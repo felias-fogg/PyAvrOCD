@@ -1,2 +1,2 @@
 # pyavrocd
-A Python gdbserver for AVR MCUs
+A Python gdbserver for AVR MCUs (work in progress)
