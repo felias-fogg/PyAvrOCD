@@ -2,7 +2,7 @@
 
 The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip. 
 
-![Snap adapter](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adaper.JPG)
+![Snap adapter](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adapter.JPG)
 
 Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG header. For the Atmel debuggers, adapters are either already included or must be purchased separately.
 
@@ -102,7 +102,7 @@ Again, if there is a JTAG header oin the board, connecting the board is a breeze
 
 ### Connecting to targets without a JTAG header
 
-When debugging a program running on an Arduino Mega, you must connect the wires individually, referring to the Arduino Mega's pinout and the header on the debugger. Here the example for connecting PICkit4 (or Snap) to an Arduino Mega 2560.
+When debugging a program running on an Arduino Mega, you must connect the wires individually, referring to the Arduino Mega's pinout and the header on the debugger. Here is an example for connecting PICkit4 (or Snap) to an Arduino Mega 2560.
 
 ![Atmel-ICI+MCUdude](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pickit4+mega.jpeg)
 

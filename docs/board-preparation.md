@@ -30,7 +30,7 @@ This is responsible for issuing a reset signal when a serial connection is estab
 
 On clone boards with a CH340 serial converter chip, you may have to remove the capacitor marked `C8`.
 
-![remove c8](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.jpg)
+![remove c8](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png)
 
 Things are a bit more complicated with Arduino Nano boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. This is impossible for the original boards because the resistor is part of a resistor array. You may try to cut the trace from Vcc to the resistor, but I doubt this can be done without damaging other parts of the board.
 
@@ -42,7 +42,7 @@ The Arduino Pro Mini is a simpler case. The pull-up resistor has a resistance of
 
 In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the RSTDSBL fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when SPIEN (enabling SPI programming) is unprogrammed. 
 
-Enabling and disabling debugWIRE mode by programming and unprogramming the DWEN fuse will be carried out by pyavrocd. Similarly, it will erase the flash if a lock bit is set, and it will unprogram the BOOTRST fuse deactivating any bootloader.
+Enabling and disabling debugWIRE mode by programming and unprogramming the DWEN fuse will be carried out by pyavrocd. Similarly, it will erase the flash if a lock bit is set, and it will unprogram the BOOTRST fuse, deactivating any bootloader.
 
 
 
