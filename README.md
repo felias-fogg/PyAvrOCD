@@ -107,34 +107,32 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 #### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-- ATmega16(A), ATmega32(A)
-- ATmega164(P)(A), ATmega324(P)(A/B), ATmega644, ATmega1284
+* ATmega16(A), ATmega32(A)
+* ATmega164(P)(A), ATmega324(P)(A/B), ATmega644, ATmega1284
 
 #### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
-- ATmega64(A), ATmega128(A) (no SW breakpoints?)
-
-- ATmega640, ATmega1280, ATmega2560
-- ATmega1281, ATmega2561
-- ATmega165(P)(A), ATmega325(P)(A), ATmega645(P)(A)
-- ATmega169(P)(A), ATmega329(P)(A), ATmega649
-- ATmega3250(P)(A), ATmega6450(P)(A)
-- ATmega3290(P)(A), ATmega6490(P)(A)
-- AT90CAN32, AT90CAN64, AT90CAN128
+* ATmega64(A), ATmega128(A) (no SW breakpoints?)
+* ATmega640, ATmega1280, ATmega2560
+* ATmega1281, ATmega2561
+* ATmega165(P)(A), ATmega325(P)(A), ATmega645(P)(A)
+* ATmega169(P)(A), ATmega329(P)(A), ATmega649
+* ATmega3250(P)(A), ATmega6450(P)(A)
+* ATmega3290(P)(A), ATmega6490(P)(A)
+* AT90CAN32, AT90CAN64, AT90CAN128
 
 #### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
-- ATmega162
+* ATmega162
 
 #### Other ATmegas
 
-- AT90USB646, AT90USB647, AT90USB1286, AT90USB1287
-
-- ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
-- ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
-- ATmega128rfa1
-- ATmega16U4, ATmega32U4
-- ATmega406
+* AT90USB646, AT90USB647, AT90USB1286, AT90USB1287
+* ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
+* ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
+* ATmega128rfa1
+* ATmega16U4, ATmega32U4
+* ATmega406
 
 #### Supported Arduino boards
 
@@ -145,6 +143,3 @@ All boards with the chips listed above can be debugged. This is, in particular, 
 ## What to expect in the future 
 
 The package has now its full functionality and seems to work pretty well with debugWIRE MCUs. It has also been integrated into MiniCore, MicroCore and my fork of ATTinyCore. Currently, I am working on implementing the JTAG part. UPDI will follow soon, hopefully.
-
-### 
-
