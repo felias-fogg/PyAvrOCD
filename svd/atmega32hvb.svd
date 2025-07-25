@@ -1,0 +1,3252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<device schemaVersion="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="CMSIS-SVD.xsd">
+  <vendor>Atmel</vendor>
+  <name>ATmega32HVB</name>
+  <version>1.0</version>
+  <description>No description available.</description>
+  <cpu>
+    <name>other</name>
+    <revision>r0p0</revision>
+    <endian>little</endian>
+    <mpuPresent>false</mpuPresent>
+    <fpuPresent>false</fpuPresent>
+    <nvicPrioBits>4</nvicPrioBits>
+    <vendorSystickConfig>false</vendorSystickConfig>
+  </cpu>
+  <addressUnitBits>8</addressUnitBits>
+  <width>8</width>
+  <size>0x8</size>
+  <access>read-write</access>
+  <resetValue>0x00000000</resetValue>
+  <resetMask>0x000000FF</resetMask>
+  <peripherals>
+    <peripheral>
+      <name>ADC</name>
+      <description>Analog-to-Digital Converter</description>
+      <baseAddress>0x00000078</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x4</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>VADC</name>
+          <description>VADC Data Register Bytes</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>VADC</name>
+              <description>VADC Data bits</description>
+              <bitRange>[11:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>4095</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>VADCSR</name>
+          <description>The VADC Control and Status register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>VADCCIE</name>
+              <description>VADC Conversion Complete Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>VADCCIF</name>
+              <description>VADC Conversion Complete Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>VADSC</name>
+              <description>VADC Satrt Conversion</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>VADEN</name>
+              <description>VADC Enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>VADMUX</name>
+          <description>The VADC multiplexer Selection Register</description>
+          <addressOffset>0x4</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>VADMUX</name>
+              <description>Analog Channel and Gain Selection Bits</description>
+              <bitRange>[3:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>15</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>BANDGAP</name>
+      <description>Bandgap</description>
+      <baseAddress>0x000000D0</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>BGCCR</name>
+          <description>Bandgap Calibration Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BGCC</name>
+              <description>BG Calibration of PTAT Current Bits</description>
+              <bitRange>[5:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>63</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BGCRR</name>
+          <description>Bandgap Calibration of Resistor Ladder</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BGCR</name>
+              <description>Bandgap Calibration of Resistor Ladder Bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BGCSR</name>
+          <description>Bandgap Control and Status Register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BGSCDIE</name>
+              <description>Bandgap Short Circuit Detection Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BGSCDIF</name>
+              <description>Bandgap Short Circuit Detection Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BGSCDE</name>
+              <description>Bandgap Short Circuit Detection Enabled</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BGD</name>
+              <description>Bandgap Disable</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>BATTERY_PROTECTION</name>
+      <description>Battery Protection</description>
+      <baseAddress>0x000000F2</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x3</offset>
+        <size>0xA</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>BPCHCD</name>
+          <description>Battery Protection Charge-High-current Detection Level Register</description>
+          <addressOffset>0x7</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CHCDL</name>
+              <description>Battery Protection Charge-High-current Detection Level bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPCOCD</name>
+          <description>Battery Protection Charge-Over-current Detection Level Register</description>
+          <addressOffset>0x5</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>COCDL</name>
+              <description>Battery Protection Charge-Over-current Detection Level bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPCR</name>
+          <description>Battery Protection Control Register</description>
+          <addressOffset>0xB</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CHCD</name>
+              <description>Charge High-current Protection Disable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DHCD</name>
+              <description>Discharge High-current Protection Disable</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>COCD</name>
+              <description>Charge Over-current Protection Disabled</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DOCD</name>
+              <description>Discharge Over-current Protection Disabled</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SCD</name>
+              <description>Short Circuit Protection Disabled</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EPID</name>
+              <description>External Protection Input Disable</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPDHCD</name>
+          <description>Battery Protection Discharge-High-current Detection Level Register</description>
+          <addressOffset>0x6</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>DHCDL</name>
+              <description>Battery Protection Discharge-High-current Detection Level bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPDOCD</name>
+          <description>Battery Protection Discharge-Over-current Detection Level Register</description>
+          <addressOffset>0x4</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>DOCDL</name>
+              <description>Battery Protection Discharge-Over-current Detection Level bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPHCTR</name>
+          <description>Battery Protection Short-current Timing Register</description>
+          <addressOffset>0xA</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>HCPT</name>
+              <description>Battery Protection Short-current Timing bits</description>
+              <bitRange>[5:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>63</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPIFR</name>
+          <description>Battery Protection Interrupt Flag Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CHCIF</name>
+              <description>Charge High-current Protection Activated Interrupt</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DHCIF</name>
+              <description>Discharge High-current Protection Activated Interrupt</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>COCIF</name>
+              <description>Charge Over-current Protection Activated Interrupt Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DOCIF</name>
+              <description>Discharge Over-current Protection Activated Interrupt Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SCIF</name>
+              <description>Short-circuit Protection Activated Interrupt Flag</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPIMSK</name>
+          <description>Battery Protection Interrupt Mask Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CHCIE</name>
+              <description>Charger High-current Protection Activated Interrupt</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DHCIE</name>
+              <description>Discharger High-current Protection Activated Interrupt</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>COCIE</name>
+              <description>Charge Over-current Protection Activated Interrupt Enable</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DOCIE</name>
+              <description>Discharge Over-current Protection Activated Interrupt Enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SCIE</name>
+              <description>Short-circuit Protection Activated Interrupt Enable</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPOCTR</name>
+          <description>Battery Protection Over-current Timing Register</description>
+          <addressOffset>0x9</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OCPT</name>
+              <description>Battery Protection Over-current Timing bits</description>
+              <bitRange>[5:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>63</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPPLR</name>
+          <description>Battery Protection Parameter Lock Register</description>
+          <addressOffset>0xC</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>BPPL</name>
+              <description>Battery Protection Parameter Lock</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BPPLE</name>
+              <description>Battery Protection Parameter Lock Enable</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPSCD</name>
+          <description>Battery Protection Short-Circuit Detection Level Register</description>
+          <addressOffset>0x3</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SCDL</name>
+              <description>Battery Protection Short-Circuit Detection Level Register bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>BPSCTR</name>
+          <description>Battery Protection Short-current Timing Register</description>
+          <addressOffset>0x8</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SCPT</name>
+              <description>Battery Protection Short-current Timing bits</description>
+              <bitRange>[6:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>127</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>BOOT_LOAD</name>
+      <description>Bootloader</description>
+      <baseAddress>0x00000057</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>SPMCSR</name>
+          <description>Store Program Memory Control and Status Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SPMEN</name>
+              <description>Store Program Memory Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PGERS</name>
+              <description>Page Erase</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PGWRT</name>
+              <description>Page Write</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>LBSET</name>
+              <description>Lock Bit Set</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RWWSRE</name>
+              <description>Read-While-Write Section Read Enable</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SIGRD</name>
+              <description>Signature Row Read</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>RWWSB</name>
+              <description>Read-While-Write Section Busy</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPMIE</name>
+              <description>SPM Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>CELL_BALANCING</name>
+      <description>Cell Balancing</description>
+      <baseAddress>0x000000F1</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>CBCR</name>
+          <description>Cell Balancing Control Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CBE</name>
+              <description>Cell Balancing Enables</description>
+              <bitRange>[3:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>15</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>CHARGER_DETECT</name>
+      <description>Charger Detect</description>
+      <baseAddress>0x000000D4</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>CHGDCSR</name>
+          <description>Charger Detect Control and Status Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CHGDIE</name>
+              <description>Charger Detect Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CHGDIF</name>
+              <description>Charger Detect Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CHGDISC</name>
+              <description>Charger Detect Interrupt Sense Control</description>
+              <bitRange>[3:2]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+            <field>
+              <name>BATTPVL</name>
+              <description>BATT Pin Voltage Level</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>COULOMB_COUNTER</name>
+      <description>Coulomb Counter</description>
+      <baseAddress>0x000000E0</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xB</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>CADAC0</name>
+          <description>ADC Accumulate Current</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADAC0</name>
+              <description>ADC accumulate current bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADAC1</name>
+          <description>ADC Accumulate Current</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADAC0</name>
+              <description>ADC accumulate current bits</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+            <field>
+              <name>CADAC</name>
+              <description>ADC accumulate current bits</description>
+              <bitRange>[7:2]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>63</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADAC2</name>
+          <description>ADC Accumulate Current</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADAC</name>
+              <description>ADC accumulate current bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADAC3</name>
+          <description>ADC Accumulate Current</description>
+          <addressOffset>0x3</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADAC</name>
+              <description>ADC accumulate current bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADCSRA</name>
+          <description>CC-ADC Control and Status Register A</description>
+          <addressOffset>0x6</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADSE</name>
+              <description>When the CADSE bit is written to one, the ongoing CC-ADC conversion is aborted, and the CC-ADC enters Regular Current detection mode.</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADSI</name>
+              <description>The CADSI bits determine the current sampling interval for the Regular Current detection in Power-down mode. The actual settings remain to be determined.</description>
+              <bitRange>[2:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+            <field>
+              <name>CADAS</name>
+              <description>CC_ADC Accumulate Current Select Bits</description>
+              <bitRange>[4:3]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+            <field>
+              <name>CADUB</name>
+              <description>CC_ADC Update Busy</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADPOL</name>
+              <description>No Description.</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADEN</name>
+              <description>When the CADEN bit is cleared (zero), the CC-ADC is disabled. When the CADEN bit is set (one), the CC-ADC will continuously measure the voltage drop over the external sense resistor RSENSE. In Power-down, only the Regular Current detection is active. In Power-off, the CC-ADC is always disabled.</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADCSRB</name>
+          <description>CC-ADC Control and Status Register B</description>
+          <addressOffset>0x7</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADICIF</name>
+              <description>CC-ADC Instantaneous Current Interrupt Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADRCIF</name>
+              <description>CC-ADC Accumulate Current Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADACIF</name>
+              <description>CC-ADC Accumulate Current Interrupt Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADICIE</name>
+              <description>CAD Instantaneous Current Interrupt Enable</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADRCIE</name>
+              <description>Regular Current Interrupt Enable</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CADACIE</name>
+              <description>No Description.</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADCSRC</name>
+          <description>CC-ADC Control and Status Register C</description>
+          <addressOffset>0x8</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADVSE</name>
+              <description>CC-ADC Voltage Scaling Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADIC</name>
+          <description>CC-ADC Instantaneous Current</description>
+          <addressOffset>0x4</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADIC</name>
+              <description>CC-ADC Instantaneous Current</description>
+              <bitRange>[15:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>65535</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADRCC</name>
+          <description>CC-ADC Regular Charge Current</description>
+          <addressOffset>0x9</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADRCC</name>
+              <description>CC-ADC Regular Charge Current</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CADRDC</name>
+          <description>CC-ADC Regular Discharge Current</description>
+          <addressOffset>0xA</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CADRDC</name>
+              <description>CC-ADC Regular Discharge Current</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>CPU</name>
+      <description>CPU Registers</description>
+      <baseAddress>0x00000037</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x7</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x13</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x1C</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x26</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x2A</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x2D</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x2F</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x47</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <interrupt>
+        <name>RESET</name>
+        <description>External Pin, Power-on Reset, Brown-out Reset and Watchdog Reset</description>
+        <value>0</value>
+      </interrupt>
+      <interrupt>
+        <name>BPINT</name>
+        <description>Battery Protection Interrupt</description>
+        <value>1</value>
+      </interrupt>
+      <interrupt>
+        <name>VREGMON</name>
+        <description>Voltage regulator monitor interrupt</description>
+        <value>2</value>
+      </interrupt>
+      <interrupt>
+        <name>INT0</name>
+        <description>External Interrupt Request 0</description>
+        <value>3</value>
+      </interrupt>
+      <interrupt>
+        <name>INT1</name>
+        <description>External Interrupt Request 1</description>
+        <value>4</value>
+      </interrupt>
+      <interrupt>
+        <name>INT2</name>
+        <description>External Interrupt Request 2</description>
+        <value>5</value>
+      </interrupt>
+      <interrupt>
+        <name>INT3</name>
+        <description>External Interrupt Request 3</description>
+        <value>6</value>
+      </interrupt>
+      <interrupt>
+        <name>PCINT0</name>
+        <description>Pin Change Interrupt 0</description>
+        <value>7</value>
+      </interrupt>
+      <interrupt>
+        <name>PCINT1</name>
+        <description>Pin Change Interrupt 1</description>
+        <value>8</value>
+      </interrupt>
+      <interrupt>
+        <name>WDT</name>
+        <description>Watchdog Timeout Interrupt</description>
+        <value>9</value>
+      </interrupt>
+      <interrupt>
+        <name>BGSCD</name>
+        <description>Bandgap Buffer Short Circuit Detected</description>
+        <value>10</value>
+      </interrupt>
+      <interrupt>
+        <name>CHDET</name>
+        <description>Charger Detect</description>
+        <value>11</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER1_IC</name>
+        <description>Timer 1 Input capture</description>
+        <value>12</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER1_COMPA</name>
+        <description>Timer 1 Compare Match A</description>
+        <value>13</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER1_COMPB</name>
+        <description>Timer 1 Compare Match B</description>
+        <value>14</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER1_OVF</name>
+        <description>Timer 1 overflow</description>
+        <value>15</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER0_IC</name>
+        <description>Timer 0 Input Capture</description>
+        <value>16</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER0_COMPA</name>
+        <description>Timer 0 Compare Match A</description>
+        <value>17</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER0_COMPB</name>
+        <description>Timer 0 Compare Match B</description>
+        <value>18</value>
+      </interrupt>
+      <interrupt>
+        <name>TIMER0_OVF</name>
+        <description>Timer 0 Overflow</description>
+        <value>19</value>
+      </interrupt>
+      <interrupt>
+        <name>TWIBUSCD</name>
+        <description>Two-Wire Bus Connect/Disconnect</description>
+        <value>20</value>
+      </interrupt>
+      <interrupt>
+        <name>TWI</name>
+        <description>Two-Wire Serial Interface</description>
+        <value>21</value>
+      </interrupt>
+      <interrupt>
+        <name>SPI_STC</name>
+        <description>SPI Serial transfer complete</description>
+        <value>22</value>
+      </interrupt>
+      <interrupt>
+        <name>VADC</name>
+        <description>Voltage ADC Conversion Complete</description>
+        <value>23</value>
+      </interrupt>
+      <interrupt>
+        <name>CCADC_CONV</name>
+        <description>Coulomb Counter ADC Conversion Complete</description>
+        <value>24</value>
+      </interrupt>
+      <interrupt>
+        <name>CCADC_REG_CUR</name>
+        <description>Coloumb Counter ADC Regular Current</description>
+        <value>25</value>
+      </interrupt>
+      <interrupt>
+        <name>CCADC_ACC</name>
+        <description>Coloumb Counter ADC Accumulator</description>
+        <value>26</value>
+      </interrupt>
+      <interrupt>
+        <name>EE_READY</name>
+        <description>EEPROM Ready</description>
+        <value>27</value>
+      </interrupt>
+      <interrupt>
+        <name>SPM</name>
+        <description>SPM Ready</description>
+        <value>28</value>
+      </interrupt>
+      <registers>
+        <register>
+          <name>CLKPR</name>
+          <description>Clock Prescale Register</description>
+          <addressOffset>0x2A</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>CLKPS</name>
+              <description>Clock Prescaler Select Bits</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+            <field>
+              <name>CLKPCE</name>
+              <description>Clock Prescaler Change Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DIDR0</name>
+          <description>Digital Input Disable Register</description>
+          <addressOffset>0x47</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PA0DID</name>
+              <description>When this bit is written logic one, the digital input buffer of the corresponding V_ADC pin is disabled.</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PA1DID</name>
+              <description>When this bit is written logic one, the digital input buffer of the corresponding V_ADC pin is disabled.</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>FOSCCAL</name>
+          <description>Fast Oscillator Calibration Value</description>
+          <addressOffset>0x2F</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>FCAL</name>
+              <description>Fast Oscillator Calibration Value</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>GPIOR0</name>
+          <description>General Purpose IO Register 0</description>
+          <addressOffset>0x7</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>GPIOR0</name>
+              <description>General Purpose IO bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>GPIOR1</name>
+          <description>General Purpose IO Register 1</description>
+          <addressOffset>0x13</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>GPIOR1</name>
+              <description>General Purpose IO bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>GPIOR2</name>
+          <description>General Purpose IO Register 2</description>
+          <addressOffset>0x14</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>GPIOR2</name>
+              <description>General Purpose IO bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MCUCR</name>
+          <description>MCU Control Register</description>
+          <addressOffset>0x1E</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>IVCE</name>
+              <description>Interrupt Vector Change Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>IVSEL</name>
+              <description>Interrupt Vector Select</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PUD</name>
+              <description>Pull-up disable</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CKOE</name>
+              <description>Clock Output Enable</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MCUSR</name>
+          <description>MCU Status Register</description>
+          <addressOffset>0x1D</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>PORF</name>
+              <description>Power-on reset flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EXTRF</name>
+              <description>External Reset Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BODRF</name>
+              <description>Brown-out Reset Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDRF</name>
+              <description>Watchdog Reset Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCDRF</name>
+              <description>OCD Reset Flag</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OSICSR</name>
+          <description>Oscillator Sampling Interface Control and Status Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>OSIEN</name>
+              <description>Oscillator Sampling Interface Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OSIST</name>
+              <description>Oscillator Sampling Interface Status</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OSISEL0</name>
+              <description>Oscillator Sampling Interface Select 0</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PRR0</name>
+          <description>Power Reduction Register 0</description>
+          <addressOffset>0x2D</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PRVADC</name>
+              <description>Power Reduction V-ADC</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRTIM0</name>
+              <description>Power Reduction Timer/Counter0</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRTIM1</name>
+              <description>Power Reduction Timer/Counter1</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRSPI</name>
+              <description>Power reduction SPI</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRVRM</name>
+              <description>Power Reduction Voltage Regulator Monitor</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>PRTWI</name>
+              <description>Power Reduction TWI</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SMCR</name>
+          <description>Sleep Mode Control Register</description>
+          <addressOffset>0x1C</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SE</name>
+              <description>Sleep Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SM</name>
+              <description>Sleep Mode Select bits</description>
+              <bitRange>[3:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>IDLE</name>
+                  <description>Idle</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ADC</name>
+                  <description>ADC</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>VAL_0x02</name>
+                  <description>Reserved</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PSAVE</name>
+                  <description>Power Save</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>POFF</name>
+                  <description>Power Off</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>VAL_0x05</name>
+                  <description>Reserved</description>
+                  <value>5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>VAL_0x06</name>
+                  <description>Reserved</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>VAL_0x07</name>
+                  <description>Reserved</description>
+                  <value>7</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SP</name>
+          <description>Stack Pointer </description>
+          <addressOffset>0x26</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>65535</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>SREG</name>
+          <description>Status Register</description>
+          <addressOffset>0x28</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>C</name>
+              <description>Carry Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>Z</name>
+              <description>Zero Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>N</name>
+              <description>Negative Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>V</name>
+              <description>Two's Complement Overflow Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>S</name>
+              <description>Sign Bit</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>H</name>
+              <description>Half Carry Flag</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T</name>
+              <description>Bit Copy Storage</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>I</name>
+              <description>Global Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>EEPROM</name>
+      <description>EEPROM</description>
+      <baseAddress>0x0000003F</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x4</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>EEAR</name>
+          <description>EEPROM Read/Write Access</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>EEAR</name>
+              <description>EEPROM Address bits</description>
+              <bitRange>[9:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>1023</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>EECR</name>
+          <description>EEPROM Control Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>EERE</name>
+              <description>EEPROM Read Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EEPE</name>
+              <description>EEPROM Write Enable</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EEMPE</name>
+              <description>EEPROM Master Write Enable</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EERIE</name>
+              <description>EEProm Ready Interrupt Enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EEPM</name>
+              <description>No Description.</description>
+              <bitRange>[5:4]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>ERASE_AND_WRITE_IN_ONE_OPERATION</name>
+                  <description>Erase and Write in one operation</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ERASE_ONLY</name>
+                  <description>Erase Only</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>WRITE_ONLY</name>
+                  <description>Write Only</description>
+                  <value>2</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>EEDR</name>
+          <description>EEPROM Data Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>EEDR</name>
+              <description>EEPROM Data bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>EXINT</name>
+      <description>External Interrupts</description>
+      <baseAddress>0x0000003B</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x2D</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x30</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>EICRA</name>
+          <description>External Interrupt Control Register</description>
+          <addressOffset>0x2E</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>ISC0</name>
+              <description>External Interrupt Sense Control 0 Bits</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LOW_LEVEL_OF_INTX</name>
+                  <description>Low Level of INTX</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ANY_LOGICAL_CHANGE_OF_INTX</name>
+                  <description>Any Logical Change of INTX</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FALLING_EDGE_OF_INTX</name>
+                  <description>Falling Edge of INTX</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RISING_EDGE_OF_INTX</name>
+                  <description>Rising Edge of INTX</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ISC1</name>
+              <description>External Interrupt Sense Control 1 Bits</description>
+              <bitRange>[3:2]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LOW_LEVEL_OF_INTX</name>
+                  <description>Low Level of INTX</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ANY_LOGICAL_CHANGE_OF_INTX</name>
+                  <description>Any Logical Change of INTX</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FALLING_EDGE_OF_INTX</name>
+                  <description>Falling Edge of INTX</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RISING_EDGE_OF_INTX</name>
+                  <description>Rising Edge of INTX</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ISC2</name>
+              <description>External Interrupt Sense Control 2 Bits</description>
+              <bitRange>[5:4]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LOW_LEVEL_OF_INTX</name>
+                  <description>Low Level of INTX</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ANY_LOGICAL_CHANGE_OF_INTX</name>
+                  <description>Any Logical Change of INTX</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FALLING_EDGE_OF_INTX</name>
+                  <description>Falling Edge of INTX</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RISING_EDGE_OF_INTX</name>
+                  <description>Rising Edge of INTX</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ISC3</name>
+              <description>External Interrupt Sense Control 3 Bits</description>
+              <bitRange>[7:6]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LOW_LEVEL_OF_INTX</name>
+                  <description>Low Level of INTX</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ANY_LOGICAL_CHANGE_OF_INTX</name>
+                  <description>Any Logical Change of INTX</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FALLING_EDGE_OF_INTX</name>
+                  <description>Falling Edge of INTX</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RISING_EDGE_OF_INTX</name>
+                  <description>Rising Edge of INTX</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>EIFR</name>
+          <description>External Interrupt Flag Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>INTF</name>
+              <description>External Interrupt Flags</description>
+              <bitRange>[3:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>15</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>EIMSK</name>
+          <description>External Interrupt Mask Register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>INT</name>
+              <description>External Interrupt Request 3 Enable</description>
+              <bitRange>[3:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>15</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PCICR</name>
+          <description>Pin Change Interrupt Control Register</description>
+          <addressOffset>0x2D</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PCIE</name>
+              <description>Pin Change Interrupt Enables</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PCIFR</name>
+          <description>Pin Change Interrupt Flag Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>PCIF</name>
+              <description>Pin Change Interrupt Flags</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>3</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PCMSK0</name>
+          <description>Pin Change Enable Mask Register 0</description>
+          <addressOffset>0x30</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PCINT</name>
+              <description>Pin Change Enable Mask</description>
+              <bitRange>[3:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>15</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PCMSK1</name>
+          <description>Pin Change Enable Mask Register 1</description>
+          <addressOffset>0x31</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PCINT</name>
+              <description>Pin Change Enable Mask</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>FET</name>
+      <description>FET Control</description>
+      <baseAddress>0x000000F0</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>FCSR</name>
+          <description>FET Control and Status Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CFE</name>
+              <description>Charge FET Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DFE</name>
+              <description>Discharge FET Enable</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CPS</name>
+              <description>Current Protection Status</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DUVRD</name>
+              <description>Deep Under-Voltage Recovery Disable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>PORTA</name>
+      <description>I/O Port</description>
+      <baseAddress>0x00000020</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>DDRA</name>
+          <description>Port A Data Direction Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>PINA</name>
+          <description>Port A Input Pins</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>PORTA</name>
+          <description>Port A Data Register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>PORTB</name>
+      <description>I/O Port</description>
+      <baseAddress>0x00000023</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>DDRB</name>
+          <description>Port B Data Direction Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>PINB</name>
+          <description>Port B Input Pins</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>PORTB</name>
+          <description>Port B Data Register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>PORTC</name>
+      <description>I/O Port</description>
+      <baseAddress>0x00000026</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x2</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>PINC</name>
+          <description>Port C Input Pins</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>PORTC</name>
+          <description>Port C Data Register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>SPI</name>
+      <description>Serial Peripheral Interface</description>
+      <baseAddress>0x0000004C</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>SPCR</name>
+          <description>SPI Control Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SPR</name>
+              <description>SPI Clock Rate Selects</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FOSC_4</name>
+                  <description>fosc/4</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FOSC_16</name>
+                  <description>fosc/16</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FOSC_128</name>
+                  <description>fosc/128</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>CPHA</name>
+              <description>Clock Phase</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CPOL</name>
+              <description>Clock polarity</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>MSTR</name>
+              <description>Master/Slave Select</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DORD</name>
+              <description>Data Order</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPE</name>
+              <description>SPI Enable</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPIE</name>
+              <description>SPI Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SPDR</name>
+          <description>SPI Data Register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>write-only</access>
+          <fields>
+            <field>
+              <name>SPDR</name>
+              <description>SPI Data bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>SPSR</name>
+          <description>SPI Status Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>SPI2X</name>
+              <description>Double SPI Speed Bit</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WCOL</name>
+              <description>Write Collision Flag</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPIF</name>
+              <description>SPI Interrupt Flag</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>TC0</name>
+      <description>Timer/Counter, 16-bit</description>
+      <baseAddress>0x00000035</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0xE</offset>
+        <size>0x7</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x39</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>GTCCR</name>
+          <description>General Timer/Counter Control Register</description>
+          <addressOffset>0xE</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PSRSYNC</name>
+              <description>Prescaler Reset</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TSM</name>
+              <description>Timer/Counter Synchronization Mode</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCR0A</name>
+          <description>Output Compare Register A</description>
+          <addressOffset>0x13</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OCR0A</name>
+              <description>Output Compare 0 A bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCR0B</name>
+          <description>Output Compare Register B</description>
+          <addressOffset>0x14</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OCR0B</name>
+              <description>Output Compare 0 B bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TCCR0A</name>
+          <description>Timer/Counter 0 Control Register A</description>
+          <addressOffset>0xF</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>WGM00</name>
+              <description>Waveform Generation Mode</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICS0</name>
+              <description>Input Capture Select</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICES0</name>
+              <description>Input Capture Edge Select</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICNC0</name>
+              <description>Input Capture Noise Canceler</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICEN0</name>
+              <description>Input Capture Mode Enable</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TCW0</name>
+              <description>Timer/Counter Width</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TCCR0B</name>
+          <description>Timer/Counter0 Control Register B</description>
+          <addressOffset>0x10</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CS00</name>
+              <description>Clock Select0 bit 0</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_CLOCK_SOURCE_STOPPED</name>
+                  <description>No Clock Source (Stopped)</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_NO_PRESCALING</name>
+                  <description>Running, No Prescaling</description>
+                  <value>1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>CS01</name>
+              <description>Clock Select0 bit 1</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CS02</name>
+              <description>Clock Select0 bit 2</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TCNT0</name>
+          <description>Timer Counter 0 Bytes</description>
+          <addressOffset>0x11</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TCNT0</name>
+              <description>Timer Counter 0 bits</description>
+              <bitRange>[15:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>65535</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TIFR0</name>
+          <description>Timer/Counter Interrupt Flag register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>TOV0</name>
+              <description>Timer/Counter0 Overflow Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCF0A</name>
+              <description>Timer/Counter0 Output Compare Flag A</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCF0B</name>
+              <description>Timer/Counter0 Output Compare Flag B</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICF0</name>
+              <description>Timer/Counter 0 Input Capture Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TIMSK0</name>
+          <description>Timer/Counter Interrupt Mask Register</description>
+          <addressOffset>0x39</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TOIE0</name>
+              <description>Timer/Counter0 Overflow Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCIE0A</name>
+              <description>Timer/Counter0 Output Compare A Interrupt Enable</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCIE0B</name>
+              <description>Timer/Counter0 Output Compare B Interrupt Enable</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICIE0</name>
+              <description>Timer/Counter n Input Capture Interrupt Enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>TC1</name>
+      <description>Timer/Counter, 16-bit</description>
+      <baseAddress>0x00000036</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0xD</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x39</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x4A</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x4E</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0x52</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>GTCCR</name>
+          <description>General Timer/Counter Control Register</description>
+          <addressOffset>0xD</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PSRSYNC</name>
+              <description>Prescaler Reset</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TSM</name>
+              <description>Timer/Counter Synchronization Mode</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCR1A</name>
+          <description>Output Compare Register 1A</description>
+          <addressOffset>0x52</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OCR1A</name>
+              <description>Output Compare 1 A bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>OCR1B</name>
+          <description>Output Compare Register B</description>
+          <addressOffset>0x53</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OCR1B</name>
+              <description>Output Compare 1 B bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TCCR1A</name>
+          <description>Timer/Counter 1 Control Register A</description>
+          <addressOffset>0x4A</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>WGM10</name>
+              <description>Waveform Generation Mode</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICS1</name>
+              <description>Input Capture Select</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICES1</name>
+              <description>Input Capture Edge Select</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICNC1</name>
+              <description>Input Capture Noise Canceler</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICEN1</name>
+              <description>Input Capture Mode Enable</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TCW1</name>
+              <description>Timer/Counter Width</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TCCR1B</name>
+          <description>Timer/Counter1 Control Register B</description>
+          <addressOffset>0x4B</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CS</name>
+              <description>Clock Select1 bis</description>
+              <bitRange>[2:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_CLOCK_SOURCE_STOPPED</name>
+                  <description>No Clock Source (Stopped)</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_NO_PRESCALING</name>
+                  <description>Running, No Prescaling</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_CLK_8</name>
+                  <description>Running, CLK/8</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_CLK_64</name>
+                  <description>Running, CLK/64</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_CLK_256</name>
+                  <description>Running, CLK/256</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_CLK_1024</name>
+                  <description>Running, CLK/1024</description>
+                  <value>5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_EXTCLK_TN_FALLING_EDGE</name>
+                  <description>Running, ExtClk Tn Falling Edge</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUNNING_EXTCLK_TN_RISING_EDGE</name>
+                  <description>Running, ExtClk Tn Rising Edge</description>
+                  <value>7</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TCNT1</name>
+          <description>Timer Counter 1 Bytes</description>
+          <addressOffset>0x4E</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TCNT1</name>
+              <description>Timer Counter 1 bits</description>
+              <bitRange>[15:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>65535</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TIFR1</name>
+          <description>Timer/Counter Interrupt Flag register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>TOV1</name>
+              <description>Timer/Counter1 Overflow Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCF1A</name>
+              <description>Timer/Counter1 Output Compare Flag A</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCF1B</name>
+              <description>Timer/Counter1 Output Compare Flag B</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICF1</name>
+              <description>Timer/Counter 1 Input Capture Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TIMSK1</name>
+          <description>Timer/Counter Interrupt Mask Register</description>
+          <addressOffset>0x39</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TOIE1</name>
+              <description>Timer/Counter1 Overflow Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCIE1A</name>
+              <description>Timer/Counter1 Output Compare A Interrupt Enable</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCIE1B</name>
+              <description>Timer/Counter1 Output Compare B Interrupt Enable</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ICIE1</name>
+              <description>Timer/Counter n Input Capture Interrupt Enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>TWI</name>
+      <description>Two Wire Serial Interface</description>
+      <baseAddress>0x000000B8</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x7</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>TWAMR</name>
+          <description>TWI (Slave) Address Mask Register</description>
+          <addressOffset>0x5</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TWAM</name>
+              <description>No Description.</description>
+              <bitRange>[7:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>127</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TWAR</name>
+          <description>TWI (Slave) Address register</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TWGCE</name>
+              <description>TWI General Call Recognition Enable Bit</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWA</name>
+              <description>TWI (Slave) Address register Bits</description>
+              <bitRange>[7:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>127</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TWBCSR</name>
+          <description>TWI Bus Control and Status Register</description>
+          <addressOffset>0x6</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TWBCIP</name>
+              <description>TWI Bus Connect/Disconnect Interrupt Polarity</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWBDT</name>
+              <description>TWI Bus Disconnect Time-out Period</description>
+              <bitRange>[2:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>250MS</name>
+                  <description>250ms</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>500MS</name>
+                  <description>500ms</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1000MS</name>
+                  <description>1000ms</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2000MS</name>
+                  <description>2000ms</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>TWBCIE</name>
+              <description>TWI Bus Connect/Disconnect Interrupt Enable</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWBCIF</name>
+              <description>TWI Bus Connect/Disconnect Interrupt Flag</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TWBR</name>
+          <description>TWI Bit Rate register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TWBR</name>
+              <description>TWI Bit Rate bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TWCR</name>
+          <description>TWI Control Register</description>
+          <addressOffset>0x4</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>TWIE</name>
+              <description>TWI Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWEN</name>
+              <description>TWI Enable Bit</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWWC</name>
+              <description>TWI Write Collision Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWSTO</name>
+              <description>TWI Stop Condition Bit</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWSTA</name>
+              <description>TWI Start Condition Bit</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWEA</name>
+              <description>TWI Enable Acknowledge Bit</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>TWINT</name>
+              <description>TWI Interrupt Flag</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TWDR</name>
+          <description>TWI Data register</description>
+          <addressOffset>0x3</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TWD</name>
+              <description>TWI Data Bits</description>
+              <bitRange>[7:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>255</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TWSR</name>
+          <description>TWI Status Register</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>TWPS</name>
+              <description>TWI Prescaler</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>1</name>
+                  <description>1</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>4</name>
+                  <description>4</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>16</name>
+                  <description>16</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>64</name>
+                  <description>64</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>TWS</name>
+              <description>TWI Status</description>
+              <bitRange>[7:3]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <range>
+                  <minimum>0</minimum>
+                  <maximum>31</maximum>
+                </range>
+              </writeConstraint>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>VOLTAGE_REGULATOR</name>
+      <description>Voltage Regulator</description>
+      <baseAddress>0x000000C8</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>ROCR</name>
+          <description>Regulator Operating Condition Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>ROCWIE</name>
+              <description>ROC Warning Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ROCWIF</name>
+              <description>ROC Warning Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ROCD</name>
+              <description>ROC Disable</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>ROCS</name>
+              <description>ROC Status</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>WDT</name>
+      <description>Watchdog Timer</description>
+      <baseAddress>0x00000060</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>WDTCSR</name>
+          <description>Watchdog Timer Control Register</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>WDP</name>
+              <description>Watchdog Timer Prescaler Bits</description>
+              <bitRange>[5:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_2K</name>
+                  <description>Oscillator Cycles 2K</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_4K</name>
+                  <description>Oscillator Cycles 4K</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_8K</name>
+                  <description>Oscillator Cycles 8K</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_16K</name>
+                  <description>Oscillator Cycles 16K</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_32K</name>
+                  <description>Oscillator Cycles 32K</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_64K</name>
+                  <description>Oscillator Cycles 64K</description>
+                  <value>5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_128K</name>
+                  <description>Oscillator Cycles 128K</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>OSCILLATOR_CYCLES_256K</name>
+                  <description>Oscillator Cycles 256K</description>
+                  <value>7</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>WDE</name>
+              <description>Watch Dog Enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDCE</name>
+              <description>Watchdog Change Enable</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDIE</name>
+              <description>Watchdog Timeout Interrupt Enable</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDIF</name>
+              <description>Watchdog Timeout Interrupt Flag</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+  </peripherals>
+</device>

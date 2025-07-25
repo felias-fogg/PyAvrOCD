@@ -1,0 +1,9 @@
+#!/bin/bash
+arch=XXX
+git pull
+poetry install
+rm -rf build
+poetry run pyinstaller -y pyavrocd.spec
+ssh nebel@macmini.fogg rm -rf /Users/nebel/Github/felias-fogg.github.io/binaries/${arch}/dw-gdb*
+scp -r dist/pyavrocd/pyavrocd* nebel@macmini.fogg:/Users/nebel/Github/felias-fogg.github.io/binaries/${arch}/
+./dist/pyavrocd/pyavrocd -V

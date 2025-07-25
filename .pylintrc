@@ -1,0 +1,2 @@
+[tool.pylint.MASTER]
+ignore-pattern=(at(tiny|mega|90).*\\.py)

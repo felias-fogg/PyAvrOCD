@@ -1,0 +1,44 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: check-ast
+  - id: check-illegal-windows-names
+  - id: check-toml
+  - id:	trailing-whitespace
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.3.0
+  hooks:
+  - id: codespell
+    name: codespell
+    args: [ "--exclude-file=tests/util/all.lst,poetry.lock", "-L ser, RCALL, datas, rcall, ACI" ]
+- repo: local
+  hooks:
+  - id: pylint
+    name: pylint
+    entry: poetry run pylint
+    language: python
+    types: [python]
+    require_serial: true
+    args:
+      [
+        "-rn", # Only display messages
+        "-sn", # Don't display the score
+	"--ignore-pattern=(at(tiny|mega|90).*\\.py)",
+	"--ignore=harvest.py,alldevices.py,collect.py",
+	"--disable=similarities,import-error"
+      ]
+    additional_dependencies:
+      - pyedbglib
+      - pymcuprog
+  - id: unittest
+    name: unittest
+    entry: poetry run python -m unittest discover
+    language: python
+    types: [python]
+    args: []
+    pass_filenames: false
+    additional_dependencies:
+      - pyedbglib
+      - pymcuprog
+      - pyusb
