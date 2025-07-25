@@ -90,7 +90,7 @@ With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin
 
 While there is a standard for the JTAG lines, there is no commonly agreed-upon pinout of the headers. However, for the AVR family, there is a standard pinout as follows. 
 
-![ISP headers](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/jtag-header-MC.bmp)
+![ISP headers](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/jtag-header-MC.png)
 
 Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND. 
 
@@ -98,7 +98,7 @@ Sometimes, pin 8 is connected to nTREST, which we do not need, though. The cruci
 
 Again, if there is a JTAG header oin the board, connecting the board is a breeze. Simply use the right cable.
 
-![Atmel-ICI+MCUdude](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-ICI+MCUdude.jpeg)
+![Atmel-ICI+MCUdude](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-ICE+MCUdude.jpeg)
 
 ### Connecting to targets without a JTAG header
 
