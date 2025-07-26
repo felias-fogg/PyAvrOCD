@@ -1,6 +1,6 @@
 # Connecting the hardware debugger to a target
 
-The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip. 
+The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip.
 
 ![Snap adapter](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adapter.JPG)
 
@@ -8,25 +8,25 @@ Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG 
 
 ![Atmel-ICE adapter](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-adapter.JPG)
 
-The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header on the Arduino Uno. If a dw-link shield is used, one can use the standard 6-pin SPI header. 
+The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header on the Arduino Uno. If a dw-link shield is used, one can use the standard 6-pin SPI header.
 
 ![dw-link](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/dw-link.jpeg)
 
-Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board. 
+Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
 
-Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily switch a cable, and then nothing works. For this reason, I designed some adapter boards for the Arduino Mega and Leonardo. If you have standard headers on the target and the debugger has those (perhaps via adapter PCBs) as well, then the connection is simply to plug in the cable into both headers. 
+Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily switch a cable, and then nothing works. For this reason, I designed some adapter boards for the Arduino Mega and Leonardo. If you have standard headers on the target and the debugger has those (perhaps via adapter PCBs) as well, then the connection is simply to plug in the cable into both headers.
 
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
 ![picki4-connect](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pickit4-connect.png)
 
-In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the right connections. 
+In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the right connections.
 
 ## Connecting to a debugWIRE target
 
 In principle, only two wires are necessary to connect your hardware debugger to a target chip or board: the debugWIRE line, which is the target chip's RESET line, and GND. Since the debugger also needs to know which voltage the target board uses, the Vcc line is also necessary. Note that none of the commercial debuggers source the target. They only have voltage-sensing lines to drive the level-shifting hardware.
 
-Since one also wants to change into and out of debugWIRE mode, change fuses, or upload firmware, it is necessary to connect all 6 SPI programming lines to the target: VTG, GND, RESET, MOSI, MISO, and SCK. For this reason, using all SPI programming lines makes a lot of sense. Moreover, most of the time, an SPI connector is already on the target board. 
+Since one also wants to change into and out of debugWIRE mode, change fuses, or upload firmware, it is necessary to connect all 6 SPI programming lines to the target: VTG, GND, RESET, MOSI, MISO, and SCK. For this reason, using all SPI programming lines makes a lot of sense. Moreover, most of the time, an SPI connector is already on the target board.
 
 ### SPI programming header
 
@@ -88,13 +88,13 @@ With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin
 
 ## Connecting to a JTAG target
 
-While there is a standard for the JTAG lines, there is no commonly agreed-upon pinout of the headers. However, for the AVR family, there is a standard pinout as follows. 
+While there is a standard for the JTAG lines, there is no commonly agreed-upon pinout of the headers. However, for the AVR family, there is a standard pinout as follows.
 
 ![ISP headers](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/jtag-header-MC.png)
 
-Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND. 
+Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND.
 
-### Connecting to targets with a JTAG header 
+### Connecting to targets with a JTAG header
 
 Again, if there is a JTAG header oin the board, connecting the board is a breeze. Simply use the right cable.
 

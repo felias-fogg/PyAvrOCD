@@ -2,7 +2,7 @@
 
 If you want to use pyavrocd as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" and install the respective core](https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugging-software.md). As a Linux user, you may also need to set some permissions and provide udev rules.
 
-If you want to use pyavrocd stand-alone or as part of another IDE, you need to install the pyavrocd package explicitly. 
+If you want to use pyavrocd stand-alone or as part of another IDE, you need to install the pyavrocd package explicitly.
 
 ## Installation by downloading binaries
 
@@ -24,7 +24,7 @@ It will be necessary to install [pipx](https://pipx.pypa.io/) first. If you have
 > sudo ~/.local/bin/pyavrocd --install-udev-rules
 ```
 
-The last command will install the necessary udev rules. This can also be done manually by following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md). 
+The last command will install the necessary udev rules. This can also be done manually by following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md).
 
 After unplugging and replugging the debugger and restarting your shell, you can invoke the GDB server by simply typing `pyavrocd` into a shell. The binary is stored under `~/.local/bin/`
 

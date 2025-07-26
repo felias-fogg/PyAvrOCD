@@ -43,7 +43,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 
 If you have reached this point, I trust that you are familiar with GDB and know how to proceed.
 
-Note the request to power-cycle the target system. You need to do that by disconnecting and then reconnecting the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line. 
+Note the request to power-cycle the target system. You need to do that by disconnecting and then reconnecting the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.
 
 ## Debugging using the Arduino IDE 2
 
@@ -51,23 +51,23 @@ If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most stra
 
 ### Compiling the sketch
 
-You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the `MiniCore` in the `Tools` menu. 
+You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the `MiniCore` in the `Tools` menu.
 
 Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
 
 ![ide2-1](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-1.png)
 
-### Starting the debuger
+### Starting the debugger
 
-After verifying the sketch (which also compiles it), it is time to start debugging by clicking the debug button in the top row. This will start the debug server. 
+After verifying the sketch (which also compiles it), it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
 
-Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](https://github.com/felias-fogg/pyavrocd/blob/main/INSTALL.md)). Or maybe you forgot to connect a hardware debugger altogether. 
+Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](https://github.com/felias-fogg/pyavrocd/blob/main/INSTALL.md)). Or maybe you forgot to connect a hardware debugger altogether.
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-2.png)
 
-The main point is that you should power-cycle the target, i.e., disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point. 
+The main point is that you should power-cycle the target, i.e., disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
 
-After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program. 
+After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
 
 After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular the [`monitor` commands](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md) to control the GDB server. Here the command `monitor debugwire disable` is crucial because it will disable the debugWIRE mode.
 
@@ -89,15 +89,15 @@ The debugging panes are organized as follows. Pane A contains the debug controls
 - *Restart*: Same as Reset
 - *Stop*: Terminate debugging
 
-Pane B shows the active threads, but there is just one in our case. Pane C displays the call stack starting from the bottom, i.e., the current frame is the topmost. Pane D displays variable values. Unfortunately, global variables are not shown. Pane E can be populated with watch expressions.  Finally, in pane F, the active breakpoints are listed. 
+Pane B shows the active threads, but there is just one in our case. Pane C displays the call stack starting from the bottom, i.e., the current frame is the topmost. Pane D displays variable values. Unfortunately, global variables are not shown. Pane E can be populated with watch expressions.  Finally, in pane F, the active breakpoints are listed.
 
-The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. 
+The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers.
 
-For more information on debugging, refer to the Arduino [debugging tutorial](hhttps://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/). 
+For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
 
 ## Debugging using PlatformIO/VSC
 
-Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work well, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, on the other hand, the handling of displaying and changing peripheral registers does not seem to work. In any case, if you are opting for PlatformIO/VSC, you are familiar with the tools, and I do not need to preach to the converted.  
+Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work well, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, on the other hand, the handling of displaying and changing peripheral registers does not seem to work. In any case, if you are opting for PlatformIO/VSC, you are familiar with the tools, and I do not need to preach to the converted.
 
 ## Debugging using Gede
 
@@ -109,7 +109,7 @@ Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same t
 
 ![ ](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-cmds.png)
 
-Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory.b After a while, you will see window similar to what is shown below. 
+Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory.b After a while, you will see window similar to what is shown below.
 
 ![Gede section](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-window.png)
 

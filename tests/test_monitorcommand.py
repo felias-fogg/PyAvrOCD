@@ -145,4 +145,4 @@ class TestMonitorCommand(TestCase):
             importlib.metadata.version("pyavrocd")
         except importlib.metadata.PackageNotFoundError:
             return
-        self.assertEqual(self.mo.dispatch(['version']), ("", "dw-gdbserver version {}".format(importlib.metadata.version("pyavrocd"))))
+        self.assertEqual(self.mo.dispatch(['version']), ("", "pyavrocd version {}".format(importlib.metadata.version("pyavrocd"))))

@@ -4,9 +4,9 @@ If, after debugging, you want to restore a target board to its original state, a
 
 1. If your target is a debugWIRE MCU, then you need to leave debugWIRE mode. This can be done by entering the debugger and then issuing the `monitor debugwire disable` command.
 
-2. You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for **debug use** only.  In this case, you can also ignore step 3. 
+2. You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for **debug use** only.  In this case, you can also ignore step 3.
 
-3. You may need to reflash the bootloader and likely need to set the correct fuses. 
+3. You may need to reflash the bootloader and likely need to set the correct fuses.
 
    - In the Arduino IDE, you can do this by using the `Burn Bootloader` command in the `Tools` menu. This will set the correct fuses and reinstall the bootloader.
 

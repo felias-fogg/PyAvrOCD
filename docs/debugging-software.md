@@ -1,6 +1,6 @@
 # Debugging software
 
-There are several possible options for debugging software. 
+There are several possible options for debugging software.
 
 ## CLI debugging
 
@@ -18,7 +18,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
-After that, you must install the respective cores, which enable you to debug almost all classic AVR chips that use the debugWIRE interface. And this is all! Now, you can press the debug button and start debugging. 
+After that, you must install the respective cores, which enable you to debug almost all classic AVR chips that use the debugWIRE interface. And this is all! Now, you can press the debug button and start debugging.
 
 Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute pyavrocd once as root using the command-line option `--install-udev-rules`. Instead, you can create a udev-rules file along the lines described in the [README file of pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md).
 
@@ -71,7 +71,7 @@ I further noticed that the avr-gdb debugger in the PlatformIO toolchain is quite
 
 ## Other options
 
-There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate pyavrocd into **Visual Studio Code**, **CLion**, and **Eclipse**. How to integrate a GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). 
+There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate pyavrocd into **Visual Studio Code**, **CLion**, and **Eclipse**. How to integrate a GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup).
 
 If you have a clear description of how to integrate pyavrocd in an IDE, I'd be happy to add it here.
 

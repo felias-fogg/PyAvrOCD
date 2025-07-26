@@ -1,6 +1,6 @@
 # Monitor commands
 
-Pyavrocd implements a number of `monitor` commands. These can be used to control important aspected of the gdbserver. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
+Pyavrocd implements a number of `monitor` commands. These can be used to control important aspects of the GDB server. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
 
 | Command                                               | Action                                                       |
 | ----------------------------------------------------- | ------------------------------------------------------------ |
@@ -19,7 +19,7 @@ Pyavrocd implements a number of `monitor` commands. These can be used to control
 | `monitor verify` [`enable`\|`disable`]                | Verify flash after loading each flash page. The cost of verification is negligible, and doing so may help diagnose flash wear problems. The default setting is for this option to be *enabled*. |
 | `monitor version`                                     | Show version of the gdbserver.                               |
 
-The default setting is always the first one listed, except for `debugwire`, which depends on the MCU itself. All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`. 
+The default setting is always the first one listed, except for `debugwire`, which depends on the MCU itself. All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`.
 
 Commands marked with **(-)** are not implemented by dw-link. If they are marked with **(+),** they are only implemented by dw-link.
 

@@ -18,9 +18,9 @@ With that, it will be easy to [restore the original](https://github.com/felias-f
 
 ### Physical preparations
 
-Since the RESET line is used for communication between the MCU and the hardware debugger, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line. 
+Since the RESET line is used for communication between the MCU and the hardware debugger, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.
 
-On the Arduino Uno and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below. 
+On the Arduino Uno and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.
 
 ![auto-reset capacitor](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg)
 
@@ -34,13 +34,13 @@ On clone boards with a CH340 serial converter chip, you may have to remove the c
 
 Things are a bit more complicated with Arduino Nano boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. This is impossible for the original boards because the resistor is part of a resistor array. You may try to cut the trace from Vcc to the resistor, but I doubt this can be done without damaging other parts of the board.
 
-For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor, [as described by denMike](https://mtech.dk/thomsen/electro/arduino.php). 
+For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor, [as described by denMike](https://mtech.dk/thomsen/electro/arduino.php).
 
-The Arduino Pro Mini is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. 
+The Arduino Pro Mini is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN.
 
 ### Fuse settings
 
-In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the RSTDSBL fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when SPIEN (enabling SPI programming) is unprogrammed. 
+In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the RSTDSBL fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when SPIEN (enabling SPI programming) is unprogrammed.
 
 Enabling and disabling debugWIRE mode by programming and unprogramming the DWEN fuse will be carried out by pyavrocd. Similarly, it will erase the flash if a lock bit is set, and it will unprogram the BOOTRST fuse, deactivating any bootloader.
 
@@ -50,11 +50,11 @@ Enabling and disabling debugWIRE mode by programming and unprogramming the DWEN 
 
 ### Physical preparation
 
-JTAG targets are much easier to deal with. Simply do not connect anything to the JTAG lines or disconnect those components. 
+JTAG targets are much easier to deal with. Simply do not connect anything to the JTAG lines or disconnect those components.
 
 ### Fuse settings
 
-As in the debugWIRE case, it could be that SPI programming has been disabled. If JTAGEN is programmed, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary. 
+As in the debugWIRE case, it could be that SPI programming has been disabled. If JTAGEN is programmed, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
 
 It is possible that the JTAG pins are disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward.
 

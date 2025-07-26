@@ -1892,9 +1892,9 @@ class MonitorCommand():
         if self._no_hw_dbg_error:
             if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
                 path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
-                path_to_prog +=  '/dw-gdbserver'
+                path_to_prog +=  '/pyavrocd'
             else:
-                path_to_prog = 'dw-gdbserver'
+                path_to_prog = 'pyavrocd'
             return("", "No hardware debugger discovered.\n" +
                        "Debugging cannot be activated." +
                        ((("\nPerhaps you need to install the udev rules first:\n" +
@@ -1955,7 +1955,7 @@ The first option is always the default one
 If no parameter is specified, the current setting is returned""")
 
     def _mon_info(self, _):
-        return ('info', """dw-gdbserver Version:     """ +
+        return ('info', """pyavrocd Version:     """ +
                     importlib.metadata.version("pyavrocd") + """
 Target:                   {}
 DebugWIRE:                """ + ("enabled" if self._dw_mode_active else "disabled") + """
@@ -2035,7 +2035,7 @@ Single-stepping:          """ + ("safe" if self._safe else "interruptible"))
         return self._mon_unknown(tokens[0])
 
     def _mon_version(self, _):
-        return("", "dw-gdbserver version {}".format(importlib.metadata.version("pyavrocd")))
+        return("", "pyavrocd version {}".format(importlib.metadata.version("pyavrocd")))
 
     # The following commands are for internal purposes
     def _mon_no_xml(self, _):
@@ -2411,7 +2411,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent('''\n\
-    GDBserver for debugWIRE MCUs
+    GDB server for AVR MCUs
             '''))
 
     parser.add_argument("-c", "--command",
@@ -2450,7 +2450,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
                             help="Logging verbosity level")
 
     parser.add_argument("-V", "--version",
-                            help="Print dw-gdbserver version number and exit",
+                            help="Print pyavrocd version number and exit",
                             action="store_true")
 
     if platform.system() == 'Linux':
@@ -2495,7 +2495,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
         logger.warning("Unknown options: %s", ' '.join(unknown))
 
     if args.version:
-        print("dw-gdbserver version {}".format(importlib.metadata.version("pyavrocd")))
+        print("pyavrocd version {}".format(importlib.metadata.version("pyavrocd")))
         return 0
 
     if args.dev:
@@ -2524,7 +2524,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
         return 1
 
     if device.lower() not in dev_id:
-        logger.critical("Device '%s' is not supported by dw-gdbserver", device)
+        logger.critical("Device '%s' is not supported by pyavrocd", device)
         return 1
 
     if args.tool:
@@ -2569,9 +2569,9 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
         elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices) == 0:
             if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
                 path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
-                path_to_prog +=  '/dw-gdbserver'
+                path_to_prog +=  '/pyavrocd'
             else:
-                path_to_prog = 'dw-gdbserver'
+                path_to_prog = 'pyavrocd'
             logger.critical(("Perhaps you need to install the udev rules first:\n"
                              "'sudo %s --install-udev-rules'\n" +
                              "and then unplug and replug the debugger."), path_to_prog)
@@ -2579,7 +2579,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
     if no_hw_dbg_error or no_backend_error:
         return 1
 
-    logger.info("Starting dw-gdbserver")
+    logger.info("Starting GDB server")
     avrdebugger = XAvrDebugger(transport, device)
     server = AvrGdbRspServer(avrdebugger, device, args.port, no_backend_error, no_hw_dbg_error)
 

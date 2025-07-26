@@ -1,17 +1,17 @@
 #  pyavrocd
 
-This is a Python GDB server for 8-bit AVR MCUs (work in progress, currently only for classic ATtinys and ATmegas with debugWIRE debugging interface). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB SNAP](https://www.microchip.com/en-us/development-tool/pg164100) (in AVR mode), and provides a pass-through service for the Arduino Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib) to implement a full-blown GDB server. 
+This is a Python GDB server for 8-bit AVR MCUs (work in progress, currently only for classic ATtinys and ATmegas with debugWIRE debugging interface). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) (in AVR mode), and provides a pass-through service for the Arduino Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib).
 
 So, why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://github.com/avrdudes/avarice) and [Bloom](https://bloom.oscillate.io))? The main intention is to provide a *platform-agnostic* AVR GDB server. In other words, it is the missing AVR debugging solution for PlatformIO and the Arduino IDE 2.
 
 ![ide2-6](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png)
 
-Additionally to being platform agnostic, pyavrocd offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/). 
+Additionally to being platform agnostic, pyavrocd offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
 After [installing the package](https://github.com/felias-fogg/pyavrocd/blob/main/INSTALL.md), the following steps are necessary for successful debugging:
 
 1. [Installing and configuring the appropriate debugging software](https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugging-software.md)
-2. [Preparing the target board for debugging](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md) 
+2. [Preparing the target board for debugging](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md)
 3. [Connecting the hardware debugger to the target](https://github.com/felias-fogg/pyavrocd/blob/main/docs/connect-to-target.md)
 4. [Debugging a program on the target](https://github.com/felias-fogg/pyavrocd/blob/main/docs/usage.md)
 5. [Restoring the target to its original state](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md)
@@ -55,7 +55,7 @@ In both cases, you can check whether you were successful by typing the same comm
 
 ## Currently supported AVR MCUs and Arduino boards
 
-This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs tested with pyavrocd are marked bold. MCUs known not to work with pyavrocd are struck out. 
+This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs tested with pyavrocd are marked bold. MCUs known not to work with pyavrocd are struck out.
 
 ### Classic ATtinys and ATmegas with debugWIRE interface
 
@@ -101,7 +101,7 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 
 
-### ATmegas with JTAG interface 
+### ATmegas with JTAG interface
 
 *(not yet supported, but will be real soon)*
 
@@ -140,6 +140,6 @@ All boards with the chips listed above can be debugged. This is, in particular, 
 
 
 
-## What to expect in the future 
+## What to expect in the future
 
 The package has now its full functionality and seems to work pretty well with debugWIRE MCUs. It has also been integrated into MiniCore, MicroCore and my fork of ATTinyCore. Currently, I am working on implementing the JTAG part. UPDI will follow soon, hopefully.
