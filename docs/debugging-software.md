@@ -18,7 +18,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
-After that, you must install the respective cores, which enable you to debug almost all classic AVR chips that use the debugWIRE interface. And this is all! Now, you can press the debug button and start debugging.
+After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging.
 
 Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute pyavrocd once as root using the command-line option `--install-udev-rules`. Instead, you can create a udev-rules file along the lines described in the [README file of pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md).
 
@@ -63,11 +63,11 @@ debug_build_flags =
 
 Note that the debug environment should be the default one. It should be the first if no default environment has been declared.
 
-I further noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the pyavrocd binary . The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/` , where the tilde symbol signifies the home directory of the user.
+I further noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the pyavrocd binary. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
 
 ## Gede
 
-[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, you can start it by specifying the option `--gede` or `-g` when starting pyavrocd.
+[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, pyavrocd will start Gede in the background if you specify the option `--gede` or `-g` when starting pyavrocd.
 
 ## Other options
 

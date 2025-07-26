@@ -36,7 +36,9 @@ Things are a bit more complicated with Arduino Nano boards. Here, you not only h
 
 For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor, [as described by denMike](https://mtech.dk/thomsen/electro/arduino.php).
 
-The Arduino Pro Mini is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN.
+The Arduino Pro Mini is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.
+
+![pro-minis](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png)
 
 ### Fuse settings
 
@@ -54,11 +56,11 @@ JTAG targets are much easier to deal with. Simply do not connect anything to the
 
 ### Fuse settings
 
-As in the debugWIRE case, it could be that SPI programming has been disabled. If JTAGEN is programmed, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
+The JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward.
 
-It is possible that the JTAG pins are disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward.
+As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
 
-Enabling and disabling the OCDEN fuse in order to activate and deactivate the on-chip debugging module is done by pyavrocd. Similarly, it will erase flash if lock bits are set and the BOOTRST fuse is unprogrammed, in order to deactivate the bootloader.
+Enabling and disabling the OCDEN fuse to activate and deactivate the on-chip debugging module is performed by pyavrocd. Similarly, pyavrocd will erase flash if lock bits are set and the BOOTRST fuse is unprogrammed, thereby deactivating the bootloader.
 
 ## Preparing a PDI target
 
@@ -68,7 +70,7 @@ If the PDI interface is used, then the RESET line will be employed as a clock li
 
 ### Fuse settings
 
-SPIEN could be disabled. In this case, the above commands apply. Otherwise, there is no need to change any fuses before beginning the debugging process.
+SPIEN could be disabled. In this case, the above comments apply. Otherwise, there is no need to change any fuses before beginning the debugging process.
 
 
 
@@ -76,7 +78,7 @@ SPIEN could be disabled. In this case, the above commands apply. Otherwise, ther
 
 ### Physical preparations
 
-Ensure that there is no load or active component on the UPDI line and that the UPDI pin is accessible. On the Nano Every, for example, this pin cannot be accessed. I am unsure whether it is possible to modify this board in a safe manner to enable debugging.
+Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible. On the Nano Every, for example, this pin cannot be accessed. I am unsure whether it is possible to modify this board in a safe manner to enable debugging.
 
 ### Fuse settings
 

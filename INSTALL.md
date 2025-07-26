@@ -58,7 +58,7 @@ Furthermore, you can create a binary standalone package as follows (after having
 > poetry run pyinstaller pyavrocd.spec
 ```
 
-After that, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the directory `dist/pyavrocd/` together with the folder `pyavrocd-util`. You can copy those to a place in your `PATH`. If you want to generate a binary on a Mac that can be shipped to other Macs, you should use `arm64-apple-pyavrocd.spec` or `intel-apple-pyavrocd.spec` in order to include `libusb`. Note that fat binaries cannot be generated.
+After that, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the directory `dist/pyavrocd/` together with the folder `pyavrocd-util`. You can copy those to a place in your `PATH`. If you want to generate a binary on a Mac that can be shipped to other Macs, you should use `arm64-apple-pyavrocd.spec` or `intel-apple-pyavrocd.spec` in order to include the right `libusb` for the host architecture. Note that fat binaries cannot be generated.
 
 ------
 

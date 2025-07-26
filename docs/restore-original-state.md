@@ -2,7 +2,7 @@
 
 If, after debugging, you want to restore a target board to its original state, a few things have to be done:
 
-1. If your target is a debugWIRE MCU, then you need to leave debugWIRE mode. This can be done by entering the debugger and then issuing the `monitor debugwire disable` command.
+1. If your target is a debugWIRE MCU, then you need to disable debugWIRE mode. This can be done by entering the debugger and then issuing the `monitor debugwire disable` command.
 
 2. You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for **debug use** only.  In this case, you can also ignore step 3.
 
