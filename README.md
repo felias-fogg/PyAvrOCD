@@ -16,7 +16,7 @@ After [installing the package](https://github.com/felias-fogg/pyavrocd/blob/main
 4. [Debugging a program on the target](https://github.com/felias-fogg/pyavrocd/blob/main/docs/usage.md)
 5. [Restoring the target to its original state](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md)
 
-When starting the GDB server from the command line, there are a number of possible [command-line options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md) that will influence the behavior of pyavrocd. Once you have a debugger connected to the server, you can control the server's behavior using [`monitor` commands](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md).
+When starting the GDB server from the command line, there are a number of possible *[command-line options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md)* that will influence the behavior of pyavrocd. Once you have a debugger connected to the server, you can control the server's behavior using *[`monitor` commands](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md).*
 
 While the package appears to function as intended, there is always the chance of a bug. If you run across a behavior that seems odd, you can report it as an [issue](https://github.com/felias-fogg/pyavrocd/issues). I hope to resolve those over time.
 

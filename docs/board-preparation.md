@@ -54,11 +54,11 @@ JTAG targets are much easier to deal with. Simply do not connect anything to the
 
 ### Fuse settings
 
-As in the debugWIRE case, you can disable SPI programming by disabling SPIEN. If JTAGEN is programmed, this does not matter because the JTAG pins are all we need. If not, high voltage programming is necessary. 
+As in the debugWIRE case, it could be that SPI programming has been disabled. If JTAGEN is programmed, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary. 
 
 It is possible that the JTAG pins are disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward.
 
-Enabling and disabling the OCDEN fuse in order to activate and deactivate the on-chip debugging module is done by pyavrocd. Similarly, it will erase flash if lock bits are set, and the BOOTRST fuse is unprogrammed  in order to deactivate the bootloader.
+Enabling and disabling the OCDEN fuse in order to activate and deactivate the on-chip debugging module is done by pyavrocd. Similarly, it will erase flash if lock bits are set and the BOOTRST fuse is unprogrammed, in order to deactivate the bootloader.
 
 ## Preparing a PDI target
 
@@ -80,7 +80,7 @@ Ensure that there is no load or active component on the UPDI line and that the U
 
 ### Fuse settings
 
-If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. In order to enable debugging and programming over this pin again, you will need to use a [high-voltage UPDI programmer.](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) Here, you must ensure that the 12 V pulse does not damage any components on your board.
+If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. To enable debugging and programming over this pin again, you will need to use a [high-voltage UPDI programmer.](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) Here, you must ensure that the 12 V pulse does not damage any components on your board.
 
 ------
 

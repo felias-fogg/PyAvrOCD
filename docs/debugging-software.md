@@ -2,7 +2,7 @@
 
 There are several possible options for debugging software. 
 
-## Command-line interface debugging
+## CLI debugging
 
 The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the pyavrocd binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's [avr-gcc-build](https://github.com/ZakKemble/avr-gcc-build) repository. This is particularly useful when you want to run debugging software on a 32-bit system.
 
