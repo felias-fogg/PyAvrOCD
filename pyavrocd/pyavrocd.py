@@ -73,13 +73,12 @@ class GdbHandler():
     Maps between incoming GDB requests and AVR debugging protocols (via pymcuprog)
     """
     # pylint: disable=too-many-arguments, too-many-positional-arguments
-    def __init__ (self, comsocket, avrdebugger, devicename,
-                      no_backend_error, no_hw_dbg_error):
+    def __init__ (self, comsocket, avrdebugger, devicename):
         self.packet_size = 8000
         self.logger = getLogger('GdbHandler')
         self.dbg = avrdebugger
         self.dw = DebugWIRE(avrdebugger, devicename)
-        self.mon = MonitorCommand(no_backend_error, no_hw_dbg_error) # hw debugger connected
+        self.mon = MonitorCommand() # hw debugger connected
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
@@ -1669,9 +1668,7 @@ class MonitorCommand():
     the right action. The return value of the dispatch method is
     a pair consisting of an action identifier and the string to be displayed.
     """
-    def __init__(self, no_backend_error, no_hw_dbg_error):
-        self._no_backend_error = no_backend_error
-        self._no_hw_dbg_error = no_hw_dbg_error
+    def __init__(self):
         self._dw_mode_active = False
         self._dw_activated_once = False
         self._noload = False # when true, one may start execution even without a previous load
@@ -1881,27 +1878,6 @@ class MonitorCommand():
 
     # pylint: disable=too-many-return-statements, too-many-branches
     def _mon_debugwire(self, tokens):
-        if self._no_backend_error:
-            if platform.system() == 'Linux':
-                return("", "Could not connect via USB.\nPlease install libusb: " +
-                           "'sudo apt install libusb-1.0.-0'")
-            if platform.system() == "Darwin":
-                return("", "Could not connect via USB.\nPlease install libusb: " +
-                           "'brew install libusb'")
-            return("", "Could not connect via USB. Should not have happened!")
-        if self._no_hw_dbg_error:
-            if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-                path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
-                path_to_prog +=  '/pyavrocd'
-            else:
-                path_to_prog = 'pyavrocd'
-            return("", "No hardware debugger discovered.\n" +
-                       "Debugging cannot be activated." +
-                       ((("\nPerhaps you need to install the udev rules first:\n" +
-                             "'sudo %s --install-udev-rules'\n" +
-                             "and then unplug and replug the debugger.") %
-                         path_to_prog)\
-                        if platform.system() == 'Linux' else ""))
         if tokens[0] =="":
             if self._dw_mode_active:
                 return("", "debugWIRE is enabled")
@@ -2290,13 +2266,10 @@ class AvrGdbRspServer():
     method of the handler.
     """
     # pylint: disable=too-many-arguments, too-many-positional-arguments
-    def __init__(self, avrdebugger, devicename, port,
-                     no_backend_error, no_hw_dbg_error):
+    def __init__(self, avrdebugger, devicename, port):
         self.avrdebugger = avrdebugger
         self.devicename = devicename
         self.port = port
-        self.no_backend_error = no_backend_error
-        self.no_hw_dbg_error = no_hw_dbg_error
         self.logger = getLogger("AvrGdbRspServer")
         self.connection = None
         self.gdb_socket = None
@@ -2317,8 +2290,7 @@ class AvrGdbRspServer():
         self.connection, self.address = self.gdb_socket.accept()
         self.connection.setblocking(0)
         self.logger.info('Connection from %s', self.address)
-        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename,
-                                      self.no_backend_error, self.no_hw_dbg_error)
+        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename)
         while True:
             ready = select.select([self.connection], [], [], 0.5)
             if ready[0]:
@@ -2582,7 +2554,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
     logger.info("Starting GDB server")
     try:
         avrdebugger = XAvrDebugger(transport, device)
-        server = AvrGdbRspServer(avrdebugger, device, args.port, no_backend_error, no_hw_dbg_error)
+        server = AvrGdbRspServer(avrdebugger, device, args.port)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)
