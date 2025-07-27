@@ -459,7 +459,7 @@ class GdbHandler():
             if  self.dw.warm_start(graceful=True):
                 self.mon.set_dw_mode_active()
         except FatalError as e:
-            self.logger.critical("Error while connecting: %s", e)
+            self.logger.critical("Error while connecting to target OCD: %s", e)
             self._connection_error = e
             self.dbg.stop_debugging()
         self.logger.debug("dw_mode_active=%d",self.mon.is_dw_mode_active())
@@ -2580,8 +2580,14 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
         return 1
 
     logger.info("Starting GDB server")
-    avrdebugger = XAvrDebugger(transport, device)
-    server = AvrGdbRspServer(avrdebugger, device, args.port, no_backend_error, no_hw_dbg_error)
+    try:
+        avrdebugger = XAvrDebugger(transport, device)
+        server = AvrGdbRspServer(avrdebugger, device, args.port, no_backend_error, no_hw_dbg_error)
+    except Exception as e:
+        if logger.getEffectiveLevel() != logging.DEBUG:
+            logger.critical("Fatal Error: %s",e)
+            return 1
+        raise
 
     if args.gede:
         args.prg = "gede"

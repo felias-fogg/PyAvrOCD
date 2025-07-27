@@ -1,5 +1,5 @@
 """
-DebugWIRE NVM implementation
+DebugWIRE NVM implementation - extended
 """
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
@@ -31,7 +31,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     def __del__(self):
         pass
 
-    def start(self, user_interaction_callback=None):
+    def start(self):
         """
         Start (activate) session for debugWIRE targets
 
@@ -51,7 +51,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
 
     def stop(self):
         """
-        Stop (deactivate) session for UPDI targets
+        Stop (deactivate) session for debugWIRE targets
         """
         self.logger.debug("debugWIRE-specific de-initialiser")
         self.avr.deactivate_physical()
