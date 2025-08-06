@@ -1,6 +1,6 @@
 #  pyavrocd
 
-This is a Python GDB server for 8-bit AVR MCUs (work in progress, currently only for classic ATtinys and ATmegas with debugWIRE debugging interface). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) (in AVR mode), and provides a pass-through service for the Arduino Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib).
+This is a Python GDB server for 8-bit AVR MCUs (work in progress, currently only for classic ATtinys and ATmegas with debugWIRE debugging interface). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) ([in AVR mode](#switching-to-avr-mode)), and provides a pass-through service for the Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib).
 
 So, why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://github.com/avrdudes/avarice) and [Bloom](https://bloom.oscillate.io))? The main intention is to provide a *platform-agnostic* AVR GDB server. In other words, it is the missing AVR debugging solution for PlatformIO and the Arduino IDE 2.
 
@@ -24,7 +24,7 @@ While the package appears to function as intended, there is always the chance of
 
 ## Supported hardware debuggers
 
-Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copied from the readme file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that the debuggers have been tested by me and work with pyavrocd.
+Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with pyavrocd.
 
 
 * **MPLAB PICkit 4 In-Circuit Debugger** (when in 'AVR mode')
@@ -36,6 +36,8 @@ Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copie
 * **mEDBG - on-board debuggers on Xplained Mini/Nano**
 * nEDBG - on-board debuggers on Curiosity Nano
 * **[dw-link](https://github.com/felias-fogg/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
+
+### Switching to AVR mode
 
 Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually be accomplished as follows by using avrdude (>= Version 7.3):
 
@@ -97,9 +99,9 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 #### Supported Arduino boards
 
-All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that the board must be physically changed before debugging is possible.
+All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that the [board must be physically changed](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md) before debugging is possible.
 
-
+<!--
 
 ### ATmegas with JTAG interface
 
@@ -136,10 +138,10 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 #### Supported Arduino boards
 
-All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load on the JTAG lines. Furthermore, you must first enable the JTAG pins by ISP programming because on the Arduino boards they are disabled by default.
+All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by ISP programming because on the Arduino boards, they are disabled by default.
 
-
+-->
 
 ## What to expect in the future
 
-The package has now its full functionality and seems to work pretty well with debugWIRE MCUs. It has also been integrated into MiniCore, MicroCore and my fork of ATTinyCore. Currently, I am working on implementing the JTAG part. UPDI will follow soon, hopefully.
+The package now has its full functionality and seems to work pretty well with debugWIRE MCUs. It has also been integrated into MiniCore, MicroCore, and my fork of ATTinyCore. Currently, I am working on implementing the JTAG part. UPDI will follow soon, hopefully.
