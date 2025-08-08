@@ -1,5 +1,14 @@
 # Changelog
 
+### 0.9.2
+
+- **Added:**
+  - Ran tests on ATmega168PB and, unsurprisingly, the chip does not present any problem
+
+- **Fixed:**
+  - Fixed all broken unit tests
+  -
+
 ### 0.9.1
 
 - **Added:**

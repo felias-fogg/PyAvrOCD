@@ -46,7 +46,6 @@ class GdbHandler():
         self._devicename = devicename
         self.last_sigval = 0
         self._lastmessage = ""
-        self._debugger_active = False
         self._extended_remote_mode = False
         self._vflashdone = False # set to True after vFlashDone received
         self._connection_error = None
@@ -131,7 +130,7 @@ class GdbHandler():
         Checks whether debugger is active and flash is loaded. If not,
         a signal is sent, a warning message is printed and False is returned
         """
-        if not self._debugger_active:
+        if not self.mon.is_debugger_active():
             self.logger.warning("Cannot start execution because not connected to OCD")
             if "debugwire" == self.dbg.iface:
                 self.send_debug_message("Enable debugWIRE first: 'monitor debugwire enable'")
@@ -197,7 +196,7 @@ class GdbHandler():
         'g': Send the current register values R[0:31] + SREG + SP + PC to GDB
         """
         self.logger.debug("RSP packet: GDB reading registers")
-        if self.mon.is_dw_mode_active():
+        if self.mon.is_debugger_active():
             regs = self.dbg.register_file_read()
             sreg = self.dbg.status_register_read()
             sp = self.dbg.stack_pointer_read()
@@ -227,7 +226,7 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: GDB writing registers")
         self.logger.debug("Data received: %s", packet)
-        if self.mon.is_dw_mode_active():
+        if self.mon.is_debugger_active():
             newdata = binascii.unhexlify(packet)
             self.dbg.register_file_write(newdata[:32])
             self.dbg.status_register_write(newdata[32:33])
@@ -248,7 +247,7 @@ class GdbHandler():
         """
         'm': provide GDB with memory contents
         """
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: memory read, but not connected")
             self.send_packet("E01")
             return
@@ -272,7 +271,7 @@ class GdbHandler():
         """
         'M': GDB sends new data for MCU memory
         """
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: Memory write, but not connected")
             self.send_packet("E01")
             return
@@ -294,7 +293,7 @@ class GdbHandler():
         'p': read register and send to GDB
         currently only PC
         """
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: read register command, but not connected")
             self.send_packet("E01")
             return
@@ -323,7 +322,7 @@ class GdbHandler():
         """
         'P': set a single register with a new value given by GDB
         """
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: write register command, but not connected")
             self.send_packet("E01")
             return
@@ -372,13 +371,12 @@ class GdbHandler():
                     raise FatalError(self._connection_error)
                 self.dw.cold_start(graceful=False, callback=self.send_power_cycle)
                 # will only be called if there was no error in enabling debugWIRE mode:
-                self.mon.set_dw_mode_active()
-                self._debugger_active = True
+                self.mon.set_debug_mode_active()
                 self.dbg.reset()
             elif response[0] == 'dwoff':
-                self.dw.disable()
                 self.dbg.reset()
-                self._debugger_active = False
+                self.dw.disable()
+                self.mon.set_debug_mode_active(False)
             elif response[0] == 'reset':
                 self.dbg.reset()
             elif response[0] in [0, 1]:
@@ -394,8 +392,7 @@ class GdbHandler():
                 self.logger.info("Commands: %s", resp)
             elif 'info' in response[0]:
                 response = ("",
-                            response[1].format(dev_name[self.dbg.device_info['device_id']],
-                                                    self._debugger_active))
+                            response[1].format(dev_name[self.dbg.device_info['device_id']]))
             elif 'live_tests' in response[0]:
                 self._live_tests.run_tests()
         except AvrIspProtocolError as e:
@@ -450,13 +447,12 @@ class GdbHandler():
         # when a request for enabling debugWIRE is made
         try:
             if  self.dw.warm_start(graceful=True):
-                self.mon.set_dw_mode_active()
-                self._debugger_active = True
+                self.mon.set_debug_mode_active()
         except FatalError as e:
             self.logger.critical("Error while connecting to target OCD: %s", e)
             self._connection_error = e
             self.dbg.stop_debugging()
-        self.logger.debug("dw_mode_active=%d",self.mon.is_dw_mode_active())
+        self.logger.debug("debugger_active=%d",self.mon.is_debugger_active())
         self.send_packet("PacketSize={0:X};qXfer:memory-map:read+".format(self.packet_size))
 
     def _first_thread_info_handler(self, _):
@@ -558,7 +554,7 @@ class GdbHandler():
         vFlashDone command.
         """
         self.logger.debug("RSP packet: vFlashErase")
-        if self.mon.is_dw_mode_active():
+        if self.mon.is_debugger_active():
             self.bp.cleanup_breakpoints()
             if self._vflashdone:
                 self._vflashdone = False
@@ -628,7 +624,7 @@ class GdbHandler():
         file and run that one.
         """
         self.logger.debug("RSP packet: kill process, will reset MCU")
-        if self.mon.is_dw_mode_active():
+        if self.mon.is_debugger_active():
             self.dbg.reset()
         self.send_packet("OK")
         if not self._extended_remote_mode:
@@ -654,7 +650,7 @@ class GdbHandler():
         size = int(((packet.split(b',')[1]).split(b':')[0]).decode('ascii'),16)
         data = self.unescape((packet.split(b':')[1]))
         self.logger.debug("RSP packet: X, addr=0x%s, length=%d, data=%s", addr, size, data)
-        if not self.mon.is_dw_mode_active() and size > 0:
+        if not self.mon.is_debugger_active() and size > 0:
             self.logger.debug("RSP packet: Memory write, but not connected")
             self.send_packet("E01")
             return
@@ -676,7 +672,7 @@ class GdbHandler():
         """
         'z': Remove a breakpoint
         """
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.send_packet("E01")
             return
         breakpoint_type = packet[0]
@@ -693,7 +689,7 @@ class GdbHandler():
         """
         'Z': Set a breakpoint
         """
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.send_packet("E01")
             return
         breakpoint_type = packet[0]
@@ -710,7 +706,7 @@ class GdbHandler():
         """
         Checks the AvrDebugger for incoming events (breaks)
         """
-        if not self.mon.is_dw_mode_active(): # if DW is not enabled yet, simply return
+        if not self.mon.is_debugger_active(): # if DW is not enabled yet, simply return
             return
         pc = self.dbg.poll_event()
         if pc:

@@ -74,14 +74,14 @@ class TestDebugWire(TestCase):
         self.dw.dbg.housekeeper.end_session.assert_not_called()
         read_target_voltage.assert_not_called()
 
-    @patch('pyavrocd.pyavrocd.pymcuprog.utils.read_voltage_parameter',
+    @patch('pyavrocd.main.pymcuprog.utils.read_voltage_parameter',
                Mock(side_effect=[5,5,5,0,0,0,0,0,5,5,5,5]))
-    @patch('pyavrocd.pyavrocd.time.sleep', Mock())
+    @patch('pyavrocd.main.time.sleep', Mock())
     def test_power_cycle_normal(self):
         self.dw.dbg.housekeeper = Mock()
         self.assertEqual(self.dw.power_cycle(None), None)
 
-    @patch('pyavrocd.pyavrocd.NvmAccessProviderCmsisDapSpi',MagicMock(spec_set=True))
+    @patch('pyavrocd.debugwiretarget.NvmAccessProviderCmsisDapSpi', MagicMock(spec_set=True))
     def test_disable(self):
         self.dw.dbg.housekeeper = Mock()
         self.dw.disable()
@@ -91,9 +91,9 @@ class TestDebugWire(TestCase):
         self.dw.spidevice.isp.enter_progmode.assert_called_once()
         self.dw.spidevice.isp.leave_progmode.assert_called_once()
 
-    @patch('pyavrocd.pyavrocd.pymcuprog.utils.read_voltage_parameter',
+    @patch('pyavrocd.main.pymcuprog.utils.read_voltage_parameter',
                Mock(return_value=5.0))
-    @patch('pyavrocd.pyavrocd.NvmAccessProviderCmsisDapSpi', MagicMock())
+    @patch('pyavrocd.debugwiretarget.NvmAccessProviderCmsisDapSpi', MagicMock())
     def test_enable_wrong_mcu(self):
         dev_name[0] = "Wrong MCU"
         self.dw.dbg.housekeeper = MagicMock()
@@ -101,9 +101,9 @@ class TestDebugWire(TestCase):
         with self.assertRaises(FatalError):
             self.dw.enable()
 
-    @patch('pyavrocd.pyavrocd.pymcuprog.utils.read_voltage_parameter',
+    @patch('pyavrocd.main.pymcuprog.utils.read_voltage_parameter',
                Mock(return_value=5.0))
-    @patch('pyavrocd.pyavrocd.NvmAccessProviderCmsisDapSpi', MagicMock())
+    @patch('pyavrocd.debugwiretarget.NvmAccessProviderCmsisDapSpi', MagicMock())
     def test_enable_ok(self):
         self.dw.dbg.housekeeper = MagicMock()
         self.dw.spidevice = Mock()
@@ -116,7 +116,7 @@ class TestDebugWire(TestCase):
         self.dw.spidevice.isp.leave_progmode.assert_called()
         self.dw.spidevice.isp.enter_progmode.assert_called()
 
-    @patch('pyavrocd.pyavrocd.pymcuprog.utils.read_voltage_parameter',
+    @patch('pyavrocd.main.pymcuprog.utils.read_voltage_parameter',
                Mock(return_value=0.0))
     def test_enable_no_target_power(self):
         self.dw.dbg.housekeeper = MagicMock()

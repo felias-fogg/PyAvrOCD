@@ -55,21 +55,21 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(["ca", ""]), ("", "Flash memory will not be cached"))
 
     def test_dispatch_debugWIRE(self):
-        self.mo._dw_mode_active = False
+        self.mo._debugger_active = False
         self.assertEqual(self.mo.dispatch(["d", ""]), ("", "debugWIRE is disabled"))
-        self.mo._dw_mode_active = True
+        self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(["debugwire"]), ("", "debugWIRE is enabled"))
-        self.mo._dw_mode_active = False
+        self.mo._debugger_active = False
         self.assertEqual(self.mo.dispatch(["debug", "e"]), ("dwon", "debugWIRE is enabled"))
-        self.assertFalse(self.mo._dw_mode_active) # The enable command does NOT change the value of the state var!
-        self.mo._dw_mode_active = True
+        self.assertFalse(self.mo._debugger_active) # The enable command does NOT change the value of the state var!
+        self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(["debug", "dis"]), ("dwoff", "debugWIRE is disabled"))
-        self.assertFalse(self.mo._dw_mode_active)
-        self.mo._dw_activated_once = True
+        self.assertFalse(self.mo._debugger_active)
+        self.mo._debugger_activated_once = True
         self.assertEqual(self.mo.dispatch(["debug", "enable"]),
                              ("", "Cannot reactivate debugWIRE\nYou have to exit and restart the debugger"))
-        self.assertFalse(self.mo._dw_mode_active)
-        self.assertTrue(self.mo._dw_activated_once)
+        self.assertFalse(self.mo._debugger_active)
+        self.assertTrue(self.mo._debugger_activated_once)
 
     def test_dispatch_flashVerify(self):
         self.assertTrue(self.mo._verify)
@@ -119,9 +119,9 @@ class TestMonitorCommand(TestCase):
 
 
     def test_dispatch_reset(self):
-        self.mo._dw_mode_active = False
+        self.mo._debugger_active = False
         self.assertEqual(self.mo.dispatch(['reset', 'halt']), ("","Enable debugWIRE first"))
-        self.mo._dw_mode_active = True
+        self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(['res']), ("reset", "MCU has been reset"))
 
     def test_dispatch_singlestep(self):

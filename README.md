@@ -82,7 +82,7 @@ This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs
 
 * <s>__ATmega48__</s>, __ATmega48A__, __ATmega48PA__, ATmega48PB,
 * <s>__ATmega88__</s>, __ATmega88A__, __ATmega88PA__, Atmega88PB,
-* __ATmega168__, __ATmega168A__, __ATmega168PA__, ATmega168PB,
+* __ATmega168__, __ATmega168A__, __ATmega168PA__, **ATmega168PB**,
 * **ATmega328**, __ATmega328P__, **ATmega328PB**
 
 The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. I suspect that this applies to all chips labeled this way. In any case, the test for stuck-at-one-bits is made when connecting to the chips.

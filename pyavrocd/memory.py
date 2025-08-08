@@ -136,7 +136,7 @@ class Memory():
         fall back to reading the flash page-wise (which is the only way supported by mEDBG).
         """
         self.logger.debug("Trying to read %d bytes starting at 0x%X", size, addr)
-        if not self.mon.is_dw_mode_active():
+        if not self.mon.is_debugger_active():
             self.logger.error("Cannot read from memory when DW mode is disabled")
             return bytearray([0xFF]*size)
         if self.mon.is_cache() and addr + size <= self.flash_filled():

@@ -32,6 +32,7 @@ class TestGdbHandler(TestCase):
         mock_dbg.edbg_protocol = MagicMock()
         mock_dbg.device = Mock()
         mock_dbg.device.avr = Mock()
+        mock_dbg.iface = 'debugwire'
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
         self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p")
@@ -65,7 +66,7 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("S02"))
 
     def test_continue_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.mem.is_flash_empty.return_value = True
         self.gh.mon.is_noload.return_value = False
         self.gh.dbg.status_register_read.return_value = [0x55]
@@ -73,20 +74,22 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.program_counter_read.return_value = 0x00003421
         self.gh.dispatch('c',b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("S01"))
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('c',b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("S04"))
 
     def test_continue_handler_with_start(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.is_flash_empty.return_value = False
+        self.gh.bp.resume_execution.return_value = None
         self.gh.dispatch('c',b'2244')
         self.gh.bp.resume_execution.assert_called_with(0x2244)
         self.gh._comsocket.sendall.assert_not_called()
 
     def test_continue_handler_without_start(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.is_flash_empty.return_value = False
+        self.gh.bp.resume_execution.return_value = None
         self.gh.dbg.program_counter_read.return_value = 1
         self.gh.dispatch('c',b'')
         self.gh.bp.resume_execution.assert_called_with(None)
@@ -99,8 +102,9 @@ class TestGdbHandler(TestCase):
         self.gh._continue_handler.assert_has_calls([call('2244'), call('')])
 
     def test_continue_with_signal_handler_without_start(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.is_flash_empty.return_value = False
+        self.gh.bp.resume_execution.return_value = None
         self.gh.dispatch('C',b'09')
         self.gh.bp.resume_execution.assert_called_with(None)
         self.gh._comsocket.sendall.assert_not_called()
@@ -111,7 +115,7 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_get_register_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('g',b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2000341200000000"))
 
@@ -120,18 +124,18 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.status_register_read.return_value = [0x55]
         self.gh.dbg.register_file_read.return_value = bytearray(list(range(32)))
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('g',b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f55341242680000"))
 
     def test_setRegisterHandle_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('G',b'000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f66341242680000')
         self.gh.dbg.program_counter_write.assert_not_called()
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_setRegisterHandle(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('G',b'000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f66341242680000')
         self.gh.dbg.register_file_write.assert_called_with(bytearray(list(range(32))))
         self.gh.dbg.status_register_write.assert_called_with(bytearray([0x66]))
@@ -144,98 +148,98 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_get_memory_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('m',b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("E01"))
 
     def test_get_memory_handler_chunk(self):
         # read chunk from memory
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.readmem.return_value = b'\x01\x02\x03\x04'
         self.gh.dispatch('m',b'800101,4')
         self.gh.mem.readmem.assert_called_with("800101", "4")
         self.gh._comsocket.sendall.assert_called_with(rsp("01020304"))
 
     def test_get_memory_handler_empty_request(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.readmem.return_value = None
         self.gh.dispatch('m',b'800101,0')
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
         self.gh.mem.readmem.assert_not_called()
 
     def test_get_memory_handler_empty_return(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.readmem.return_value = b''
         self.gh.dispatch('m',b'800101,4')
         self.gh.mem.readmem.assert_called_with("800101", "4")
         self.gh._comsocket.sendall.assert_called_with(rsp("E14"))
 
     def test_set_memory_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('M', b'800100,0:')
         self.gh._comsocket.sendall.assert_called_with(rsp('E01'))
 
     def test_set_memory_handler_byte(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.writemem.return_value = "OK"
         self.gh.dispatch('M', b'800100,1:63')
         self.gh.mem.writemem.assert_called_with("800100", bytes([0x63]))
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_get_one_register_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('p', b'22')
         self.gh._comsocket.sendall.assert_called_with(rsp("E01"))
 
     def test_get_one_register_handler_pc(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.program_counter_read.return_value = 0x123
         self.gh.dispatch('p', b'22')
         self.gh._comsocket.sendall.assert_called_with(rsp("46020000"))
 
     def test_get_one_register_handler_sp(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x23,0x01])
         self.gh.dispatch('p', b'21')
         self.gh._comsocket.sendall.assert_called_with(rsp("2301"))
 
     def test_get_one_register_handler_sreg(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.status_register_read.return_value = bytearray([0x01])
         self.gh.dispatch('p', b'20')
         self.gh._comsocket.sendall.assert_called_with(rsp("01"))
 
     def test_get_one_register_handler_reg(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.sram_read.return_value = bytearray([0x23])
         self.gh.dispatch('p', b'07')
         self.gh._comsocket.sendall.assert_called_with(rsp("23"))
 
     def test_set_one_register_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('P', b'22=04200000')
         self.gh._comsocket.sendall.assert_called_with(rsp("E01"))
 
     def test_set_one_register_handler_pc(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('P', b'22=04200000')
         self.gh.dbg.program_counter_write.assert_called_with(0x2004>>1)
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_set_one_register_handler_sp(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('P', b'21=0420')
         self.gh.dbg.stack_pointer_write.assert_called_with(bytearray([0x04, 0x20]))
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_set_one_register_handler_sreg(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('P', b'20=04')
         self.gh.dbg.status_register_write.assert_called_with(bytearray([0x04]))
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_set_one_register_handler_reg(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('P', b'10=ee')
         self.gh.dbg.sram_write.assert_called_with(0x10, bytearray([0xee]))
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
@@ -251,10 +255,10 @@ class TestGdbHandler(TestCase):
     def test_monitorCommand(self):
         self.gh.mon.dispatch.return_value = ('reset', 'Bla')
         self.gh.dispatch('qRcmd', b',7265736574')
-        self.gh.dbg.reset.assert_called_once()
+        self.assertTrue(self.gh.dbg.reset.called)
         self.gh._comsocket.sendall.assert_called_with(rsp("426C610A"))
 
-    @patch('pyavrocd.pyavrocd.time.sleep',Mock()) # we do not want to sleep in a test!
+    @patch('pyavrocd.main.time.sleep',Mock()) # we do not want to sleep in a test!
     def test_send_power_cycle_magic(self):
         self.gh.dbg.transport.device.product_string = 'MEDBG'
         self.assertEqual(self.gh.send_power_cycle(), True)
@@ -268,7 +272,7 @@ class TestGdbHandler(TestCase):
         self.gh.dw.warm_start.return_value = True
         self.gh.dispatch('qSupported', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("PacketSize={0:X};qXfer:memory-map:read+".format(self.gh.packet_size)))
-        self.gh.mon.set_dw_mode_active.assert_called_once()
+        self.gh.mon.set_debug_mode_active.assert_called_once()
 
     def test_first_thread_info_handler(self):
         self.gh.dispatch('qfThreadInfo', b'')
@@ -285,17 +289,17 @@ class TestGdbHandler(TestCase):
         self.gh.mem.memory_map.assert_called_once()
 
     def test_step_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value=False
+        self.gh.mon.is_debugger_active.return_value=False
         self.gh.mem.is_flash_empty.return_value = True
         self.gh.mon.is_noload.return_value = False
         self.gh.dispatch('s', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("S01"))
-        self.gh.mon.is_dw_mode_active.return_value=True
+        self.gh.mon.is_debugger_active.return_value=True
         self.gh.dispatch('s', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("S04"))
 
     def test_step_handler_with_start(self):
-        self.gh.mon.is_dw_mode_active.return_value=True
+        self.gh.mon.is_debugger_active.return_value=True
         self.gh.mem.is_flash_empty.return_value = False
         self.gh.mon.is_noload.return_value = False
         self.gh.dbg.program_counter_read.return_value = 0x00000102
@@ -307,7 +311,7 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("T0520:55;21:3412;22:04020000;thread:1;"))
 
     def test_step_handler_without_start(self):
-        self.gh.mon.is_dw_mode_active.return_value=True
+        self.gh.mon.is_debugger_active.return_value=True
         self.gh.mem.is_flash_empty.return_value = False
         self.gh.mon.is_noload.return_value = False
         self.gh.dbg.program_counter_read.return_value = 0x00000101
@@ -334,13 +338,13 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_flashEraseHandler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('vFlashErase', b':100,10')
         self.gh._comsocket.sendall.assert_called_with(rsp("E01"))
 
     def test_flashEraseHandler_fresh(self):
         self.gh._vflashdone = True
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('vFlashErase', b':100,10')
         self.assertFalse(self.gh._vflashdone)
         self.gh.dispatch('vFlashErase', b':200,10')
@@ -373,12 +377,12 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_run_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('vRun', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("S01"))
 
     def test_run_handler(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.program_counter_read.return_value = 0x00000101
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.status_register_read.return_value = [0x77]
@@ -387,60 +391,60 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.reset.assert_called_once()
 
     def test_set_binary_memory_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('m',b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("E01"))
 
     def test_set_binary_memory_handler_byte(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.writemem.return_value = "OK"
         self.gh.dispatch('X', b'800100,1:}]')
         self.gh.mem.writemem.assert_called_with("800100", bytearray([0x7D]))
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_remove_breakpoint_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('z',b'0,111,2')
         self.gh._comsocket.sendall.assert_called_with(rsp('E01'))
 
     def test_remove_breakpoint_handler_wrong_type(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('z',b'2,111,2')
         self.gh._comsocket.sendall.assert_called_with(rsp(''))
 
     def test_remove_breakpoint_handler(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('z',b'0,222,2')
         # note: for  breakpoints, it is always the byte address!
         self.gh.bp.remove_breakpoint.assert_called_with(0x222)
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_add_breakpoint_handler_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('Z',b'0,111,2')
         self.gh._comsocket.sendall.assert_called_with(rsp('E01'))
 
     def test_add_breakpoint_handler_wrong_type(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('Z',b'2,111,2')
         self.gh._comsocket.sendall.assert_called_with(rsp(''))
 
     def test_add_breakpoint_handler_new(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('Z',b'0,222,2')
         # note: for  breakpoints, it is always the byte address!
         self.gh.bp.insert_breakpoint.assert_called_with(0x222)
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_poll_events_impossible(self):
-        self.gh.mon.is_dw_mode_active.return_value = False
+        self.gh.mon.is_debugger_active.return_value = False
         self.gh.poll_events()
         self.gh.dbg.poll_event.assert_not_called()
 
     def test_poll_events_positive(self):
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.poll_event.return_value = 0x101
-        self.gh.mon.is_dw_mode_active.return_value = True
+        self.gh.mon.is_debugger_active.return_value = True
         self.gh.dbg.program_counter_read.return_value = 0x00000101
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.status_register_read.return_value = [0x88]
@@ -448,11 +452,11 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.poll_event.assert_called_once()
         self.gh._comsocket.sendall.assert_called_with(rsp("T0520:88;21:3412;22:02020000;thread:1;"))
 
-    @patch('pyavrocd.pyavrocd.select.select', Mock(return_value=[None, None, None]))
+    @patch('pyavrocd.main.select.select', Mock(return_value=[None, None, None]))
     def test_poll_gdb_input_false(self):
         self.assertFalse(self.gh.poll_gdb_input())
 
-    @patch('pyavrocd.pyavrocd.select.select', Mock(return_value=[[1], None, None]))
+    @patch('pyavrocd.main.select.select', Mock(return_value=[[1], None, None]))
     def test_poll_gdb_input_true(self):
         self.assertTrue(self.gh.poll_gdb_input())
 

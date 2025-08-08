@@ -16,8 +16,8 @@ class MonitorCommand():
     """
     def __init__(self, iface):
         self._iface = iface
-        self._dw_mode_active = False
-        self._dw_activated_once = False
+        self._debugger_active = False
+        self._debugger_activated_once = False
         self._noload = False # when true, one may start execution even without a previous load
         self._onlyhwbps = False
         self._onlyswbps = False
@@ -87,19 +87,19 @@ class MonitorCommand():
         """
         return self._cache
 
-    def is_dw_mode_active(self):
+    def is_debugger_active(self):
         """
-        Returns True is dw mode is activated
+        Returns True if debugger is active
         """
-        return self._dw_mode_active
+        return self._debugger_active
 
-    def set_dw_mode_active(self):
+    def set_debug_mode_active(self, enable=True):
         """
-        Sets the dw activated mode to True and remembers that dw has been
+        Sets the debug mode to True and remembers that debug mode has been
         activated once
         """
-        self._dw_mode_active = True
-        self._dw_activated_once = True
+        self._debugger_active = enable
+        self._debugger_activated_once = True
 
     def is_fastload(self):
         """
@@ -230,20 +230,20 @@ class MonitorCommand():
                 return("", "This is not a debugWIRE target")
             return("reset", "This is not a debugWIRE target")
         if tokens[0] =="":
-            if self._dw_mode_active:
+            if self._debugger_active:
                 return("", "debugWIRE is enabled")
             return("", "debugWIRE is disabled")
         if "enable".startswith(tokens[0]):
-            if not self._dw_mode_active:
-                if self._dw_activated_once:
+            if not self._debugger_active:
+                if self._debugger_activated_once:
                     return("", "Cannot reactivate debugWIRE\n" +
                                "You have to exit and restart the debugger")
                 # we set the state variable to active in the calling module
                 return("dwon", "debugWIRE is enabled")
             return("reset", "debugWIRE is enabled")
         if "disable".startswith(tokens[0]):
-            if self._dw_mode_active:
-                self._dw_mode_active = False
+            if self._debugger_active:
+                self._debugger_active = False
                 return("dwoff", "debugWIRE is disabled")
             return("reset", "debugWIRE is disabled")
         return self._mon_unknown(tokens[0])
@@ -286,7 +286,7 @@ If no parameter is specified, the current setting is returned""")
 Pyavrocd version:         """ + importlib.metadata.version("pyavrocd") + """
 Target:                   {}
 Debugging interface:      """ + self._iface + """
-Debugging enabled:        {}
+Debugging enabled:        """ + ("yes" if self._debugger_active else "no") + """
 Breakpoints:              """ + ("all types"
                                      if (not self._onlyhwbps and not self._onlyswbps) else
                                      ("only hardware bps"
@@ -335,7 +335,7 @@ Single-stepping:          """ + ("safe" if self._safe else "interruptible"))
         return self._mon_unknown(tokens[0])
 
     def _mon_reset(self, _):
-        if self._dw_mode_active:
+        if self._debugger_active:
             return("reset", "MCU has been reset")
         return("","Enable debugWIRE first")
 
@@ -392,7 +392,7 @@ Single-stepping:          """ + ("safe" if self._safe else "interruptible"))
         return res
 
     def _mon_live_tests(self, _):
-        if self._dw_mode_active:
+        if self._debugger_active:
             return("live_tests", "Tests done")
         return("", "Enable debugWIRE first")
 

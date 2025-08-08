@@ -15,7 +15,7 @@ class TestXAvrDebugger(TestCase):
     @patch('pyavrocd.xavrdebugger.AvrDebugger.__init__',MagicMock())
     def setUp(self):
         mock_transport = MagicMock()
-        self.xa = XAvrDebugger(mock_transport, "attiny85")
+        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire")
         self.xa.logger = MagicMock()
         self.xa.transport = mock_transport
         self.xa.housekeeper = MagicMock()

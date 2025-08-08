@@ -6,17 +6,11 @@ from pyedbglib.protocols.avr8protocol import Avr8Protocol
 
 from pymcuprog.nvmmegaavrjtag import NvmAccessProviderCmsisDapMegaAvrJtag
 from pymcuprog.nvm import NvmAccessProviderCmsisDapAvr
-from pymcuprog.pymcuprog_errors import PymcuprogError
-
-from pymcuprog.deviceinfo.deviceinfokeys import DeviceMemoryInfoKeys
-from pymcuprog.deviceinfo.memorynames import MemoryNames
-
-from pymcuprog import utils
 
 from pyavrocd.xavr8target import XMegaAvrJtagTarget
 
 # pylint: disable=consider-using-f-string
-class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
+class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag):
     """
     NVM Access the JTAG way
     """
@@ -24,7 +18,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     #we want to set up the debug session much later
     def __init__(self, transport, device_info):
         NvmAccessProviderCmsisDapAvr.__init__(self, device_info)
-        self.avr = XMegaAvrTarget(transport)
+        self.avr = XMegaAvrJtagTarget(transport)
         self.avr.setup_config(device_info)
 
     #pylint: enable=non-parent-init-called, super-init-not-called
@@ -36,6 +30,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
         Start (activate) session for JTAG targets
 
         """
+        # pylint: disable=unused-argument
         self.logger.info("megaAVR-JTAG-specific initialiser")
 
         try:
