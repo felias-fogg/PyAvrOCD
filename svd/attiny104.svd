@@ -23,7 +23,7 @@
     <peripheral>
       <name>AC</name>
       <description>Analog Comparator</description>
-      <baseAddress>0x00000017</baseAddress>
+      <baseAddress>0x00800017</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -158,7 +158,7 @@
     <peripheral>
       <name>ADC</name>
       <description>Analog-to-Digital Converter</description>
-      <baseAddress>0x00000017</baseAddress>
+      <baseAddress>0x00800017</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -500,7 +500,7 @@
     <peripheral>
       <name>CPU</name>
       <description>CPU Registers</description>
-      <baseAddress>0x00000032</baseAddress>
+      <baseAddress>0x00800032</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x6</size>
@@ -508,7 +508,7 @@
       </addressBlock>
       <addressBlock>
         <offset>0x7</offset>
-        <size>0x7</size>
+        <size>0x4</size>
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
@@ -870,76 +870,6 @@
           </fields>
         </register>
         <register>
-          <name>SP</name>
-          <description>Stack Pointer </description>
-          <addressOffset>0xB</addressOffset>
-          <size>0x10</size>
-          <access>read-write</access>
-          <writeConstraint>
-            <range>
-              <minimum>0</minimum>
-              <maximum>65535</maximum>
-            </range>
-          </writeConstraint>
-        </register>
-        <register>
-          <name>SREG</name>
-          <description>Status Register</description>
-          <addressOffset>0xD</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>C</name>
-              <description>Carry Flag</description>
-              <bitRange>[0:0]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>Z</name>
-              <description>Zero Flag</description>
-              <bitRange>[1:1]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>N</name>
-              <description>Negative Flag</description>
-              <bitRange>[2:2]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>V</name>
-              <description>Two's Complement Overflow Flag</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>S</name>
-              <description>Sign Bit</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>H</name>
-              <description>Half Carry Flag</description>
-              <bitRange>[5:5]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>T</name>
-              <description>Bit Copy Storage</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>I</name>
-              <description>Global Interrupt Enable</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-        <register>
           <name>VLMCSR</name>
           <description>Vcc Level Monitoring Control and Status Register</description>
           <addressOffset>0x2</addressOffset>
@@ -977,7 +907,7 @@
     <peripheral>
       <name>EXINT</name>
       <description>External Interrupts</description>
-      <baseAddress>0x0000000F</baseAddress>
+      <baseAddress>0x0080000F</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x7</size>
@@ -1172,7 +1102,7 @@
     <peripheral>
       <name>PORTA</name>
       <description>I/O Port</description>
-      <baseAddress>0x00000000</baseAddress>
+      <baseAddress>0x00800000</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -1432,7 +1362,7 @@
     <peripheral>
       <name>PORTB</name>
       <description>I/O Port</description>
-      <baseAddress>0x00000004</baseAddress>
+      <baseAddress>0x00800004</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -1596,7 +1526,7 @@
     <peripheral>
       <name>TC0</name>
       <description>Timer/Counter, 16-bit</description>
-      <baseAddress>0x00000022</baseAddress>
+      <baseAddress>0x00800022</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xE</size>
@@ -1903,7 +1833,7 @@
     <peripheral>
       <name>USART</name>
       <description>USART</description>
-      <baseAddress>0x00000008</baseAddress>
+      <baseAddress>0x00800008</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x7</size>
@@ -2182,7 +2112,7 @@
     <peripheral>
       <name>WDT</name>
       <description>Watchdog Timer</description>
-      <baseAddress>0x00000031</baseAddress>
+      <baseAddress>0x00800031</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>

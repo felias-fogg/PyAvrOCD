@@ -6,7 +6,8 @@ import logging
 from unittest.mock import Mock, call, create_autospec
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
-from pyavrocd.pyavrocd import MonitorCommand, BreakAndExec, SIGTRAP, SIGABRT, SIGILL, BREAKCODE, SLEEPCODE
+from pyavrocd.monitor import MonitorCommand
+from pyavrocd.breakexec import BreakAndExec, SIGTRAP, SIGABRT, SIGILL, BREAKCODE, SLEEPCODE
 from .util.instr import instrmap
 
 logging.basicConfig(level=logging.CRITICAL)

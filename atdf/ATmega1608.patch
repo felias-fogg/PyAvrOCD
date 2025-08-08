@@ -1,0 +1,23 @@
+--- mega/ATmega1608.atdf	2025-07-30 15:02:05
++++ mega/ATmega1608.atdf.new	2025-07-29 09:43:27
+@@ -3310,13 +3310,19 @@
+             <value caption="EVOUT on PA2" name="DEFAULT" value="0x0"/>
+             <value caption="EVOUT on PA7" name="ALT1" value="0x1"/>
+          </value-group>
+-         <value-group caption="Event Output C select" name="PORTMUX_EVOUTC">
++	 <value-group caption="Event Output B select" name="PORTMUX_EVOUTB">
++            <value caption="EVOUT on PB2" name="DEFAULT" value="0x0"/>
++         </value-group>
++          <value-group caption="Event Output C select" name="PORTMUX_EVOUTC">
+             <value caption="EVOUT on PC2" name="DEFAULT" value="0x0"/>
+          </value-group>
+          <value-group caption="Event Output D select" name="PORTMUX_EVOUTD">
+             <value caption="EVOUT on PD2" name="DEFAULT" value="0x0"/>
+             <value caption="EVOUT on PD7" name="ALT1" value="0x1"/>
+          </value-group>
++	 <value-group caption="Event Output E select" name="PORTMUX_EVOUTE">
++            <value caption="EVOUT on PE2" name="DEFAULT" value="0x0"/>
++         </value-group>
+          <value-group caption="Event Output F select" name="PORTMUX_EVOUTF">
+             <value caption="EVOUT on PF2" name="DEFAULT" value="0x0"/>
+          </value-group>

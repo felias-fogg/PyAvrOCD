@@ -1,6 +1,8 @@
 """
 Python AVR MCU debugger
 """
+#pylint: disable=trailing-newlines,trailing-whitespace
+
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyedbglib.protocols.edbgprotocol import EdbgProtocol
 from pyedbglib.util import binary
@@ -23,7 +25,8 @@ class XAvrDebugger(AvrDebugger):
     :param use_events_for_run_stop_state: True to use HID event channel, False to polling
     :type use_events_for_run_stop_state: boolean
     """
-    def __init__(self, transport, device, use_events_for_run_stop_state=True):
+    def __init__(self, transport, device, iface, use_events_for_run_stop_state=True):
+        self.iface = iface
         if transport.hid_device is not None:
             super().__init__(transport)
         # Gather device info
@@ -32,9 +35,10 @@ class XAvrDebugger(AvrDebugger):
             self.device_info = deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices." + device)
         except ImportError:
             raise PymcuprogNotSupportedError("No device info for device: {}".format(device)) #pylint: disable=raise-missing-from
-        if self.device_info['interface'].upper() !="UPDI" and \
-           'DEBUGWIRE' not in self.device_info['interface'].upper():
-            raise PymcuprogToolConfigurationError("pymcuprog debug wrapper only supports UPDI and debugWIRE devices")
+        if iface not in ['debugwire']:
+            raise PymcuprogToolConfigurationError("Pyavrocd only supports debugWIRE devices")
+        if iface not in self.device_info['interface'].lower():
+            raise PymcuprogToolConfigurationError("Incompatible debugging interface")
 
         # Memory info for the device
         self.memory_info = deviceinfo.DeviceMemoryInfo(self.device_info)

@@ -115,7 +115,7 @@ def discover(args):
                 sys.stderr.write('[ERROR] ' + repr(e) + '\n\r')
     return (None, None)
 
-def main(args):
+def main(args, intf):
     """
     Main function providing an serial-to-IP bridge for the dw-link hardware debugger
     """
@@ -124,6 +124,11 @@ def main(args):
     speed, device = discover(args)
     if speed is None or device is None:
         return # return to dw-gdbserver main, which will handle this problem
+
+    # check whether interface is OK
+    if intf != "debugwire":
+        sys.stderr.write('[CRITICAL] dw-link can only debug debugWIRE targets\n')
+        sys.exit(1)
 
     # connect to serial port
     ser = serial.serial_for_url(device, do_not_open=True)
@@ -138,7 +143,7 @@ def main(args):
     try:
         ser.open()
     except serial.SerialException as e:
-        sys.stderr.write('Could not open serial port {}: {}\n'.format(device, e))
+        sys.stderr.write('[CRITICAL] Could not open serial port {}: {}\n'.format(device, e))
         sys.exit(2)
 
     try:

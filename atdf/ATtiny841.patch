@@ -1,0 +1,11 @@
+--- tiny/ATtiny841.atdf	2025-07-30 15:21:46
++++ tiny/ATtiny841.atdf.new	2025-07-29 09:51:02
+@@ -1076,7 +1076,7 @@
+           <bitfield caption="Write Collision Flag" mask="0x40" name="WCOL"/>
+           <bitfield caption="Double SPI Speed Bit" mask="0x01" name="SPI2X"/>
+         </register>
+-        <register caption="SPI Data Register" name="SPDR" offset="0xB0" size="1" mask="0xFF"/>
++        <register caption="SPI Data Register" name="SPDR" offset="0xB0" size="1" mask="0xFF" ocd-rw=""/>
+         <register caption="Remap Port Pins" name="REMAP" offset="0x65" size="1">
+           <bitfield caption="SPI Pin Mapping" mask="0x02" name="SPIMAP"/>
+         </register>

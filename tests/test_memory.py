@@ -6,7 +6,9 @@ import logging
 from unittest.mock import Mock, MagicMock, call, create_autospec
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
-from pyavrocd.pyavrocd import FatalError, Memory, MonitorCommand
+from pyavrocd.errors import FatalError
+from pyavrocd.memory import Memory
+from pyavrocd.monitor import MonitorCommand
 
 logging.basicConfig(level=logging.CRITICAL)
 

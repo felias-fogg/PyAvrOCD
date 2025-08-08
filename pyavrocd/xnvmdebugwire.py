@@ -31,7 +31,8 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     def __del__(self):
         pass
 
-    def start(self):
+    #pylint: disable=arguments-differ, unused-argument
+    def start(self, **kwargs):
         """
         Start (activate) session for debugWIRE targets
 

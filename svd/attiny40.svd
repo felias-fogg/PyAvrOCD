@@ -23,7 +23,7 @@
     <peripheral>
       <name>AC</name>
       <description>Analog Comparator</description>
-      <baseAddress>0x00000013</baseAddress>
+      <baseAddress>0x00800013</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -138,7 +138,7 @@
     <peripheral>
       <name>ADC</name>
       <description>Analog-to-Digital Converter</description>
-      <baseAddress>0x0000000D</baseAddress>
+      <baseAddress>0x0080000D</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x6</size>
@@ -163,7 +163,7 @@
           <description>The ADC Control and Status register</description>
           <addressOffset>0x5</addressOffset>
           <size>0x8</size>
-          <access>read-only</access>
+          <access>read-write</access>
           <fields>
             <field>
               <name>ADPS</name>
@@ -487,7 +487,7 @@
     <peripheral>
       <name>CPU</name>
       <description>CPU Registers</description>
-      <baseAddress>0x0000001F</baseAddress>
+      <baseAddress>0x0080001F</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -505,7 +505,7 @@
       </addressBlock>
       <addressBlock>
         <offset>0x1A</offset>
-        <size>0x7</size>
+        <size>0x4</size>
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
@@ -891,82 +891,12 @@
             </field>
           </fields>
         </register>
-        <register>
-          <name>SP</name>
-          <description>Stack Pointer </description>
-          <addressOffset>0x1E</addressOffset>
-          <size>0x10</size>
-          <access>read-write</access>
-          <writeConstraint>
-            <range>
-              <minimum>0</minimum>
-              <maximum>65535</maximum>
-            </range>
-          </writeConstraint>
-        </register>
-        <register>
-          <name>SREG</name>
-          <description>Status Register</description>
-          <addressOffset>0x20</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>C</name>
-              <description>Carry Flag</description>
-              <bitRange>[0:0]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>Z</name>
-              <description>Zero Flag</description>
-              <bitRange>[1:1]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>N</name>
-              <description>Negative Flag</description>
-              <bitRange>[2:2]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>V</name>
-              <description>Two's Complement Overflow Flag</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>S</name>
-              <description>Sign Bit</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>H</name>
-              <description>Half Carry Flag</description>
-              <bitRange>[5:5]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>T</name>
-              <description>Bit Copy Storage</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>I</name>
-              <description>Global Interrupt Enable</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
       </registers>
     </peripheral>
     <peripheral>
       <name>EXINT</name>
       <description>External Interrupts</description>
-      <baseAddress>0x00000009</baseAddress>
+      <baseAddress>0x00800009</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -1141,7 +1071,7 @@
     <peripheral>
       <name>PORTA</name>
       <description>I/O Port</description>
-      <baseAddress>0x00000000</baseAddress>
+      <baseAddress>0x00800000</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -1401,7 +1331,7 @@
     <peripheral>
       <name>PORTB</name>
       <description>I/O Port</description>
-      <baseAddress>0x00000004</baseAddress>
+      <baseAddress>0x00800004</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x5</size>
@@ -1596,7 +1526,7 @@
     <peripheral>
       <name>PORTC</name>
       <description>I/O Port</description>
-      <baseAddress>0x00000008</baseAddress>
+      <baseAddress>0x00800008</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -1832,7 +1762,7 @@
     <peripheral>
       <name>SPI</name>
       <description>Serial Peripheral Interface</description>
-      <baseAddress>0x0000002E</baseAddress>
+      <baseAddress>0x0080002E</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x3</size>
@@ -1960,7 +1890,7 @@
     <peripheral>
       <name>TC0</name>
       <description>Timer/Counter, 8-bit</description>
-      <baseAddress>0x00000015</baseAddress>
+      <baseAddress>0x00800015</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x5</size>
@@ -2344,7 +2274,7 @@
     <peripheral>
       <name>TWI</name>
       <description>Two Wire Serial Interface</description>
-      <baseAddress>0x00000028</baseAddress>
+      <baseAddress>0x00800028</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x6</size>
@@ -2356,7 +2286,7 @@
           <description>TWI Slave Address Register</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
-          <access>read-only</access>
+          <access>read-write</access>
           <fields>
             <field>
               <name>TWSA</name>
@@ -2468,7 +2398,7 @@
           <description>TWI Slave Data Register</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-only</access>
+          <access>read-write</access>
           <fields>
             <field>
               <name>TWSD</name>
@@ -2546,7 +2476,7 @@
     <peripheral>
       <name>WDT</name>
       <description>Watchdog Timer</description>
-      <baseAddress>0x00000031</baseAddress>
+      <baseAddress>0x00800031</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>

@@ -15,19 +15,69 @@ dependencies = [
     "pylint (>=3.3.6,<4.0.0)",
     "pre-commit (>=4.2.0,<5.0.0)",
     "pyinstaller (>=6.12.0,<7.0.0)",
-    "pexpect (>=4.9.0,<5.0.0)"
+    "pexpect (>=4.9.0,<5.0.0)",
+    "pytest (>=8.0.0,<9.0.0)",
+    "pytest-cov (>=4.0.0,<5.0.0)"
 ]
 
 [project.urls]
 repository = "https://github.com/felias-fogg/pyavrocd"
 
 [project.scripts]
-pyavrocd = 'pyavrocd.pyavrocd:main'
+pyavrocd = 'pyavrocd.main:main'
 
 [tool.poetry]
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.6"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--cov=pyavrocd",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests"
+]
+
+[tool.pylint.main]
+ignore-patterns = ["at(tiny|mega|90).*\\.py"]
+jobs = 1
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-locals",
+    "too-many-branches",
+    "too-many-statements",
+    "line-too-long",
+    "invalid-name",
+    "broad-exception-caught",
+    "consider-using-f-string",
+    "trailing-whitespace",
+    "protected-access"
+]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "ex", "Run", "_", "e", "f", "x", "y", "z"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -9,6 +9,7 @@ import os
 import collections
 import argparse
 import textwrap
+import pprint
 from xml.etree import ElementTree
 
 from pymcuprog.deviceinfo.memorynames import MemoryNames
@@ -435,7 +436,7 @@ def harvest_from_file(filename):
     output = ""
     device_fields = ""
     extra_fields = "\n    # Some extra AVR specific fields\n"
-
+    crit_fields = []
     interfaces = []
     shared_updi = False
     progmem_offset = None
@@ -497,9 +498,16 @@ def harvest_from_file(filename):
                     spmcsr_base = int(elem.attrib['offset'],16)
                 if elem.attrib['name'].lower() in ['osccal', 'osccal0', 'fosccal', 'sosccala']:
                     osccal_base = int(elem.attrib['offset'],16)
-                if elem.attrib.get('ocd-rw',"RW") in ["", "W"] \
-                   and int(elem.attrib['offset'],16) not in masked:
+                if elem.attrib.get('ocd-rw',"RW") in ["", "W"]:
+                    crit_fields.append(elem.attrib['name'] +  \
+                                        ("-Wonly" if (elem.attrib.get('ocd-rw',"RW") == "W") else ""))
+                    if int(elem.attrib['offset'],16) not in masked:
                         masked.append(int(elem.attrib['offset'],16))
+                elif elem.attrib['name'] in [ 'DWDR', 'MONDR', 'OCDR', 'EUDR', 'UDR', 'UDR0',
+                                                        'UDR1', 'UDR2', 'UDR3', 'UDR4', 'SPDR',
+                                                        'SPDR0', 'SPDR1', 'SPDR2', 'LINDAT',
+                                                        'UEDATX', 'UPDATX', 'DAC', 'DACL', 'DACH']:
+                    crit_fields.append(elem.attrib['name'] + "-R/W")
             if elem.tag == 'bitfield':
                 if elem.attrib['name'].lower() == 'dwen':
                     dwen_mask = elem.attrib['mask']
@@ -549,7 +557,7 @@ def harvest_from_file(filename):
     if buf_per_page is not None:
         extra_fields += "    'buffers_per_flash_page' : " + "%s" % buf_per_page + ",\n"
     if masked:
-        extra_fields += "    'masked_registers' : [{}],\n".format(', '.join(hex(x) for x in masked))
+        extra_fields += "    'masked_registers' : [{}],\n".format(', '.join(hex(x) for x in sorted(masked)))
 
 
     #pylint: disable=used-before-assignment
@@ -584,7 +592,7 @@ def harvest_from_file(filename):
 
     output += extra_fields
     output += "    'interface': '" + '+'.join(interfaces) + "'\n"
-    return output
+    return output, crit_fields
 
 def main():
     """
@@ -607,21 +615,29 @@ def main():
 
     arguments = parser.parse_args()
 
-    if arguments.filename.endswith('.atdf'):
-        dict_content = harvest_from_file(arguments.filename)
+    if arguments.filename.lower().endswith('.atdf'):
+        dict_content, _ = harvest_from_file(arguments.filename)
         if arguments.interface is None or arguments.interface.lower() in dict_content.lower():
             content = "\nfrom pymcuprog.deviceinfo.eraseflags import ChiperaseEffect\n\n"
             content += "DEVICE_INFO = {{\n{}}}".format(dict_content)
             print(content)
     else:
+        all_critical_fields = []
         for file in os.listdir(arguments.filename):
-            dict_content = harvest_from_file(arguments.filename + '/' + file)
+            if os.path.splitext(file)[1].lower() != ".atdf":
+                print("Skipping %s" %  file)
+                continue
+            print("Parsing %s" % os.path.splitext(file)[0])
+            dict_content, crit_fields = harvest_from_file(arguments.filename + '/' + file)
+            all_critical_fields.append([ os.path.splitext(file)[0],
+                                             sorted(crit_fields)])
             if arguments.interface is None or arguments.interface.lower() in dict_content.lower():
                 content = "\nfrom pymcuprog.deviceinfo.eraseflags import ChiperaseEffect\n\n"
                 content += "DEVICE_INFO = {{\n{}}}".format(dict_content)
                 with open(os.path.splitext(file)[0].lower() + '.py', 'w', encoding='utf-8') as f:
                     f.write(content)
-
+        with open("critical-fields.txt", 'w', encoding='utf-8') as f:
+            pprint.pp(sorted(all_critical_fields), stream=f)
 
 
 if __name__ == "__main__":

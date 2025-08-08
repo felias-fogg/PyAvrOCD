@@ -11,7 +11,9 @@ repos:
   hooks:
   - id: codespell
     name: codespell
-    args: [ "--exclude-file=tests/util/all.lst,poetry.lock", "-L ser, RCALL, datas, rcall, ACI" ]
+    args: [ "--exclude-file=tests/util/all.lst,poetry.lock",
+    	  "--skip=*.atdf,*.svd",
+    	  "-L ser, RCALL, datas, rcall, ACI, EXTINT" ]
 - repo: local
   hooks:
   - id: pylint

@@ -23,7 +23,7 @@
     <peripheral>
       <name>AC0</name>
       <description>Analog Comparator</description>
-      <baseAddress>0x00000680</baseAddress>
+      <baseAddress>0x00800680</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -152,7 +152,7 @@
         </register>
         <register>
           <name>DACREF</name>
-          <description>Reference scale control</description>
+          <description>Referance scale control</description>
           <addressOffset>0x4</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -289,7 +289,7 @@
     <peripheral>
       <name>ADC0</name>
       <description>Analog to Digital Converter</description>
-      <baseAddress>0x00000600</baseAddress>
+      <baseAddress>0x00800600</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x7</size>
@@ -866,7 +866,7 @@
           <description>ADC Accumulator Result</description>
           <addressOffset>0x10</addressOffset>
           <size>0x10</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -947,7 +947,7 @@
     <peripheral>
       <name>BOD</name>
       <description>Bod interface</description>
-      <baseAddress>0x00000080</baseAddress>
+      <baseAddress>0x00800080</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -1090,7 +1090,7 @@
           <fields>
             <field>
               <name>VLMIE</name>
-              <description>voltage level monitor interrupt enable</description>
+              <description>voltage level monitor interrrupt enable</description>
               <bitRange>[0:0]</bitRange>
               <access>read-write</access>
             </field>
@@ -1192,7 +1192,7 @@
     <peripheral>
       <name>CCL</name>
       <description>Configurable Custom Logic</description>
-      <baseAddress>0x000001C0</baseAddress>
+      <baseAddress>0x008001C0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x3</size>
@@ -2843,7 +2843,7 @@
     <peripheral>
       <name>CLKCTRL</name>
       <description>Clock controller</description>
-      <baseAddress>0x00000060</baseAddress>
+      <baseAddress>0x00800060</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -3012,7 +3012,7 @@
           <description>MCLK Status</description>
           <addressOffset>0x3</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>SOSC</name>
@@ -3187,7 +3187,7 @@
     <peripheral>
       <name>CPU</name>
       <description>CPU</description>
-      <baseAddress>0x00000034</baseAddress>
+      <baseAddress>0x00800034</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -3195,7 +3195,7 @@
       </addressBlock>
       <addressBlock>
         <offset>0x9</offset>
-        <size>0x3</size>
+        <size>0x2</size>
         <usage>registers</usage>
       </addressBlock>
       <interrupt>
@@ -3430,69 +3430,12 @@
             </range>
           </writeConstraint>
         </register>
-        <register>
-          <name>SREG</name>
-          <description>Status Register</description>
-          <addressOffset>0xB</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>C</name>
-              <description>Carry Flag</description>
-              <bitRange>[0:0]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>Z</name>
-              <description>Zero Flag</description>
-              <bitRange>[1:1]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>N</name>
-              <description>Negative Flag</description>
-              <bitRange>[2:2]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>V</name>
-              <description>Two's Complement Overflow Flag</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>S</name>
-              <description>N Exclusive Or V Flag</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>H</name>
-              <description>Half Carry Flag</description>
-              <bitRange>[5:5]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>T</name>
-              <description>Transfer Bit</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>I</name>
-              <description>Global Interrupt Enable Flag</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
       </registers>
     </peripheral>
     <peripheral>
       <name>CPUINT</name>
       <description>Interrupt Controller</description>
-      <baseAddress>0x00000110</baseAddress>
+      <baseAddress>0x00800110</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -3600,7 +3543,7 @@
     <peripheral>
       <name>CRCSCAN</name>
       <description>CRCSCAN</description>
-      <baseAddress>0x00000120</baseAddress>
+      <baseAddress>0x00800120</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x3</size>
@@ -3690,7 +3633,7 @@
           <description>Status</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>BUSY</name>
@@ -3711,7 +3654,7 @@
     <peripheral>
       <name>EVSYS</name>
       <description>Event System</description>
-      <baseAddress>0x00000180</baseAddress>
+      <baseAddress>0x00800180</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -5173,7 +5116,7 @@
           <description>Channel Strobe</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>write-only</access>
           <fields>
             <field>
               <name>STROBE0</name>
@@ -6553,7 +6496,7 @@
     <peripheral>
       <name>GPIO</name>
       <description>General Purpose IO</description>
-      <baseAddress>0x0000001C</baseAddress>
+      <baseAddress>0x0080001C</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -6617,7 +6560,7 @@
     <peripheral>
       <name>NVMCTRL</name>
       <description>Non-volatile Memory Controller</description>
-      <baseAddress>0x00001000</baseAddress>
+      <baseAddress>0x00801000</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x5</size>
@@ -6771,7 +6714,7 @@
           <description>Status</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>FBUSY</name>
@@ -6798,7 +6741,7 @@
     <peripheral>
       <name>PORTA</name>
       <description>I/O Ports</description>
-      <baseAddress>0x00000400</baseAddress>
+      <baseAddress>0x00800400</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xB</size>
@@ -7896,7 +7839,7 @@
     <peripheral>
       <name>PORTB</name>
       <description>I/O Ports</description>
-      <baseAddress>0x00000420</baseAddress>
+      <baseAddress>0x00800420</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xB</size>
@@ -8562,7 +8505,7 @@
     <peripheral>
       <name>PORTC</name>
       <description>I/O Ports</description>
-      <baseAddress>0x00000440</baseAddress>
+      <baseAddress>0x00800440</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xB</size>
@@ -9228,7 +9171,7 @@
     <peripheral>
       <name>PORTD</name>
       <description>I/O Ports</description>
-      <baseAddress>0x00000460</baseAddress>
+      <baseAddress>0x00800460</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xB</size>
@@ -9894,7 +9837,7 @@
     <peripheral>
       <name>PORTE</name>
       <description>I/O Ports</description>
-      <baseAddress>0x00000480</baseAddress>
+      <baseAddress>0x00800480</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xB</size>
@@ -10560,7 +10503,7 @@
     <peripheral>
       <name>PORTF</name>
       <description>I/O Ports</description>
-      <baseAddress>0x000004A0</baseAddress>
+      <baseAddress>0x008004A0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xB</size>
@@ -11226,7 +11169,7 @@
     <peripheral>
       <name>PORTMUX</name>
       <description>Port Multiplexer</description>
-      <baseAddress>0x000005E0</baseAddress>
+      <baseAddress>0x008005E0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x6</size>
@@ -11681,7 +11624,7 @@
     <peripheral>
       <name>RSTCTRL</name>
       <description>Reset controller</description>
-      <baseAddress>0x00000040</baseAddress>
+      <baseAddress>0x00800040</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -11753,7 +11696,7 @@
     <peripheral>
       <name>RTC</name>
       <description>Real-Time Counter</description>
-      <baseAddress>0x00000140</baseAddress>
+      <baseAddress>0x00800140</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xE</size>
@@ -12202,7 +12145,7 @@
           <description>PIT Status</description>
           <addressOffset>0x11</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>CTRLBUSY</name>
@@ -12217,7 +12160,7 @@
           <description>Status</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>CTRLABUSY</name>
@@ -12263,7 +12206,7 @@
     <peripheral>
       <name>SIGROW</name>
       <description>Signature row</description>
-      <baseAddress>0x00001100</baseAddress>
+      <baseAddress>0x00801100</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xD</size>
@@ -12295,7 +12238,7 @@
           <description>CRC Checksum Byte 1</description>
           <addressOffset>0x2F</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12308,7 +12251,7 @@
           <description>Device ID Byte 0</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12321,7 +12264,7 @@
           <description>Device ID Byte 1</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12334,7 +12277,7 @@
           <description>Device ID Byte 2</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12347,7 +12290,7 @@
           <description>OSC16 error at 3V</description>
           <addressOffset>0x22</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12360,7 +12303,7 @@
           <description>OSC16 error at 5V</description>
           <addressOffset>0x23</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12373,7 +12316,7 @@
           <description>OSC20 error at 3V</description>
           <addressOffset>0x24</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12386,7 +12329,7 @@
           <description>OSC20 error at 5V</description>
           <addressOffset>0x25</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12399,7 +12342,7 @@
           <description>Oscillator Calibration 16 MHz Byte 0</description>
           <addressOffset>0x18</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12412,7 +12355,7 @@
           <description>Oscillator Calibration 16 MHz Byte 1</description>
           <addressOffset>0x19</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12425,7 +12368,7 @@
           <description>Oscillator Calibration 20 MHz Byte 0</description>
           <addressOffset>0x1A</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12438,7 +12381,7 @@
           <description>Oscillator Calibration 20 MHz Byte 1</description>
           <addressOffset>0x1B</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12451,7 +12394,7 @@
           <description>Oscillator Calibration for 32kHz ULP</description>
           <addressOffset>0x14</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12464,7 +12407,7 @@
           <description>Serial Number Byte 0</description>
           <addressOffset>0x3</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12477,7 +12420,7 @@
           <description>Serial Number Byte 1</description>
           <addressOffset>0x4</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12490,7 +12433,7 @@
           <description>Serial Number Byte 2</description>
           <addressOffset>0x5</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12503,7 +12446,7 @@
           <description>Serial Number Byte 3</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12516,7 +12459,7 @@
           <description>Serial Number Byte 4</description>
           <addressOffset>0x7</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12529,7 +12472,7 @@
           <description>Serial Number Byte 5</description>
           <addressOffset>0x8</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12542,7 +12485,7 @@
           <description>Serial Number Byte 6</description>
           <addressOffset>0x9</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12555,7 +12498,7 @@
           <description>Serial Number Byte 7</description>
           <addressOffset>0xA</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12568,7 +12511,7 @@
           <description>Serial Number Byte 8</description>
           <addressOffset>0xB</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12581,7 +12524,7 @@
           <description>Serial Number Byte 9</description>
           <addressOffset>0xC</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12594,7 +12537,7 @@
           <description>Temperature Sensor Calibration Byte 0</description>
           <addressOffset>0x20</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12607,7 +12550,7 @@
           <description>Temperature Sensor Calibration Byte 1</description>
           <addressOffset>0x21</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12620,7 +12563,7 @@
     <peripheral>
       <name>SLPCTRL</name>
       <description>Sleep Controller</description>
-      <baseAddress>0x00000050</baseAddress>
+      <baseAddress>0x00800050</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -12673,7 +12616,7 @@
     <peripheral>
       <name>SPI0</name>
       <description>Serial Peripheral Interface</description>
-      <baseAddress>0x000008C0</baseAddress>
+      <baseAddress>0x008008C0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x5</size>
@@ -12910,7 +12853,7 @@
     <peripheral>
       <name>SYSCFG</name>
       <description>System Configuration Registers</description>
-      <baseAddress>0x00000F01</baseAddress>
+      <baseAddress>0x00800F01</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -12970,7 +12913,7 @@
           <description>Revision ID</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <writeConstraint>
             <range>
               <minimum>0</minimum>
@@ -12983,7 +12926,7 @@
     <peripheral>
       <name>TCA0</name>
       <description>16-bit Timer/Counter Type A</description>
-      <baseAddress>0x00000A00</baseAddress>
+      <baseAddress>0x00800A00</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x1</size>
@@ -14229,7 +14172,7 @@
     <peripheral>
       <name>TCB0</name>
       <description>16-bit Timer Type B</description>
-      <baseAddress>0x00000A80</baseAddress>
+      <baseAddress>0x00800A80</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -14475,7 +14418,7 @@
           <description>Status</description>
           <addressOffset>0x7</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>RUN</name>
@@ -14503,7 +14446,7 @@
     <peripheral>
       <name>TCB1</name>
       <description>16-bit Timer Type B</description>
-      <baseAddress>0x00000A90</baseAddress>
+      <baseAddress>0x00800A90</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -14749,7 +14692,7 @@
           <description>Status</description>
           <addressOffset>0x7</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>RUN</name>
@@ -14777,7 +14720,7 @@
     <peripheral>
       <name>TCB2</name>
       <description>16-bit Timer Type B</description>
-      <baseAddress>0x00000AA0</baseAddress>
+      <baseAddress>0x00800AA0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -15023,7 +14966,7 @@
           <description>Status</description>
           <addressOffset>0x7</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>RUN</name>
@@ -15051,7 +14994,7 @@
     <peripheral>
       <name>TWI0</name>
       <description>Two-Wire Interface</description>
-      <baseAddress>0x000008A0</baseAddress>
+      <baseAddress>0x008008A0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xF</size>
@@ -15675,7 +15618,7 @@
     <peripheral>
       <name>USART0</name>
       <description>Universal Synchronous and Asynchronous Receiver and Transmitter</description>
-      <baseAddress>0x00000800</baseAddress>
+      <baseAddress>0x00800800</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xF</size>
@@ -15830,7 +15773,7 @@
             </field>
             <field>
               <name>RXEN</name>
-              <description>Receiver enable</description>
+              <description>Reciever enable</description>
               <bitRange>[7:7]</bitRange>
               <access>read-write</access>
             </field>
@@ -16051,7 +15994,7 @@
           <description>Receive Data High Byte</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>DATA8</name>
@@ -16090,7 +16033,7 @@
           <description>Receive Data Low Byte</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>DATA</name>
@@ -16115,7 +16058,7 @@
           <fields>
             <field>
               <name>RXPL</name>
-              <description>Receiver Pulse Length</description>
+              <description>Receiver Pulse Lenght</description>
               <bitRange>[6:0]</bitRange>
               <access>read-write</access>
               <writeConstraint>
@@ -16240,7 +16183,7 @@
     <peripheral>
       <name>USART1</name>
       <description>Universal Synchronous and Asynchronous Receiver and Transmitter</description>
-      <baseAddress>0x00000820</baseAddress>
+      <baseAddress>0x00800820</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xF</size>
@@ -16395,7 +16338,7 @@
             </field>
             <field>
               <name>RXEN</name>
-              <description>Receiver enable</description>
+              <description>Reciever enable</description>
               <bitRange>[7:7]</bitRange>
               <access>read-write</access>
             </field>
@@ -16616,7 +16559,7 @@
           <description>Receive Data High Byte</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>DATA8</name>
@@ -16655,7 +16598,7 @@
           <description>Receive Data Low Byte</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>DATA</name>
@@ -16680,7 +16623,7 @@
           <fields>
             <field>
               <name>RXPL</name>
-              <description>Receiver Pulse Length</description>
+              <description>Receiver Pulse Lenght</description>
               <bitRange>[6:0]</bitRange>
               <access>read-write</access>
               <writeConstraint>
@@ -16805,7 +16748,7 @@
     <peripheral>
       <name>USART2</name>
       <description>Universal Synchronous and Asynchronous Receiver and Transmitter</description>
-      <baseAddress>0x00000840</baseAddress>
+      <baseAddress>0x00800840</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0xF</size>
@@ -16960,7 +16903,7 @@
             </field>
             <field>
               <name>RXEN</name>
-              <description>Receiver enable</description>
+              <description>Reciever enable</description>
               <bitRange>[7:7]</bitRange>
               <access>read-write</access>
             </field>
@@ -17181,7 +17124,7 @@
           <description>Receive Data High Byte</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>DATA8</name>
@@ -17220,7 +17163,7 @@
           <description>Receive Data Low Byte</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
-          <access>read-write</access>
+          <access>read-only</access>
           <fields>
             <field>
               <name>DATA</name>
@@ -17245,7 +17188,7 @@
           <fields>
             <field>
               <name>RXPL</name>
-              <description>Receiver Pulse Length</description>
+              <description>Receiver Pulse Lenght</description>
               <bitRange>[6:0]</bitRange>
               <access>read-write</access>
               <writeConstraint>
@@ -17370,7 +17313,7 @@
     <peripheral>
       <name>USERROW</name>
       <description>User Row</description>
-      <baseAddress>0x00001300</baseAddress>
+      <baseAddress>0x00801300</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x40</size>
@@ -18214,7 +18157,7 @@
     <peripheral>
       <name>VPORTA</name>
       <description>Virtual Ports</description>
-      <baseAddress>0x00000000</baseAddress>
+      <baseAddress>0x00800000</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -18286,7 +18229,7 @@
     <peripheral>
       <name>VPORTB</name>
       <description>Virtual Ports</description>
-      <baseAddress>0x00000004</baseAddress>
+      <baseAddress>0x00800004</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -18358,7 +18301,7 @@
     <peripheral>
       <name>VPORTC</name>
       <description>Virtual Ports</description>
-      <baseAddress>0x00000008</baseAddress>
+      <baseAddress>0x00800008</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -18430,7 +18373,7 @@
     <peripheral>
       <name>VPORTD</name>
       <description>Virtual Ports</description>
-      <baseAddress>0x0000000C</baseAddress>
+      <baseAddress>0x0080000C</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -18502,7 +18445,7 @@
     <peripheral>
       <name>VPORTE</name>
       <description>Virtual Ports</description>
-      <baseAddress>0x00000010</baseAddress>
+      <baseAddress>0x00800010</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -18574,7 +18517,7 @@
     <peripheral>
       <name>VPORTF</name>
       <description>Virtual Ports</description>
-      <baseAddress>0x00000014</baseAddress>
+      <baseAddress>0x00800014</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x4</size>
@@ -18646,7 +18589,7 @@
     <peripheral>
       <name>VREF</name>
       <description>Voltage reference</description>
-      <baseAddress>0x000000A0</baseAddress>
+      <baseAddress>0x008000A0</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -18765,7 +18708,7 @@
     <peripheral>
       <name>WDT</name>
       <description>Watch-Dog Timer</description>
-      <baseAddress>0x00000100</baseAddress>
+      <baseAddress>0x00800100</baseAddress>
       <addressBlock>
         <offset>0x0</offset>
         <size>0x2</size>
@@ -18932,7 +18875,7 @@
           <fields>
             <field>
               <name>SYNCBUSY</name>
-              <description>Synchronization busy</description>
+              <description>Syncronization busy</description>
               <bitRange>[0:0]</bitRange>
               <access>read-only</access>
             </field>

@@ -5,7 +5,7 @@ The test suit for the MonitorCommand class
 import logging
 import importlib
 from unittest import TestCase
-from pyavrocd.pyavrocd import MonitorCommand
+from pyavrocd.monitor import MonitorCommand
 
 
 logging.basicConfig(level=logging.CRITICAL)
@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.CRITICAL)
 class TestMonitorCommand(TestCase):
 
     def setUp(self):
-        self.mo = MonitorCommand()
+        self.mo = MonitorCommand('debugwire')
 
     def test_dispatch_ambigious(self):
         self.assertEqual(self.mo.dispatch(["ver"]), ("", "Ambiguous 'monitor' command string"))

@@ -7,7 +7,12 @@ from unittest.mock import Mock, MagicMock, patch, call, create_autospec
 from unittest import TestCase
 import socket
 from pyavrocd.xavrdebugger import XAvrDebugger
-from pyavrocd.pyavrocd import GdbHandler, EndOfSession, Memory, MonitorCommand, BreakAndExec, DebugWIRE, SIGINT, SIGHUP
+from pyavrocd.handler import GdbHandler, SIGINT, SIGHUP
+from pyavrocd.errors import EndOfSession
+from pyavrocd.memory import Memory
+from pyavrocd.monitor import MonitorCommand
+from pyavrocd.breakexec import BreakAndExec
+from pyavrocd.debugwiretarget import DebugWIRE
 
 logging.basicConfig(level=logging.CRITICAL)
 

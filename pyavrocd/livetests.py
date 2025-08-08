@@ -1,6 +1,8 @@
 """
 Live Tests for dw-gdbserver
 """
+#pylint: disable=protected-access
+
 import time
 import logging
 from logging import getLogger
@@ -20,7 +22,7 @@ class LiveTests():
         self.mem = handler.mem
         self.mon = handler.mon
         self.bp = handler.bp
-        self.backup_send_packet = handler.send_packet
+        self.backup_send_packet = None
         self.send_string = ""
         self.success = 0
         self.failure = 0
@@ -74,10 +76,12 @@ class LiveTests():
         the remanibg tests are skipped. In the end, we restore the send_packet method
         and give a short statistic.
         """
+        self.backup_send_packet = self.handler.send_packet
         self.mon.set_default_state()
         self.success = 0
         self.failure = 0
         self.tests_total = 27
+        self.mon._cache = False
         try:
             self.handler.send_debug_message("Running live tests ...")
             self.logger.info("Starting live tests (will clobber SRAM and flash)")
@@ -126,6 +130,11 @@ class LiveTests():
                 self.handler.send_debug_message("... live tests successfully finished.")
             else:
                 self.handler.send_debug_message("... live tests finished with some failures.")
+            self.logger.info("Loaded binary has been deleted")
+            self.mem._flash = bytearray()
+            self.mem._flashmem_start_prog = 0
+            self.logger.info("All monitor state variables set to default values")
+            self.mon.set_default_state()
 
     def check_result(self, success_condition):
         """
@@ -258,8 +267,7 @@ class LiveTests():
         Tests 'get memory' function on flash memory
         """
         self.logger.info("Running 'get memory flash' test ...")
-        data = bytearray([0x95,0x98,0x95])
-        self.dbg.eeprom_write(0x1cb, data)
+        data = bytearray([0x95,0x98,0x95]) # is already flashed at 0x1cb
         self.handler.dispatch('m', b'00%04X,03' % 0x1cb)
         self.check_result(self.send_string == binascii.hexlify(data).decode('ascii'))
 
@@ -280,8 +288,7 @@ class LiveTests():
         """
         self.logger.info("Running 'set memory eeprom' test ...")
         data = bytearray([0x75,0x96,0x17,0x84,0x19])
-        self.handler.dispatch('M', b'81%04X,05:%s' % (2,
-                                                       binascii.hexlify(data)))
+        self.handler.dispatch('M', b'81%04X,05:%s' % (2, binascii.hexlify(data)))
         newdata = self.dbg.eeprom_read(2, 5)
         self.check_result(newdata == data and self.send_string == "OK")
 
@@ -614,6 +621,7 @@ class LiveTests():
         self.logger.info("Running test for cleaning BPs before load ...")
         self.mon._cache = False
         self.mon._onlyswbps = True
+        self.mon._noload = True
         self.handler.dispatch("Z", b"1,1b2,2")
         opc1 = self.mem.flash_read_word(0x1b2)
         self.dbg.program_counter_write(0x1c4 >> 1)

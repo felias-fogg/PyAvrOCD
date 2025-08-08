@@ -7,7 +7,8 @@ from unittest.mock import Mock, MagicMock, patch, create_autospec
 from unittest import TestCase
 #from pymcuprog.utils import read_target_voltage
 from pyavrocd.xavrdebugger import XAvrDebugger
-from pyavrocd.pyavrocd import DebugWIRE,  FatalError
+from pyavrocd.debugwiretarget import DebugWIRE
+from pyavrocd.errors import FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
 logging.basicConfig(level=logging.CRITICAL)
