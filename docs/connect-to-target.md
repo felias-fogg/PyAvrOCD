@@ -1,6 +1,6 @@
 # Connecting the hardware debugger to a target
 
-The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip.
+The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as sown in the following picture.
 
 ![Snap adapter](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adapter.JPG)
 
@@ -14,13 +14,13 @@ The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header o
 
 Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
 
-Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily switch a cable, and then nothing works. For this reason, I designed some adapter boards for the Arduino Mega and Leonardo. If you have standard headers on the target and the debugger has those (perhaps via adapter PCBs) as well, then the connection is simply to plug in the cable into both headers.
+Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works. For this reason, I designed some adapter boards for the Arduino Mega and Leonardo. If you have standard headers on the target and the debugger has those (perhaps via adapter PCBs) as well, then the connection is simply to plug in the cable into both headers.
 
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
 ![picki4-connect](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pickit4-connect.png)
 
-In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the right connections.
+In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the correct connections.
 
 ## Connecting to a debugWIRE target
 

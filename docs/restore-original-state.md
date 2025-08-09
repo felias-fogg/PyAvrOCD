@@ -1,4 +1,4 @@
-# Restoring a target to its original state
+# Restoring a target to its original state after debugging
 
 If, after debugging, you want to restore a target board to its original state, a few things have to be done:
 
@@ -10,7 +10,7 @@ If, after debugging, you want to restore a target board to its original state, a
 
    - In the Arduino IDE, you can do this by using the `Burn Bootloader` command in the `Tools` menu. This will set the correct fuses and reinstall the bootloader.
 
-   To restore the board to its exact original state before debugging, you must download the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state.
+   To restore the board to its exact original state before debugging, you must download the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using an SPI programmer.
 
 
 

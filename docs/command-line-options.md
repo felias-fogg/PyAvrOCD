@@ -1,27 +1,20 @@
-# Monitor commands
+# Command line options
 
-Pyavrocd implements a number of `monitor` commands. These can be used to control important aspects of the GDB server. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
+When starting pyavrocd, you can influence its behavior by several command-line options.
 
-| Command                                               | Action                                                       |
-| ----------------------------------------------------- | ------------------------------------------------------------ |
-| `monitor breakpoints` [`all`\|`software`\|`hardware`] | Restricts the kind of breakpoints the hardware debugger can use. Either *all* types are permitted, only *software* breakpoints are allowed, or only *hardware* breakpoints can be used. Using all kinds is the default. |
-| `monitor caching` [`enable`\|`disable`]               | The loaded executable is cached in the gdbserver when *enabled*, which is the default. **(-)** |
-| `monitor debugwire` [`enable`\|`disable`]             | DebugWIRE mode will be enabled or disabled. When enabling it, the MCU will be reset and you may be asked to power-cycle the target. After disabling debugWIRE mode, the MCU can be programmed again using SPI programming. |
-| `monitor help`                                        | Display help text.                                           |
-| `monitor info`                                        | Display information about the target and the state of the debugger. |
-| `monitor load` [`readbeforewrite`\|`writeonly`]       | When loading an executable, either each flash page is compared with the content to be loaded, and flashing is skipped if the content is already there, or each flash page is written without reading the current contents beforehand. The first option is the default option and there is no reason to change it. |
-| `monitor onlyloaded` [`enable`\|`disable`]            | Execution is only possible when a `load` command was previously executed, which is the default. If you want to start execution without previously loading an executable, you need to disable this mode. |
-| `monitor rangestepping `[`enable`\|`disable`]         | The GDB range-stepping command is supported or disabled. **(-)** |
-| `monitor reset`                                       | Resets the MCU.                                              |
-| `monitor singlestep` [`safe`\|`interruptible`]        | Single-stepping can either be performed in a *safe* way, where single steps are shielded against interrupts or in a way, where a single step can lead to a jump into the interrupt dispatch table. The *safe* option is the default. |
-| `monitor speed` [`high`|`low`]                        | Set the debugWIRE communication speed limit to `low` (=150kbps) (default) or to `high` (=300kbps); without an argument, the current communication speed and speed limit are printed. **(+)** |
-| `monitor timer` [`freeze`\|`run`]                     | Timers can either be *frozen* when execution is stopped, or they can *run* freely. The latter option is helpful when PWM output is crucial. |
-| `monitor verify` [`enable`\|`disable`]                | Verify flash after loading each flash page. The cost of verification is negligible, and doing so may help diagnose flash wear problems. The default setting is for this option to be *enabled*. |
-| `monitor version`                                     | Show version of the gdbserver.                               |
-
-The default setting is always the first one listed, except for `debugwire`, which depends on the MCU itself. All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`.
-
-Commands marked with **(-)** are not implemented by dw-link. If they are marked with **(+),** they are only implemented by dw-link.
+| Option Name            | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| `--command`<br>`-c`    | Command to set the gdb port (OpenOCD style). This is an alternative to the `--port` option that is used in the Arduino IDE 2. |
+| `--device` <br>`-d`    | The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed. |
+| `--gede`<br>`-g`       | No argument for this option. This option will start the `Gede` debugger GUI. |
+| `--interface`<br>`-i`  | Debugging interface to use. Should be one of `debugwire`, `jtag`, `pdi`, or `updi` |
+| `--port` <br>`-p`      | IP port on the local host to which GDB can connect.          |
+| `--start` <br>`-s`     | Program to start or the string `noop`, when no program should be started |
+| `--tool`<br>`-t`       | Specifying the debug tool. Possible values are `atmelice`, `edbg`, `jtagice3`, `medbg`, `nedbg`, `pickit4`, `powerdebugger`, `snap`, `dwlink`. Use of this option is necessary only if more than one debugging tool is connected to the computer. |
+| `--usbsn` <br>`-u`     | USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer. |
+| `--verbose` <br>`-v`   | Specify verbosity level. Possible values are `debug`, `info`, `warning`, `error`, or `critical`. The default is `info`. |
+| `--version` <br>`-V`   | Print dw-gdbserver version number and exit.                  |
+| `--install-udev-rules` | Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with `sudo` and is only present under Linux. |
 
 ------
 

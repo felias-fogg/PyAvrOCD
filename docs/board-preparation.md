@@ -62,6 +62,8 @@ As in the debugWIRE case, it could be that SPI programming has been disabled. If
 
 Enabling and disabling the OCDEN fuse to activate and deactivate the on-chip debugging module is performed by pyavrocd. Similarly, pyavrocd will erase flash if lock bits are set and the BOOTRST fuse is unprogrammed, thereby deactivating the bootloader.
 
+
+
 ## Preparing a PDI target
 
 ### Physical preparation
@@ -78,7 +80,9 @@ SPIEN could be disabled. In this case, the above comments apply. Otherwise, ther
 
 ### Physical preparations
 
-Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible. On the Nano Every, for example, this pin cannot be accessed. I am unsure whether it is possible to modify this board in a safe manner to enable debugging.
+Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible. On the **Nano Every**, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin.
+
+On the **Uno WIFI Rev2**, again the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect through USB to this debugger.
 
 ### Fuse settings
 

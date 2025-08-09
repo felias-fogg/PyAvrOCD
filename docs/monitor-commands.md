@@ -1,6 +1,6 @@
 # Monitor commands
 
-Pyavrocd implements a number of `monitor` commands. These can be used to control important aspects of the GDB server. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
+Pyavrocd implements several `monitor` commands. These can be used to control important aspects of the GDB server. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
 
 | Command                                               | Action                                                       |
 | ----------------------------------------------------- | ------------------------------------------------------------ |
@@ -14,7 +14,7 @@ Pyavrocd implements a number of `monitor` commands. These can be used to control
 | `monitor rangestepping `[`enable`\|`disable`]         | The GDB range-stepping command is supported or disabled. **(+)** |
 | `monitor reset`                                       | Resets the MCU.                                              |
 | `monitor singlestep` [`safe`\|`interruptible`]        | Single-stepping can be performed in a *safe* way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The *safe* option is the default. |
-| `monitor speed` [`low`|`high`]                        | Set the debugWIRE communication speed limit to *low* (=150kbps) (default) or to *high* (=300kbps); without an argument, the current communication speed and speed limit are printed. **(*)** |
+| `monitor speed` [`low` |`high`]                       | Set the communication speed limit to *low* (=150kbps) (default) or to *high* (=300kbps); without an argument, the current communication speed and speed limit are printed. **(*)** |
 | `monitor timer` [`freeze`\|`run`]                     | Timers can either be *frozen* when execution is stopped, or they can *run* freely. The latter option is helpful when PWM output is crucial. |
 | `monitor verify` [`enable`\|`disable`]                | Verify flash after loading each flash page. The cost of verification is negligible, and doing so may help diagnose flash wear problems. The default setting is for this option to be *enabled*. |
 | `monitor version`                                     | Show version of the gdbserver.                               |
