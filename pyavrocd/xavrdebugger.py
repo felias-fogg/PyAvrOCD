@@ -1,7 +1,6 @@
 """
 Python AVR MCU debugger
 """
-#pylint: disable=trailing-newlines,trailing-whitespace
 
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyedbglib.protocols.edbgprotocol import EdbgProtocol
@@ -15,7 +14,6 @@ from pymcuprog.pymcuprog_errors import PymcuprogToolConfigurationError,\
 
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
 
-# pylint: disable=line-too-long, consider-using-f-string
 class XAvrDebugger(AvrDebugger):
     """
     AVR debugger wrapper
@@ -26,7 +24,9 @@ class XAvrDebugger(AvrDebugger):
     :type use_events_for_run_stop_state: boolean
     """
     def __init__(self, transport, device, iface, use_events_for_run_stop_state=True):
+        self.device = device
         self.iface = iface
+        _dummy = use_events_for_run_stop_state
         if transport.hid_device is not None:
             super().__init__(transport)
         # Gather device info
@@ -63,20 +63,19 @@ class XAvrDebugger(AvrDebugger):
 
 
         # Start a session
-        if self.device_info['interface'].upper() == "UPDI":
+        if self.iface == "updi":
             self.device = NvmAccessProviderCmsisDapUpdi(self.transport, self.device_info, frequency, options)
             # Default setup for NVM Access Provider is prog session - override with debug info
             self.device.avr.setup_debug_session(interface=Avr8Protocol.AVR8_PHY_INTF_PDI_1W,
                                                 khz=frequency // 1000,
                                                 use_hv=Avr8Protocol.UPDI_HV_NONE)
-        elif "DEBUGWIRE" in self.device_info['interface'].upper():
+        elif self.iface == "debugwire":
             # This starts a debugWIRE session. All the complexities of programming and
             # disabling the DWEN fuse bit and power-cycling is delegated to the calling
             # program
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info)
             self.device.avr.setup_debug_session()
 
-    # pylint: disable=line-too-long
     def start_debugging(self, flash_data=None):
         """
         Start the debug session
@@ -86,9 +85,9 @@ class XAvrDebugger(AvrDebugger):
         """
         self.logger.info("Starting debug session")
         self.device.start()
-        if "DEBUGWIRE" in self.device_info['interface'].upper():
+        if self.iface == 'debugwire':
             self.attach(do_break=True)
-        if self.device_info['interface'].upper() == "UPDI":
+        if self.iface == "updi":
             # The UPDI device is now in prog mode
             device_id = self.device.read_device_id()
             self.logger.debug("Device ID read: %X", binary.unpack_le24(device_id))

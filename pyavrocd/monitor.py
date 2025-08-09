@@ -1,13 +1,11 @@
 """
 This module implements the 'monitor' command
 """
-#pylint: disable=trailing-newlines,consider-using-f-string
 
 # args, logging
 import importlib.metadata
 
 class MonitorCommand():
-    #pylint: disable=too-many-instance-attributes
     """
     This class implements all the monitor commands
     It manages state variables, gives responses and selects
@@ -188,7 +186,6 @@ class MonitorCommand():
     def _mon_ambigious(self, _):
         return("", "Ambiguous 'monitor' command string")
 
-    # pylint: disable=too-many-return-statements
     def _mon_breakpoints(self, tokens):
         if not tokens[0]:
             if self._onlyhwbps and self._onlyswbps:
@@ -223,7 +220,6 @@ class MonitorCommand():
             return("", "Flash memory will not be cached")
         return self._mon_unknown(tokens[0])
 
-    # pylint: disable=too-many-return-statements, too-many-branches
     def _mon_debugwire(self, tokens):
         if not self._iface == "debugwire":
             if tokens[0] =="":

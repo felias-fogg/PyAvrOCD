@@ -2,11 +2,11 @@
 Device Specific Classes which use AVR8Protocol implementation
 """
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
+from pyedbglib.util import binary
 
 from pymcuprog.deviceinfo import deviceinfo
 from pymcuprog.deviceinfo.memorynames import MemoryNames
-from pymcuprog.deviceinfo.deviceinfokeys import DeviceInfoKeys,\
-     DeviceInfoKeysAvr, DeviceMemoryInfoKeys
+from pymcuprog.deviceinfo.deviceinfokeys import DeviceInfoKeysAvr, DeviceMemoryInfoKeys
 
 from pymcuprog.avr8target import TinyXAvrTarget, TinyAvrTarget,\
      MegaAvrJtagTarget, XmegaAvrTarget
@@ -89,7 +89,6 @@ class XTinyAvrTarget(TinyAvrTarget):
         """
         return self.memtype_read_from_string(memtype_string)
 
-    #pylint: disable=too-many-locals, unused-variable
     def setup_config(self, device_info):
         """
         Sets up the device config for a tiny AVR device
@@ -112,7 +111,6 @@ class XTinyAvrTarget(TinyAvrTarget):
         fl_size = flash_info[DeviceMemoryInfoKeys.SIZE]
         fl_base = flash_info[DeviceMemoryInfoKeys.ADDRESS]
         sram_base = sram_info[DeviceMemoryInfoKeys.ADDRESS]
-        ee_base = eeprom_info[DeviceMemoryInfoKeys.ADDRESS]
         ee_page_size = eeprom_info[DeviceMemoryInfoKeys.PAGE_SIZE]
         ee_size = eeprom_info[DeviceMemoryInfoKeys.SIZE]
         ocd_addr = device_info.get(DeviceInfoKeysAvr.OCD_BASE)
@@ -125,8 +123,6 @@ class XTinyAvrTarget(TinyAvrTarget):
         eedr_addr = device_info.get('eedr_base')
         spmcsr_addr = device_info.get('spmcsr_base')
         osccal_addr = device_info.get('osccal_base')
-        device_id = device_info.get(DeviceInfoKeys.DEVICE_ID)
-
         # Setup device structure and write to tool
         # TINY_FLASH_PAGE_BYTES (2@0x00)
         devdata = bytearray([fl_page_size & 0xff, 0])
@@ -237,6 +233,20 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
     Implements Mega AVR (JTAG) functionality of the AVR8 protocol
     """
 
+    def memtype_write_from_string(self, memtype_string):
+        """
+        Maps from a string to an avr8 memtype for writes
+
+        :param memtype_string: Friendly name of memory
+        :type memtype_string: str
+        :returns: Memory type identifier as defined in the protocol
+        :rtype: int
+        """
+        return self.memtype_read_from_string(memtype_string)
+
+    # setup_config is done in the super class
+
+
     def regfile_read(self):
         """
         Reads out the AVR register file (R0::R31)
@@ -253,6 +263,73 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         :raises ValueError: if 32 bytes are not given
         """
         return self.protocol.memory_write(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0, regs)
+
+    def statreg_read(self):
+        """
+        Reads out SREG
+
+        :return: 1 byte of status register
+        """
+        return self.protocol.memory_read(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x5F, 1)
+
+
+    def statreg_write(self, data):
+        """
+        Writes byte to SREG
+        :param: 1 byte of data
+
+        """
+        return self.protocol.memory_write(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x5F, data)
+
+    def stack_pointer_read(self):
+        """
+        Reads the stack pointer
+
+        :returns: Stack pointer
+        :rtype: bytearray
+        """
+        return self.protocol.memory_read(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x5D, 0x02)
+
+    def stack_pointer_write(self, data):
+        """
+        Writes the stack pointer
+
+        :param data: 2 byte as bytearray
+        :raises ValueError: if 2 bytes are not given
+        """
+        return self.protocol.memory_write(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x5D, data)
+
+    def hardware_breakpoint_set(self, num, address):
+        """
+        Sets one hardware breakpoint <num>
+
+        :param num: number of breakpoint 1-3
+        :param address: Address to break at
+        :type address: int
+        """
+        resp = self.protocol.jtagice3_command_response(
+            bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_SET, Avr8Protocol.CMD_VERSION0, 1, num]) +
+            binary.pack_le32(address) +
+            bytearray([3]))
+        return self.protocol.check_response(resp)
+
+
+    def hardware_breakpoint_clear(self, num):
+        """
+        Clears the hardware breakpoint <num>
+        """
+        resp = self.protocol.jtagice3_command_response(
+            bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_CLEAR, Avr8Protocol.CMD_VERSION0, num]))
+        return self.protocol.check_response(resp)
+
+    def breakpoint_clear(self):
+        """
+        Is needed in stop_debugging and will clear all hardware breakpoints
+        """
+        for hwbp in range(1,4):
+            self.hardware_breakpoint_clear(hwbp)
+        return 0
+
 
 class XXmegaAvrTarget(XmegaAvrTarget):
     """

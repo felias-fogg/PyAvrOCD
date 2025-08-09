@@ -1,7 +1,7 @@
 """
 This module is responsible for connecting and disconnecting to and from an debugWIRE target.
 """
-#pylint: disable=trailing-newlines, consider-using-f-string
+
 # args, logging
 from logging import getLogger
 
@@ -30,7 +30,7 @@ class DebugWIRE():
         self.dbg = dbg
         self.spidevice = None
         self._devicename = devicename
-        self.logger = getLogger('DebugWIRE')
+        self.logger = getLogger('DebugWIRE target')
 
     def warm_start(self, graceful=True):
         """
@@ -50,7 +50,7 @@ class DebugWIRE():
             self.dbg.reset()
         except FatalError:
             raise
-        except Exception as e: # pylint: disable=broad-exception-caught
+        except Exception as e: #
             if graceful:
                 self.logger.debug("Graceful exception: %s",e)
                 self.logger.info("Warm start was unsuccessful")
@@ -97,7 +97,7 @@ class DebugWIRE():
             self.power_cycle(callback=callback)
         except (PymcuprogError, FatalError):
             raise
-        except Exception as e: # pylint: disable=broad-exception-caught
+        except Exception as e:
             self.logger.debug("Graceful exception: %s",e)
             if not graceful:
                 raise
@@ -178,6 +178,8 @@ class DebugWIRE():
         fuses = self.spidevice.read(self.dbg.memory_info.memory_info_by_name('fuses'), 0, 3)
         self.logger.debug("Fuses read after DWEN disable: %X %X %X",fuses[0], fuses[1], fuses[2])
         self.spidevice.isp.leave_progmode()
+        # we do not interact with the tool anymore after this
+        self.dbg.housekeeper.end_session()
 
     def enable(self, erase_if_locked=True):
         """
@@ -188,8 +190,10 @@ class DebugWIRE():
         """
         if read_target_voltage(self.dbg.housekeeper) < 1.5:
             raise FatalError("Target is not powered")
+        self.dbg.housekeeper.start_session() # need to start a new session after reading target voltage
         self.logger.info("Try to connect using ISP")
         self.spidevice = NvmAccessProviderCmsisDapSpi(self.dbg.transport, self.dbg.device_info)
+        self.spidevice.isp.enter_progmode()
         device_id = int.from_bytes(self.spidevice.read_device_id(),byteorder='little')
         if self.dbg.device_info['device_id'] != device_id:
             raise FatalError("Wrong MCU: '{}', expected: '{}'".format(

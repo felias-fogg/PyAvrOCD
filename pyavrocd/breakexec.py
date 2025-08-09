@@ -1,7 +1,6 @@
 """
 This module deals with breakpoints and execution.
 """
-#pylint: disable=trailing-newlines
 
 # args, logging
 from logging import getLogger
@@ -22,7 +21,6 @@ SIGABRT = 6     # Abort because of a fatal error or no breakpoint available
 SIGBUS = 10     # Segmentation violation means in our case stack overflow
 
 class BreakAndExec():
-    #pylint: disable=too-many-instance-attributes
     """
     This class manages breakpoints, supports flashwear minimizing execution, and
     makes interrupt-safe single stepping possible.
@@ -267,7 +265,6 @@ class BreakAndExec():
             self.dbg.run()
         return None
 
-    #pylint: disable=too-many-return-statements, too-many-statements, too-many-branches
     def single_step(self, addr, fresh=True):
         """
         Perform a single step. If at the current location, there is a software breakpoint,
@@ -370,7 +367,6 @@ class BreakAndExec():
         Note that we need to return after the first step to allow GDB to set a breakpoint at the
         location where we started.
         """
-        #pylint: disable=too-many-return-statements
         self.logger.debug("Range stepping from 0x%X to 0x%X", start, end)
         if not self.mon.is_range() or self.mon.is_old_exec():
             self.logger.debug("Range stepping forbidden")
@@ -410,7 +406,6 @@ class BreakAndExec():
         return self.single_step(None, fresh=False)
 
     def build_range(self, start, end):
-        #pylint: disable=too-many-branches
         """
         Collect all instructions in the range and analyze them. Find all points, where
         an instruction possibly leaves the range. This includes the first instruction
@@ -473,7 +468,6 @@ class BreakAndExec():
         """
         Returns True iff it is a branch instruction
         """
-        #pylint: disable=too-many-boolean-expressions)
         if (((opcode & 0xFC00) == 0x1000) or # CPSE
             ((opcode & 0xFFEF) == 0x9409) or # IJMP / EIJMP
             ((opcode & 0xFFEE) == 0x9508) or # RET, ICALL, RETI, EICALL

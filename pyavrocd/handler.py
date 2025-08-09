@@ -1,7 +1,6 @@
 """
 This is the RSP command handler module.
 """
-#pylint: disable=trailing-whitespace,trailing-newlines,consider-using-f-string
 
 # args, logging
 from logging import getLogger
@@ -23,23 +22,27 @@ from pyavrocd.memory import Memory
 from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.debugwiretarget import DebugWIRE
+from pyavrocd.jtagtarget import JTAG
 from pyavrocd.livetests import LiveTests
 from pyavrocd.errors import  EndOfSession, FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
 class GdbHandler():
-    # pylint: disable=too-many-instance-attributes
     """
     GDB handler
     Maps between incoming GDB requests and AVR debugging protocols (via pymcuprog)
     """
-    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def __init__ (self, comsocket, avrdebugger, devicename):
         self.packet_size = 8000
         self.logger = getLogger('GdbHandler')
         self.dbg = avrdebugger
         self.mon = MonitorCommand(self.dbg.iface)
-        self.dw = DebugWIRE(avrdebugger, devicename)
+        self.dw = None
+        self.jtag = None
+        if self.dbg.iface == 'debugwire':
+            self.dw = DebugWIRE(avrdebugger, devicename)
+        elif self.dbg.iface == 'jtag':
+            self.jtag = JTAG(avrdebugger, devicename)
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
@@ -135,9 +138,9 @@ class GdbHandler():
             if "debugwire" == self.dbg.iface:
                 self.send_debug_message("Enable debugWIRE first: 'monitor debugwire enable'")
             elif "jtag" in self.dbg.iface:
-                self.send_debug_message("JTAG is not enabled."
-                                            "Program the JTAGEN"
-                                            "fuse and connect to the JTAG connector.")
+                self.send_debug_message("JTAG is not enabled. "
+                                            "Program the JTAGEN "
+                                            "fuse and connect using the JTAG connector.")
             else:
                 self.send_debug_message("No connection to OCD. Enable debugging first")
             self.send_signal(SIGHUP)
@@ -370,7 +373,7 @@ class GdbHandler():
                 if self._connection_error:
                     raise FatalError(self._connection_error)
                 self.dw.cold_start(graceful=False, callback=self.send_power_cycle)
-                # will only be called if there was no error in enabling debugWIRE mode:
+                # will only be called if there was no error in connecting to OCD:
                 self.mon.set_debug_mode_active()
                 self.dbg.reset()
             elif response[0] == 'dwoff':
@@ -435,18 +438,22 @@ class GdbHandler():
         'qSupported': query for features supported by the gbdserver; in our case
         packet size and memory map. Because this is also the command send after a
         connection with 'target remote' is made,
-        we will try to establish a connection to the debugWIRE target.
+        we will try to establish a connection to the target OCD
         """
         self.logger.debug("RSP packet: qSupported query.")
         self.logger.debug("Will answer 'PacketSize=%X;qXfer:memory-map:read+'",
                               self.packet_size)
-        # Try to start a debugWIRE debugging session
+        # Try to start a debugging session
+        # if the interface is JTAG, check whether we can establish a connection.
+        # If not, we end the GDB session with an error message.
+        # If the interface is debugWIRE, then try to connect.
         # if we are already in debugWIRE mode, this will work
         # if not, one has to use the 'monitor debugwire on' command later on
         # If a fatal error is raised, we will remember that and print it again
         # when a request for enabling debugWIRE is made
         try:
-            if  self.dw.warm_start(graceful=True):
+            if  (self.dbg.iface == 'debugwire' and self.dw.warm_start(graceful=True)) or \
+                (self.dbg.iface == 'jtag' and self.jtag.start()):
                 self.mon.set_debug_mode_active()
         except FatalError as e:
             self.logger.critical("Error while connecting to target OCD: %s", e)
@@ -672,9 +679,6 @@ class GdbHandler():
         """
         'z': Remove a breakpoint
         """
-        if not self.mon.is_debugger_active():
-            self.send_packet("E01")
-            return
         breakpoint_type = packet[0]
         addr = packet.split(",")[1]
         self.logger.debug("RSP packet: remove BP of type %s at %s", breakpoint_type, addr)
@@ -689,9 +693,6 @@ class GdbHandler():
         """
         'Z': Set a breakpoint
         """
-        if not self.mon.is_debugger_active():
-            self.send_packet("E01")
-            return
         breakpoint_type = packet[0]
         addr = packet.split(",")[1]
         self.logger.debug("RSP packet: set BP of type %s at %s", breakpoint_type, addr)
@@ -764,7 +765,6 @@ class GdbHandler():
             self.send_packet(stoppacket)
 
     def handle_data(self, data):
-    #pylint: disable=too-many-nested-blocks, too-many-branches
         """
         Analyze the incoming data stream from GDB. Allow more than one RSP record
         per packet, although this should not be necessary because each packet needs

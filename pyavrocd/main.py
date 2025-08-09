@@ -1,7 +1,6 @@
 """
 AVR GDB Server
 """
-# pylint: disable=too-many-lines,consider-using-f-string,trailing-whitespace
 
 # args, logging
 import platform
@@ -39,14 +38,12 @@ from pyavrocd.errors import  EndOfSession
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 
 
-# pylint: disable=too-many-instance-attributes
 class AvrGdbRspServer():
     """
     This is the GDB RSP server, setting up the connection to the GDB, reading
     and responding, and terminating. The important part is calling the handle_data
     method of the handler.
     """
-    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def __init__(self, avrdebugger, devicename, port):
         self.avrdebugger = avrdebugger
         self.devicename = devicename
@@ -84,12 +81,14 @@ class AvrGdbRspServer():
 
     def __del__(self):
         try:
-            if self.handler:
-                self.handler.bp.cleanup_breakpoints()
             if self.avrdebugger and self.avrdebugger.device:
                 self.avrdebugger.stop_debugging()
-        except Exception as e: #pylint: disable=broad-exception-caught
-            self.logger.info("Graceful exception during stopping: %s",e)
+        except Exception as e:
+            if self.logger.getEffectiveLevel() == logging.DEBUG:
+                self.logger.debug("Graceful exception during stopping: %s",e)
+                # raise
+            else:
+                pass
         finally:
             # sleep 0.5 seconds before closing in order to allow the client to close first
             time.sleep(0.5)
@@ -132,40 +131,14 @@ def _setup_tool_connection(args, logger):
     return toolconnection
 
 
-# pylint: disable=too-many-statements, too-many-branches, too-many-return-statements, too-many-locals
-def main():
+def options():
     """
-    Configures the CLI and parses the arguments
+    Option processing. Returns a pair of processed options and unknown options.
     """
-    no_backend_error = False # will become true when libusb is not found
-    no_hw_dbg_error = False # will become true, when no HW debugger is found
-
-    # These rules are added (under Linux only) when requested by the user"
-    udev_rules= '''# JTAGICE3
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2140", MODE="0666"
-# Atmel-ICE
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2141", MODE="0666"
-# Power Debugger
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2144", MODE="0666"
-# EDBG - debugger on Xplained Pro
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2111", MODE="0666"
-# EDBG - debugger on Xplained Pro (MSD mode)
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2169", MODE="0666"
-# mEDBG - debugger on Xplained Mini
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2145", MODE="0666"
-# PKOB nano (nEDBG) - debugger on Curiosity Nano
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2175", MODE="0666"
-# PKOB nano (nEDBG) in DFU mode - bootloader of debugger on Curiosity Nano
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2fc0", MODE="0666"
-# MPLAB PICkit 4 In-Circuit Debugger
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2177", MODE="0666"
-# MPLAB Snap In-Circuit Debugger
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"'''
-
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description=textwrap.dedent('''\n\
-    GDB server for AVR MCUs
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description=textwrap.dedent('''\n\
+        GDB server for AVR MCUs
             '''))
 
     parser.add_argument("-c", "--command",
@@ -218,18 +191,49 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
                                 help="Install udev rules for Microchip hardware " +
                                 "debuggers under /etc/udev/rules.d/",
                                 action="store_true")
+    # Parse args and return
+    return parser.parse_known_args()
 
-    # Parse args
-    args, unknown = parser.parse_known_args()
+def install_udev_rules(logger):
+    """
+    Install the udev rules for all the debuggers. Necessary only under Linux
+    """
+    # These rules are added (under Linux only) when requested by the user"
+    udev_rules= '''# JTAGICE3
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2140", MODE="0666"
+# Atmel-ICE
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2141", MODE="0666"
+# Power Debugger
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2144", MODE="0666"
+# EDBG - debugger on Xplained Pro
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2111", MODE="0666"
+# EDBG - debugger on Xplained Pro (MSD mode)
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2169", MODE="0666"
+# mEDBG - debugger on Xplained Mini
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2145", MODE="0666"
+# PKOB nano (nEDBG) - debugger on Curiosity Nano
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2175", MODE="0666"
+# PKOB nano (nEDBG) in DFU mode - bootloader of debugger on Curiosity Nano
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2fc0", MODE="0666"
+# MPLAB PICkit 4 In-Circuit Debugger
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2177", MODE="0666"
+# MPLAB Snap In-Circuit Debugger
+SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"'''
 
-    if args.cmd:
-        args.cmd = args.cmd
-        portcmd = [c for c in args.cmd if 'gdb_port' in c]
-        if portcmd:
-            cmd = portcmd[0]
-            args.port = int(cmd[cmd.index('gdb_port')+len('gdb_port'):])
+    logger.info("Will try to install udev rules")
+    try:
+        with open("/etc/udev/rules.d/99-edbg-debuggers.rules", "w", encoding='utf-8') as f:
+            f.write(udev_rules)
+    except Exception as e:
+        logger.critical("Could not install the udev rules: %s", e)
+        return 1
+    logger.info("Udev rules have been successfully installed")
+    return 0
 
-    # set up logging
+def setup_logging(args):
+    """
+    Setup logging
+    """
     if args.verbose:
         args.verbose = args.verbose.strip()
     if args.verbose.upper() in ["INFO", "WARNING", "ERROR", "CRITICAL"]:
@@ -239,9 +243,9 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
     logging.basicConfig(stream=sys.stderr,level=args.verbose.upper(), format = form)
     logger = getLogger()
 
-    if args.verbose.upper() == "DEBUG":
+    if args.verbose.lower() == "debug":
         getLogger('pyedbglib').setLevel(logging.INFO)
-    if args.verbose.upper() != "DEBUG":
+    if args.verbose.lower() != "debug":
         # suppress messages from hidtransport
         getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
         # suppress spurious error messages from pyedbglib
@@ -250,16 +254,29 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
         getLogger('pymcuprog.nvm').setLevel(logging.CRITICAL)
         # we do not want to see the "read flash" messages
         getLogger('pymcuprog.avr8target').setLevel(logging.ERROR)
+    return logger
 
-    if unknown:
-        logger.warning("Unknown options: %s", ' '.join(unknown))
-
+def process_arguments(args, logger):
+    """
+    Process the parsed options. Return triple of
+    - return value (if program should be terminated, else None;
+    - device name
+    - interface string
+    """
     if args.version:
         print("pyavrocd version {}".format(importlib.metadata.version("pyavrocd")))
-        return 0
+        return 0,None,None
+
+    if args.cmd:
+        args.cmd = args.cmd
+        portcmd = [c for c in args.cmd if 'gdb_port' in c]
+        if portcmd:
+            cmd = portcmd[0]
+            args.port = int(cmd[cmd.index('gdb_port')+len('gdb_port'):])
 
     if args.dev:
         args.dev = args.dev.strip()
+
     if args.dev and args.dev == "?":
         if args.interface:
             print("Supported device with debugging interface '%s':" % args.interface)
@@ -273,30 +290,21 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
             print(alldev[-1])
         else:
             print("None")
-        return 0
-
+        return 0, None, None
 
     if hasattr(args, 'install_udev_rules') and args.install_udev_rules:
-        logger.info("Will try to install udev rules")
-        try:
-            with open("/etc/udev/rules.d/99-edbg-debuggers.rules", "w", encoding='utf-8') as f:
-                f.write(udev_rules)
-        except Exception as e: #pylint: disable=broad-exception-caught
-            logger.critical("Could not install the udev rules: %s", e)
-            return 1
-        logger.info("Udev rules have been successfully installed")
-        return 0
+        return install_udev_rules(logger), None, None
 
     device = args.dev
 
     if not device:
         print("Please specify target MCU with -d option")
-        return 1
+        return 1, None, None
     device = device.lower()
 
     if device not in dev_id:
         logger.critical("Device '%s' is not supported by pyavrocd", device)
-        return 1
+        return 1, None, None
 
     if args.interface:
         intf = [args.interface]
@@ -313,9 +321,64 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
         logger.critical("Device '%s' does not have the interface '%s'", device, intf[0])
         return 1
     if len(intf) > 1:
-        logger.critical("Debugging interface for device '%s' ambigious: '%s'", device, intf)
+        logger.critical("Debugging interface for device '%s' ambiguous: '%s'", device, intf)
         return 1
     intf = intf[0]
+    return None, device, intf
+
+def startup_helper(args, logger):
+    """
+    Starts program requested by user, e.g., a debugger GUI
+    """
+    if args.gede:
+        args.prg = "gede"
+    if args.prg and args.prg != "noop":
+        args.prg = args.prg.strip()
+        logger.info("Starting %s", args.prg)
+        cmd = shlex.split(args.prg)
+        cmd[0] = shutil.which(cmd[0])
+        subprocess.Popen(cmd)
+
+def run_server(server, logger):
+    """
+    Startup server and serve until done.
+    """
+    try:
+        server.serve()
+    except (EndOfSession, SystemExit):
+        logger.info("End of session")
+        return 0
+    except KeyboardInterrupt:
+        logger.info("Terminated by Ctrl-C")
+        return 1
+    except (ValueError, Exception) as e:
+        if logger.getEffectiveLevel() != logging.DEBUG:
+            logger.critical("Fatal Error: %s",e)
+            return 1
+        raise
+    return 0
+
+
+def main():
+    """
+    Configures the CLI and parses the arguments, connects to a tool and starts debugger
+    """
+    no_backend_error = False # will become true when libusb is not found
+    no_hw_dbg_error = False # will become true, when no HW debugger is found
+
+    # Parse options
+    args, unknown = options()
+
+    # set up logging
+    logger = setup_logging(args)
+
+    if unknown:
+        logger.warning("Unknown options: %s", ' '.join(unknown))
+
+    result, device, intf = process_arguments(args, logger)
+    if result is not None:
+        return result
+
 
     if args.tool:
         args.tool = args.tool.strip()
@@ -341,7 +404,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
                 logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
             else:
                 logger.critical("This error should not happen!")
-        except pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError as e:
+        except pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError:
             dwlink.main(args, intf)
             no_hw_dbg_error = True
         finally:
@@ -379,29 +442,9 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
             return 1
         raise
 
-    if args.gede:
-        args.prg = "gede"
-    if args.prg and args.prg != "noop":
-        args.prg = args.prg.strip()
-        logger.info("Starting %s", args.prg)
-        cmd = shlex.split(args.prg)
-        cmd[0] = shutil.which(cmd[0])
-        subprocess.Popen(cmd) # pylint: disable=consider-using-with
+    startup_helper(args, logger)
 
-    try:
-        server.serve()
-    except (EndOfSession, SystemExit):
-        logger.info("End of session")
-        return 0
-    except KeyboardInterrupt:
-        logger.info("Terminated by Ctrl-C")
-        return 1
-    except (ValueError, Exception) as e:
-        if logger.getEffectiveLevel() != logging.DEBUG:
-            logger.critical("Fatal Error: %s",e)
-            return 1
-        raise
-    return 0
+    return run_server(server, logger)
 
 if __name__ == "__main__":
     sys.exit(main())

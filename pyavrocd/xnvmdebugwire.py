@@ -15,7 +15,6 @@ from pymcuprog import utils
 
 from pyavrocd.xavr8target import XTinyAvrTarget
 
-# pylint: disable=consider-using-f-string
 class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     """
     NVM Access the DW way
@@ -27,18 +26,17 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
         self.avr = XTinyAvrTarget(transport)
         self.avr.setup_config(device_info)
 
-    #pylint: enable=non-parent-init-called, super-init-not-called
     def __del__(self):
         pass
 
-    #pylint: disable=arguments-differ, unused-argument
-    def start(self, **kwargs):
+    def start(self, user_interaction_callback=None):
         """
         Start (activate) session for debugWIRE targets
 
         """
         self.logger.info("debugWIRE-specific initialiser")
 
+        _dummy = user_interaction_callback
         try:
             self.avr.activate_physical()
         except Jtagice3ResponseError as error:

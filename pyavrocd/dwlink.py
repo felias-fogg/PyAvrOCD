@@ -3,7 +3,6 @@ Discover dw-link and then redirect data from a TCP/IP connection to the serial p
 Further, send the device name in specially designed RSP record and wait for Ack
 Based on Chris Liechti's tcp_serial_redirect script
 """
-# pylint: disable=consider-using-f-string
 import os
 import sys
 import shutil
@@ -111,7 +110,7 @@ def discover(args):
                             return (sp, s.device)
             except SerialException:
                 pass
-            except Exception as e: # pylint: disable=broad-exception-caught
+            except Exception as e:
                 sys.stderr.write('[ERROR] ' + repr(e) + '\n\r')
     return (None, None)
 
@@ -119,7 +118,6 @@ def main(args, intf):
     """
     Main function providing an serial-to-IP bridge for the dw-link hardware debugger
     """
-    #pylint: disable=too-many-statements, too-many-branches, too-many-nested-blocks
     # discover adapter
     speed, device = discover(args)
     if speed is None or device is None:
@@ -167,7 +165,7 @@ def main(args, intf):
         if args.prg and args.prg != "noop":
             cmd = shlex.split(args.prg)
             cmd[0] = shutil.which(cmd[0])
-            subprc = subprocess.Popen(cmd) #pylint: disable=consider-using-with
+            subprc = subprocess.Popen(cmd)
 
         sys.stderr.write("[INFO] Connected to dw-link debugger\r\n")
         sys.stderr.write("[INFO] Listening on port {} for gdb connection\n\r".format(args.port))
@@ -205,7 +203,7 @@ def main(args, intf):
                     sys.stderr.write('[ERROR] {}\n\r'.format(msg))
                     # probably got disconnected
                     break
-        except Exception as msg: # pylint: disable=broad-exception-caught
+        except Exception as msg:
             sys.stderr.write('[ERROR] {}\n\r'.format(msg))
         finally:
             ser_to_net.socket = None
@@ -214,12 +212,12 @@ def main(args, intf):
             client_socket.close()
     except KeyboardInterrupt:
         os._exit(1)
-    except Exception: # pylint: disable=broad-exception-caught
+    except Exception:
         pass
 
     if subprc:
         subprc.kill()
     try:
         serial_worker.stop()
-    except Exception:  # pylint: disable=broad-exception-caught
+    except Exception:
         pass

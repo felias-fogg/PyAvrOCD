@@ -113,7 +113,7 @@ class LiveTests():
             self._live_test_vcont_step_hwbp_unprotected()
             self._live_test_v_flash_erase_clean_bps()
             self._live_test_load_clean_bps()
-        except Exception as e: #pylint: disable=broad-exception-caught
+        except Exception as e:
             self.failure += 1
             self.logger.info("... failed")
             if self.logger.getEffectiveLevel() == logging.DEBUG:
@@ -155,7 +155,7 @@ class LiveTests():
         self.logger.info("Running 'load' test ...")
         self.mon._verify = False # because on mEDBG debuggers, first page is not always writeable
         test_code = self.handler.escape(self.test_code)
-        header = "0001AA,%0X:" % len(test_code) # pylint: disable=consider-using-f-string
+        header = "0001AA,%0X:" % len(test_code)
         self.send_string = ""
         self.handler.dispatch("X", header.encode("ascii") + test_code)
         self.mon._verify = True
@@ -635,7 +635,7 @@ class LiveTests():
         self.logger.debug("OPC after deleting BP: 0x%X", opc2)
         self.mon._verify = False # because on mEDBG debuggers, first page is not always writeable
         test_code = self.handler.escape(self.test_code)
-        header = "0001AA,%0X:" % len(test_code) # pylint: disable=consider-using-f-string
+        header = "0001AA,%0X:" % len(test_code)
         self.handler.dispatch("X", header.encode("ascii") + test_code)
         opc3 = self.mem.flash_read_word(0x1b2)
         self.logger.debug("OPC after load: 0x%X", opc3)

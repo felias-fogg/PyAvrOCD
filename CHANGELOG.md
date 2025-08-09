@@ -1,5 +1,28 @@
 # Changelog
 
+### 0.9.3
+- **Removed**:
+  - Check whether there is a connection to the OCD in set/clear
+    breakpoint. This test muddied the water since the real error
+    message "not connected to OCD" by `continue` or `step` was not printed
+  - Clear software_breakpoints in `__del__` of server removed because this is done in `stop_debugging` anyways.
+- **Added**:
+	- `self.dbg.housekeeper.end_session` in disable in class DebugWIRE
+    in the end. I am not sure whether this helps, but it is the right
+    way to do! One now has only to protect the calls in
+    `stop_debugging`
+	- `self.spidevice.isp.enter_progmode()` before reading `device_id`
+    in `enable`
+	-  `self.dbg.housekeeper.start_session()` after
+       read_target_voltage because this function explicitly ends a
+       session
+	- Methods in XAVR8Target for handling JTAG. They look very similar
+      to the debugwire ones. Maybe refactoring later?
+- **Changed:**
+	- Changed pylint rules globally and removed a number of pylint exceptions from the sources
+  - Split up the main function
+
+
 ### 0.9.2
 
 - **Added:**
@@ -7,7 +30,7 @@
 
 - **Fixed:**
   - Fixed all broken unit tests
-  -
+
 
 ### 0.9.1
 

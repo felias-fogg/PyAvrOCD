@@ -403,9 +403,10 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_remove_breakpoint_handler_impossible(self):
+        # even when debugger is not active, success is returned
         self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('z',b'0,111,2')
-        self.gh._comsocket.sendall.assert_called_with(rsp('E01'))
+        self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_remove_breakpoint_handler_wrong_type(self):
         self.gh.mon.is_debugger_active.return_value = True
@@ -420,9 +421,10 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_add_breakpoint_handler_impossible(self):
+        # even when debugger is not active, success is returned
         self.gh.mon.is_debugger_active.return_value = False
         self.gh.dispatch('Z',b'0,111,2')
-        self.gh._comsocket.sendall.assert_called_with(rsp('E01'))
+        self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
 
     def test_add_breakpoint_handler_wrong_type(self):
         self.gh.mon.is_debugger_active.return_value = True

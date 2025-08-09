@@ -1,7 +1,6 @@
 """
 Memory module for the AVR GDB server
 """
-#pylint: disable=trailing-newlines,consider-using-f-string
 
 # args, logging
 from logging import getLogger
@@ -10,7 +9,6 @@ from logging import getLogger
 from pyavrocd.errors import  FatalError
 
 class Memory():
-    # pylint: disable=too-many-instance-attributes
     """
     This class is responsible for access to all kinds of memory, for loading the flash memory,
     and for managing the flash cache.
