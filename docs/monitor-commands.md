@@ -14,7 +14,7 @@ Pyavrocd implements several `monitor` commands. These can be used to control imp
 | `monitor rangestepping `[`enable`\|`disable`]         | The GDB range-stepping command is supported or disabled. **(+)** |
 | `monitor reset`                                       | Resets the MCU.                                              |
 | `monitor singlestep` [`safe`\|`interruptible`]        | Single-stepping can be performed in a *safe* way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The *safe* option is the default. |
-| `monitor speed` [`low`|`high`]                        | Set the communication speed limit to the target to `low` (=150kbps) (default) or to `high` (=300kbps); without an argument, the current communication speed and speed limit is printed. |
+| `monitor speed` [`low`\|`high`]                       | Set the communication speed limit to the target to `low` (=150kbps) (default) or to `high` (=300kbps); without an argument, the current communication speed and speed limit is printed. |
 | `monitor timer` [`freeze`\|`run`]                     | Timers can either be *frozen* when execution is stopped, or they can *run* freely. The latter option is helpful when PWM output is crucial. |
 | `monitor verify` [`enable`\|`disable`]                | Verify flash after loading each flash page. The cost of verification is negligible, and doing so may help diagnose flash wear problems. The default setting is for this option to be *enabled*. |
 | `monitor version`                                     | Show version of the gdbserver.                               |
