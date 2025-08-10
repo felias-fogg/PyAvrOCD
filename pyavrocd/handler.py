@@ -97,6 +97,10 @@ class GdbHandler():
         """
         Dispatches command to the right handler
         """
+        if cmd is None: # This is a timeout
+            if self.mem.lazy_loading: # while we were loading an executable
+                self._set_binary_memory_handler_finalize(None)
+            return
         try:
             handler = self.packettypes[cmd]
         except (KeyError, IndexError):
@@ -548,11 +552,16 @@ class GdbHandler():
         self._vflashdone = True
         self.bp.cleanup_breakpoints()
         try:
+            self.dbg.device.avr.protocol.enter_progmode()
+            self.logger.info("Programming mode entered")
             self.mem.flash_pages()
         except:
             self.logger.error("Flashing was unsuccessful")
             self.send_packet("E11")
             raise
+        finally:
+            self.dbg.device.avr.protocol.leave_progmode()
+            self.logger.info("Programming mode stopped")
         self.send_packet("OK")
 
     def _vflash_erase_handler(self, _):
@@ -667,7 +676,12 @@ class GdbHandler():
             self.send_packet("E15")
             return
         if int(addr,16) < 0x80000: # writing to flash
-            self.bp.cleanup_breakpoints() # cleanup breakpoints before load
+            if not self.mem.lazy_loading:
+                self.logger.info("Loading executable")
+                self.bp.cleanup_breakpoints() # cleanup breakpoints before load
+                self.mem.lazy_loading = True
+                self.dbg.device.avr.protocol.enter_progmode()
+                self.logger.info("Programming mode entered")
         try:
             reply = self.mem.writemem(addr, bytearray(data))
         except:
@@ -675,6 +689,18 @@ class GdbHandler():
             self.send_packet("E11")
             raise
         self.send_packet(reply)
+
+    def _set_binary_memory_handler_finalize(self, _):
+        """
+        This method is called when the server function times out after 1 second
+        while mem.lazy_loading = True, meaning there is an executable loaded using
+        the X-records.
+        """
+        self.mem.lazy_loading = False
+        self.mem.flash_pages() # program the remaining bytes
+        self.dbg.device.avr.protocol.leave_progmode()
+        self.logger.info("Programming mode stopped")
+
 
     def _remove_breakpoint_handler(self, packet):
         """
@@ -771,6 +797,9 @@ class GdbHandler():
         per packet, although this should not be necessary because each packet needs
         to be acknowledged by a '+' from us.
         """
+        if data is None: # timeout
+            self.dispatch(None,None)
+            return
         while data:
             if data[0] == ord('+'): # ACK
                 self.logger.debug("-> +")

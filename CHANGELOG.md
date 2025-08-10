@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.9.6
+
+- **Added:**
+  - Attribute `lazy_loading` is added to class `Memory`. It will be set to `True` by the first X-record concerning flash memory, and it is used to leave excess memory unprogrammed in each step (in `flash_pages`). If, in the end, the server times out not receiving any new records, then it will send an empty packet to the handler, which will be taken as an indication that now flashing should be finalised, i.e., setting `lazy_loading` to `False` again, calling `flash_pages` a last time, and disabling prog mode. This gives a reasonable handling of executables for clients without XML support.
+
 ### 0.9.5
 
 - **Added:**

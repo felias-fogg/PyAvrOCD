@@ -18,6 +18,8 @@ class Memory():
     program flash memory. Neither the end of the flash cache nor _flashmem_start_prog need to be
     aligned with multi_page_size (page_size multiplied by buffers_per_flash_page).
     When programming, we will restart at a lower address or add 0xFF at the end.
+    If the attribute lazy is set, then flashing is done leaving the bytes not fitting in a page
+    unprogrammed. One can finalize loading when calling flash_pages with the lazy attribute set to False.
     """
 
     def __init__(self, dbg, mon):
@@ -37,6 +39,7 @@ class Memory():
         self._eeprom_start = self.dbg.memory_info.memory_info_by_name('eeprom')['address']
         self._eeprom_size = self.dbg.memory_info.memory_info_by_name('eeprom')['size']
         self._flashmem_start_prog = 0
+        self.lazy_loading = False
 
     def init_flash(self):
         """
@@ -186,15 +189,16 @@ class Memory():
         needs to be adjusted. At the end, we may add some 0xFFs.
         """
         startaddr = (self._flashmem_start_prog // self._multi_page_size) * self._multi_page_size
-        stopaddr = ((len(self._flash) + self._multi_page_size - 1) //
-                            self._multi_page_size) * self._multi_page_size
+        if self.lazy_loading:
+            roundup = 0
+        else:
+            roundup = self._multi_page_size - 1
+        stopaddr = ((len(self._flash) + roundup) // self._multi_page_size) * self._multi_page_size
         pgaddr = startaddr
         give_info = stopaddr-startaddr > 2048
         proged = 0
         next_mile_stone = 2000
         self.logger.info("Flashing at 0x%X, length: %u ...", pgaddr, stopaddr-startaddr)
-        self.dbg.device.avr.protocol.enter_progmode()
-        self.logger.info("Programming mode entered")
         while pgaddr < stopaddr:
             self.logger.debug("Flashing page starting at 0x%X", pgaddr)
             pagetoflash = self._flash[pgaddr:pgaddr + self._multi_page_size]
@@ -232,9 +236,10 @@ class Memory():
             if give_info and proged >= next_mile_stone:
                 next_mile_stone += 2000
                 self.logger.info("%d bytes flashed", proged)
-        self._flashmem_start_prog = len(self._flash)
-        self.dbg.device.avr.protocol.leave_progmode()
-        self.logger.info("Programming mode stopped")
+        if self.lazy_loading:
+            self._flashmem_start_prog = pgaddr
+        else:
+            self._flashmem_start_prog = len(self._flash)
         self.logger.info("... flashing done")
 
     def memory_map(self):

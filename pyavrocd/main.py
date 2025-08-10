@@ -69,12 +69,14 @@ class RspServer():
         self.logger.info('Connection from %s', self.address)
         self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename)
         while True:
-            ready = select.select([self.connection], [], [], 1)
+            ready = select.select([self.connection], [], [], 0.5)
             if ready[0]:
                 data = self.connection.recv(RECEIVE_BUFFER)
                 #self.logger.debug("Received over TCP/IP: %s",data)
                 if len(data) > 0:
                     self.handler.handle_data(data)
+            else:
+                self.handler.handle_data(None)
             self.handler.poll_events()
 
 
