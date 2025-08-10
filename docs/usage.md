@@ -43,7 +43,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 
 If you have reached this point, I trust that you are familiar with GDB and know how to proceed.
 
-Note the request to power-cycle the target system. You need to do that by disconnecting and then reconnecting the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.
+Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use, you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.
 
 ## Debugging using the Arduino IDE 2
 
@@ -65,7 +65,7 @@ Instead of the message shown in the following screenshot, a warning "No hardware
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-2.png)
 
-If there is a connection to the debugger and the target, the GDB server will start up. It will require you to power-cycle the target, i.e., disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
+If there is a connection to the debugger and the target, the GDB server will start up. If you deal with a debugWIRE target, it may require you to power-cycle the target, i.e., disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
 
 After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
 
@@ -89,19 +89,19 @@ The debugging panes are organized as follows. Pane A contains the debug controls
 - *Restart*: Same as Reset
 - *Stop*: Terminate debugging
 
-Pane B shows the active threads, but there is just one in our case. Pane C displays the call stack starting from the bottom, i.e., the current frame is the topmost. Pane D displays variable values. Unfortunately, global variables are not shown if *link time optimizations* are enabled, which is the default. Pane E can be populated with watch expressions, for example with the names of global variables.  Finally, in pane F, the active breakpoints are listed.
+Pane B shows the active threads, but there is just one in our case. Pane C displays the call stack starting from the bottom, i.e., the current frame is the topmost. Pane D displays variable values. Unfortunately, global variables are not shown if *link time optimizations* are enabled, which is the default. Pane E can be populated with watch expressions, for example, with the names of global variables.  Finally, in pane F, the active breakpoints are listed.
 
-The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers.
+The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
 
-For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
+When you have decided to change the source code, remember to terminate the debugger (red square), then verify the sketch again using the left upper button, and finally start another debugging session.
 
 ## Debugging using PlatformIO/VSC
 
-Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted.
+Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. A `platform.ini`  that can be used to start the debugger is provided [here](https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugging-software.md#platformio-and-visual-studio-code).
 
 ## Debugging using Gede
 
-[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version >= 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--gede` or `-g` when starting pyavrocd.
+[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--gede` or `-g` when starting pyavrocd.
 
 ![Gede](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede.png)
 
