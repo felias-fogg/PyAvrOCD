@@ -189,6 +189,9 @@ class Memory():
         stopaddr = ((len(self._flash) + self._multi_page_size - 1) //
                             self._multi_page_size) * self._multi_page_size
         pgaddr = startaddr
+        give_info = stopaddr-startaddr > 2048
+        proged = 0
+        next_mile_stone = 2000
         self.logger.info("Flashing at 0x%X, length: %u ...", pgaddr, stopaddr-startaddr)
         self.dbg.device.avr.protocol.enter_progmode()
         self.logger.info("Programming mode entered")
@@ -225,6 +228,10 @@ class Memory():
                     if readbackpage != pagetoflash:
                         raise FatalError("Flash verification error on page 0x{:X}".format(pgaddr))
             pgaddr += self._multi_page_size
+            proged += self._multi_page_size
+            if give_info and proged >= next_mile_stone:
+                next_mile_stone += 2000
+                self.logger.info("%d bytes flashed", proged)
         self._flashmem_start_prog = len(self._flash)
         self.dbg.device.avr.protocol.leave_progmode()
         self.logger.info("Programming mode stopped")

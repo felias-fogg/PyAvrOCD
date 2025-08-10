@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.9.5
+
+- **Added:**
+  - Some dynamic info messages when flashing large files
+
 ### 0.9.4
 
 - **Fixed:**
