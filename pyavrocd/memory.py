@@ -21,7 +21,7 @@ class Memory():
     """
 
     def __init__(self, dbg, mon):
-        self.logger = getLogger('Memory')
+        self.logger = getLogger('pyavrocd.memory')
         self.dbg = dbg
         self.mon = mon
         self._flash = bytearray() # bytearray starting at 0x0000
@@ -189,6 +189,9 @@ class Memory():
         stopaddr = ((len(self._flash) + self._multi_page_size - 1) //
                             self._multi_page_size) * self._multi_page_size
         pgaddr = startaddr
+        self.logger.info("Flashing at 0x%X, length: %u ...", pgaddr, stopaddr-startaddr)
+        self.dbg.device.avr.protocol.enter_progmode()
+        self.logger.info("Programming mode entered")
         while pgaddr < stopaddr:
             self.logger.debug("Flashing page starting at 0x%X", pgaddr)
             pagetoflash = self._flash[pgaddr:pgaddr + self._multi_page_size]
@@ -223,6 +226,9 @@ class Memory():
                         raise FatalError("Flash verification error on page 0x{:X}".format(pgaddr))
             pgaddr += self._multi_page_size
         self._flashmem_start_prog = len(self._flash)
+        self.dbg.device.avr.protocol.leave_progmode()
+        self.logger.info("Programming mode stopped")
+        self.logger.info("... flashing done")
 
     def memory_map(self):
         """

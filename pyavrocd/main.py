@@ -33,12 +33,11 @@ from pymcuprog.toolconnection import ToolUsbHidConnection, ToolSerialConnection
 
 from pyavrocd import dwlink
 from pyavrocd.xavrdebugger import XAvrDebugger
-from pyavrocd.handler import GdbHandler
+from pyavrocd.handler import GdbHandler, RECEIVE_BUFFER
 from pyavrocd.errors import  EndOfSession
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 
-
-class AvrGdbRspServer():
+class RspServer():
     """
     This is the GDB RSP server, setting up the connection to the GDB, reading
     and responding, and terminating. The important part is calling the handle_data
@@ -48,7 +47,7 @@ class AvrGdbRspServer():
         self.avrdebugger = avrdebugger
         self.devicename = devicename
         self.port = port
-        self.logger = getLogger("AvrGdbRspServer")
+        self.logger = getLogger("pyavrocd.rspserver")
         self.connection = None
         self.gdb_socket = None
         self.handler = None
@@ -70,19 +69,20 @@ class AvrGdbRspServer():
         self.logger.info('Connection from %s', self.address)
         self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename)
         while True:
-            ready = select.select([self.connection], [], [], 0.5)
+            ready = select.select([self.connection], [], [], 1)
             if ready[0]:
-                data = self.connection.recv(8192)
+                data = self.connection.recv(RECEIVE_BUFFER)
+                #self.logger.debug("Received over TCP/IP: %s",data)
                 if len(data) > 0:
-                    # self.logger.debug("Received over TCP/IP: %s",data)
                     self.handler.handle_data(data)
             self.handler.poll_events()
 
 
     def __del__(self):
         try:
+            self.logger.info("Terminating GDB server and cleaning up ...")
             if self.avrdebugger and self.avrdebugger.device:
-                self.avrdebugger.stop_debugging()
+                self.avrdebugger.stop_debugging(graceful=True)
         except Exception as e:
             if self.logger.getEffectiveLevel() == logging.DEBUG:
                 self.logger.debug("Graceful exception during stopping: %s",e)
@@ -98,7 +98,7 @@ class AvrGdbRspServer():
             self.logger.info("Closing connection")
             if self.connection:
                 self.connection.close()
-
+            self.logger.info("... terminating GDB server done")
 
 
 def _setup_tool_connection(args, logger):
@@ -435,7 +435,8 @@ def main():
     logger.info("Starting GDB server")
     try:
         avrdebugger = XAvrDebugger(transport, device, intf)
-        server = AvrGdbRspServer(avrdebugger, device, args.port)
+        logger.info("Housekeeping session started")
+        server = RspServer(avrdebugger, device, args.port)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)

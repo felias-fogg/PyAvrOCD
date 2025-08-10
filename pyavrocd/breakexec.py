@@ -29,7 +29,7 @@ class BreakAndExec():
     def __init__(self, hwbps, mon, dbg, read_flash_word):
         self.mon = mon
         self.dbg = dbg
-        self.logger = getLogger('BreakAndExec')
+        self.logger = getLogger('pyavrocd.breakexec')
         self._hwbps = hwbps # This number includes the implicit HWBP used by run_to
         self._read_flash_word = read_flash_word
         self._hw = [-1] + [None]*self._hwbps # note that the entries start at index 1
@@ -226,7 +226,7 @@ class BreakAndExec():
         """
         Remove all breakpoints from flash and clear hardware breakpoints
         """
-        self.logger.info("Deleting all breakpoints ...")
+        self.logger.debug("Deleting all breakpoints")
         self._hw = [-1] + [None for x in range(self._hwbps)]
         # self.dbg.hardware_breakpoint_clear_all() # not yet implemented
         self.dbg.software_breakpoint_clear_all()

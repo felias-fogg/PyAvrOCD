@@ -1,6 +1,9 @@
 """
 DebugWIRE NVM implementation - extended
 """
+
+from logging import getLogger
+
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 
@@ -22,6 +25,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     #pylint: disable=non-parent-init-called, super-init-not-called
     #we want to set up thje debug session much later
     def __init__(self, transport, device_info):
+        self.logger_local = getLogger('pyavrocd.nvm')
         NvmAccessProviderCmsisDapAvr.__init__(self, device_info)
         self.avr = XTinyAvrTarget(transport)
         self.avr.setup_config(device_info)
@@ -34,17 +38,20 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
         Start (activate) session for debugWIRE targets
 
         """
-        self.logger.info("debugWIRE-specific initialiser")
+        self.logger_local.info("debugWIRE-specific initialiser")
 
         _dummy = user_interaction_callback
         try:
             self.avr.activate_physical()
+            self.logger_local.info("Physical interface activated")
         except Jtagice3ResponseError as error:
             # The debugger could be out of sync with the target, retry
             if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE:
-                self.logger.info("Physical state out of sync.  Retrying.")
+                self.logger_local.info("Physical state out of sync.  Retrying.")
                 self.avr.deactivate_physical()
+                self.logger_local.info("Physical interface deactivated")
                 self.avr.activate_physical()
+                self.logger_local.info("Physical interface activated")
             else:
                 raise
 
@@ -52,8 +59,9 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
         """
         Stop (deactivate) session for debugWIRE targets
         """
-        self.logger.debug("debugWIRE-specific de-initialiser")
+        self.logger_local.info("debugWIRE-specific de-initialiser")
         self.avr.deactivate_physical()
+        self.logger_local.info("Physical interface deactivated")
 
     # pylint: disable=arguments-differ
     # reason for the difference: read and write are declared as staticmethod in the base class,

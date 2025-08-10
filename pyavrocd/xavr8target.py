@@ -1,6 +1,8 @@
 """
 Device Specific Classes which use AVR8Protocol implementation
 """
+from logging import getLogger
+
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyedbglib.util import binary
 
@@ -12,10 +14,14 @@ from pymcuprog.avr8target import TinyXAvrTarget, TinyAvrTarget,\
      MegaAvrJtagTarget, XmegaAvrTarget
 
 
+
 class XTinyXAvrTarget(TinyXAvrTarget):
     """
     Class handling sessions with TinyX AVR targets using the AVR8 generic protocol
     """
+    def __init__(self, transport):
+        super().__init__(transport)
+        self.logger_loc = getLogger('pyavrocd.tinyxtarget')
 
     # The next two methods are needed because different targets access the registers
     # in different ways: TinyX and XMega have a regfile mem type, the others have to access
@@ -26,7 +32,7 @@ class XTinyXAvrTarget(TinyXAvrTarget):
 
         :return: 32 bytes of register file content as bytearray
         """
-        self.logger.debug("Reading register file")
+        self.logger_loc.debug("Reading register file")
         return self.protocol.regfile_read()
 
     def register_file_write(self, regs):
@@ -36,7 +42,7 @@ class XTinyXAvrTarget(TinyXAvrTarget):
         :param data: 32 byte register file content as bytearray
         :raises ValueError: if 32 bytes are not given
         """
-        self.logger.debug("Writing register file")
+        self.logger_loc.debug("Writing register file")
         self.protocol.regfile_write(regs)
 
     def statreg_read(self):
@@ -71,6 +77,7 @@ class XTinyAvrTarget(TinyAvrTarget):
 
     def __init__(self, transport):
         super().__init__(transport)
+        self.logger_loc = getLogger('pyavrocd.tinytarget')
 
         # next lines are copied from TinyXAvrTarget
         if transport.device.product_string.lower().startswith('edbg'):
@@ -163,7 +170,7 @@ class XTinyAvrTarget(TinyAvrTarget):
         # TINY_OSCCAL_BASE (1@0x1E)
         devdata += bytearray([osccal_addr & 0xFF])
 
-        self.logger.debug("Write all device data: %s",
+        self.logger_loc.debug("Write all device data: %s",
                               [devdata.hex()[i:i+2] for i in range(0, len(devdata.hex()), 2)])
         self.protocol.write_device_data(devdata)
 
@@ -232,6 +239,10 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
     """
     Implements Mega AVR (JTAG) functionality of the AVR8 protocol
     """
+
+    def __init__(self, transport):
+        super().__init__(transport)
+        self.logger_loc = getLogger('pyavrocd.megatarget')
 
     def memtype_write_from_string(self, memtype_string):
         """
@@ -336,6 +347,11 @@ class XXmegaAvrTarget(XmegaAvrTarget):
     Implements XMEGA (PDI) functionality of the AVR8 protocol
     """
 
+    def __init__(self, transport):
+        super().__init__(transport)
+        self.logger_loc = getLogger('pyavrocd.xmegatarget')
+
+
     def setup_debug_session(self):
         """
         Sets up a debugging session on an XMEGA AVR
@@ -353,7 +369,7 @@ class XXmegaAvrTarget(XmegaAvrTarget):
 
         :return: 32 bytes of register file content as bytearray
         """
-        self.logger.debug("Reading register file")
+        self.logger_loc.debug("Reading register file")
         return self.protocol.regfile_read()
 
     def register_file_write(self, regs):
@@ -363,5 +379,5 @@ class XXmegaAvrTarget(XmegaAvrTarget):
         :param data: 32 byte register file content as bytearray
         :raises ValueError: if 32 bytes are not given
         """
-        self.logger.debug("Writing register file")
+        self.logger_loc.debug("Writing register file")
         return self.protocol.regfile_write(regs)

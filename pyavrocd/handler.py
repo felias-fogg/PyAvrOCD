@@ -27,14 +27,16 @@ from pyavrocd.livetests import LiveTests
 from pyavrocd.errors import  EndOfSession, FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
+RECEIVE_BUFFER = 1024
+
 class GdbHandler():
     """
     GDB handler
     Maps between incoming GDB requests and AVR debugging protocols (via pymcuprog)
     """
     def __init__ (self, comsocket, avrdebugger, devicename):
-        self.packet_size = 8000
-        self.logger = getLogger('GdbHandler')
+        self.packet_size = RECEIVE_BUFFER - 20
+        self.logger = getLogger('pyavrocd.handler')
         self.dbg = avrdebugger
         self.mon = MonitorCommand(self.dbg.iface)
         self.dw = None
@@ -544,14 +546,13 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: vFlashDone")
         self._vflashdone = True
-        self.logger.info("Starting to flash ...")
+        self.bp.cleanup_breakpoints()
         try:
             self.mem.flash_pages()
         except:
             self.logger.error("Flashing was unsuccessful")
             self.send_packet("E11")
             raise
-        self.logger.info("Flash done")
         self.send_packet("OK")
 
     def _vflash_erase_handler(self, _):
@@ -562,12 +563,11 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: vFlashErase")
         if self.mon.is_debugger_active():
-            self.bp.cleanup_breakpoints()
             if self._vflashdone:
                 self._vflashdone = False
                 self.mem.init_flash() # clear cache
             if self.mem.is_flash_empty():
-                self.logger.info("Loading executable ...")
+                self.logger.info("Loading executable")
             self.send_packet("OK")
         else:
             self.send_packet("E01")
@@ -609,17 +609,17 @@ class GdbHandler():
         :param: data Bytes-like object with possibly escaped values.
         :return: List of integers in the range 0-255, with all escaped bytes de-escaped.
         """
-        data_idx = 0
+        result = []
+        unquote = False
 
-        # unpack the data into binary array
-        result = list(data)
-
-        # check for escaped characters
-        while data_idx < len(result):
-            if result[data_idx] == 0x7d:
-                result.pop(data_idx)
-                result[data_idx] = result[data_idx] ^ 0x20
-            data_idx += 1
+        for c in data:
+            if unquote:
+                result.append(c ^ 0x20)
+                unquote = False
+            elif c == 0x7d:
+                unquote = True
+            else:
+                result.append(c)
 
         return result
 
@@ -655,14 +655,15 @@ class GdbHandler():
         """
         addr = (packet.split(b',')[0]).decode('ascii')
         size = int(((packet.split(b',')[1]).split(b':')[0]).decode('ascii'),16)
-        data = self.unescape((packet.split(b':')[1]))
+        data = self.unescape((packet.split(b':',1)[1]))
         self.logger.debug("RSP packet: X, addr=0x%s, length=%d, data=%s", addr, size, data)
         if not self.mon.is_debugger_active() and size > 0:
             self.logger.debug("RSP packet: Memory write, but not connected")
             self.send_packet("E01")
             return
         if len(data) != size:
-            self.logger.error("Size of data packet does not fit: %s", packet)
+            self.logger.error("Size of data packet %d does not fit data length %d",size,len(data))
+            self.logger.error("Data: %s", data)
             self.send_packet("E15")
             return
         if int(addr,16) < 0x80000: # writing to flash

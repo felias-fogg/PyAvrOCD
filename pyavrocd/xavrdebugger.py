@@ -27,6 +27,7 @@ class XAvrDebugger(AvrDebugger):
         self.device = device
         self.iface = iface
         _dummy = use_events_for_run_stop_state
+        self.debugger_stopped = False
         if transport.hid_device is not None:
             super().__init__(transport)
         # Gather device info
@@ -46,8 +47,6 @@ class XAvrDebugger(AvrDebugger):
         self.spidevice = None
         if transport and transport.hid_device is not None:
             self.edbg_protocol = EdbgProtocol(transport) # necessary to access target power control
-
-
 
     def setup_session(self, device, frequency=900000, options=""):
         """
@@ -87,6 +86,7 @@ class XAvrDebugger(AvrDebugger):
         self.device.start()
         if self.iface == 'debugwire':
             self.attach(do_break=True)
+            self.logger.info("Attached to OCD")
         if self.iface == "updi":
             # The UPDI device is now in prog mode
             device_id = self.device.read_device_id()
@@ -106,6 +106,53 @@ class XAvrDebugger(AvrDebugger):
                 self.logger.info("Leaving prog mode (with auto-attach)")
                 self.device.avr.protocol.leave_progmode()
                 self._wait_for_break()
+
+    # Cleanup code for detaching target
+    def stop_debugging(self, graceful=True):
+        """
+        Stop the debug session and clean up in a safe way
+        """
+        if self.debugger_stopped:
+            return
+        self.logger.info("Terminating debugging session ...")
+        try:
+            # Halt the core
+            self.device.avr.protocol.stop()
+            self.logger.info("AVR core stopped")
+            # Remove all software breakpoints
+            self.device.avr.protocol.software_breakpoint_clear_all()
+            self.logger.info("All software breakpoints removed")
+            # Remove all hardware  breakpoints
+            self.device.avr.breakpoint_clear()
+            self.logger.info("All hardware breakpoints removed")
+        except Exception as e:
+            if not graceful:
+                self.logger.info("Error during stopping core and removing BPs: %s", e)
+        try:
+            # Detach from the OCD
+            self.device.avr.protocol.detach()
+            self.logger.info("Detached from OCD")
+        except Exception as e:
+            if not graceful:
+                self.logger.info("Error during detaching from OCD: %s", e)
+        try:
+            # De-activate UPDI physical interface
+            self.device.avr.deactivate_physical()
+            self.logger.info("Physical interface deactivated")
+        except Exception as e:
+            if not graceful:
+                self.logger.info("Error during deactivating interface: %s", e)
+        try:
+            # Sign off device
+            if self.use_events_for_run_stop_state:
+                self.housekeeper.end_session()
+                self.logger.info("Housekeeping session stopped")
+        except Exception as e:
+            if not graceful:
+                self.logger.info("Error during termination of housekeeping session: %s", e)
+        self.debugger_stopped = True
+        self.logger.info("... terminating debugging session done")
+
 
     def stack_pointer_write(self, data):
         """

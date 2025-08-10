@@ -1,40 +1,60 @@
 # Changelog
 
+### 0.9.4
+
+- **Fixed:**
+  - Binary load with X-records broke when a ':' appeared in the binary string. This showed only when the GDB version did not support XML (usually Windows GDB clients).
+  - With the large receive buffer of 16k, the binary load did not work because of the GDB timeouts. For this reason, the buffer was scaled back to 1k. Loading when expat is present is as fast as before. But without it, it is less than optimal because a large number of pages have to be written twice. Maybe one should use the same strategy as in dw-link.
+- **Added:**
+  - `enter_/leave_prog_mode` in `flash_pages` in class `Memory`
+  - constant `RECEIVE_BUFFER` in handler.py
+  - some info messages concerning housekeeping/attaching/activating
+  - try/exception in stop_debugging
+  - local loggers in xavr8target and xnvmdebugwire
+- **Changed**:
+  - Logger names have been adapted to Python naming
+  - Renamed `AvrGdbRspServer` to `RspServer`
+
 ### 0.9.3
-- **Removed**:
-  - Check whether there is a connection to the OCD in set/clear
-    breakpoint. This test muddied the water since the real error
-    message "not connected to OCD" by `continue` or `step` was not printed
-  - Clear software_breakpoints in `__del__` of server removed because this is done in `stop_debugging` anyways.
+
 - **Added**:
-	- `self.dbg.housekeeper.end_session` in disable in class DebugWIRE
+  - `self.dbg.housekeeper.end_session` in disable in class DebugWIRE
     in the end. I am not sure whether this helps, but it is the right
     way to do! One now has only to protect the calls in
     `stop_debugging`
-	- `self.spidevice.isp.enter_progmode()` before reading `device_id`
+  - `self.spidevice.isp.enter_progmode()` before reading `device_id`
     in `enable`
-	-  `self.dbg.housekeeper.start_session()` after
+  -  `self.dbg.housekeeper.start_session()` after
        read_target_voltage because this function explicitly ends a
        session
-	- Methods in XAVR8Target for handling JTAG. They look very similar
+  - Methods in XAVR8Target for handling JTAG. They look very similar
       to the debugwire ones. Maybe refactoring later?
 - **Changed:**
 	- Changed pylint rules globally and removed a number of pylint exceptions from the sources
   - Split up the main function
-
+- **Removed**:
+	- Check whether there is a connection to the OCD in set/clear
+    breakpoint. This test muddied the water since the real error
+    message "not connected to OCD" by `continue` or `step` was not printed
+  - Clear software_breakpoints in `__del__` of server removed because this is done in `stop_debugging` anyways.
 
 ### 0.9.2
-
-- **Added:**
-  - Ran tests on ATmega168PB and, unsurprisingly, the chip does not present any problem
 
 - **Fixed:**
   - Fixed all broken unit tests
 
+- **Added:**
+  - Ran tests on ATmega168PB and, unsurprisingly, the chip does not present any problem
+
+
 
 ### 0.9.1
 
+- **Fixed:**
+  - Omissions and errors patched in ATDF files (read README in the atdf folder)
+
 - **Added:**
+
   - Added option "-i", "--interface" for choosing the debug interface
   - Checking whether the device is compatible with the interface
   - New argument and state variable for XAvrDebugger class: iface
@@ -52,8 +72,8 @@
 - **Changed:**
   - Changed the names of the atdf folders to `mega-<version>` and `tiny-<version>` and included them in the repo. In addition added `tiny` and `mega` soft links (so that patches are independent of the concrete version)
   - Refactored pyavrocd.py: all classes now have their own module
-- **Fixed:**
-  - Omissions and errors patched in ATDF files (read README in the atdf folder)
+
+
 
 
 

@@ -6,7 +6,7 @@ So, why another open-source GDB server for AVR MCUs (others are [AVaRICE](https:
 
 ![ide2-6](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png)
 
-Additionally to being platform agnostic, pyavrocd offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
+In addition to being platform agnostic, pyavrocd offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
 After [installing the package](https://github.com/felias-fogg/pyavrocd/blob/main/INSTALL.md), the following steps are necessary for successful debugging:
 
@@ -16,7 +16,7 @@ After [installing the package](https://github.com/felias-fogg/pyavrocd/blob/main
 4. [Debugging a program on the target](https://github.com/felias-fogg/pyavrocd/blob/main/docs/usage.md)
 5. [Restoring the target to its original state](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md)
 
-When starting the GDB server from the command line, there are a number of possible *[command-line options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md)* that will influence the behavior of pyavrocd. Once you have a debugger connected to the server, you can control the server's behavior using *[`monitor` commands](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md).*
+When starting the GDB server from the command line, there are several *[command-line options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md)* that will influence the behavior of pyavrocd. Once you have a debugger connected to the server, you can control the server's behavior using *[`monitor` commands](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md).*
 
 While the package appears to function as intended, there is always the chance of a bug. If you run across a behavior that seems odd, you can report it as an [issue](https://github.com/felias-fogg/pyavrocd/issues). I hope to resolve those over time.
 
@@ -45,7 +45,7 @@ Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually b
 > avrdude -c snap_isp -Pusb -xmode=avr
 ```
 
-With PICkit4 it is similar:
+With PICkit4, it is similar:
 
 ```
 > avrdude -c pickit4_isp -Pusb -xmode=avr
@@ -138,7 +138,7 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 #### Supported Arduino boards
 
-All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by ISP programming because on the Arduino boards, they are disabled by default.
+All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by ISP programming because on the Arduino boards, JTAG is disabled by default.
 
 -->
 

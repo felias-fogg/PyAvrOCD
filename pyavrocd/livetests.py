@@ -16,7 +16,7 @@ class LiveTests():
     """
 
     def __init__(self, handler):
-        self.logger = getLogger('LiveTests')
+        self.logger = getLogger('pyavrocd.livetests')
         self.handler = handler
         self.dbg = handler.dbg
         self.mem = handler.mem

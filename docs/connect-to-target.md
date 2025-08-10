@@ -1,6 +1,6 @@
 # Connecting the hardware debugger to a target
 
-The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as sown in the following picture.
+The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, which is not compatible with any AVR debug connector. Pin 1 is marked by a triangle. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as shown in the following picture.
 
 ![Snap adapter](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adapter.JPG)
 
@@ -96,7 +96,7 @@ Sometimes, pin 8 is connected to nTREST, which we do not need, though. The cruci
 
 ### Connecting to targets with a JTAG header
 
-Again, if there is a JTAG header oin the board, connecting the board is a breeze. Simply use the right cable.
+Again, if there is a JTAG header on the board, connecting the board is a breeze. Simply use the right cable.
 
 ![Atmel-ICI+MCUdude](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-ICE+MCUdude.jpeg)
 
@@ -106,7 +106,7 @@ When debugging a program running on an Arduino Mega, you must connect the wires 
 
 ![Atmel-ICI+MCUdude](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pickit4+mega.jpeg)
 
-The table pin mapping for the PICkit4 looks as follows, where I have added the Arduino pins in the last column.
+The pin mapping for the PICkit4 looks as follows, where I have added the Arduino pins in the last column.
 
 | MBLAP Debugger | Pin # | Target pin | JTAG pin | Mega pin |
 | -------------- | ----- | ---------- | -------- | -------- |

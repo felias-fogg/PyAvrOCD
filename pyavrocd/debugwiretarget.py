@@ -30,7 +30,7 @@ class DebugWIRE():
         self.dbg = dbg
         self.spidevice = None
         self._devicename = devicename
-        self.logger = getLogger('DebugWIRE target')
+        self.logger = getLogger('pyavrocd.debugwire')
 
     def warm_start(self, graceful=True):
         """
@@ -98,13 +98,14 @@ class DebugWIRE():
         except (PymcuprogError, FatalError):
             raise
         except Exception as e:
-            self.logger.debug("Graceful exception: %s",e)
             if not graceful:
                 raise
+            self.logger.debug("Graceful exception: %s",e)
         # end current tool session and start a new one
-        self.logger.info("Restarting the debug tool before entering debugWIRE mode")
         self.dbg.housekeeper.end_session()
+        self.logger.info("Housekeeping session terminated")
         self.dbg.housekeeper.start_session()
+        self.logger.info("Housekeeping session restarted")
         # now start the debugWIRE session
         return self.warm_start(graceful=False)
 
@@ -124,7 +125,7 @@ class DebugWIRE():
             return
         self.logger.info("Restarting the debug tool before power-cycling")
         self.dbg.housekeeper.end_session() # might be necessary after an unsuccessful power-cycle
-        self.dbg.housekeeper.start_session()
+        self.logger.info("Housekeeping session terminated")
         while time.monotonic() - wait_start < 150:
             if time.monotonic() - last_message > 20:
                 self.logger.warning("*** Please power-cycle the target system ***")
@@ -138,6 +139,8 @@ class DebugWIRE():
                 if read_target_voltage(self.dbg.housekeeper) < 1.5:
                     raise FatalError("Timed out waiting for repowering target")
                 time.sleep(1) # wait for debugWIRE system to be ready to accept connections
+                self.dbg.housekeeper.start_session()
+                self.logger.info("Housekeeping session restarted")
                 return
             time.sleep(0.1)
         raise FatalError("Timed out waiting for power-cycle")
@@ -149,20 +152,25 @@ class DebugWIRE():
         needs to be done before, such as cleaning up breakpoints.
         """
         # stop core
+        self.logger.info("Disabling debugWIRE mode...")
         self.dbg.device.avr.protocol.stop()
+        self.logger.info("AVR core stopped")
         # clear all breakpoints
         self.dbg.software_breakpoint_clear_all()
+        self.logger.info("All software breakpoints removed")
         # disable DW
-        self.logger.info("Leaving debugWIRE mode")
         self.dbg.device.avr.protocol.debugwire_disable()
-        # detach from OCD
+        self.logger.info("DebugWIRE mode disabled")
+        # stop all debugging activities
         self.dbg.device.avr.protocol.detach()
-        # De-activate physical interface
+        self.logger.info("Detached from OCD")
         self.dbg.device.avr.deactivate_physical()
-        # it seems necessary to reset the debug tool again
-        self.logger.info("Restarting the debug tool before unprogramming the DWEN fuse")
+        self.logger.info("Physical interface deactivated")
         self.dbg.housekeeper.end_session()
+        self.logger.info("Housekeeping session stopped")
+        # start housekeeping again
         self.dbg.housekeeper.start_session()
+        self.logger.info("Housekeeping session restarted")
         # now open an ISP programming session again
         self.logger.info("Reconnecting in ISP mode")
         self.spidevice = NvmAccessProviderCmsisDapSpi(self.dbg.transport, self.dbg.device_info)
@@ -180,6 +188,9 @@ class DebugWIRE():
         self.spidevice.isp.leave_progmode()
         # we do not interact with the tool anymore after this
         self.dbg.housekeeper.end_session()
+        self.logger.info("Housekeeping session terminated")
+        self.logger.info("... disabling debugWIRE mode done")
+
 
     def enable(self, erase_if_locked=True):
         """
@@ -188,12 +199,17 @@ class DebugWIRE():
         Since the implementation of ISP programming is somewhat funny, a few stop/start
         sequences and double reads are necessary.
         """
+        self.logger.info("Enabling debugWIRE mode ...")
         if read_target_voltage(self.dbg.housekeeper) < 1.5:
+            self.logger.info("Housekeeping session terminated")
             raise FatalError("Target is not powered")
+        self.logger.info("Housekeeping session terminated")
         self.dbg.housekeeper.start_session() # need to start a new session after reading target voltage
+        self.logger.info("Housekeeping session restarted")
         self.logger.info("Try to connect using ISP")
         self.spidevice = NvmAccessProviderCmsisDapSpi(self.dbg.transport, self.dbg.device_info)
         self.spidevice.isp.enter_progmode()
+        self.logger.info("Programming mode entered")
         device_id = int.from_bytes(self.spidevice.read_device_id(),byteorder='little')
         if self.dbg.device_info['device_id'] != device_id:
             raise FatalError("Wrong MCU: '{}', expected: '{}'".format(
@@ -213,25 +229,29 @@ class DebugWIRE():
             self.logger.debug("Lockbits after erase: %X", lockbits[0])
         if 'bootrst_fuse' in self.dbg.device_info:
             # unprogramm bit 0 in high or extended fuse
-            self.logger.info("BOOTRST fuse will be unprogrammed.")
             bfuse = self.dbg.device_info['bootrst_fuse']
             fuses[bfuse] |= 0x01
             self.spidevice.write(self.dbg.memory_info.memory_info_by_name('fuses'),
                                      bfuse, fuses[bfuse:bfuse+1])
+            self.logger.info("BOOTRST fuse has been unprogrammed.")
         # program the DWEN bit
         # leaving and re-entering programming mode is necessary, otherwise write has no effect
-        self.logger.info("Reentering programming mode")
         self.spidevice.isp.leave_progmode()
+        self.logger.info("Programming mode terminated")
         self.spidevice.isp.enter_progmode()
+        self.logger.info("Programming mode re-entered")
         fuses[1] &= (0xFF & ~(self.dbg.device_info['dwen_mask']))
         self.logger.debug("New high fuse: 0x%X", fuses[1])
-        self.logger.info("Programming DWEN fuse")
         self.spidevice.write(self.dbg.memory_info.memory_info_by_name('fuses'), 1, fuses[1:2])
+        self.logger.info("DWEN fuse has been programmed")
         # needs to be done twice!
         fuses = self.spidevice.read(self.dbg.memory_info.memory_info_by_name('fuses'), 0, 3)
         fuses = self.spidevice.read(self.dbg.memory_info.memory_info_by_name('fuses'), 0, 3)
         self.logger.debug("Fuses read again: %X %X %X",fuses[0], fuses[1], fuses[2])
         self.spidevice.isp.leave_progmode()
+        self.logger.info("Programming mode terminated")
         # in order to start a debugWIRE session, a power-cycle is now necessary, but
         # this has to be taken care of by the calling process
+        self.logger.info("... enabling debugWIRE mode done")
+
 

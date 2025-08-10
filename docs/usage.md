@@ -1,6 +1,6 @@
 # Usage
 
-## Debugging with a command-line interface.
+## Debugging with a command-line interface
 
 After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: `-Og` and `-ggdb3`. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.
 
@@ -109,7 +109,7 @@ Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same t
 
 ![ ](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-cmds.png)
 
-Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory.b After a while, you will see window similar to what is shown below.
+Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory. After a while, you will see a window similar to what is shown below.
 
 ![Gede section](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-window.png)
 
