@@ -2,7 +2,7 @@
 
 This is a Python GDB server for 8-bit AVR MCUs (work in progress, currently only for classic ATtinys and ATmegas with debugWIRE debugging interface). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) ([in AVR mode](#switching-to-avr-mode)), and provides a pass-through service for the Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib).
 
-So, why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://github.com/avrdudes/avarice) and [Bloom](https://bloom.oscillate.io))? The main intention is to provide a *platform-agnostic* AVR GDB server. In other words, it is the missing AVR debugging solution for PlatformIO and the Arduino IDE 2.
+So, why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://github.com/avrdudes/avarice) and [Bloom](https://bloom.oscillate.io))? The main intention is to provide a *platform-agnostic* AVR GDB server. In other words, it is the missing AVR debugging solution for [PlatformIO](https://platformio.org) and the [Arduino IDE 2](https://www.arduino.cc/en/software/).
 
 ![ide2-6](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png)
 
