@@ -22,6 +22,7 @@ class TestMemory(TestCase):
         mock_dbg.transport = MagicMock()
         mock_dbg.device = Mock()
         mock_dbg.device.avr = Mock()
+        mock_dbg.iface = "debugwire"
 
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
@@ -36,6 +37,7 @@ class TestMemory(TestCase):
         self.mem._eeprom_start = 0
         self.mem._eeprom_size = 5
         self.mem._flashmemtype = 123
+        self.mem.programming_mode = True
 
     def test_init_flash_True(self):
         self.assertEqual(self.mem._flash,bytearray())

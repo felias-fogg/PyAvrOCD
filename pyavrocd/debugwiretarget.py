@@ -26,8 +26,9 @@ class DebugWIRE():
     connecting to the target. Further, if one does this transition, it is necessary to restart
     the debugging tool by a housekeeping end_session/start_session sequence.
     """
-    def __init__(self, dbg, devicename):
+    def __init__(self, dbg, mem, devicename):
         self.dbg = dbg
+        self.mem = mem
         self.spidevice = None
         self._devicename = devicename
         self.logger = getLogger('pyavrocd.debugwire')
@@ -43,10 +44,10 @@ class DebugWIRE():
             self.logger.info("debugWIRE warm start")
         try:
             self.dbg.setup_session(self._devicename)
-            idbytes = self.dbg.device.read_device_id()
-            sig = (0x1E<<16) + (idbytes[1]<<8) + idbytes[0]
-            self.logger.debug("Device signature by debugWIRE: %X", sig)
             self.dbg.start_debugging()
+            idbytes = self.mem.sig_read(0,3)
+            sig = idbytes[2] + (idbytes[1]<<8) + (idbytes[0]<<16)
+            self.logger.debug("Device signature by debugWIRE: %X", sig)
             self.dbg.reset()
         except FatalError:
             raise
@@ -69,7 +70,7 @@ class DebugWIRE():
                 # pretends to be a 328P, but is 328
                 (not (sig == 0x1E950F and self.dbg.device_info['device_id'] == 0x1E9514))):
                 raise FatalError("Wrong MCU: '{}', expected: '{}'".\
-                                     format(dev_name[sig],
+                                     format(dev_name.get(sig,"Unknown"),
                                             dev_name[self.dbg.device_info['device_id']]))
         # read out program counter and check whether it contains stuck to 1 bits
         pc = self.dbg.program_counter_read()

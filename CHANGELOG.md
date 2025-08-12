@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.9.7
+
+- **Added:**
+  - The first part of integrating JTAG in xmvmegaavrjtag.py (basically the stuff I added for debugwire), xavr8target.py, jtagtarget.py (first steps and starting and stopping JTAG), and in xavrdebugger.py is working. I can now enter debugging mode on a Xplained324pb board!
+  - Added a switch to revert to debugging mode while flashing a program, enabling the erasure of a single page when using the read-before-write strategy. It turns out that this strategy is now no longer dominant.
+  - New memory areas and methods to access them have been integrated.
+
 ### 0.9.6
 
 - **Added:**

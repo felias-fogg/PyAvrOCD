@@ -8,6 +8,7 @@ from logging import getLogger
 # debugger modules
 from pyavrocd.errors import  FatalError
 
+
 class Memory():
     """
     This class is responsible for access to all kinds of memory, for loading the flash memory,
@@ -40,6 +41,7 @@ class Memory():
         self._eeprom_size = self.dbg.memory_info.memory_info_by_name('eeprom')['size']
         self._flashmem_start_prog = 0
         self.lazy_loading = False
+        self.programming_mode = False
 
     def init_flash(self):
         """
@@ -77,14 +79,17 @@ class Memory():
         iaddr, _, method = self.mem_area(addr)
         if not data:
             return "OK"
-        method(iaddr, data)
-        return "OK"
+        response = method(iaddr, data)
+        self.logger.debug("Result of writing: %s", response)
+        if response is None:
+            return "OK"
+        return "E13"
 
     def mem_area(self, addr):
         """
         This function returns a triple consisting of the real address as an int, the read,
         and the write method. If illegal address section, report and return
-        (0, lambda *x: bytes(), lambda *x: False)
+        (0, lambda *x: bytes(), lambda *x: 'E13')
         """
         addr_section = "00"
         if len(addr) > 4:
@@ -96,15 +101,31 @@ class Memory():
                 addr = addr[1:]
         iaddr = int(addr,16)
         self.logger.debug("Address section: %s",addr_section)
+        if addr_section == "00": # flash
+            if self.dbg.iface == "debugwire" or self.programming_mode:
+                return(iaddr, self.flash_read, self.flash_write)
+            return(iaddr, self.flash_read, lambda *x: 'E13')
         if addr_section == "80": # ram
-            return(iaddr, self.sram_masked_read, self.dbg.sram_write)
+            if not self.programming_mode:
+                return(iaddr, self.sram_masked_read, self.dbg.sram_write)
         if addr_section == "81": # eeprom
             return(iaddr, self.dbg.eeprom_read, self.dbg.eeprom_write)
-        if addr_section == "00": # flash
-            return(iaddr, self.flash_read, self.flash_write)
+        if addr_section == "82": # fuse
+            if self.programming_mode and self.dbg.iface in ['jtag', 'updi']:
+                return(iaddr, self.fuse_read, self.fuse_write)
+        if addr_section == "83": #  lock
+            if (self.programming_mode and self.dbg.iface == 'jtag') or self.dbg.iface == 'updi':
+                return(iaddr, self.lock_read, self.lock_write)
+        if addr_section == "84": # signature
+            if (self.programming_mode and self.dbg.iface in ['jtag', 'updi']) \
+              or self.dbg.iface == 'debugwire':
+                return(iaddr, self.sig_read, lambda *x: 'E13')
+        if addr_section == "85":  # user signature
+            if self.dbg.iface in ['jtag', 'updi']:
+                return(iaddr, self.usig_read, self.usig_write)
         self.logger.error("Illegal memtype in memory access operation at %s: %s",
                               addr, addr_section)
-        return (0, lambda *x: bytes(), lambda *x: False)
+        return (0, lambda *x: bytes(), lambda *x: 'E13')
 
     def sram_masked_read(self, addr, size):
         """
@@ -138,7 +159,7 @@ class Memory():
         """
         self.logger.debug("Trying to read %d bytes starting at 0x%X", size, addr)
         if not self.mon.is_debugger_active():
-            self.logger.error("Cannot read from memory when DW mode is disabled")
+            self.logger.error("Cannot read from memory when OCD is disabled")
             return bytearray([0xFF]*size)
         if self.mon.is_cache() and addr + size <= self.flash_filled():
             return self._flash[addr:addr+size]
@@ -160,6 +181,7 @@ class Memory():
         """
         return(int.from_bytes(self.flash_read(addr, 2), byteorder='little'))
 
+    #pylint: disable=useless-return
     def flash_write(self, addr, data):
         """
         This writes an arbitrary chunk of data to flash. If addr is lower than len(self._flash),
@@ -170,6 +192,7 @@ class Memory():
             self.init_flash()
         self.store_to_cache(addr, data)
         self.flash_pages()
+        return None
 
     def store_to_cache(self, addr, data):
         """
@@ -187,6 +210,11 @@ class Memory():
         Write pages to flash memory, starting at _flashmem_start_prog up to len(self._flash)-1.
         Since programming takes place in chunks of size self._multi_page_size, beginning and end
         needs to be adjusted. At the end, we may add some 0xFFs.
+        If mon.is_fast_load() is true (read before write), the we will read a page before it is written.
+        If it is nothing new, we skip. Otherwise, when "jtag", we check whether the page is blank.
+        If not, the we need to erase this page by temporarily leaving progmode.
+        This out of the way, we program.
+        Optionally, after writing, we check whether we were successful.
         """
         startaddr = (self._flashmem_start_prog // self._multi_page_size) * self._multi_page_size
         if self.lazy_loading:
@@ -213,6 +241,14 @@ class Memory():
             if currentpage[:len(pagetoflash)] == pagetoflash:
                 self.logger.debug("Skip flashing page because already flashed at 0x%X", pgaddr)
             else:
+                if self.dbg.iface == 'jtag':
+                    if self.mon.is_fastload() and not self.dbg.device.avr.is_blank(currentpage):
+                        self.logger.debug("Erasing page at 0x%x in debug mode", pgaddr)
+                        if self.programming_mode:
+                            self.dbg.device.avr.protocol.leave_progmode()
+                        self.dbg.device.erase_page(pgaddr)
+                        if self.programming_mode:
+                            self.dbg.device.avr.protocol.enter_progmode()
                 self.logger.debug("Flashing now from 0x%X to 0x%X", pgaddr, pgaddr+len(pagetoflash))
                 pagetoflash.extend(bytearray([0xFF]*(self._multi_page_size-len(pagetoflash))))
                 flashmemtype = self.dbg.device.avr.memtype_write_from_string('flash')
@@ -250,6 +286,83 @@ class Memory():
                              '<memory type="flash" start="0x{2:X}" length="0x{3:X}">' + \
                              '<property name="blocksize">0x{4:X}</property>' + \
                              '</memory></memory-map>').format(0 + 0x800000, \
-                             (0x10000 + self._eeprom_start + self._eeprom_size),
+                              # (0x10000 + self._eeprom_start + self._eeprom_size),
+                              0x890000, # is needed to read the other memory areas as well
                               self._flash_start, self._flash_size, self._multi_page_size)
 
+    def fuse_read(self, addr, size):
+        """
+        Read fuses (does not work with debugWIRE)
+        """
+        try:
+            resp = self.dbg.read_fuse(addr, size)
+        except Exception as e:
+            self.logger.error("Error reading fuses: %s", e)
+            return bytearray([0xFF]*size)
+        return bytearray(resp)
+
+    def fuse_write(self, addr, data):
+        """
+        Write fuses (does not work with debugWIRE)
+        """
+        try:
+            self.dbg.write_fuse(self, addr, data)
+        except Exception as e:
+            self.logger.error("Error writing fuses: %s", e)
+            return 'E13'
+        return None
+
+    def lock_read(self, addr, size):
+        """
+        Read lock bits (does not work with debugWIRE)
+        """
+        try:
+            resp = self.dbg.read_lock(addr, size)
+        except Exception as e:
+            self.logger.error("Error reading lockbits: %s", e)
+            return bytearray([0xFF]*size)
+        return bytearray(resp)
+
+    def lock_write(self, addr, data):
+        """
+        Write lock bits (does not work with debugWIRE)
+        """
+        try:
+            self.dbg.write_lock(addr, data)
+        except Exception as e:
+            self.logger.error("Error writing lockbits: %s", e)
+            return 'E13'
+        return None
+
+    def sig_read(self, addr, size):
+        """
+        Read signature in a liberal way, i.e., throwing no errors
+        """
+        try:
+            resp = self.dbg.read_sig(addr, size)
+        except Exception as e:
+            self.logger.error("Error reading the signature: %s", e)
+            return bytearray([0xFF]*size)
+        return bytearray(resp)
+
+    def usig_read(self, addr, size):
+        """
+        Read contents of user signature (does not work with debugWIRE)
+        """
+        try:
+            resp = self.dbg.read_usig(addr, size)
+        except Exception as e:
+            self.logger.error("Error reading the user signature: %s", e)
+            return bytearray([0xFF]*size)
+        return bytearray(resp)
+
+    def usig_write(self, addr, data):
+        """
+        Write user signature
+        """
+        try:
+            self.dbg.write_usig(addr, data)
+        except Exception as e:
+            self.logger.error("Error writing the user signature: %s", e)
+            return 'E13'
+        return None

@@ -1,9 +1,10 @@
 """
 Pytest configuration and shared fixtures for pyavrocd tests.
 """
-import pytest
+#pylint: disable=too-few-public-methods
 import sys
 import os
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,6 +22,7 @@ def sample_interface():
 @pytest.fixture
 def mock_args():
     """Mock command line arguments for testing."""
+    #pylint: disable=too-few-public-methods, missing-class-docstring
     class MockArgs:
         def __init__(self):
             self.dev = "attiny85"

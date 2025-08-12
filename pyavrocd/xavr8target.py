@@ -11,7 +11,7 @@ from pymcuprog.deviceinfo.memorynames import MemoryNames
 from pymcuprog.deviceinfo.deviceinfokeys import DeviceInfoKeysAvr, DeviceMemoryInfoKeys
 
 from pymcuprog.avr8target import TinyXAvrTarget, TinyAvrTarget,\
-     MegaAvrJtagTarget, XmegaAvrTarget
+     MegaAvrJtagTarget, XmegaAvrTarget, AvrDevice
 
 
 
@@ -85,6 +85,17 @@ class XTinyAvrTarget(TinyAvrTarget):
             # but no new EDBG firmware has/will be built)
             self.max_read_chunk_size = 256
 
+    #pylint: disable=arguments-differ
+    def memtype_read_from_string(self, memtype_string):
+        """
+        Maps from a string to an AVR memtype taking into account the constraints for
+        memory in the NVM mode for reading.
+        """
+        memtype = AvrDevice.memtype_read_from_string(memtype_string)
+        if memtype == Avr8Protocol.AVR8_MEMTYPE_CALIBRATION_SIGNATURE:
+            memtype = Avr8Protocol.AVR8_MEMTYPE_SIGNATURE
+        return memtype
+
     def memtype_write_from_string(self, memtype_string):
         """
         Maps from a string to an avr8 memtype for writes
@@ -130,7 +141,8 @@ class XTinyAvrTarget(TinyAvrTarget):
         eedr_addr = device_info.get('eedr_base')
         spmcsr_addr = device_info.get('spmcsr_base')
         osccal_addr = device_info.get('osccal_base')
-        # Setup device structure and write to tool
+
+# Setup device structure and write to tool
         # TINY_FLASH_PAGE_BYTES (2@0x00)
         devdata = bytearray([fl_page_size & 0xff, 0])
         # TINY_FLASH_BYTES (4@0x02)
@@ -244,18 +256,134 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         super().__init__(transport)
         self.logger_loc = getLogger('pyavrocd.megatarget')
 
+    #pylint: disable=arguments-differ
+    def memtype_read_from_string(self, memtype_string):
+        """
+        Maps from a string to an AVR memtype taking into account the constraints for
+        memory in the NVM mode for reading.
+        """
+        memtype = AvrDevice.memtype_read_from_string(memtype_string)
+        if memtype == Avr8Protocol.AVR8_MEMTYPE_EEPROM:
+            memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
+        if memtype == Avr8Protocol.AVR8_MEMTYPE_CALIBRATION_SIGNATURE:
+            memtype = Avr8Protocol.AVR8_MEMTYPE_SIGNATURE
+        return memtype
+
     def memtype_write_from_string(self, memtype_string):
         """
-        Maps from a string to an avr8 memtype for writes
-
-        :param memtype_string: Friendly name of memory
-        :type memtype_string: str
-        :returns: Memory type identifier as defined in the protocol
-        :rtype: int
+        Maps from a string to an AVR memtype taking into account the constraints for
+        memory in the NVM mode for writing.
         """
         return self.memtype_read_from_string(memtype_string)
 
+    def setup_debug_session(self):
+        """
+        Sets up a programming session on an Mega AVR (JTAG)
+        """
+        self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
+        self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
+        self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
+
+
     # setup_config is done in the super class
+    # However, it seems to be wrong. Instead of IO register addresses RAM addresses
+    # are used. I guess the version below is the correct one!
+    def setup_config(self, device_info):
+        """
+        Sets up the device config for a tiny AVR device
+
+        :param device_info: Target device information as returned
+                            by deviceinfo.deviceinfo.getdeviceinfo
+        :type device_info: dict
+        """
+        if device_info is None:
+            device_info = {}
+
+        # Parse the device info for memory descriptions
+        device_memory_info = deviceinfo.DeviceMemoryInfo(device_info)
+
+        flash_info = device_memory_info.memory_info_by_name(MemoryNames.FLASH)
+        eeprom_info = device_memory_info.memory_info_by_name(MemoryNames.EEPROM)
+        sram_info = device_memory_info.memory_info_by_name(MemoryNames.INTERNAL_SRAM)
+        # Extract settings
+        fl_page_size = flash_info[DeviceMemoryInfoKeys.PAGE_SIZE]
+        fl_size = flash_info[DeviceMemoryInfoKeys.SIZE]
+        fl_base = flash_info[DeviceMemoryInfoKeys.ADDRESS]
+        sram_base = sram_info[DeviceMemoryInfoKeys.ADDRESS]
+        ee_page_size = eeprom_info[DeviceMemoryInfoKeys.PAGE_SIZE]
+        ee_size = eeprom_info[DeviceMemoryInfoKeys.SIZE]
+        ocd_addr = device_info.get(DeviceInfoKeysAvr.OCD_BASE)
+        ocd_rev = device_info.get('ocd_rev')
+        pagebuffers_per_flash_block = device_info.get('buffers_per_flash_page',1)
+        eear_size = device_info.get('eear_size')
+        eearh_addr = device_info.get('eear_base') + eear_size - 1
+        eearl_addr = device_info.get('eear_base')
+        eecr_addr = device_info.get('eecr_base')
+        eedr_addr = device_info.get('eedr_base')
+        spmcsr_addr = device_info.get('spmcsr_base')
+        osccal_addr = device_info.get('osccal_base') - 0x20
+
+        # Setup device structure and write to tool
+
+        # TMEGA_FLASH_PAGE_BYTES (2@0x00)
+        devdata = bytearray([fl_page_size & 0xff, (fl_page_size >> 8) & 0xff])
+
+        # TMEGA_FLASH_BYTES (4@0x02)
+        devdata += bytearray([fl_size & 0xFF, (fl_size >> 8) & 0xFF,
+                                  (fl_size >> 16) & 0xFF, (fl_size >> 24) & 0xFF])
+
+        # TMEGA_FLASH_BASE (4@0x06)
+        devdata += bytearray([fl_base & 0xFF, (fl_base >> 8) & 0xFF,
+                                  (fl_base >> 16) & 0xFF, (fl_base >> 24) & 0xFF])
+
+        # TMEGA_BOOT_BASE (4@0x0A)
+        boot_base = fl_size - fl_page_size # as is done for MegaAvr
+        devdata += bytearray([boot_base & 0xFF, (boot_base >> 8) & 0xFF,
+                                  (boot_base >> 16) & 0xFF, (boot_base >> 24) & 0xFF])
+
+        # TMEGA_SRAM_BASE (2@0x0E)
+        devdata += bytearray([sram_base & 0xff, (sram_base >> 8) & 0xff])
+
+        # TMEGA_EEPROM_BYTES (2@0x10)
+        devdata += bytearray([ee_size & 0xff, (ee_size >> 8) & 0xff])
+
+        # TMEGA_EEPROM_PAGE_BYTES (1@0x12)
+        devdata += bytearray([ee_page_size])
+
+        # TMEGA_OCD_REVISION (1@0x13)
+        devdata += bytearray([ocd_rev])
+
+        # TMEGA_PAGEBUFFERS_PER_FLASH_BLOCK
+        devdata += bytearray([pagebuffers_per_flash_block])
+
+        # 3 byte gap (3@0x15)
+        devdata += bytearray([0, 0, 0])
+
+        # TMEGA_OCD_MODULE_ADDRESS (1@0x18)
+        devdata += bytearray([ocd_addr & 0xff])
+
+        # TMEGA_EEARH_BASE (1@0x19)
+        devdata += bytearray([eearh_addr & 0xFF])
+
+        # TMEGA_EEARL_BASE (1@0x1A)
+        devdata += bytearray([eearl_addr & 0xFF])
+
+        # TMEGA_EECR_BASE (1@0x1B)
+        devdata += bytearray([eecr_addr & 0xFF])
+
+        # TMEGA_EEDR_BASE (1@0x1C)
+        devdata += bytearray([eedr_addr & 0xFF])
+
+        # TMEGA_SPMCSR_BASE (1@0x1D)
+        devdata += bytearray([spmcsr_addr & 0xFF])
+
+        # TMEGA_OSCCAL_BASE (1@0x1E)
+        devdata += bytearray([osccal_addr & 0xFF])
+
+        self.logger_loc.debug("Write all device data: %s",
+                              [devdata.hex()[i:i+2] for i in range(0, len(devdata.hex()), 2)])
+        self.protocol.write_device_data(devdata)
+
 
 
     def regfile_read(self):

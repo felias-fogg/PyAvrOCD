@@ -19,7 +19,9 @@ Pyavrocd implements several `monitor` commands. These can be used to control imp
 | `monitor verify` [`enable`\|`disable`]                | Verify flash after loading each flash page. The cost of verification is negligible, and doing so may help diagnose flash wear problems. The default setting is for this option to be *enabled*. |
 | `monitor version`                                     | Show version of the gdbserver.                               |
 
-The default setting is always the first one listed, except for `debugwire`, which depends on the MCU itself. All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`.
+The default setting is always the first one listed, except for `debugwire`, which depends on the MCU itself. All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`. If you use a command without an argument, the current setting is printed.
 
 Commands marked with **(+)** are not implemented in dw-link; those marked with **(*)** are specific to dw-link.
+
+If you want to use one of the commands in each run for a given project, then you should put it into a file `conf.gdb` in the project folder. When using the Arduino IDE 2, a file with that name is automatically loaded. You can also put such a load command into the `platformio.ini`  file or any other initialization file for your IDE/GUI.
 

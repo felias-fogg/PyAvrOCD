@@ -39,13 +39,13 @@ class GdbHandler():
         self.logger = getLogger('pyavrocd.handler')
         self.dbg = avrdebugger
         self.mon = MonitorCommand(self.dbg.iface)
+        self.mem = Memory(avrdebugger, self.mon)
         self.dw = None
         self.jtag = None
         if self.dbg.iface == 'debugwire':
-            self.dw = DebugWIRE(avrdebugger, devicename)
+            self.dw = DebugWIRE(avrdebugger, self.mem, devicename)
         elif self.dbg.iface == 'jtag':
-            self.jtag = JTAG(avrdebugger, devicename)
-        self.mem = Memory(avrdebugger, self.mon)
+            self.jtag = JTAG(avrdebugger, self.mem, devicename)
         self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
         self._devicename = devicename
@@ -144,16 +144,14 @@ class GdbHandler():
             if "debugwire" == self.dbg.iface:
                 self.send_debug_message("Enable debugWIRE first: 'monitor debugwire enable'")
             elif "jtag" in self.dbg.iface:
-                self.send_debug_message("JTAG is not enabled. "
-                                            "Program the JTAGEN "
-                                            "fuse and connect using the JTAG connector.")
+                self.send_debug_message("JTAG pins are not enabled.")
             else:
                 self.send_debug_message("No connection to OCD. Enable debugging first")
             self.send_signal(SIGHUP)
             return False
         if self.mem.is_flash_empty() and not self.mon.is_noload():
             self.logger.warning("Cannot start execution without prior loading of executable")
-            self.send_debug_message("No program loaded")
+            self.send_debug_message("No program loaded; cannot start execution")
             self.send_signal(SIGILL)
             return False
         return True
@@ -553,7 +551,12 @@ class GdbHandler():
         self.bp.cleanup_breakpoints()
         try:
             self.dbg.device.avr.protocol.enter_progmode()
+            self.mem.programming_mode = True
             self.logger.info("Programming mode entered")
+            if not self.mon.is_fastload() and self.dbg.iface == 'jtag':
+                # if we do not read before write and this is a jtag device, then erase chip
+                self.dbg.device.erase()
+                self.logger.info("Chip erased before flashing")
             self.mem.flash_pages()
         except:
             self.logger.error("Flashing was unsuccessful")
@@ -561,6 +564,7 @@ class GdbHandler():
             raise
         finally:
             self.dbg.device.avr.protocol.leave_progmode()
+            self.mem.programming_mode = False
             self.logger.info("Programming mode stopped")
         self.send_packet("OK")
 
@@ -681,7 +685,13 @@ class GdbHandler():
                 self.bp.cleanup_breakpoints() # cleanup breakpoints before load
                 self.mem.lazy_loading = True
                 self.dbg.device.avr.protocol.enter_progmode()
+                self.mem.programming_mode = True
                 self.logger.info("Programming mode entered")
+                if not self.mon.is_fastload() and self.dbg.iface == 'jtag':
+                    # if we do not read before write and this is a jtag device, then erase chip
+                    # with debugwiere and updi, we have an automatic page erase before writing
+                    self.dbg.device.erase()
+                    self.logger.info("Chip erased before flashing")
         try:
             reply = self.mem.writemem(addr, bytearray(data))
         except:
@@ -699,6 +709,7 @@ class GdbHandler():
         self.mem.lazy_loading = False
         self.mem.flash_pages() # program the remaining bytes
         self.dbg.device.avr.protocol.leave_progmode()
+        self.mem.programming_mode = False
         self.logger.info("Programming mode stopped")
 
 

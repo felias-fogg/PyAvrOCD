@@ -1,6 +1,6 @@
 [project]
 name = "pyavrocd"
-version = "0.9.6"
+version = "0.9.7"
 description = "A platform-agnostic GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}

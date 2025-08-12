@@ -13,6 +13,7 @@ from pymcuprog.pymcuprog_errors import PymcuprogToolConfigurationError,\
      PymcuprogNotSupportedError
 
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
+from pyavrocd.xnvmmegaavrjtag import XNvmAccessProviderCmsisDapMegaAvrJtag
 
 class XAvrDebugger(AvrDebugger):
     """
@@ -36,8 +37,6 @@ class XAvrDebugger(AvrDebugger):
             self.device_info = deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices." + device)
         except ImportError:
             raise PymcuprogNotSupportedError("No device info for device: {}".format(device)) #pylint: disable=raise-missing-from
-        if iface not in ['debugwire']:
-            raise PymcuprogToolConfigurationError("Pyavrocd only supports debugWIRE devices")
         if iface not in self.device_info['interface'].lower():
             raise PymcuprogToolConfigurationError("Incompatible debugging interface")
 
@@ -74,6 +73,20 @@ class XAvrDebugger(AvrDebugger):
             # program
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info)
             self.device.avr.setup_debug_session()
+        elif self.iface == "jtag":
+            self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info)
+            self.device.avr.setup_prog_session()
+            self.logger.debug("Enabled prog (not debug) session")
+            self.device.avr.protocol.enter_progmode()
+            ocdenbyte = self.read_fuse(1,1) # needs generalization
+            self.logger.debug("Read fuse byte containing OCDEN: 0x%x", ocdenbyte)
+            ocdenbyte &= ~0x80 # needs generalization
+            self.logger.debug("New fuse byte containing OCDEN: 0x%x", ocdenbyte)
+            self.write_fuse(1, bytearray([ocdenbyte]))
+            self.logger.debug("Enabled OCD fuse")
+            self.device.avr.protocol.leave_progmode()
+            #self.device.avr.setup_debug_session()
+
 
     def start_debugging(self, flash_data=None):
         """
@@ -84,6 +97,9 @@ class XAvrDebugger(AvrDebugger):
         """
         self.logger.info("Starting debug session")
         self.device.start()
+        if self.iface == 'jtag':
+            self.attach(do_break=True)
+            self.logger.info("Attached to OCD")
         if self.iface == 'debugwire':
             self.attach(do_break=True)
             self.logger.info("Attached to OCD")
@@ -212,3 +228,48 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("MCU reset")
         self.device.avr.protocol.reset()
         self._wait_for_break()
+
+    def read_fuse(self, addr, size):
+        """
+        Read fuses (does not work with debugWIRE and in JTAG only when programming mode)
+        """
+        return self.device.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_FUSES, addr, size)
+
+    def write_fuse(self, addr, data):
+        """
+        Write fuses (does not work with debugWIRE and in JTAG only in programming mode)
+        """
+        return self.device.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, addr, data)
+
+    def read_lock(self, addr, size):
+        """
+        Read lock bits (does not work with debugWIRE and in JTAG only when programming mode)
+        """
+        return self.device.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_LOCKBITS, addr, size)
+
+    def write_lock(self, addr, data):
+        """
+        Write lock bits (does not work with debugWIRE and in JTAG only in programming mode)
+        """
+        return self.device.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_LOCKBITS, addr, data)
+
+    def read_sig(self, addr, size):
+        """
+        Read signature in a liberal way, i.e., throwing no errors
+        """
+        resp = self.device.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_SIGNATURE, 0, 3)
+        if size+addr > 3:
+            resp += [0xFF]*(addr+size)
+        return bytearray(resp[addr:addr+size])
+
+    def read_usig(self, addr, size):
+        """
+        Read contents of user signature (does not work with debugWIRE)
+        """
+        return self.device.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_USER_SIGNATURE, addr, size)
+
+    def write_usig(self, addr, data):
+        """
+        Write user signature
+        """
+        return self.device.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_USER_SIGNATURE, addr, data)
