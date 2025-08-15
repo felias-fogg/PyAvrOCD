@@ -77,7 +77,7 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
     # reason for the difference in arguments:
     # read and write are declared as staticmethod in the base class,
     # which is an oversight, I believe
-    def read(self, memory_info, offset, numbytes):
+    def read(self, memory_info, offset, numbytes, prog_mode=False):
         """
         Read the memory in chunks
 
@@ -104,7 +104,8 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         else:
             # if we read chunks that are not page sized or not page aligned, then use SPM as memtype
             if offset%memory_info[DeviceMemoryInfoKeys.PAGE_SIZE] != 0 or \
-              numbytes != memory_info[DeviceMemoryInfoKeys.PAGE_SIZE]:
+              numbytes != memory_info[DeviceMemoryInfoKeys.PAGE_SIZE] or \
+              not prog_mode:
                 memtype = Avr8Protocol.AVR8_MEMTYPE_SPM
 
         self.logger_local.debug("Reading from %s (memtype=0x%x) at %X %d bytes",

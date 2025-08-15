@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.10.1
+
+- **Fixed:**
+  - Since megaAVRs make a difference between FLASH_PAGE (during programming) and SPM 8during debugging, I added an optional parameter to the read routines in avrdebugger and nvmmegajtag `prog_mode`. While flashing the program, it is true; otherwise, it is false. Seems to to do the trick.
+
 ### 0.10.0
 
 - **Fixed:**

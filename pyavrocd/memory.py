@@ -235,7 +235,7 @@ class Memory():
                 # interestingly, it is faster to read single pages than a multi-page chunk!
                 for p in range(self._multi_buffer):
                     currentpage += self.dbg.flash_read(pgaddr+(p*self._flash_page_size),
-                                                           self._flash_page_size)
+                                                           self._flash_page_size, prog_mode=True)
             self.logger.debug("pagetoflash: %s", pagetoflash.hex())
             self.logger.debug("currentpage: %s", currentpage.hex())
             if currentpage[:len(pagetoflash)] == pagetoflash:
@@ -262,7 +262,8 @@ class Memory():
                     readbackpage = bytearray([])
                     for p in range(self._multi_buffer):
                         readbackpage += self.dbg.flash_read(pgaddr+(p*self._flash_page_size),
-                                                                     self._flash_page_size)
+                                                                     self._flash_page_size,
+                                                                      prog_mode=True)
                     self.logger.debug("pagetoflash: %s", pagetoflash.hex())
                     self.logger.debug("readback: %s", readbackpage.hex())
                     if readbackpage != pagetoflash:

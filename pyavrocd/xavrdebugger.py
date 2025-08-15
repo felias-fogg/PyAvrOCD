@@ -169,8 +169,8 @@ class XAvrDebugger(AvrDebugger):
             raise FatalError("Debug session not started: %s" % e) #pylint: disable=raise-missing-from
         self.verify_target()
         self.logger.info("Target verified")
-        self.post_process_after_start()
-        self.logger.info("Post processing finished")
+        #self.post_process_after_start()
+        #self.logger.info("Post processing finished")
         self.check_stuck_at_one_pc()
         self.logger.info("Checked that there is no stuck-at-1-bit in the PC")
         self.logger.info("... debug session startup done")
@@ -587,3 +587,18 @@ class XAvrDebugger(AvrDebugger):
         Write user signature
         """
         return self.device.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_USER_SIGNATURE, addr, data)
+
+    def flash_read(self, address, numbytes, prog_mode=False):
+        """
+        Read flash content from the AVR
+
+        :param address: absolute address to start reading from
+        :param numbytes: number of bytes to read
+        :param prog_mode: optinal, when False, FLASH_SPM is chosen, otherwise FLASH_PAGE
+        """
+        self.logger.debug("Reading %d bytes from flash at %X", numbytes, address)
+        # The debugger protocols (via pymcuprog) use memory-types with zero-offsets
+        # However the address used here is already zero-offset, so no compensation is done here
+        return self.device.read(self.memory_info.memory_info_by_name('flash'),
+                                    address, numbytes, prog_mode=prog_mode)
+
