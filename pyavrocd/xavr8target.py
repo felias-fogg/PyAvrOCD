@@ -142,7 +142,7 @@ class XTinyAvrTarget(TinyAvrTarget):
         spmcsr_addr = device_info.get('spmcsr_base')
         osccal_addr = device_info.get('osccal_base')
 
-# Setup device structure and write to tool
+        # Setup device structure and write to tool
         # TINY_FLASH_PAGE_BYTES (2@0x00)
         devdata = bytearray([fl_page_size & 0xff, 0])
         # TINY_FLASH_BYTES (4@0x02)
@@ -280,6 +280,7 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         Sets up a programming session on an Mega AVR (JTAG)
         """
+        self.logger.debug("Setting up debug session for JTAG target")
         self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
         self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
@@ -321,7 +322,7 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         eecr_addr = device_info.get('eecr_base')
         eedr_addr = device_info.get('eedr_base')
         spmcsr_addr = device_info.get('spmcsr_base')
-        osccal_addr = device_info.get('osccal_base') - 0x20
+        osccal_addr = device_info.get('osccal_base')
 
         # Setup device structure and write to tool
 

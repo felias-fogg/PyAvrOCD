@@ -56,7 +56,7 @@ DEVICE_INFO = {
     'eear_size' : 1,
     'eecr_base' : 0x-4,
     'eedr_base' : 0x-3,
-    'osccal_base' : 0x31,
+    'osccal_base' : 0x11,
     'device_id': 0x1E9005,
     'interface': 'ISP+HVSP'
 }

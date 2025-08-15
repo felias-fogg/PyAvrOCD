@@ -65,8 +65,9 @@ DEVICE_INFO = {
     'eear_size' : 2,
     'eecr_base' : 0x1C,
     'eedr_base' : 0x1D,
-    'osccal_base' : 0x24,
-    'bootrst_fuse' : 0x01,
+    'osccal_base' : 0x04,
+    'bootrst_base' : 0x01,
+    'bootrst_mask' : 0x01,
     'masked_registers' : [0x2f],
     'device_id': 0x1E9306,
     'interface': 'ISP+HVPP'

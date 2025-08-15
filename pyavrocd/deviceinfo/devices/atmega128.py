@@ -68,8 +68,11 @@ DEVICE_INFO = {
     'eecr_base' : 0x1C,
     'eedr_base' : 0x1D,
     'spmcsr_base' : 0x68,
-    'osccal_base' : 0x6F,
-    'bootrst_fuse' : 0x01,
+    'osccal_base' : 0x4F,
+    'ocden_base' : 0x01,
+    'ocden_mask' : 0x80,
+    'bootrst_base' : 0x01,
+    'bootrst_mask' : 0x01,
     'masked_registers' : [0x2c, 0x2f, 0x42, 0x9c],
     'device_id': 0x1E9702,
     'interface': 'ISP+HVPP+JTAG'

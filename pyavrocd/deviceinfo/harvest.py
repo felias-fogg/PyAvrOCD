@@ -331,6 +331,38 @@ def capture_bootrst_from_register_group(element):
                 return off
     return None
 
+def capture_dwen_from_register_group(element):
+    """
+    Capture the fuse address of the DWEN bit from a register-group element
+
+    :param element: element with tag='register-group'
+    :type element: xml.etree.ElementTree.Element instance
+    :return: fuse address where DWEN is located
+    :rtype: int
+    """
+    for reg in element.findall('register'):
+        off = reg.attrib['offset']
+        for bf in reg.findall('bitfield'):
+            if bf.attrib['name'].lower() == 'dwen':
+                return off
+    return None
+
+def capture_ocden_from_register_group(element):
+    """
+    Capture the fuse address of the OCDEN bit from a register-group element
+
+    :param element: element with tag='register-group'
+    :type element: xml.etree.ElementTree.Element instance
+    :return: fuse address where OCDEN is located
+    :rtype: int
+    """
+    for reg in element.findall('register'):
+        off = reg.attrib['offset']
+        for bf in reg.findall('bitfield'):
+            if bf.attrib['name'].lower() == 'ocden':
+                return off
+    return None
+
 
 def get_flash_offset(element):
     """
@@ -450,8 +482,12 @@ def harvest_from_file(filename):
     eedr_base = None
     spmcsr_base = None
     osccal_base = None
+    dwen_base = None
     dwen_mask = None
-    bootrst_fuse = None
+    ocden_base = None
+    ocden_mask = None
+    bootrst_base = None
+    bootrst_mask = None
     buf_per_page = None
 
     memories = {}
@@ -497,7 +533,7 @@ def harvest_from_file(filename):
                 if elem.attrib['name'].lower() == 'spmcsr':
                     spmcsr_base = int(elem.attrib['offset'],16)
                 if elem.attrib['name'].lower() in ['osccal', 'osccal0', 'fosccal', 'sosccala']:
-                    osccal_base = int(elem.attrib['offset'],16)
+                    osccal_base = int(elem.attrib['offset'],16) - 0x20
                 if elem.attrib.get('ocd-rw',"RW") in ["", "W"]:
                     crit_fields.append(elem.attrib['name'] +  \
                                         ("-Wonly" if (elem.attrib.get('ocd-rw',"RW") == "W") else ""))
@@ -511,9 +547,17 @@ def harvest_from_file(filename):
             if elem.tag == 'bitfield':
                 if elem.attrib['name'].lower() == 'dwen':
                     dwen_mask = elem.attrib['mask']
+                if elem.attrib['name'].lower() == 'ocden':
+                    ocden_mask = elem.attrib['mask']
+                if elem.attrib['name'].lower() == 'bootrst':
+                    bootrst_mask = elem.attrib['mask']
             if elem.tag == 'register-group':
                 if capture_bootrst_from_register_group(elem) is not None:
-                    bootrst_fuse = capture_bootrst_from_register_group(elem)
+                    bootrst_base = capture_bootrst_from_register_group(elem)
+                if capture_dwen_from_register_group(elem) is not None:
+                    dwen_base = capture_dwen_from_register_group(elem)
+                if capture_ocden_from_register_group(elem) is not None:
+                    ocden_base = capture_ocden_from_register_group(elem)
 
 
     extra_fields += capture_field('address_size', determine_address_size(progmem_offset))
@@ -550,11 +594,19 @@ def harvest_from_file(filename):
         extra_fields += "    'spmcsr_base' : " + "0x%02X" % spmcsr_base + ",\n"
     if osccal_base:
         extra_fields += "    'osccal_base' : " + "0x%02X" % osccal_base + ",\n"
+    if dwen_base:
+        extra_fields += "    'dwen_base' : " + "%s" % dwen_base + ",\n"
     if dwen_mask:
         extra_fields += "    'dwen_mask' : " + "%s" % dwen_mask + ",\n"
-    if bootrst_fuse is not None:
-        extra_fields += "    'bootrst_fuse' : " + "%s" % bootrst_fuse + ",\n"
-    if buf_per_page is not None:
+    if ocden_base:
+        extra_fields += "    'ocden_base' : " + "%s" % ocden_base + ",\n"
+    if ocden_mask:
+        extra_fields += "    'ocden_mask' : " + "%s" % ocden_mask + ",\n"
+    if bootrst_base:
+        extra_fields += "    'bootrst_base' : " + "%s" % bootrst_base + ",\n"
+    if bootrst_mask:
+        extra_fields += "    'bootrst_mask' : " + "%s" % bootrst_mask + ",\n"
+    if buf_per_page:
         extra_fields += "    'buffers_per_flash_page' : " + "%s" % buf_per_page + ",\n"
     if masked:
         extra_fields += "    'masked_registers' : [{}],\n".format(', '.join(hex(x) for x in sorted(masked)))

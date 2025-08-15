@@ -21,8 +21,6 @@ from pymcuprog.pymcuprog_errors import PymcuprogNotSupportedError, PymcuprogErro
 from pyavrocd.memory import Memory
 from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT
 from pyavrocd.monitor import MonitorCommand
-from pyavrocd.debugwiretarget import DebugWIRE
-from pyavrocd.jtagtarget import JTAG
 from pyavrocd.livetests import LiveTests
 from pyavrocd.errors import  EndOfSession, FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
@@ -37,15 +35,10 @@ class GdbHandler():
     def __init__ (self, comsocket, avrdebugger, devicename):
         self.packet_size = RECEIVE_BUFFER - 20
         self.logger = getLogger('pyavrocd.handler')
+        self.rsp_logger = getLogger('pyavrocd.rsp')
         self.dbg = avrdebugger
         self.mon = MonitorCommand(self.dbg.iface)
         self.mem = Memory(avrdebugger, self.mon)
-        self.dw = None
-        self.jtag = None
-        if self.dbg.iface == 'debugwire':
-            self.dw = DebugWIRE(avrdebugger, self.mem, devicename)
-        elif self.dbg.iface == 'jtag':
-            self.jtag = JTAG(avrdebugger, self.mem, devicename)
         self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
         self._devicename = devicename
@@ -133,7 +126,7 @@ class GdbHandler():
         self.send_packet("S{:02X}".format(self.last_sigval))
         self.logger.debug("Reason was %s",self.last_sigval)
 
-    def _debugger_is_active(self):
+    def __debugger_is_active(self):
         """
         Internal method for continue and step:
         Checks whether debugger is active and flash is loaded. If not,
@@ -156,7 +149,7 @@ class GdbHandler():
             return False
         return True
 
-    def _send_execution_result_signal(self, sig):
+    def __send_execution_result_signal(self, sig):
         """
         Internal method for continue and step:
         Print message and send signal according the result of the execution.
@@ -176,13 +169,13 @@ class GdbHandler():
         'c': Continue execution, either at current address or at given address
         """
         self.logger.debug("RSP packet: Continue")
-        if not self._debugger_is_active():
+        if not self.__debugger_is_active():
             return
         newpc = None
         if packet:
             newpc = int(packet,16)
             self.logger.debug("Set PC to 0x%X before resuming execution", newpc)
-        self._send_execution_result_signal(self.bp.resume_execution(newpc))
+        self.__send_execution_result_signal(self.bp.resume_execution(newpc))
 
     def _continue_with_signal_handler(self, packet):
         """
@@ -376,13 +369,13 @@ class GdbHandler():
             if response[0] == 'dwon':
                 if self._connection_error:
                     raise FatalError(self._connection_error)
-                self.dw.cold_start(graceful=False, callback=self.send_power_cycle)
+                self.dbg.prepare_debugging(callback=self.__send_power_cycle)
+                self.dbg.start_debugging()
                 # will only be called if there was no error in connecting to OCD:
                 self.mon.set_debug_mode_active()
-                self.dbg.reset()
             elif response[0] == 'dwoff':
                 self.dbg.reset()
-                self.dw.disable()
+                self.dbg.dw_disable()
                 self.mon.set_debug_mode_active(False)
             elif response[0] == 'reset':
                 self.dbg.reset()
@@ -412,7 +405,7 @@ class GdbHandler():
             self.send_reply_packet(response[1])
 
 
-    def send_power_cycle(self):
+    def __send_power_cycle(self):
         """
         This is a call back function that will try to power-cycle
         automagically. If successful, it will return True.
@@ -447,17 +440,12 @@ class GdbHandler():
         self.logger.debug("RSP packet: qSupported query.")
         self.logger.debug("Will answer 'PacketSize=%X;qXfer:memory-map:read+'",
                               self.packet_size)
-        # Try to start a debugging session
-        # if the interface is JTAG, check whether we can establish a connection.
-        # If not, we end the GDB session with an error message.
-        # If the interface is debugWIRE, then try to connect.
-        # if we are already in debugWIRE mode, this will work
-        # if not, one has to use the 'monitor debugwire on' command later on
+        # Try to start a debugging session. If we are unsuccessful,
+        # one has to use the 'monitor debugwire on' command later on
         # If a fatal error is raised, we will remember that and print it again
         # when a request for enabling debugWIRE is made
         try:
-            if  (self.dbg.iface == 'debugwire' and self.dw.warm_start(graceful=True)) or \
-                (self.dbg.iface == 'jtag' and self.jtag.start()):
+            if self.dbg.start_debugging(warmstart=self.dbg.iface=='debugwire'):
                 self.mon.set_debug_mode_active()
         except FatalError as e:
             self.logger.critical("Error while connecting to target OCD: %s", e)
@@ -497,13 +485,13 @@ class GdbHandler():
         """
         's': single step, perhaps starting at a different address
         """
-        if not self._debugger_is_active():
+        if not self.__debugger_is_active():
             return
         newpc = None
         if packet:
             newpc = int(packet,16)
             self.logger.debug("Set PC to 0x%X before single step",newpc)
-        self._send_execution_result_signal(self.bp.single_step(newpc))
+        self.__send_execution_result_signal(self.bp.single_step(newpc))
 
 
     def _step_with_signal_handler(self, packet):
@@ -534,7 +522,7 @@ class GdbHandler():
                 self._step_handler("")
             elif packet[1] == 'r':
                 step_range = packet[2:].split(':')[0].split(',')
-                self._send_execution_result_signal(
+                self.__send_execution_result_signal(
                     self.bp.range_step(int(step_range[0],16), int(step_range[1],16)))
             else:
                 self.send_packet("") # unknown
@@ -656,7 +644,7 @@ class GdbHandler():
         'vRun': reset and wait to be started from address 0
         """
         self.logger.debug("RSP packet: run")
-        if not self._debugger_is_active():
+        if not self.__debugger_is_active():
             return
         self.logger.debug("Resetting MCU and wait for start")
         self.dbg.reset()
@@ -745,7 +733,8 @@ class GdbHandler():
         """
         Checks the AvrDebugger for incoming events (breaks)
         """
-        if not self.mon.is_debugger_active(): # if DW is not enabled yet, simply return
+        if not self.mon.is_debugger_active() or self.mem.programming_mode:
+            # if DW is not enabled yet or we are in programming mode, simply return
             return
         pc = self.dbg.poll_event()
         if pc:
@@ -765,7 +754,7 @@ class GdbHandler():
         """
         checksum = sum(packet_data.encode("ascii")) % 256
         message = "$" + packet_data + "#" + format(checksum, '02x')
-        self.logger.debug("<- %s", message)
+        self.rsp_logger.debug("<- %s", message)
         self._lastmessage = packet_data
         self._comsocket.sendall(message.encode("ascii"))
 
@@ -779,7 +768,7 @@ class GdbHandler():
     def send_debug_message(self, mes):
         """
         Send a packet that always should be displayed in the debug console when the system
-        is in active mode.
+        is in 'running' mode.
         """
         self.send_packet('O' + binascii.hexlify(bytearray((mes+"\n").\
                                                     encode('utf-8'))).decode("ascii").upper())
@@ -813,7 +802,7 @@ class GdbHandler():
             return
         while data:
             if data[0] == ord('+'): # ACK
-                self.logger.debug("-> +")
+                self.rsp_logger.debug("-> +")
                 data = data[1:]
                 # if no ACKs/NACKs are following, delete last message
                 if not data or data[0] not in b'+-':
@@ -824,7 +813,7 @@ class GdbHandler():
                 while (i < len(data) and data[i] == ord('-')):
                     i += 1
                 data = data[i:]
-                self.logger.debug("-> -")
+                self.rsp_logger.debug("-> -")
                 if self._lastmessage:
                     self.logger.debug("Resending packet to GDB")
                     self.send_packet(self._lastmessage)
@@ -835,11 +824,11 @@ class GdbHandler():
                 self.dbg.stop()
                 self.send_signal(SIGINT)
                 #self._comsocket.sendall(b"+")
-                #self.logger.debug("<- +")
+                #self.rsp_logger.debug("<- +")
                 data = data[1:]
             elif data[0] == ord('$'): # start of message
                 valid_data = True
-                self.logger.debug('-> %s', data)
+                self.rsp_logger.debug('-> %s', data)
                 checksum = (data.split(b"#")[1])[:2]
                 packet_data = (data.split(b"$")[1]).split(b"#")[0]
                 if int(checksum, 16) != sum(packet_data) % 256:
@@ -847,10 +836,10 @@ class GdbHandler():
                     valid_data = False
                 if not valid_data:
                     self._comsocket.sendall(b"-")
-                    self.logger.debug("<- -")
+                    self.rsp_logger.debug("<- -")
                 else:
                     self._comsocket.sendall(b"+")
-                    self.logger.debug("<- +")
+                    self.rsp_logger.debug("<- +")
                     # now split into command and data (or parameters) and dispatch
                     if chr(packet_data[0]) not in {'v', 'q', 'Q'}:
                         i = 1

@@ -154,6 +154,13 @@ def options():
                             type=str,
                             help="Device to debug")
 
+    parser.add_argument("-f", "--fuse",
+                            action='append',
+                            dest='manage',
+                            type=str,
+                            choices=['all', 'bootrst', 'dwen', 'ocden', 'lockbits'],
+                            help="Fuses to be managed by the GDB server")
+
     parser.add_argument('-g', '--gede',  action="store_true",
                             help='Start Gede debugger GUI')
 
@@ -180,9 +187,9 @@ def options():
                             help="USB serial number of the unit to use")
 
     parser.add_argument("-v", "--verbose",
-                            default="info", choices=['debug', 'info',
+                            default="info", choices=['all', 'debug', 'info',
                                                          'warning', 'error', 'critical'],
-                            help="Logging verbosity level")
+                            help="Verbosity level for logger")
 
     parser.add_argument("-V", "--version",
                             help="Print pyavrocd version number and exit",
@@ -232,7 +239,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"
     logger.info("Udev rules have been successfully installed")
     return 0
 
-def setup_logging(args):
+def setup_logging(args, log_rsp):
     """
     Setup logging
     """
@@ -247,6 +254,8 @@ def setup_logging(args):
 
     if args.verbose.lower() == "debug":
         getLogger('pyedbglib').setLevel(logging.INFO)
+        if not log_rsp:
+            getLogger('pyavrocd.rsp').setLevel(logging.CRITICAL)
     if args.verbose.lower() != "debug":
         # suppress messages from hidtransport
         getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
@@ -258,7 +267,7 @@ def setup_logging(args):
         getLogger('pymcuprog.avr8target').setLevel(logging.ERROR)
     return logger
 
-def process_arguments(args, logger):
+def process_arguments(args, logger): #pylint: disable=too-many-branches
     """
     Process the parsed options. Return triple of
     - return value (if program should be terminated, else None;
@@ -270,19 +279,25 @@ def process_arguments(args, logger):
         return 0,None,None
 
     if args.cmd:
-        args.cmd = args.cmd
-        portcmd = [c for c in args.cmd if 'gdb_port' in c]
-        if portcmd:
+        for portcmd in [c for c in args.cmd if 'gdb_port' in c]:
             cmd = portcmd[0]
             args.port = int(cmd[cmd.index('gdb_port')+len('gdb_port'):])
+
+    if args.tool:
+        args.tool = args.tool.strip()
 
     if args.dev:
         args.dev = args.dev.strip()
 
+    if args.manage is None:
+        args.manage = []
+    if 'all' in args.manage:
+        args.manage = ['bootrst', 'dwen', 'ocden', 'lockbits']
+
     if args.dev and args.dev == "?":
         if args.interface:
             print("Supported device with debugging interface '%s':" % args.interface)
-            alldev = [x for x in sorted(dev_id) if args.interface in dev_iface[dev_id[x]].lower()]
+            alldev = [x for x in sorted(dev_id) if args.interface in dev_iface[dev_id[x]].lower().split("+")]
         else:
             print("Supported devices:")
             alldev = sorted(dev_id)
@@ -312,7 +327,7 @@ def process_arguments(args, logger):
         intf = [args.interface]
     else:
         intf = [x for x in ['debugwire', 'jtag', 'pdi', 'updi']
-                    if x in dev_iface[dev_id[device]].lower()]
+                    if x in dev_iface[dev_id[device]].lower().split('+')]
     logger.debug("Device: %s", device)
     logger.debug("Possible interfaces: %s", intf)
     logger.debug("Interfaces of chip: %s",  dev_iface[dev_id[device]].lower())
@@ -328,7 +343,7 @@ def process_arguments(args, logger):
     intf = intf[0]
     return None, device, intf
 
-def startup_helper(args, logger):
+def startup_helper_prog(args, logger):
     """
     Starts program requested by user, e.g., a debugger GUI
     """
@@ -367,12 +382,18 @@ def main():
     """
     no_backend_error = False # will become true when libusb is not found
     no_hw_dbg_error = False # will become true, when no HW debugger is found
+    log_rsp = False
 
     # Parse options
     args, unknown = options()
 
+    # verbose option 'all' is a spical one
+    if args.verbose == "all":
+        log_rsp = True
+        args.verbose = "debug"
+
     # set up logging
-    logger = setup_logging(args)
+    logger = setup_logging(args, log_rsp)
 
     if unknown:
         logger.warning("Unknown options: %s", ' '.join(unknown))
@@ -381,9 +402,6 @@ def main():
     if result is not None:
         return result
 
-
-    if args.tool:
-        args.tool = args.tool.strip()
     if args.tool == "dwlink":
         dwlink.main(args, intf) # if we return, then there is no HW debugger
         no_hw_dbg_error = True
@@ -436,17 +454,14 @@ def main():
 
     logger.info("Starting GDB server")
     try:
-        avrdebugger = XAvrDebugger(transport, device, intf)
-        logger.info("Housekeeping session started")
+        avrdebugger = XAvrDebugger(transport, device, intf, args.manage)
         server = RspServer(avrdebugger, device, args.port)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)
             return 1
         raise
-
-    startup_helper(args, logger)
-
+    startup_helper_prog(args, logger)
     return run_server(server, logger)
 
 if __name__ == "__main__":

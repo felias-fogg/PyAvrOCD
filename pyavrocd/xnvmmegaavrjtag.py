@@ -55,9 +55,9 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
             if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE:
                 self.logger_local.info("Physical state out of sync.  Retrying.")
                 self.avr.deactivate_physical()
-                self.logger_local_local.info("Physical interface deactivated")
+                self.logger_local.info("Physical interface deactivated")
                 resp = self.avr.activate_physical()
-                self.logger_local_local.info("Physical interface activated")
+                self.logger_local.info("Physical interface activated")
             else:
                 raise
 
@@ -69,9 +69,9 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         """
         Stop (deactivate) session for JTAG targets
         """
-        self.logger_local_local.info("JTAG-specific de-initialiser")
+        self.logger_local.info("JTAG-specific de-initialiser")
         self.avr.deactivate_physical()
-        self.logger_local_local.info("Physical interface deactivated")
+        self.logger_local.info("Physical interface deactivated")
 
     # pylint: disable=arguments-differ
     # reason for the difference in arguments:
@@ -184,6 +184,6 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         """
         Erase one page (in debug mode only)
         """
-        resp = self.protocol.jtagice3_command_response(
-            bytearray([Avr8Protocol.CMD_AVR8_PAGE_ERASE, Avr8Protocol.CMD_VERSION0, binary.pack_le32(pageaddr)]))
-        return self.protocol.check_response(resp)
+        resp = self.avr.protocol.jtagice3_command_response(
+            bytearray([Avr8Protocol.CMD_AVR8_PAGE_ERASE, Avr8Protocol.CMD_VERSION0]) + binary.pack_le32(pageaddr))
+        return self.avr.protocol.check_response(resp)

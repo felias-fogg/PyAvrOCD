@@ -47,7 +47,7 @@ DEVICE_INFO = {
     # Missing hv_implementation property in ATDF file
     # Defaulting to 1 for devices without UPDI fuse
     'hv_implementation': 1,
-    'osccal_base' : 0x39,
+    'osccal_base' : 0x19,
     'device_id': 0x1E900C,
     'interface': 'TPI'
 }

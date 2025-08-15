@@ -68,9 +68,11 @@ DEVICE_INFO = {
     'eecr_base' : 0x1F,
     'eedr_base' : 0x20,
     'spmcsr_base' : 0x57,
-    'osccal_base' : 0x66,
+    'osccal_base' : 0x46,
+    'dwen_base' : 0x01,
     'dwen_mask' : 0x40,
-    'bootrst_fuse' : 0x01,
+    'bootrst_base' : 0x01,
+    'bootrst_mask' : 0x01,
     'masked_registers' : [0x4e, 0x51, 0x82, 0xc6],
     'device_id': 0x1E950F,
     'interface': 'ISP+HVPP+debugWIRE'

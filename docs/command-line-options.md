@@ -6,6 +6,7 @@ When starting pyavrocd, you can influence its behavior by several command-line o
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `--command`<br>`-c`                                          | Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2. This is an alternative to the `--port` option. |
 | `--device` <br>`-d`                                          | The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed. |
+| `--fuse`<br>`-f`                                             | Can be given multiple times and specifies which fuses to protect against changes by the GDB server. Possible arguments are `all`, `bootrst`, `dwen`, `ocden`, `lockbits`. Any protected fuse needs to be changed 'manually' before and/or after the GDB server is activated. |
 | `--gede`<br>`-g`                                             | No argument for this option. This option will start the `Gede` debugger GUI. |
 | `--interface`<br>`-i`                                        | Debugging interface to use. Should be one of `debugwire`, `jtag`, `pdi`, or `updi`. Only necessary if an MCU supports more than one interface or if one wants to see only the supported chips with a particular interface. |
 | `--port` <br>`-p`                                            | IP port on the local host to which GDB can connect. The default is 2000. |

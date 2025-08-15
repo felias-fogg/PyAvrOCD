@@ -72,8 +72,11 @@ DEVICE_INFO = {
     'eecr_base' : 0x1F,
     'eedr_base' : 0x20,
     'spmcsr_base' : 0x57,
-    'osccal_base' : 0x66,
-    'bootrst_fuse' : 0x00,
+    'osccal_base' : 0x46,
+    'ocden_base' : 0x01,
+    'ocden_mask' : 0x02,
+    'bootrst_base' : 0x00,
+    'bootrst_mask' : 0x08,
     'masked_registers' : [0x51],
     'device_id': 0x1E9507,
     'interface': 'HVPP+JTAG'

@@ -23,7 +23,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     NVM Access the DW way
     """
     #pylint: disable=non-parent-init-called, super-init-not-called
-    #we want to set up thje debug session much later
+    #we want to set up the debug session much later
     def __init__(self, transport, device_info):
         self.logger_local = getLogger('pyavrocd.nvmdw')
         NvmAccessProviderCmsisDapAvr.__init__(self, device_info)

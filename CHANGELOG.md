@@ -1,16 +1,31 @@
 # Changelog
 
+### 0.10.0
+
+- **Fixed:**
+  - One can now enter debugging even when OCDEN was not set. This is now done when connecting.
+- **Added:**
+  - Option value `all` for `-v` if the full RSP communication should be displayed during debugging.
+  - New option `-f`/`--fuse`, which can be used to specify which fuses shall be protected against change in the GDB server.
+- **Changed:**
+  - Reorganized the initialization process completely. Now all of it takes place in `XAvrDebugger`. All classes have `init` methods that set up the data structure, but do not contain code to initialize anything in the debugging tool (or such code is not inherited). The `start_debugging` method in `XAvrDebugger` does all the heavy lifting (including calls to special code for debugWIRE and JTAG/Mega).
+
+- **Note:**
+  - Memory type for access to flash is not set to MEMTYPE_SPM as it should be
+  - While the Atmel debugger all work, SNAP and PICkit4 choke. There is some problem with memory access, I believe.
+
+
 ### 0.9.7
 
 - **Added:**
-  - The first part of integrating JTAG in xmvmegaavrjtag.py (basically the stuff I added for debugwire), xavr8target.py, jtagtarget.py (first steps and starting and stopping JTAG), and in xavrdebugger.py is working. I can now enter debugging mode on a Xplained324pb board!
-  - Added a switch to revert to debugging mode while flashing a program, enabling the erasure of a single page when using the read-before-write strategy. It turns out that this strategy is now no longer dominant.
+  - The first part of integrating JTAG in xmvmegaavrjtag.py (basically the stuff I added for debugwire), xavr8target.py, jtagtarget.py (first steps and starting and stopping JTAG), and in xavrdebugger.py is working. I can now enter debugging mode on an Xplained324pb board!
+  - Added code to revert to debugging mode while flashing a program, enabling the erasure of a single page when using the read-before-write strategy. It turns out that this strategy is now no longer dominant, so defaults should probably be dependent on the debugging interface.
   - New memory areas and methods to access them have been integrated.
 
 ### 0.9.6
 
 - **Added:**
-  - Attribute `lazy_loading` is added to class `Memory`. It will be set to `True` by the first X-record concerning flash memory, and it is used to leave excess memory unprogrammed in each step (in `flash_pages`). If, in the end, the server times out not receiving any new records, then it will send an empty packet to the handler, which will be taken as an indication that now flashing should be finalised, i.e., setting `lazy_loading` to `False` again, calling `flash_pages` a last time, and disabling prog mode. This gives a reasonable handling of executables for clients without XML support.
+  - The attribute `lazy_loading` is added to the class `Memory`. It will be set to `True` by the first X-record concerning flash memory, and it is used to leave excess memory unprogrammed in each step (in `flash_pages`). If, in the end, the server times out not receiving any new records, then it will send an empty packet to the handler, which will be taken as an indication that now flashing should be finalised, i.e., setting `lazy_loading` to `False` again, calling `flash_pages` a last time, and disabling prog mode. This provides a reasonable solution for loading executables in clients without XML support.
 
 ### 0.9.5
 
