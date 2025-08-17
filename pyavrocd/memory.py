@@ -231,7 +231,7 @@ class Memory():
             self.logger.debug("Flashing page starting at 0x%X", pgaddr)
             pagetoflash = self._flash[pgaddr:pgaddr + self._multi_page_size]
             currentpage = bytearray([])
-            if self.mon.is_fastload():
+            if self.mon.is_read_before_write():
                 # interestingly, it is faster to read single pages than a multi-page chunk!
                 for p in range(self._multi_buffer):
                     currentpage += self.dbg.flash_read(pgaddr+(p*self._flash_page_size),
@@ -241,14 +241,10 @@ class Memory():
             if currentpage[:len(pagetoflash)] == pagetoflash:
                 self.logger.debug("Skip flashing page because already flashed at 0x%X", pgaddr)
             else:
-                if self.dbg.iface == 'jtag':
-                    if self.mon.is_fastload() and not self.dbg.device.avr.is_blank(currentpage):
-                        self.logger.debug("Erasing page at 0x%x in debug mode", pgaddr)
-                        if self.programming_mode:
-                            self.dbg.device.avr.protocol.leave_progmode()
-                        self.dbg.device.erase_page(pgaddr)
-                        if self.programming_mode:
-                            self.dbg.device.avr.protocol.enter_progmode()
+                if self.mon.is_read_before_write() and not self.dbg.device.avr.is_blank(currentpage):
+                    # will erase if necessary and return True if it did
+                    if self.dbg.device.erase_page(pgaddr, self.programming_mode):
+                        self.logger.debug("Page at 0x%x erased", pgaddr)
                 self.logger.debug("Flashing now from 0x%X to 0x%X", pgaddr, pgaddr+len(pagetoflash))
                 pagetoflash.extend(bytearray([0xFF]*(self._multi_page_size-len(pagetoflash))))
                 flashmemtype = self.dbg.device.avr.memtype_write_from_string('flash')

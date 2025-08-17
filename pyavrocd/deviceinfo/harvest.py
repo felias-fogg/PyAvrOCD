@@ -530,7 +530,8 @@ def harvest_from_file(filename):
                     eecr_base = int(elem.attrib['offset'],16) - 0x20
                 if elem.attrib['name'].lower() == 'eedr':
                     eedr_base = int(elem.attrib['offset'],16) - 0x20
-                if elem.attrib['name'].lower() == 'spmcsr':
+                if elem.attrib['name'].lower() == 'spmcsr' or \
+                   elem.attrib['name'].lower() == 'spmcr':
                     spmcsr_base = int(elem.attrib['offset'],16)
                 if elem.attrib['name'].lower() in ['osccal', 'osccal0', 'fosccal', 'sosccala']:
                     osccal_base = int(elem.attrib['offset'],16) - 0x20

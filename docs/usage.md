@@ -4,8 +4,10 @@
 
 After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: `-Og` and `-ggdb3`. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.
 
+When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [board preparations](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md)):
+
 ```
-> pyavrocd -d atmega328p
+> pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP
 [INFO] Starting pyavrocd
@@ -43,7 +45,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 
 If you have reached this point, I trust that you are familiar with GDB and know how to proceed.
 
-Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use, you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.
+Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.
 
 ## Debugging using the Arduino IDE 2
 
@@ -65,7 +67,7 @@ Instead of the message shown in the following screenshot, a warning "No hardware
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-2.png)
 
-If there is a connection to the debugger and the target, the GDB server will start up. If you deal with a debugWIRE target, it may require you to power-cycle the target, i.e., disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
+If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
 
 After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
 

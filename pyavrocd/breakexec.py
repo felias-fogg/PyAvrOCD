@@ -36,15 +36,15 @@ class BreakAndExec():
         self._bp = {}
         self._bpactive = 0
         self._bstamp = 0
-        # more than 128 MB:
+        # more than 128 kB:
         self._bigmem = self.dbg.memory_info.memory_info_by_name('flash')['size'] > 128*1024
         self._range_start = 0
         self._range_end = 0
         self._range_word = []
         self._range_branch = []
         self._range_exit = set()
-        if self._bigmem:
-            raise FatalError("Cannot deal with address spaces larger than 128 MB")
+        #if self._bigmem:
+        #    raise FatalError("Cannot deal with address spaces larger than 128 kB")
 
     def _read_filtered_flash_word(self, address):
         """

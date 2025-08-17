@@ -16,19 +16,22 @@ class MonitorCommand():
         self._iface = iface
         self._debugger_active = False
         self._debugger_activated_once = False
-        self._noload = False # when true, one may start execution even without a previous load
-        self._onlyhwbps = False
-        self._onlyswbps = False
-        self._fastload = True
-        self._cache = True
-        self._safe = True
-        self._verify = True
-        self._timersfreeze = True
-        self._noxml = False
-        self._power = True
-        self._old_exec = False
-        self._range = True
 
+        # state variables (will be set by set_default_values)
+        self._noload = None # when true, one may start execution even without a previous load
+        self._onlyhwbps = None
+        self._onlyswbps = None
+        self._read_before_write = None
+        self._cache = None
+        self._safe = None
+        self._verify = None
+        self._timersfreeze = None
+        self._noxml = None
+        self._power = None
+        self._old_exec = None
+        self._range = None
+
+        # commands
         self.moncmds = {
             'breakpoints'  : self._mon_breakpoints,
             'caching'      : self._mon_cache,
@@ -43,11 +46,15 @@ class MonitorCommand():
             'timers'       : self._mon_timers,
             'verify'       : self._mon_flash_verify,
             'version'      : self._mon_version,
-            'NoXML'        : self._mon_no_xml,
+            'NoXML'        : self._mon_noxml,
             'OldExecution' : self._mon_old_execution,
             'Target'       : self._mon_target,
             'LiveTests'    : self._mon_live_tests,
             }
+
+        # default state values
+        self.set_default_state()
+        
 
     def set_default_state(self):
         """
@@ -56,11 +63,11 @@ class MonitorCommand():
         self._noload = False
         self._onlyhwbps = False
         self._onlyswbps = False
-        self._fastload = True
+        self._read_before_write = self._iface == 'debugwire'
         self._cache = True
         self._safe = True
-        self._verify = True
-        self._timersfreeze = True
+        self._verify = False
+        self._timersfreeze = False
         self._noxml = False
         self._power = True
         self._old_exec = False
@@ -99,11 +106,11 @@ class MonitorCommand():
         self._debugger_active = enable
         self._debugger_activated_once = True
 
-    def is_fastload(self):
+    def is_read_before_write(self):
         """
         Returns True iff read-before-write is enabled for the load function
         """
-        return self._fastload
+        return self._read_before_write
 
     def is_noload(self):
         """
@@ -172,7 +179,7 @@ class MonitorCommand():
         # For these internal monitor commands, we require that
         # they are fully spelled out so that they are not
         # invoked by a mistyped abbreviation
-        if handler == self._mon_no_xml and tokens[0] != "NoXML": # pylint: disable=comparison-with-callable
+        if handler == self._mon_noxml and tokens[0] != "NoXML": # pylint: disable=comparison-with-callable
             handler = self._mon_unknown
         if handler == self._mon_target and tokens[0] != "Target": # pylint: disable=comparison-with-callable
             handler = self._mon_unknown
@@ -288,7 +295,7 @@ Breakpoints:              """ + ("all types"
                                      ("only hardware bps"
                                           if self._onlyhwbps else "only software bps")) + """
 Execute only when loaded: """ + ("enabled" if not self._noload else "disabled") + """
-Load mode:                """ + ("read before write" if self._fastload else "write only") + """
+Load mode:                """ + ("read-before-write" if self._read_before_write else "write-only") + """
 Verify after load:        """ + ("enabled" if self._verify else "disabled") + """
 Caching loaded binary:    """ + ("enabled" if self._cache else "disabled") + """
 Timers:                   """ + ("frozen when stopped"
@@ -299,12 +306,12 @@ Single-stepping:          """ + ("safe" if self._safe else "interruptible"))
 
     def _mon_load(self,tokens):
         if (("readbeforewrite".startswith(tokens[0])  and tokens[0] != "") or
-            (tokens[0] == "" and self._fastload is True)):
-            self._fastload = True
+            (tokens[0] == "" and self._read_before_write is True)):
+            self._read_before_write = True
             return("", "Reading before writing when loading")
         if (("writeonly".startswith(tokens[0])  and tokens[0] != "") or
-                (tokens[0] == "" and self._fastload is False)):
-            self._fastload = False
+                (tokens[0] == "" and self._read_before_write is False)):
+            self._read_before_write = False
             return("", "No reading before writing when loading")
         return self._mon_unknown(tokens[0])
 
@@ -361,7 +368,7 @@ Single-stepping:          """ + ("safe" if self._safe else "interruptible"))
         return("", "pyavrocd version {}".format(importlib.metadata.version("pyavrocd")))
 
     # The following commands are for internal purposes
-    def _mon_no_xml(self, _):
+    def _mon_noxml(self, _):
         self._noxml = True
         return("", "XML disabled")
 

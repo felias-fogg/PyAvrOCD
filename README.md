@@ -37,6 +37,8 @@ Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copie
 * nEDBG - on-board debuggers on Curiosity Nano
 * **[dw-link](https://github.com/felias-fogg/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
 
+JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
+
 ### Switching to AVR mode
 
 Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually be accomplished as follows by using avrdude (>= Version 7.3):
@@ -99,7 +101,7 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 #### Supported Arduino boards
 
-All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that the [board must be physically changed](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md) before debugging is possible.
+All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that in most cases the [board must be physically changed](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md) before debugging is possible.
 
 <!--
 
@@ -138,7 +140,7 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 #### Supported Arduino boards
 
-All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by ISP programming because on the Arduino boards, JTAG is disabled by default.
+All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by SPI programming because on the Arduino boards, JTAG is disabled by default.
 
 -->
 

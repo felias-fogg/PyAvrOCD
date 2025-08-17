@@ -31,9 +31,6 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         self.logger_local = getLogger('pyavrocd.nvmjtag')
         NvmAccessProviderCmsisDapAvr.__init__(self, device_info)
         self.avr = XMegaAvrJtagTarget(transport)
-        self.logger_local.debug("Setting up device info ...")
-        self.avr.setup_config(device_info)
-        self.logger_local.debug("... setup done")
 
     #pylint: enable=non-parent-init-called, super-init-not-called
     def __del__(self):
@@ -181,10 +178,28 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
                                           write_chunk_size,
                                           allow_blank_skip=allow_blank_skip)
 
-    def erase_page(self,pageaddr):
+    def erase_page(self, pageaddr, prog_mode):
         """
-        Erase one page (in debug mode only)
+        Erase one page and return True to signal success.
+        We need to switch to debugging mode in order to execute the erase operation. 
         """
+        if prog_mode:
+            self.avr.switch_to_debmode()
         resp = self.avr.protocol.jtagice3_command_response(
             bytearray([Avr8Protocol.CMD_AVR8_PAGE_ERASE, Avr8Protocol.CMD_VERSION0]) + binary.pack_le32(pageaddr))
-        return self.avr.protocol.check_response(resp)
+        self.avr.protocol.check_response(resp)
+        if prog_mode:
+            self.avr.switch_to_progmode()
+        self.logger.debug("Page erase at 0x%x in debugging mode", pageaddr)
+        return True
+
+    def erase_chip(self, prog_mode):
+        """
+        Erase entire chip (works only for JTAG in debug mode). If successful, True is returned.
+        """
+        if not prog_mode:
+            self.avr.switch_to_progmode()
+        self.avr.erase()
+        if not prog_mode:
+            self.avr.switch_to_debmode()
+        return True

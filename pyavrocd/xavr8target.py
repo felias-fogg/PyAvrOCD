@@ -107,6 +107,19 @@ class XTinyAvrTarget(TinyAvrTarget):
         """
         return self.memtype_read_from_string(memtype_string)
 
+    def switch_to_progmode(self):
+        """
+        For debugWIRE, prog mode or deb mode actually do not make a big difference. We
+        will neverthelss switch modes. 
+        """
+        self.protocol.enter_progmode()
+
+    def switch_to_debmode(self):
+        """
+        Similar thing.
+        """
+        self.protocol.leave_progmode()
+
     def setup_config(self, device_info):
         """
         Sets up the device config for a tiny AVR device
@@ -276,6 +289,27 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         return self.memtype_read_from_string(memtype_string)
 
+    def switch_to_progmode(self):
+        """
+        This is a horrible kludge to get safe mode switches on
+        SNAP and PICkit4. On these tools, you HAVE TO restart the
+        session in order to get safe mode switching. Everything else
+        leads to interesting errors.
+        """
+        self.protocol.detach()
+        self.deactivate_physical()
+        self.activate_physical()
+        self.protocol.enter_progmode()
+
+    def switch_to_debmode(self):
+        """
+        Similar thing, but worse. You have to enter and leave progmode
+        in order to make a safe transition to debug mode. The attach
+        function often does not work!
+        """
+        self.switch_to_progmode()
+        self.protocol.leave_progmode()
+
     def setup_debug_session(self):
         """
         Sets up a programming session on an Mega AVR (JTAG)
@@ -284,7 +318,6 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
         self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
-
 
     # setup_config is done in the super class
     # However, it seems to be wrong. Instead of IO register addresses RAM addresses

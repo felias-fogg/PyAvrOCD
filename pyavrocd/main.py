@@ -154,13 +154,6 @@ def options():
                             type=str,
                             help="Device to debug")
 
-    parser.add_argument("-f", "--fuse",
-                            action='append',
-                            dest='manage',
-                            type=str,
-                            choices=['all', 'bootrst', 'dwen', 'ocden', 'lockbits'],
-                            help="Fuses to be managed by the GDB server")
-
     parser.add_argument('-g', '--gede',  action="store_true",
                             help='Start Gede debugger GUI')
 
@@ -168,6 +161,21 @@ def options():
                             type=str,
                             choices=['debugwire', 'jtag', 'pdi', 'updi'],
                             help="Debugging interface to use")
+
+    parser.add_argument("-m", "--manage",
+                            action='append',
+                            dest='manage',
+                            type=str,
+                            choices=['all', 'bootrst', 'dwen', 'ocden', 'lockbits'],
+                            help="Fuses to be managed by the GDB server")
+
+    parser.add_argument("-M", "--monitor",
+                            action='append',
+                            dest='monvals',
+                            type=str,
+                            choices=['b:a', 'b:s', 'b:h', 'c:e', 'c:d', 'l:r', 'l:w', 'o:e', 'o:d', 'r:e', 'r:d',
+                                         's:s', 's:i', 't:f', 't:r', 'v:e', 'v:d'],
+                            help="Initial values for monitor options")
 
     parser.add_argument('-p', '--port',  type=int, default=2000, dest='port',
                             help='Local port on machine (default 2000)')
@@ -249,11 +257,11 @@ def setup_logging(args, log_rsp):
         form = "[%(levelname)s] %(message)s"
     else:
         form = "[%(levelname)s] %(name)s: %(message)s"
-    logging.basicConfig(stream=sys.stderr,level=args.verbose.upper(), format = form)
+    logging.basicConfig(stream=sys.stdout,level=args.verbose.upper(), format = form)
     logger = getLogger()
 
     if args.verbose.lower() == "debug":
-        getLogger('pyedbglib').setLevel(logging.INFO)
+        getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
         if not log_rsp:
             getLogger('pyavrocd.rsp').setLevel(logging.CRITICAL)
     if args.verbose.lower() != "debug":

@@ -538,11 +538,12 @@ class GdbHandler():
         self._vflashdone = True
         self.bp.cleanup_breakpoints()
         try:
-            self.dbg.device.avr.protocol.enter_progmode()
+            self.dbg.device.avr.switch_to_progmode()
             self.mem.programming_mode = True
             self.logger.info("Programming mode entered")
-            if not self.mon.is_fastload() and self.dbg.iface == 'jtag':
-                # if we do not read before write and this is a jtag device, then erase chip
+            if not self.mon.is_read_before_write():
+                # if we do not read before write, try to erase page if possible
+                # if it is not possible explicitly, then it is done before flashing implicitly
                 self.dbg.device.erase()
                 self.logger.info("Chip erased before flashing")
             self.mem.flash_pages()
@@ -551,7 +552,7 @@ class GdbHandler():
             self.send_packet("E11")
             raise
         finally:
-            self.dbg.device.avr.protocol.leave_progmode()
+            self.dbg.device.avr.switch_to_debmode()
             self.mem.programming_mode = False
             self.logger.info("Programming mode stopped")
         self.send_packet("OK")
@@ -672,14 +673,14 @@ class GdbHandler():
                 self.logger.info("Loading executable")
                 self.bp.cleanup_breakpoints() # cleanup breakpoints before load
                 self.mem.lazy_loading = True
-                self.dbg.device.avr.protocol.enter_progmode()
+                self.dbg.device.avr.device.avr.switch_to_progmode()
                 self.mem.programming_mode = True
-                self.logger.info("Programming mode entered")
-                if not self.mon.is_fastload() and self.dbg.iface == 'jtag':
-                    # if we do not read before write and this is a jtag device, then erase chip
-                    # with debugwiere and updi, we have an automatic page erase before writing
-                    self.dbg.device.erase()
-                    self.logger.info("Chip erased before flashing")
+                self.logger.info("Switched to programming mode")
+                if not self.mon.is_read_before_write(): 
+                    # if we do not read before write, then try to erase chip (debugWIRE and UPDI
+                    # do it on a page-by-page base). If successful, the method will return True.
+                    if self.dbg.device.erase_chip():
+                        self.logger.info("Chip erased before flashing")
         try:
             reply = self.mem.writemem(addr, bytearray(data))
         except:
@@ -696,7 +697,7 @@ class GdbHandler():
         """
         self.mem.lazy_loading = False
         self.mem.flash_pages() # program the remaining bytes
-        self.dbg.device.avr.protocol.leave_progmode()
+        self.dbg.device.avr.switch_to_debmode()
         self.mem.programming_mode = False
         self.logger.info("Programming mode stopped")
 

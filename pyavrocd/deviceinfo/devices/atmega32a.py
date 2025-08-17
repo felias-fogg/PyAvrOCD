@@ -67,6 +67,7 @@ DEVICE_INFO = {
     'eear_size' : 2,
     'eecr_base' : 0x1C,
     'eedr_base' : 0x1D,
+    'spmcsr_base' : 0x57,
     'osccal_base' : 0x31,
     'ocden_base' : 0x01,
     'ocden_mask' : 0x80,
