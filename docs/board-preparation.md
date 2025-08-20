@@ -29,7 +29,9 @@ Since the RESET line is used for communication between the MCU and the hardware 
 
 On the **Arduino Uno** and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.
 
-![auto-reset capacitor](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg)
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg">
+</p>
 
 This is responsible for issuing a reset signal when a serial connection is established to the board, which starts the bootloader, which then expects a HEX file sent by the Arduino IDE. On the original Uno board, there is a solder bridge marked 'RESET EN' that needs to be cut to disconnect the capacitor.
 
