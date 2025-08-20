@@ -33,7 +33,7 @@ Since one also wants to change into and out of debugWIRE mode, change fuses, or 
 There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from Wikipedia (https://commons.wikimedia.org/wiki/File:Isp_headers.svg), which provides a top view of the headers on a PCB.
 
 <p align="center">
-<img src="(https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Isp_headers.svg.png"
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Isp_headers.svg.png"
 </p>
 
 Note the notches on the left side of the headers. Since almost all SPI programming plugs are keyed, you can only plug them in in the correct orientation. However, the headers sometimes do not have notches. In this case, pin 1 is usually marked in some way, either with a dot, a star, or with the number 1. Similarly, plugs also come unkeyed. In this case, again, pin 1 is marked in some way.
