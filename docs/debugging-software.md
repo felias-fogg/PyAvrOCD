@@ -18,7 +18,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
-After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging.
+After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you might need to [modify the board](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md), and you need to [connect the hardware debugger to the target board](https://github.com/felias-fogg/pyavrocd/blob/main/docs/connect-to-target.md).
 
 Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute pyavrocd once as root using the command-line option `--install-udev-rules`. Instead, you can create a udev-rules file along the lines described in the [README file of pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md).
 
