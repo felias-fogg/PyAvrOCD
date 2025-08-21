@@ -1,6 +1,6 @@
 # Command line options
 
-When starting pyavrocd, you can influence its behavior by several command-line options.
+When starting pyavrocd, you can influence its behavior with several command-line options.
 
 | Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |

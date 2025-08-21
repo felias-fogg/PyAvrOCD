@@ -4,12 +4,12 @@ Depending on the type of debugging interface the MCU provides, different actions
 
 Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided pyavrocd is asked to manage these fuses by a command line option when [calling the GDB server](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md):
 
-- `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's memory, unless the lockbits are protected.
+- `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and perhaps EEPROM) memory, provided pyavrocd has been instructed to manage the lockbits.
 - `BOOTRST`: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including `bootrst` as a fuse to be managed by the server when starting the GDB server from the command line.
-- `DWEN`: This fuse needs to be programmed to use the debugWIRE interface. For this reason, pyavrocd will program this fuse when asked to do so by the command `monitor debugwire enable`. When the fuse is programmed, you must power-cycle to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed.
-- `OCDEN`: This is the fuse for enabling the JTAG interface. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards.
+- `DWEN`: This fuse needs to be programmed to use the debugWIRE interface. For this reason, pyavrocd will program this fuse when asked to do so by the command `monitor debugwire enable`. When the fuse is programmed, you must power-cycle to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed. Of course, DWEN programming is only performed if pyavrocd is instructed to manage this fuse.
+- `OCDEN`: This is the fuse for enabling the JTAG interface. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if pyavrocd has been instructed to manage this fuse.
 
-If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude. 
+If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
 
 In any case, before you start to modify your target board, by changing it physically and/or by changing fuses, it is a good idea to record the current state and what has been changed:
 
@@ -30,16 +30,22 @@ Since the RESET line is used for communication between the MCU and the hardware 
 On the **Arduino Uno** and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg" width="50%">
 </p>
+
 
 This is responsible for issuing a reset signal when a serial connection is established to the board, which starts the bootloader, which then expects a HEX file sent by the Arduino IDE. On the original Uno board, there is a solder bridge marked 'RESET EN' that needs to be cut to disconnect the capacitor.
 
-![cut](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg)
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg" width="80%">
+</p>
+
 
 On clone boards with a CH340 serial converter chip, you may have to remove the capacitor marked `C8`.
 
-![remove c8](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png)
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png" width="80%">
+</p>
 
 Things are a bit more complicated with **Arduino Nano** boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. This is impossible for the original boards because the resistor is part of a resistor array. You may try to cut the trace from Vcc to the resistor, but I doubt this can be done without damaging other parts of the board.
 
@@ -47,9 +53,11 @@ For Arduino Nano clones (those using a CH340 as the serial converter), one can r
 
 The **Arduino Pro Mini** is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.
 
-![pro-minis](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png)
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png" width="80%">
+</p>
 
-For other boards with ATmega168 and ATmega320 chips, the situation is similar. Find out what is connected to RESET line and disconnect capacitors, if there are any. And the same holds for other debugWIRE MCUs.
+For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.
 
 ### Fuse settings
 

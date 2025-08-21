@@ -262,6 +262,8 @@ def setup_logging(args, log_rsp):
 
     if args.verbose.lower() == "debug":
         getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
+        getLogger('pyedbglib.protocols.housekeepingprotocol').setLevel(logging.INFO)
+        getLogger('pyedbglib.protocols.jtagice3protocol').setLevel(logging.INFO)
         if not log_rsp:
             getLogger('pyavrocd.rsp').setLevel(logging.CRITICAL)
     if args.verbose.lower() != "debug":

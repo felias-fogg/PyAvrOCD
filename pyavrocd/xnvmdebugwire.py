@@ -68,7 +68,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     # pylint: disable=arguments-differ
     # reason for the difference: read and write are declared as staticmethod in the base class,
     # which is an oversight, I believe
-    def read(self, memory_info, offset, numbytes):
+    def read(self, memory_info, offset, numbytes, prog_mode=False):
         """
         Read the memory in chunks
 
@@ -77,7 +77,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
         :param numbytes: number of bytes to read
         :return: array of bytes read
         """
-
+        _dummy = prog_mode # not relevant for debugWIRE
         memtype_string = memory_info[DeviceMemoryInfoKeys.NAME]
         memtype = self.avr.memtype_read_from_string(memtype_string)
         if memtype == 0:
@@ -171,7 +171,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
     def erase_page(self, addr, prog_mode):
         """
         In debugWIRE, we cannot erase single pages. But we also do not need to because this takes
-        place while flash programming
+        place while flash programming.
         """
         _dummy1 = addr
         _dummy2 = prog_mode
@@ -179,6 +179,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
 
     def erase_chip(self, prog_mode):
         """
-        Erase entire chip is also impossible in debugWIRE
+        Erasing entire chip is impossible in debugWIRE.
         """
+        _dummy = prog_mode
         return False

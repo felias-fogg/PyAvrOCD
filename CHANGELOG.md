@@ -3,24 +3,24 @@
 ### 0.11.0
 
 - **Fixed:**
-  - The root cause of the annoying problem noted in version 0.10.0 has now been found, and a kludge to solve the issue has been implemented. SNAP and PICkit4 simply do not implement the protocol as described in the EDBG manual. For this reason, `switch_to_progmode` and `switch_to_debmode` have been implemented for the device-specific parts of `avr8trarget`, which uses a restart of the debugging session: `detach`/`deactivate_physical`/`activate_physical`/`enter_progmode` when switching to programming mode. This is followed by `leave_progmode`, if one wants to enter debugging mode.
-  
+  - The root cause of the annoying problem noted in version 0.10.0 has now been found, and a kludge to solve the issue has been implemented. SNAP and PICkit4 simply do not implement the protocol as described in the EDBG manual. For this reason, `switch_to_progmode` and `switch_to_debmode` have been implemented for the device-specific parts of `avr8target`, which uses a restart of the debugging session: `detach`/`deactivate_physical`/`activate_physical`/`enter_progmode` when switching to programming mode. This is followed by `leave_progmode`, if one wants to enter debugging mode. In the debugWIRE specific part, these are simply no-ops.
+  - debugWIRE loading did not work any longer because the `prog_mode` argument in the read nvm method was not present. Now it has been added.
+
 - **Added:**
-  
+
   - `erase_page` and `erase_chip` in the nvm classes. If they cannot be effective, they return False.
   - Extensive warning messages concerning fuse management.
-  
+
 - **Changed**:
-  
+
   - Flash programming has been adapted to the new regime
-  
-  - New monitor default value: *Verify after load* is now off, because it slows down JTAG loading seriously. 
-  
-  - New monitor default value:  *read-before-write* is now the default only for debugWIRE. For JTAG, it is a real slowdown.  
-  
+
+  - New monitor default value: *Verify after load* is now off, because it significantly slows down JTAG loading.
+
+  - New monitor default value:  *read-before-write* is now the default only for debugWIRE. For JTAG, it is a real slowdown.
+
   - New monitor default value: Timers now run freely when execution is stopped because that is the more natural thing for an embedded system.
-  
-    
+
 
 ### 0.10.1
 
@@ -33,7 +33,7 @@
   - One can now enter debugging even when OCDEN was not set. This is now done when connecting.
 - **Added:**
   - Option value `all` for `-v` if the full RSP communication should be displayed during debugging.
-  - New option `-f`/`--fuse`, which can be used to specify which fuses shall be managed by the GDB server. So, if you want to have automated changes of DWEN, OCDEN, BOOTRST, and automatic clearance of the lockbits, you need to specify `-f all`. 
+  - New option `-f`/`--fuse`, which can be used to specify which fuses shall be managed by the GDB server. So, if you want to have automated changes of DWEN, OCDEN, BOOTRST, and automatic clearance of the lockbits, you need to specify `-f all`.
 - **Changed:**
   - Reorganized the initialization process completely. Now all of it takes place in `XAvrDebugger`. All classes have `init` methods that set up the data structure, but do not contain code to initialize anything in the debugging tool (or such code is not inherited). The `start_debugging` method in `XAvrDebugger` does all the heavy lifting (including calls to special code for debugWIRE and JTAG/Mega).
 

@@ -109,16 +109,17 @@ class XTinyAvrTarget(TinyAvrTarget):
 
     def switch_to_progmode(self):
         """
-        For debugWIRE, prog mode or deb mode actually do not make a big difference. We
-        will neverthelss switch modes. 
+        In general, we would switch to programming mode. However, for debugWIRE,
+        prog mode or deb mode do not make a difference.
         """
-        self.protocol.enter_progmode()
+        #self.protocol.enter_progmode()
 
     def switch_to_debmode(self):
         """
-        Similar thing.
+        In general, we would switch to debugging mode. However, for debugWIRE,
+        prog mode or deb mode do not make a difference.
         """
-        self.protocol.leave_progmode()
+        #self.protocol.leave_progmode()
 
     def setup_config(self, device_info):
         """

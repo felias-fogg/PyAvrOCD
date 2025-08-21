@@ -1,6 +1,8 @@
 ## ~~Smoking~~ debugWIRE can be Dangerous to the Health of your MCU
 
-![Smoking IC](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/smoking_ic_breit.png)
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/smoking_ic_breit.png" width="90%">
+</p>
 
 While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, e.g., the `monitor debugwire enable` command), the RESET line cannot be used any longer for resetting the chip, and it is impossible to use SPI programming to change fuses, in particular, the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chips?
 

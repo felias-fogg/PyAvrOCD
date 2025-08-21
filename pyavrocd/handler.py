@@ -104,7 +104,7 @@ class GdbHandler():
             if cmd not in {'X', 'vFlashWrite'}: # no binary data in packet
                 packet = packet.decode('ascii')
             handler(packet)
-        except (FatalError, PymcuprogNotSupportedError, PymcuprogError) as e:
+        except (FatalError, PymcuprogNotSupportedError, PymcuprogError, AssertionError) as e:
             self.logger.critical(e)
             self.send_signal(SIGABRT)
 
@@ -374,7 +374,6 @@ class GdbHandler():
                 # will only be called if there was no error in connecting to OCD:
                 self.mon.set_debug_mode_active()
             elif response[0] == 'dwoff':
-                self.dbg.reset()
                 self.dbg.dw_disable()
                 self.mon.set_debug_mode_active(False)
             elif response[0] == 'reset':
@@ -676,7 +675,7 @@ class GdbHandler():
                 self.dbg.device.avr.device.avr.switch_to_progmode()
                 self.mem.programming_mode = True
                 self.logger.info("Switched to programming mode")
-                if not self.mon.is_read_before_write(): 
+                if not self.mon.is_read_before_write():
                     # if we do not read before write, then try to erase chip (debugWIRE and UPDI
                     # do it on a page-by-page base). If successful, the method will return True.
                     if self.dbg.device.erase_chip():
