@@ -343,13 +343,13 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     logger.debug("Interfaces of chip: %s",  dev_iface[dev_id[device]].lower())
     if not intf:
         logger.critical("Device '%s' does not have a compatible debugging interface", device)
-        return 1
+        return 1, None, None
     if len(intf) == 1 and intf[0] not in dev_iface[dev_id[device]].lower():
         logger.critical("Device '%s' does not have the interface '%s'", device, intf[0])
-        return 1
+        return 1, None, None
     if len(intf) > 1:
         logger.critical("Debugging interface for device '%s' ambiguous: '%s'", device, intf)
-        return 1
+        return 1, None, None
     intf = intf[0]
     return None, device, intf
 
@@ -385,7 +385,7 @@ def run_server(server, logger):
         raise
     return 0
 
-
+#pylint: disable=too-many-branches
 def main():
     """
     Configures the CLI and parses the arguments, connects to a tool and starts debugger
@@ -440,9 +440,13 @@ def main():
         finally:
             backend.disconnect_from_tool()
 
+        if device in ['atmega48', 'atmega88'] and (not args.tool or args.tool != 'dwlink'):
+            logger.critical("%s (w/o P or A suffix) will be bricked when trying to debug it", device)
+            return 1
         transport = hid_transport()
         if len(transport.devices) > 1:
             logger.critical("Too many hardware debuggers connected")
+            return 1
         if len(transport.devices) == 0 and no_hw_dbg_error:
             logger.critical("No hardware debugger discovered")
         if not no_backend_error and not no_hw_dbg_error:

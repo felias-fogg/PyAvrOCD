@@ -72,8 +72,8 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._debugger_activated_once)
 
     def test_dispatch_flashVerify(self):
-        self.assertTrue(self.mo._verify)
-        self.assertEqual(self.mo.dispatch(['veri']), ("", "Verifying flash after load"))
+        self.assertFalse(self.mo._verify)
+        self.assertEqual(self.mo.dispatch(['veri']), ("", "Load operations are not verified"))
         self.assertEqual(self.mo.dispatch(['verify', 'disable']), ("", "Load operations are not verified"))
         self.assertFalse(self.mo._verify)
         self.assertEqual(self.mo.dispatch(['veri', 'e']), ("", "Verifying flash after load"))
@@ -95,12 +95,12 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(['info'])[0], 'info')
 
     def test_dispatch_load(self):
-        self.assertTrue(self.mo._fastload)
+        self.assertTrue(self.mo._read_before_write)
         self.assertEqual(self.mo.dispatch(['load']), ("", "Reading before writing when loading"))
         self.assertEqual(self.mo.dispatch(['load', 'writeonly']),  ("", "No reading before writing when loading"))
-        self.assertFalse(self.mo._fastload)
+        self.assertFalse(self.mo._read_before_write)
         self.assertEqual(self.mo.dispatch(['load', 'read']),  ("", "Reading before writing when loading"))
-        self.assertTrue(self.mo._fastload)
+        self.assertTrue(self.mo._read_before_write)
 
     def test_dispatch_noload(self):
         self.assertFalse(self.mo._noload)
@@ -133,7 +133,7 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._safe)
 
     def test_dispatch_timers(self):
-        self.assertTrue(self.mo._timersfreeze)
+        self.assertFalse(self.mo._timersfreeze)
         self.assertEqual(self.mo.dispatch(['timers', 'run']), (1, "Timers will run when execution is stopped"))
         self.assertFalse(self.mo._timersfreeze)
         self.assertEqual(self.mo.dispatch(['timers', 'freeze']), (0, "Timers are frozen when execution is stopped"))

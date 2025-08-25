@@ -30,7 +30,9 @@ This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs
 * __ATmega168__, __ATmega168A__, __ATmega168PA__, **ATmega168PB**,
 * **ATmega328**, __ATmega328P__, **ATmega328PB**
 
-The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. I suspect that this applies to all chips labeled this way. However, it may be the case that these chips are non-genuine. In any case, the test for stuck-at-one-bits is made when connecting to the chips.
+The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. They also act strangely when trying to switch to debugWIRE mode or back (you can easily brick them this way).
+
+I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, pyavrocd will refuse to handle them.
 
 #### Other ATmegas
 

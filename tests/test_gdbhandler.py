@@ -12,7 +12,6 @@ from pyavrocd.errors import EndOfSession
 from pyavrocd.memory import Memory
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.breakexec import BreakAndExec
-from pyavrocd.debugwiretarget import DebugWIRE
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -36,9 +35,9 @@ class TestGdbHandler(TestCase):
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
         self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p")
-        self.gh.dw =  create_autospec(DebugWIRE, specSet=True, instance=True)
         self.gh.mon = create_autospec(MonitorCommand, specSet=True, instance=True)
         self.gh.mem = create_autospec(Memory, specSet=True, instance=True)
+        self.gh.mem.programming_mode = False
         self.gh.bp = create_autospec(BreakAndExec, specSet=True, instance=True)
 
     def test_rsp_packet_construction(self):
@@ -258,18 +257,8 @@ class TestGdbHandler(TestCase):
         self.assertTrue(self.gh.dbg.reset.called)
         self.gh._comsocket.sendall.assert_called_with(rsp("426C610A"))
 
-    @patch('pyavrocd.main.time.sleep',Mock()) # we do not want to sleep in a test!
-    def test_send_power_cycle_magic(self):
-        self.gh.dbg.transport.device.product_string = 'MEDBG'
-        self.assertEqual(self.gh.send_power_cycle(), True)
-
-    def test_send_power_cycle_manual(self):
-        self.gh.dbg.transport.device.product_string = 'XMEDBG'
-        self.assertEqual(self.gh.send_power_cycle(), False)
-        self.gh._comsocket.sendall.assert_called_with(rsp("O2A2A2A20506C6561736520706F7765722D6379636C6520746865207461726765742073797374656D202A2A2A0A"))
-
     def test_supported_handler(self):
-        self.gh.dw.warm_start.return_value = True
+        self.gh.dbg.start_debugging.return_value = True
         self.gh.dispatch('qSupported', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("PacketSize={0:X};qXfer:memory-map:read+".format(self.gh.packet_size)))
         self.gh.mon.set_debug_mode_active.assert_called_once()

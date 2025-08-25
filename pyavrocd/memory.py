@@ -143,7 +143,7 @@ class Memory():
                 continue
             if addr < mr:
                 data.extend(self.dbg.sram_read(addr, mr - addr))
-            data.append(0xFF)
+            data.append(0x00)
             addr = mr + 1
         if addr < end:
             data.extend(self.dbg.sram_read(addr, end - addr))
@@ -284,7 +284,7 @@ class Memory():
                              '<property name="blocksize">0x{4:X}</property>' + \
                              '</memory></memory-map>').format(0 + 0x800000, \
                               # (0x10000 + self._eeprom_start + self._eeprom_size),
-                              0x890000, # is needed to read the other memory areas as well
+                              0x60000, # is needed to read the other memory areas as well
                               self._flash_start, self._flash_size, self._multi_page_size)
 
     def fuse_read(self, addr, size):

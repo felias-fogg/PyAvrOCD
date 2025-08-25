@@ -37,7 +37,7 @@ class TestMemory(TestCase):
         self.mem._eeprom_start = 0
         self.mem._eeprom_size = 5
         self.mem._flashmemtype = 123
-        self.mem.programming_mode = True
+        self.mem.programming_mode = False
 
     def test_init_flash_True(self):
         self.assertEqual(self.mem._flash,bytearray())
@@ -62,7 +62,7 @@ class TestMemory(TestCase):
 
     def test_readmem_sram_masked_register_one_byte(self):
         self.mem._masked_registers = [15, 1, 6]
-        self.assertEqual(self.mem.readmem("800001", "1"), bytearray([0xFF]))
+        self.assertEqual(self.mem.readmem("800001", "1"), bytearray([0x00]))
         self.mem.dbg.sram_read.assert_not_called()
 
     def test_readmem_sram_masked_register_bytearray(self):
@@ -71,8 +71,8 @@ class TestMemory(TestCase):
         def access_sram(ix, length):
             return bytearray(sram[ix:ix+length])
         self.mem.dbg.sram_read = MagicMock(side_effect=access_sram)
-        self.assertEqual(self.mem.readmem("800005", "3"), bytearray([9, 0xFF, 7]))
-        self.assertEqual(self.mem.readmem("800004", "3"), bytearray([10, 9, 0xFF]))
+        self.assertEqual(self.mem.readmem("800005", "3"), bytearray([9, 0x00, 7]))
+        self.assertEqual(self.mem.readmem("800004", "3"), bytearray([10, 9, 0x00]))
 
     def test_readmem_eprom(self):
         eeprom = list(range(5))
@@ -134,7 +134,7 @@ class TestMemory(TestCase):
             self.mem.flash_pages()
 
     def test_memory_map(self):
-        self.assertEqual(self.mem.memory_map(), 'l<memory-map><memory type="ram" start="0x800000" length="0x10005"/>' + \
+        self.assertEqual(self.mem.memory_map(), 'l<memory-map><memory type="ram" start="0x800000" length="0x60000"/>' + \
                              '<memory type="flash" start="0x0" length="0xC">' + \
                              '<property name="blocksize">0x6</property>' + \
                              '</memory></memory-map>')

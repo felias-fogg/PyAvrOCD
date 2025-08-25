@@ -42,7 +42,7 @@ class TestXAvr8Target(TestCase):
                                                                              0x1C,
                                                                              0x1D,
                                                                              0x57,
-                                                                             0x51]))])
+                                                                             0x31]))])
 
     def test_statreg_read(self):
         self.xa.protocol.memory_read.return_value=bytearray([0x7F])

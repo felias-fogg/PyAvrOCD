@@ -2,39 +2,103 @@
 The test suit for the XAvrDebugger class
 """
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-from unittest.mock import MagicMock, patch
+import logging
+from unittest.mock import MagicMock, patch,  Mock, call
 from unittest import TestCase
 
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
-
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.xavr8target import XTinyAvrTarget
 
+logging.basicConfig(level=logging.CRITICAL)
+
 class TestXAvrDebugger(TestCase):
 
-    @patch('pyavrocd.xavrdebugger.AvrDebugger.__init__',MagicMock())
     def setUp(self):
         mock_transport = MagicMock()
-        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire")
+        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", ['bootrst', 'lockbits', 'dwen'])
         self.xa.logger = MagicMock()
         self.xa.transport = mock_transport
-        self.xa.housekeeper = MagicMock()
-        self.xa.use_events_for_run_stop_state = True
-
-    @patch('pyavrocd.xavrdebugger.XNvmAccessProviderCmsisDapDebugwire', MagicMock())
-    def test_setup_session(self):
-        self.xa.setup_session("attiny85")
-        self.xa.device.avr.setup_debug_session.assert_called_once()
-
-    def test_start_debugging(self):
+        self.xa.memory_info = MagicMock()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock()
         self.xa.device.avr.protocol = MagicMock(spec=Avr8Protocol)
-        self.xa.device.avr.protocol.poll_events.return_value=True
-        self.xa.device.avr.protocol.decode_break_event.return_value = 42
+
+    @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
+    def test_start_debugging(self):
+        self.xa.device.avr.activate_physical.return_value = bytearray([0x0B, 0x93, 0, 0])
+        self.xa.device.avr.memory_read.return_value = bytearray([0x1E, 0, 0])
+        self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
+        self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
         self.xa.start_debugging()
-        self.xa.device.start.assert_called_once()
-        self.xa.device.avr.protocol.attach.assert_called_once()
+        self.xa.device.avr.memory_read.assert_called_once()
+        self.xa.housekeeper.start_session.assert_called_once()
+        self.xa.device.avr.setup_debug_session.assert_called_once()
+        self.xa.device.avr.setup_config.assert_called_once()
+        self.xa.device.avr.activate_physical.assert_called_once()
+        self.xa.device.avr.switch_to_progmode.assert_called_once()
+        self.xa.device.avr.switch_to_debmode.assert_called_once()
+        self.xa.device.avr.protocol.reset.assert_called_once()
+        self.xa.device.avr.protocol.program_counter_read.assert_called_once()
+
+    def test_stop_debugging(self):
+        self.xa.stop_debugging(graceful=False)
+        self.xa.device.avr.switch_to_debmode.assert_called_once()
+        self.xa.device.avr.protocol.stop.assert_called_once()
+        self.xa.device.avr.protocol.software_breakpoint_clear_all.assert_called_once()
+        self.xa.device.avr.breakpoint_clear.assert_called_once()
+        self.xa.device.avr.switch_to_progmode.assert_not_called()
+        self.xa.device.avr.protocol.detach.assert_called_once()
+        self.xa.device.avr.deactivate_physical.assert_called_once()
+
+    def test__post_process_after_start_jtag(self):
+        self.xa.iface = 'jtag'
+        self.xa.manage = ['bootrst', 'lockbits', 'ocden']
+        self.xa.device_info['bootrst_base'] = 0x01
+        self.xa.device_info['bootrst_mask'] = 0x08
+        self.xa.device_info['ocden_base'] = 0x02
+        self.xa.device_info['ocden_mask'] = 0x04
+        # read lockbits and fuses: lockbits before and after, bootrst (not set), ocden before and after
+        self.xa.device.avr.memory_read.side_effect = [bytearray([0x0F]), bytearray([0xFF]),
+                                                          bytearray([0xFF]), bytearray([0x04]),
+                                                          bytearray([0x00])]
+        self.xa._post_process_after_start()
+        self.xa.device.erase.assert_called_once()
+        self.xa.device.avr.memory_read.assert_has_calls([call(Avr8Protocol.AVR8_MEMTYPE_LOCKBITS, 0, 1),
+                                                         call(Avr8Protocol.AVR8_MEMTYPE_LOCKBITS, 0, 1),
+                                                         call(Avr8Protocol.AVR8_MEMTYPE_FUSES, 1, 1),
+                                                         call(Avr8Protocol.AVR8_MEMTYPE_FUSES, 2, 1),
+                                                         call(Avr8Protocol.AVR8_MEMTYPE_FUSES, 2, 1)])
+        self.xa.device.avr.memory_write.assert_has_calls([call(Avr8Protocol.AVR8_MEMTYPE_FUSES, 2,
+                                                              bytearray([0]))])
+
+    @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(return_value=5.0))
+    @patch('pyavrocd.xavrdebugger.NvmAccessProviderCmsisDapSpi.read_device_id',
+               MagicMock(return_value = bytearray([0x0B, 0x93, 0x1E])))
+    @patch('pyavrocd.xavrdebugger.NvmAccessProviderCmsisDapSpi.erase', MagicMock())
+    @patch('pyavrocd.xavrdebugger.AvrIspProtocol.enter_progmode', MagicMock())
+    @patch('pyavrocd.xavrdebugger.AvrIspProtocol.leave_progmode', MagicMock())
+    @patch('pyavrocd.xavrdebugger.AvrIspProtocol.read_lockbits',
+               MagicMock(side_effect = [bytearray([0x0F]), bytearray([0x0FF])]))
+    @patch('pyavrocd.xavrdebugger.AvrIspProtocol.read_fuse_byte',
+               MagicMock(side_effect = [bytearray([0x00]), bytearray([0x08]),
+                                        bytearray([0x14])]))
+    @patch('pyavrocd.xavrdebugger.AvrIspProtocol.write_fuse_byte', MagicMock())
+    def test_prepare_debugging_debugWIRE(self):
+        self.xa.manage = ['bootrst', 'lockbits', 'dwen']
+        self.xa.device_info['bootrst_base'] = 0x01
+        self.xa.device_info['bootrst_mask'] = 0x08
+        self.xa.device_info['dwen_base'] = 0x02
+        self.xa.device_info['dwen_mask'] = 0x04
+        self.xa.housekeeper = Mock()
+        self.xa.prepare_debugging(callback=lambda: True)
+        self.xa.spidevice.isp.read_lockbits.assert_has_calls([call(), call()])
+        self.xa.spidevice.isp.read_fuse_byte.assert_has_calls([call(1), call(1), call(2)])
+        self.xa.spidevice.isp.write_fuse_byte.assert_has_calls([call(1,bytearray([0x08])),
+                                                                    call(2,bytearray([0x10]))])
+        self.xa.housekeeper.start_session.assert_called()
+        self.xa.spidevice.isp.enter_progmode.assert_called()
+        self.xa.spidevice.isp.leave_progmode.assert_called()
 
     def test_stack_pointer_write(self):
         self.xa.device = MagicMock()

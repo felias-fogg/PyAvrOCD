@@ -1,5 +1,28 @@
 # Changelog
 
+### 0.11.1
+
+- **Fixed:**
+  - ATmega88 and ATmega48 (without P or A suffix) act very strangely (and we are not talking about non-genuine chips here!):
+    - The DWEN fuse of ATmega48 cannot be programmed through the SPI module of pyedbglib.
+    - If one does that with avrdude, the chip cannot be accessed anymore from avrdude, although programming the fuse alone should not pose a problem.
+    - One cannot recover with the debugWIRE recovery method of avrdude, which usually simply disables debugWIRE.
+    - If the fuse can be changed, as in the case of ATmega88, one cannot unprogram the fuse after having noticed that the chip has a stuck-at-1-bit in the prgoram counter. Again, even avrdude fails.
+    - The only recovery methods for both chips are through dw-link or high-voltage programming.
+    - For these reasons, debugging these chips is refused by pyavrocd (except when the dw-link debugger is used).
+
+  - The existing tests had to be adapted to the refactored code.
+    - test_breakandexec: everything OK
+    - test_debugwire: needs to be redesigned and integrated into test_xavrdebugger
+    - test_gdbhandler: test_send_power_cycle_*** moved to test_xavrdebugger, added programming_mode as attribute to mock object self.gh.mem.
+    - test_memory: test_memory_map - adapted, test_readmem_sram_masked_register -- value for programming_mode needs to be False !
+    - test_monitorcommand: _timersfreeze is now False, _verify is now False, _fastload has been renamed to _read_before_write, remains True for debugWIRE
+    - test_xavr8target: osccal register; fixed in source - not sram address, but 'ioreg' address
+    - test_xavrdebug:
+      - had to remove `setup_config` from `__init__` in xnvmdebugwire. This is now done in `start_debugging` in xavrdebug!
+      - New tests for: start_debugging, stop_debugging, _post_process_afetr_start,
+
+
 ### 0.11.0
 
 - **Fixed:**
