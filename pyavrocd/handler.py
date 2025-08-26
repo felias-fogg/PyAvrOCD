@@ -32,12 +32,12 @@ class GdbHandler():
     GDB handler
     Maps between incoming GDB requests and AVR debugging protocols (via pymcuprog)
     """
-    def __init__ (self, comsocket, avrdebugger, devicename):
+    def __init__ (self, comsocket, avrdebugger, devicename, mon_defaults):
         self.packet_size = RECEIVE_BUFFER - 20
         self.logger = getLogger('pyavrocd.handler')
         self.rsp_logger = getLogger('pyavrocd.rsp')
         self.dbg = avrdebugger
-        self.mon = MonitorCommand(self.dbg.iface)
+        self.mon = MonitorCommand(self.dbg.iface, mon_defaults)
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
@@ -369,7 +369,8 @@ class GdbHandler():
             if response[0] == 'dwon':
                 if self._connection_error:
                     raise FatalError(self._connection_error)
-                self.dbg.prepare_debugging(callback=self.__send_power_cycle)
+                self.dbg.prepare_debugging(callback=self.__send_power_cycle,
+                                               recognition=self.__send_ready_message)
                 self.dbg.start_debugging()
                 # will only be called if there was no error in connecting to OCD:
                 self.mon.set_debug_mode_active()
@@ -428,6 +429,9 @@ class GdbHandler():
             return True
         self.send_debug_message("*** Please power-cycle the target system ***")
         return False
+
+    def __send_ready_message(self):
+        self.send_debug_message("*** Power-down recognized. Apply power again! ***")
 
     def _supported_handler(self, _):
         """

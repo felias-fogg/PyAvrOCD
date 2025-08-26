@@ -12,7 +12,7 @@ class MonitorCommand():
     the right action. The return value of the dispatch method is
     a pair consisting of an action identifier and the string to be displayed.
     """
-    def __init__(self, iface):
+    def __init__(self, iface, defaults):
         self._iface = iface
         self._debugger_active = False
         self._debugger_activated_once = False
@@ -30,6 +30,7 @@ class MonitorCommand():
         self._power = None
         self._old_exec = None
         self._range = None
+        self._defaults = defaults
 
         # commands
         self.moncmds = {
@@ -54,24 +55,25 @@ class MonitorCommand():
 
         # default state values
         self.set_default_state()
-        
+
 
     def set_default_state(self):
         """
         Set state variables to default values.
         """
-        self._noload = False
-        self._onlyhwbps = False
-        self._onlyswbps = False
-        self._read_before_write = self._iface == 'debugwire'
-        self._cache = True
-        self._safe = True
-        self._verify = False
-        self._timersfreeze = False
+        self._noload = 'o:d' in self._defaults
+        self._onlyhwbps = 'b:h' in self._defaults
+        self._onlyswbps = 'b:s' in self._defaults
+        self._read_before_write = (self._iface == 'debugwire' and 'l:w' not in self._defaults) \
+                                    or 'l:r' in self._defaults
+        self._cache = 'c:d' not in self._defaults
+        self._safe = 's:i' not in self._defaults
+        self._verify = 'v:e' in self._defaults
+        self._timersfreeze = 't:f' in self._defaults
+        self._range = 'r:d' not in self._defaults
         self._noxml = False
         self._power = True
         self._old_exec = False
-        self._range = True
 
 
     def is_onlyhwbps(self):

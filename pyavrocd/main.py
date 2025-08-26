@@ -9,7 +9,6 @@ import sys
 import os
 import argparse
 import logging
-import textwrap
 import shutil
 import shlex
 import subprocess
@@ -43,7 +42,7 @@ class RspServer():
     and responding, and terminating. The important part is calling the handle_data
     method of the handler.
     """
-    def __init__(self, avrdebugger, devicename, port):
+    def __init__(self, avrdebugger, devicename, port, mon_default):
         self.avrdebugger = avrdebugger
         self.devicename = devicename
         self.port = port
@@ -52,6 +51,7 @@ class RspServer():
         self.gdb_socket = None
         self.handler = None
         self.address = None
+        self.mon_default = mon_default
 
     def serve(self):
         """
@@ -67,7 +67,7 @@ class RspServer():
         self.connection, self.address = self.gdb_socket.accept()
         self.connection.setblocking(0)
         self.logger.info('Connection from %s', self.address)
-        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename)
+        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.mon_default)
         while True:
             ready = select.select([self.connection], [], [], 0.5)
             if ready[0]:
@@ -138,10 +138,10 @@ def options():
     Option processing. Returns a pair of processed options and unknown options.
     """
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
+            fromfile_prefix_chars='@',
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            description=textwrap.dedent('''\n\
-        GDB server for AVR MCUs
-            '''))
+            epilog='  Use @filename to insert options from file filename in command line',
+            description='GDB server for AVR MCUs')
 
     parser.add_argument("-c", "--command",
                             action='append',
@@ -166,12 +166,13 @@ def options():
                             action='append',
                             dest='manage',
                             type=str,
-                            choices=['all', 'bootrst', 'dwen', 'ocden', 'lockbits'],
+                            choices=['all', 'none', 'bootrst', 'nobootrst', 'dwen', 'nodwen',
+                                         'ocden', 'noocden', 'lockbits', 'nolockbits'],
                             help="Fuses to be managed by the GDB server")
 
     parser.add_argument("-M", "--monitor",
                             action='append',
-                            dest='monvals',
+                            dest='monitor',
                             type=str,
                             choices=['b:a', 'b:s', 'b:h', 'c:e', 'c:d', 'l:r', 'l:w', 'o:e', 'o:d', 'r:e', 'r:d',
                                          's:s', 's:i', 't:f', 't:r', 'v:e', 'v:d'],
@@ -209,6 +210,8 @@ def options():
                                 "debuggers under /etc/udev/rules.d/",
                                 action="store_true")
     # Parse args and return
+    sys.argv[:] = [x for x in sys.argv if not x.startswith('@') or os.path.exists(x[1:]) ]
+    print(sys.argv)
     return parser.parse_known_args()
 
 def install_udev_rules(logger):
@@ -299,10 +302,25 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     if args.dev:
         args.dev = args.dev.strip()
 
-    if args.manage is None:
-        args.manage = []
-    if 'all' in args.manage:
-        args.manage = ['bootrst', 'dwen', 'ocden', 'lockbits']
+    manage = []
+    if args.manage:
+        for f in args.manage:
+            if f == 'all':
+                manage = ['bootrst', 'dwen', 'ocden', 'lockbits']
+            elif f == 'none':
+                manage = []
+            elif f.startswith('no'):
+                manage.remove(f[2:])
+            else:
+                manage.append(f)
+    args.manage = manage
+
+    monvals = []
+    if args.monitor:
+        for mv in args.monitor:
+            monvals[:] = [x for x in monvals if not x.startswith(mv[0])]
+            monvals.append(mv)
+    args.monitor = monvals
 
     if args.dev and args.dev == "?":
         if args.interface:
@@ -469,7 +487,7 @@ def main():
     logger.info("Starting GDB server")
     try:
         avrdebugger = XAvrDebugger(transport, device, intf, args.manage)
-        server = RspServer(avrdebugger, device, args.port)
+        server = RspServer(avrdebugger, device, args.port, args.monitor)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)

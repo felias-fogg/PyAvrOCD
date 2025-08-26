@@ -118,10 +118,13 @@ def main(args, intf):
     """
     Main function providing an serial-to-IP bridge for the dw-link hardware debugger
     """
+    if args.verbose == "all":
+        args.verbose = "debug"
+
     # discover adapter
     speed, device = discover(args)
     if speed is None or device is None:
-        return # return to dw-gdbserver main, which will handle this problem
+        return # return to pyavrocd main, which will handle this problem
 
     # check whether interface is OK
     if intf != "debugwire":

@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.12.0
+
+- **Added:**
+  - `-M`/`--monitor` command line option can now be used to set monitor default option in the command line, e.g., `-M v:e` will enable verification after load.
+  - With a @-prefix to a file name, one can now request to read further command line options form a file. If the file does not exist, the @-argument is simply ignored. This can, e.g., be used to override options set by the IDE, when a fixed name such as `debug.arg` is used.
+  - New method in handler for telling user that power-down has been sensed and new parameter in power cycle methods to pass this message method down to where it will be called.
+
 ### 0.11.1
 
 - **Fixed:**
@@ -10,6 +17,7 @@
     - If the fuse can be changed, as in the case of ATmega88, one cannot unprogram the fuse after having noticed that the chip has a stuck-at-1-bit in the prgoram counter. Again, even avrdude fails.
     - The only recovery methods for both chips are through dw-link or high-voltage programming.
     - For these reasons, debugging these chips is refused by pyavrocd (except when the dw-link debugger is used).
+    - Note: This will require a change in MiniCore (distigiush between the A and the non-A chips)
 
   - The existing tests had to be adapted to the refactored code.
     - test_breakandexec: everything OK

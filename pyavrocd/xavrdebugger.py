@@ -73,7 +73,7 @@ class XAvrDebugger(AvrDebugger):
         self.edbg_protocol = None
         # Edbg protocol instance, necessary to access target power control
         if transport and transport.hid_device is not None:
-            self.edbg_protocol = EdbgProtocol(transport) #
+            self.edbg_protocol = EdbgProtocol(transport)
             self.logger.debug("EdbgProtcol instance created")
 
         # Now attach the right NVM device
@@ -84,7 +84,7 @@ class XAvrDebugger(AvrDebugger):
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info)
         elif self.iface == "jtag" and self.architecture =="avr8":
             self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info)
-        self.logger.debug("Nvm instance created")
+        self.logger.info("Nvm instance created")
 
 
     def start_debugging(self, flash_data=None, warmstart=False):
@@ -104,7 +104,6 @@ class XAvrDebugger(AvrDebugger):
             self.device.avr.setup_config(self.device_info)
             self.logger.info("Device configuration communicated to tool")
             dev_id = self._activate_interface()
-            self.logger.info("MCU id=0x%x", dev_id)
             if self.iface == 'jtag' and dev_id & 0xFF != 0x3F:
                 raise FatalError("Not a Microchip JTAG target")
         except Exception as e:
@@ -117,7 +116,6 @@ class XAvrDebugger(AvrDebugger):
         self.device.avr.switch_to_progmode()
         self.logger.info("Switched to programming mode")
         self._verify_target(dev_id)
-        self.logger.info("Target verified")
         self._post_process_after_start()
         self.logger.info("Post processing finished")
         self.device.avr.switch_to_debmode()
@@ -277,7 +275,7 @@ class XAvrDebugger(AvrDebugger):
                 self.logger.info("Physical interface deactivated")
                 dev_id = self.device.avr.activate_physical()
                 dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
-                self.logger.info("Physical interface activated: 0x%X", dev_code)
+                self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)
             else:
                 raise
         return dev_code
@@ -303,6 +301,10 @@ class XAvrDebugger(AvrDebugger):
                     newfuse = bfuse[0] | bfuse_mask
                     self.logger.debug("Writing new fuse byte: 0x%x", newfuse)
                     write(bfuse_addr, bytearray([newfuse]))
+                    if self.iface == 'debugwire': #necessary because otherwise the read may fail
+                        self.spidevice.isp.leave_progmode()
+                        self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
+                        self.logger.debug("Reconnected to SPI programming module")
                     bfuse = read(bfuse_addr)
                     self.logger.debug("BOOTRST fuse byte read: 0x%X", bfuse[0])
                     assert newfuse == bfuse[0], "BOOTRST could not be unprogrammed"
@@ -315,12 +317,13 @@ class XAvrDebugger(AvrDebugger):
         Clear lockbits (if permitted) for different settings (JTAG and ISP)
         """
         lockbits = read()
-        self.logger.info("Lockbits read: 0x%X", lockbits[0])
+        self.logger.debug("Lockbits read: 0x%X", lockbits[0])
         if lockbits[0] != 0xFF:
             if 'lockbits' in self.manage:
                 self.logger.info("MCU is locked.")
                 erase()
                 lockbits = read()
+                self.logger.debug("Lockbits after write: 0x%X", lockbits[0])
                 assert lockbits[0] == 0xFF, "Lockbits could not be cleared"
                 self.logger.info("MCU has been erased and lockbits have been cleared.")
             else:
@@ -332,7 +335,7 @@ class XAvrDebugger(AvrDebugger):
             self.logger.info("MCU is not locked.")
 
 
-    def prepare_debugging(self, callback=None):
+    def prepare_debugging(self, callback=None, recognition=None):
         """
         A function that prepares for starting a debug session. The only use case is
         for the debugWIRE interface, where we need to program the DWEN fuse using ISP.
@@ -364,17 +367,17 @@ class XAvrDebugger(AvrDebugger):
             self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
             self.logger.debug("Reconnected to SPI programming module")
             self._handle_lockbits(self.spidevice.isp.read_lockbits, self.spidevice.erase)
-            self.spidevice.isp.leave_progmode()
-            self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
-            self.logger.debug("Reconnected to SPI programming module")
+            #self.spidevice.isp.leave_progmode()
+            #self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
+            #self.logger.debug("Reconnected to SPI programming module")
             self._handle_bootrst(self.spidevice.isp.read_fuse_byte, self.spidevice.isp.write_fuse_byte)
             # program the DWEN bit
             # leaving and re-entering programming mode is necessary, otherwise write has no effect
             dwen_addr = self.device_info['dwen_base']
             dwen_mask = self.device_info['dwen_mask']
-            self.spidevice.isp.leave_progmode()
-            self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
-            self.logger.debug("Reconnected to SPI programming module")
+            #self.spidevice.isp.leave_progmode()
+            #self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
+            #self.logger.debug("Reconnected to SPI programming module")
             self.logger.debug("DWEN addr: 0x%X, DWEN mask: 0x%X", dwen_addr, dwen_mask)
             dwen_byte = self.spidevice.isp.read_fuse_byte(dwen_addr)
             self.logger.debug("DWEN fuse byte: 0x%X", dwen_byte[0])
@@ -387,26 +390,16 @@ class XAvrDebugger(AvrDebugger):
                     raise FatalError("Debugging is impossible when DWEN is not programmed.")
                 newfuse = dwen_byte[0] & (0xFF & ~(dwen_mask))
                 self.logger.debug("New DWEN fuse: 0x%X", newfuse)
-                self.spidevice.isp.leave_progmode()
-                self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
-                self.logger.debug("Reconnected to SPI programming module")
-                self.logger.debug("Writing fuse byte: 0x%X", newfuse)
-                self.spidevice.isp.write_fuse_byte(dwen_addr, bytearray([newfuse]))
-                self.logger.info("DWEN fuse written")
                 #self.spidevice.isp.leave_progmode()
                 #self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
                 #self.logger.debug("Reconnected to SPI programming module")
-                # reading needs to be done twice!
-                #dfuse = self.spidevice.isp.read_fuse_byte(dwen_addr)
-                #self.logger.debug("DWEN byte, 1st read: 0x%X", dfuse[0])
-                #dfuse = self.spidevice.isp.read_fuse_byte(dwen_addr)
-                #self.logger.debug("DWEN byte, 2nd read: 0x%X", dfuse[0])
-                #assert dfuse[0] == newfuse, "DWEN fuse could not be programmed"
-                #self.logger.info("DWEN fuse has been programmed")
+                self.logger.debug("Writing fuse byte: 0x%X", newfuse)
+                self.spidevice.isp.write_fuse_byte(dwen_addr, bytearray([newfuse]))
+                self.logger.info("DWEN fuse written")
             self.spidevice.isp.leave_progmode()
             self.logger.info("SPI programming terminated")
             # now you need to power-cycle
-            self._power_cycle(callback=callback)
+            self._power_cycle(callback=callback, recognition=recognition)
             # end current tool session and start a new one
         finally:
             try:
@@ -417,7 +410,7 @@ class XAvrDebugger(AvrDebugger):
             self.logger.info("Signed off from tool")
             self.logger.info("... preparation for debugWIRE debugging done")
 
-    def _power_cycle(self, callback=None):
+    def _power_cycle(self, callback=None, recognition=None):
         """
         Ask user for power-cycle and wait for voltage to come up again.
         If callback is callable, we try that first. It might magically
@@ -440,6 +433,8 @@ class XAvrDebugger(AvrDebugger):
             if read_target_voltage(self.housekeeper) < 0.5:
                 wait_start = time.monotonic()
                 self.logger.info("Power-cycling recognized")
+                if recognition:
+                    recognition()
                 while  read_target_voltage(self.housekeeper) < 1.5 and \
                   time.monotonic() - wait_start < 20:
                     time.sleep(0.1)
