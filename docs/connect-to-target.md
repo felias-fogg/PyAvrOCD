@@ -8,7 +8,7 @@ If you want to connect to your target board with a standard SPI or JTAG cable, y
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adapter.JPG" width="70%">
 </p>
 
-Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG header. For the Atmel debuggers, adapters are either already included or must be purchased separately.
+Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG header. For these debuggers, adapters are either already included or must be purchased separately. For AVR targets, one should, of course, use the header marked `AVR`.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
@@ -40,7 +40,7 @@ Since one also wants to change into and out of debugWIRE mode, change fuses, or 
 
 ### SPI programming header
 
-There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from Wikipedia (https://commons.wikimedia.org/wiki/File:Isp_headers.svg), which provides a top view of the headers on a PCB.
+There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from [Wikipedia](https://commons.wikimedia.org/wiki/File:Isp_headers.svg), which provides a top view of the headers on a PCB.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Isp_headers.svg.png" width="40%">
@@ -50,7 +50,7 @@ Note the notches on the left side of the headers. Since almost all SPI programmi
 
 #### Connecting to targets with an SPI programming header
 
-If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! However, if you plug it in the wrong way, nothing will be destroyed.
+If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! For all the Arduino boards, pin 1 is always oriented towards the USB connector. However, if you plug it in the wrong way, nothing will be destroyed.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmel-ice-connect.png" width="70%">
@@ -102,12 +102,12 @@ With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin
 
 ## Connecting to a JTAG target
 
-While there is a standard for the JTAG lines, there is no commonly agreed-upon pinout of the headers. However, for the AVR family, there is a standard pinout as follows.
+For AVR MCUs, there is a standard pinout as follows.
 
 <p align="cener"> <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
 </p>
 
-Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND.
+Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), and TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND.
 
 ### Connecting to targets with a JTAG header
 
@@ -116,10 +116,9 @@ Again, if there is a JTAG header on the board, connecting the board is a breeze.
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-ICE+MCUdude.jpeg" width="80%">
 </p>
-
 ### Connecting to targets without a JTAG header
 
-When debugging a program running on an Arduino Mega or Leonardo, you could use an adapter that plugs into the header, as shown in the following picture.
+When debugging a program running on an Arduino Mega or Leonardo, you could use an [adapter](https://github.com/felias-fogg/pyavrocd/tree/main/pcbs/arduino-jtag/) that plugs into the header, as shown in the following picture.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Mega-Adapter.png" width="70%">

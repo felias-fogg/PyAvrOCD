@@ -4,7 +4,7 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/smoking_ic_breit.png" width="90%">
 </p>
 
-While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, e.g., the `monitor debugwire enable` command), the RESET line cannot be used any longer for resetting the chip, and it is impossible to use SPI programming to change fuses, in particular, the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chips?
+While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, e.g., the `monitor debugwire enable` command), the RESET line cannot be used any longer for resetting the chip, and it is impossible to use SPI programming to change fuses, in particular, the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chip?
 
 There are essentially five different scenarios:
 
@@ -22,6 +22,11 @@ There are essentially five different scenarios:
 
 6. There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).
 
-If none of the above-mentioned recovery methods work, the last resort is *high-voltage programming*. This means that 12 volts are applied to the RESET line and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a [breadboard high-voltage programmer](https://github.com/felias-fogg/RescueAVR) or a specially designed ["fuse doctor"](https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/). For MCUs with an SMD footprint, you would need to buy a breadboard adapter.
+If none of the above-mentioned recovery methods work, the last resort is *high-voltage programming*. This means that 12 volts are applied to the RESET line and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a [breadboard high-voltage programmer](https://github.com/felias-fogg/RescueAVR) or a specially designed ["HV fuse programmer"](https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/). For MCUs with an SMD footprint, you would need to buy a breadboard adapter.
 
 Having said all that, my experience is that if you take care of the potential problems mentioned in points 1-5, it is unlikely that your MCU gets bricked. But it doesn't mean that it is impossible either. JTAG and UPDI are definitely the more robust debugging interfaces.
+
+------
+
+[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)
+

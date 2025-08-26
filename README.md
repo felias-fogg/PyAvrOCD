@@ -20,7 +20,7 @@ When starting the GDB server from the command line, there are several *[command-
 
 While the package appears to function as intended, there is always the chance of a bug. If you run across a behavior that seems odd, you can report it as an [issue](https://github.com/felias-fogg/pyavrocd/issues). I hope to resolve those over time.
 
-
+**Disclaimer**: Note that, as is usual in life, there are some risks involved when using a tool. In particular, [the debugWIRE interface can be a serious health risk to your MCU](https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugwire-risks.md). Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU, target board or attached devices. Bear in mind that [the software is provided "as is", without warranty of any kind](https://github.com/felias-fogg/pyavrocd/blob/main/LICENSE).
 
 ## Supported hardware debuggers
 
@@ -44,13 +44,13 @@ JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a
 Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually be accomplished as follows by using avrdude (>= Version 7.3):
 
 ```
-> avrdude -c snap_isp -Pusb -xmode=avr
+avrdude -c snap_isp -Pusb -xmode=avr
 ```
 
 With PICkit4, it is similar:
 
 ```
-> avrdude -c pickit4_isp -Pusb -xmode=avr
+avrdude -c pickit4_isp -Pusb -xmode=avr
 ```
 
 In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, you need to [flash new firmware first using MPLAB X](https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version).

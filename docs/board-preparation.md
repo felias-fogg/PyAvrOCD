@@ -1,23 +1,29 @@
 # Preparing a target board for debugging
 
-Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.
-
-Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided pyavrocd is asked to manage these fuses by a command line option when [calling the GDB server](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md):
-
-- `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and perhaps EEPROM) memory, provided pyavrocd has been instructed to manage the lockbits.
-- `BOOTRST`: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including `bootrst` as a fuse to be managed by the server when starting the GDB server from the command line.
-- `DWEN`: This fuse needs to be programmed to use the debugWIRE interface. For this reason, pyavrocd will program this fuse when asked to do so by the command `monitor debugwire enable`. When the fuse is programmed, you must power-cycle to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed. Of course, DWEN programming is only performed if pyavrocd is instructed to manage this fuse.
-- `OCDEN`: This is the fuse for enabling the JTAG interface. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if pyavrocd has been instructed to manage this fuse.
-
-If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
-
-In any case, before you start to modify your target board, by changing it physically and/or by changing fuses, it is a good idea to record the current state and what has been changed:
+When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes necessary to enable the board for debugging:
 
 - download the current fuse settings (using avrdude),
-- download the currently used bootloader (again using avrdude), and
+- download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and
 - record necessary physical changes on the target board.
 
 With that, it will be easy to [restore the original](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md) state after debugging, if desired.
+
+
+
+## General considerations
+
+Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.
+
+Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided pyavrocd is asked to manage these fuses by a command line option, e.g., `--manage dwen`, when [calling the GDB server](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md):
+
+- `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and perhaps EEPROM) memory, provided pyavrocd has been instructed to manage the lockbits.
+- `BOOTRST`: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including `bootrst` as a fuse to be managed by the server when starting the GDB server from the command line.
+- `DWEN`: This fuse needs to be programmed to use the debugWIRE on-chip debugger. Pyavrocd will program this fuse when asked to do so by the command `monitor debugwire enable`. When the fuse is programmed, you must power-cycle to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed. Of course, DWEN programming by pyavrocd is only performed if pyavrocd is instructed to manage this fuse.
+- `OCDEN`: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if pyavrocd has been instructed to manage this fuse.
+
+If you want to leave all the fuse management to pyavorcd, then just specify `--manage all`, which is the default, e.g., with Arduino IDE2. If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
+
+Finally, as already mentioned above, bootloaders will be deleted, so that they need to be reinstalled after debugging has finished.
 
 
 
@@ -71,11 +77,11 @@ The `DWEN` and `BOOTRST` fuses and the `lockbits` will be taken care of by pyavr
 
 ### Physical preparation
 
-JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines or disconnect those components.
+JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (`TDI`, `TDO`, `TMS`, `TCK`) or disconnect those components.
 
 ### Fuse settings
 
-The JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward.
+Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.
 
 As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
 

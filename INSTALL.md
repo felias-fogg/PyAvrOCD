@@ -19,9 +19,9 @@ It will be necessary to install [pipx](https://pipx.pypa.io/) first. If you have
 ### On Linux
 
 ```
-> pipx install pyavrocd
-> pipx ensurepath
-> sudo ~/.local/bin/pyavrocd --install-udev-rules
+pipx install pyavrocd
+pipx ensurepath
+sudo ~/.local/bin/pyavrocd --install-udev-rules
 ```
 
 The last command will install the necessary udev rules. This can also be done manually by following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md).
@@ -31,8 +31,8 @@ After unplugging and replugging the debugger and restarting your shell, you can 
 ### Windows and macOS
 
 ```
-> pipx install pyavrocd
-> pipx ensurepath
+pipx install pyavrocd
+pipx ensurepath
 ```
 
 After restarting the shell, you should be able to start the GDB server. The binary is stored under `~/.local/bin/`
@@ -42,20 +42,20 @@ After restarting the shell, you should be able to start the GDB server. The bina
 Alternatively, you can download or clone the GitHub repository. Additionally, you need to install the Python package manager [poetry](https://python-poetry.org):
 
 ```
-> pipx install poetry
+pipx install poetry
 ```
 
 With that, you can start executing the script inside the downloaded folder as follows:
 
 ```
-> poetry install
-> poetry run pyavrocd ...
+poetry install
+poetry run pyavrocd ...
 ```
 
 Furthermore, you can create a binary standalone package as follows (after having installed the [pyinstaller package](https://pyinstaller.org/en/stable/)):
 
 ```
-> poetry run pyinstaller pyavrocd.spec
+poetry run pyinstaller pyavrocd.spec
 ```
 
 After that, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the directory `dist/pyavrocd/` together with the folder `pyavrocd-util`. You can copy those to a place in your `PATH`. If you want to generate a binary on a Mac that can be shipped to other Macs, you should use `arm64-apple-pyavrocd.spec` or `intel-apple-pyavrocd.spec` in order to include the right `libusb` for the host architecture. Note that fat binaries cannot be generated.
