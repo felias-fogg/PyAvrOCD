@@ -5,7 +5,6 @@ This module deals with breakpoints and execution.
 # args, logging
 from logging import getLogger
 
-from pyavrocd.errors import FatalError
 
 # special opcodes
 BREAKCODE = 0x9598
@@ -43,8 +42,9 @@ class BreakAndExec():
         self._range_word = []
         self._range_branch = []
         self._range_exit = set()
-        #if self._bigmem:
-        #    raise FatalError("Cannot deal with address spaces larger than 128 kB")
+        if self._bigmem:
+            self.logger.warning("Flash address are beyond the 64 k word space!")
+            self.logger.warning("Implying two-step reflashing on BP hits.")
 
     def _read_filtered_flash_word(self, address):
         """
@@ -303,9 +303,10 @@ class BreakAndExec():
             return SIGABRT
         # If there is a SWBP at the place where we want to step,
         # use the internal single-step (which will execute the instruction offline)
-        # or, if a two-word instruction, simulate the step.
+        # or, if a two-word instruction, simulate the step. That is, if memory
+        # is not 256k! 
         if addr in self._bp and self._bp[addr]['inflash']:
-            if self.two_word_instr(self._bp[addr]['opcode']):
+            if self.two_word_instr(self._bp[addr]['opcode']) and not self._bigmem:
             # if there is a two word instruction, simulate
                 self.logger.debug("Two-word instruction at SWBP: simulate")
                 addr = self.sim_two_word_instr(self._bp[addr]['opcode'],

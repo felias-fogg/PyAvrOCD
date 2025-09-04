@@ -22,7 +22,7 @@ The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header o
 
 Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
 
-Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works. For this reason, I designed some adapter boards for the Arduino Mega and Leonardo. If you have standard headers on the target and the debugger has those (perhaps via adapter PCBs) as well, then the connection is simply to plug in the cable into both headers.
+Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works. 
 
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
@@ -101,6 +101,8 @@ When you want to connect a **dw-link** debugger without a dw-link probe shield t
 With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin SPI programming plug on one end and single Dupont pins on the other.
 
 ## Connecting to a JTAG target
+
+Note that in order to use the JTAG connection, you might first need to enable the JTAG pins by programming the JTAGEN fuse via SPI programming. On chips fresh from the factory, this fuse is programmed. On Arduino boards, JTAGEN is disabled. 
 
 For AVR MCUs, there is a standard pinout as follows.
 

@@ -41,7 +41,7 @@ class XAvrDebugger(AvrDebugger):
     :type use_events_for_run_stop_state: boolean
     """
     #pylint: disable=super-init-not-called,too-many-positional-arguments
-    def __init__(self, transport, devicename, iface, manage):
+    def __init__(self, transport, devicename, iface, manage, clkprg, clkdeb):
         """
         We do not want to make use of the base class' init method,
         because all startup code is collected in the start_debugging method!
@@ -51,6 +51,8 @@ class XAvrDebugger(AvrDebugger):
         self.devicename = devicename
         self.iface = iface
         self.manage = manage
+        self.clkprg = clkprg
+        self.clkdeb = clkdeb
         self.housekeeper = None
         self.use_events_for_run_stop_state = True # we use the polling feature!
         # Gather device info
@@ -99,7 +101,7 @@ class XAvrDebugger(AvrDebugger):
             self.housekeeper = housekeepingprotocol.Jtagice3HousekeepingProtocol(self.transport)
             self.housekeeper.start_session()
             self.logger.info("Signed on to tool")
-            self.device.avr.setup_debug_session()
+            self.device.avr.setup_debug_session(clkprg=self.clkprg, clkdeb=self.clkdeb)
             self.logger.info("Session configuration communicated to tool")
             self.device.avr.setup_config(self.device_info)
             self.logger.info("Device configuration communicated to tool")
@@ -107,12 +109,12 @@ class XAvrDebugger(AvrDebugger):
             if self.iface == 'jtag' and dev_id & 0xFF != 0x3F:
                 raise FatalError("Not a Microchip JTAG target")
         except Exception as e:
-            self.stop_debugging()
             if warmstart:
                 self.logger.warning("Debug session not started: %s",e)
                 self.logger.warning("Try later with 'monitor debugwire enable'")
                 return False
             raise FatalError("Debug session not started: %s" % e) #pylint: disable=raise-missing-from
+        self.device.avr.attach()
         self.device.avr.switch_to_progmode()
         self.logger.info("Switched to programming mode")
         self._verify_target(dev_id)
@@ -151,6 +153,7 @@ class XAvrDebugger(AvrDebugger):
             # Disable OCDEN
             if 'ocden_base' in self.device_info and 'ocden' in self.manage:
                 self.device.avr.switch_to_progmode()
+                self.logger.info("Switched to programming mode")
                 fuses = self.read_fuse(0, 3)
                 self.logger.debug("Fuses read: %X %X %X",fuses[0], fuses[1], fuses[2])
                 ofuse_addr = self.device_info['ocden_base']
@@ -159,21 +162,21 @@ class XAvrDebugger(AvrDebugger):
                 self.logger.info("OCDEN unprogrammed")
         except Exception as e:
             if not graceful:
-                self.logger.info("Error during unprogramming OCDEN: %s", e)
+                self.logger.error("Error during unprogramming OCDEN: %s", e)
         try:
             # Detach from the OCD
             self.device.avr.protocol.detach()
             self.logger.info("Detached from OCD")
         except Exception as e:
             if not graceful:
-                self.logger.info("Error during detaching from OCD: %s", e)
+                self.logger.error("Error during detaching from OCD: %s", e)
         try:
             # De-activate physical interface
             self.device.avr.deactivate_physical()
             self.logger.info("Physical interface deactivated")
         except Exception as e:
             if not graceful:
-                self.logger.info("Error during deactivating interface: %s", e)
+                self.logger.error("Error during deactivating interface: %s", e)
         try:
             # Sign off device
             if self.use_events_for_run_stop_state:
@@ -256,6 +259,8 @@ class XAvrDebugger(AvrDebugger):
         pc = self.program_counter_read()
         self.logger.debug("PC(word)=%X",pc)
         if pc << 1 >= self.memory_info.memory_info_by_name('flash')['size']:
+            if self.iface == 'debugwire':
+                self.device.avr.protocol.debugwire_disable()
             raise FatalError("Stopping debugging immediately because of stuck-at-1 bit in PC")
 
     def _activate_interface(self):
@@ -291,7 +296,6 @@ class XAvrDebugger(AvrDebugger):
             bfuse = read(bfuse_addr)
             self.logger.debug("BOOTRST addr: 0x%X, mask: 0x%X", bfuse_addr,   bfuse_mask)
             self.logger.debug("BOOTRST fuse byte: 0x%X", bfuse[0])
-            self.logger.info("BOOTRST read: 0x%X", bfuse[0] & bfuse_mask)
             if bfuse[0] & bfuse_mask == 0: # if BOOTRST is programmed
                 if 'bootrst' not in self.manage:
                     self.logger.warning("BOOTRST is not managed by pyavrocd and will therefore not be cleared.")
@@ -310,7 +314,7 @@ class XAvrDebugger(AvrDebugger):
                     assert newfuse == bfuse[0], "BOOTRST could not be unprogrammed"
                     self.logger.info("BOOTRST fuse has been unprogrammed.")
             else:
-                self.logger.info("BOOTRST is unprogrammed")
+                self.logger.info("BOOTRST was already unprogrammed")
 
     def _handle_lockbits(self, read, erase):
         """
@@ -367,17 +371,10 @@ class XAvrDebugger(AvrDebugger):
             self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
             self.logger.debug("Reconnected to SPI programming module")
             self._handle_lockbits(self.spidevice.isp.read_lockbits, self.spidevice.erase)
-            #self.spidevice.isp.leave_progmode()
-            #self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
-            #self.logger.debug("Reconnected to SPI programming module")
             self._handle_bootrst(self.spidevice.isp.read_fuse_byte, self.spidevice.isp.write_fuse_byte)
             # program the DWEN bit
-            # leaving and re-entering programming mode is necessary, otherwise write has no effect
             dwen_addr = self.device_info['dwen_base']
             dwen_mask = self.device_info['dwen_mask']
-            #self.spidevice.isp.leave_progmode()
-            #self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
-            #self.logger.debug("Reconnected to SPI programming module")
             self.logger.debug("DWEN addr: 0x%X, DWEN mask: 0x%X", dwen_addr, dwen_mask)
             dwen_byte = self.spidevice.isp.read_fuse_byte(dwen_addr)
             self.logger.debug("DWEN fuse byte: 0x%X", dwen_byte[0])
@@ -390,9 +387,6 @@ class XAvrDebugger(AvrDebugger):
                     raise FatalError("Debugging is impossible when DWEN is not programmed.")
                 newfuse = dwen_byte[0] & (0xFF & ~(dwen_mask))
                 self.logger.debug("New DWEN fuse: 0x%X", newfuse)
-                #self.spidevice.isp.leave_progmode()
-                #self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
-                #self.logger.debug("Reconnected to SPI programming module")
                 self.logger.debug("Writing fuse byte: 0x%X", newfuse)
                 self.spidevice.isp.write_fuse_byte(dwen_addr, bytearray([newfuse]))
                 self.logger.info("DWEN fuse written")
@@ -484,28 +478,17 @@ class XAvrDebugger(AvrDebugger):
             self.logger.info("Reconnecting in ISP mode")
             self.spidevice = NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
             self.spidevice.isp.enter_progmode()
-            self.logger.info("Entered programming mode")
+            self.logger.info("Entered SPI programming mode")
             dwen_addr = self.device_info['dwen_base']
             dwen_mask = self.device_info['dwen_mask']
-            fuses = self.spidevice.read(self.memory_info.memory_info_by_name('fuses'), 0, 3)
-            self.logger.debug("Fuses read: %X %X %X",fuses[0], fuses[1], fuses[2])
-            fuses[dwen_addr] |= dwen_mask
-            self.logger.debug("New high fuse: 0x%X", fuses[dwen_addr])
-            self.spidevice.isp.leave_progmode()
-            self.spidevice.isp.enter_progmode()
-            self.logger.info("Restarted SPI programming mode")
-            self.spidevice.write(self.memory_info.memory_info_by_name('fuses'), dwen_addr,
-                                     fuses[dwen_addr:dwen_addr+1])
-            self.spidevice.isp.leave_progmode()
-            self.spidevice.isp.enter_progmode()
-            self.logger.info("Restarted SPI programming mode")
-            fuses = self.spidevice.read(self.memory_info.memory_info_by_name('fuses'), 0, 3)
-            fuses = self.spidevice.read(self.memory_info.memory_info_by_name('fuses'), 0, 3)
-            self.logger.debug("Fuses read after DWEN disable: %X %X %X",fuses[0], fuses[1], fuses[2])
-            assert fuses[dwen_addr] & dwen_mask != 0, "DWEN fuse could not be unprogrammed"
+            dwen_byte = self.spidevice.isp.read_fuse_byte(dwen_addr)
+            self.logger.debug("DWEN byte: 0x%X", dwen_byte[0])
+            dwen_byte[0] |= dwen_mask
+            self.logger.debug("New DWEN byte: 0x%X", dwen_byte[0])
+            self.spidevice.isp.write_fuse_byte(dwen_addr, dwen_byte)
             self.logger.info("Unprogrammed DWEN fuse")
             self.spidevice.isp.leave_progmode()
-            self.logger.info("Programming mode terminated")
+            self.logger.info("SPI programming terminated")
         # we do not interact with the tool anymore after this
         self.housekeeper.end_session()
         self.logger.info("Signed off from tool")

@@ -12,6 +12,8 @@ import logging
 import shutil
 import shlex
 import subprocess
+import signal
+import contextlib
 from logging import getLogger
 
 
@@ -35,6 +37,7 @@ from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.handler import GdbHandler, RECEIVE_BUFFER
 from pyavrocd.errors import  EndOfSession
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
+from pyavrocd.monitor import monopts
 
 class RspServer():
     """
@@ -42,21 +45,27 @@ class RspServer():
     and responding, and terminating. The important part is calling the handle_data
     method of the handler.
     """
-    def __init__(self, avrdebugger, devicename, port, mon_default):
+    def __init__(self, avrdebugger, devicename, args):
         self.avrdebugger = avrdebugger
         self.devicename = devicename
-        self.port = port
+        self.port = args.port
         self.logger = getLogger("pyavrocd.rspserver")
         self.connection = None
         self.gdb_socket = None
         self.handler = None
         self.address = None
-        self.mon_default = mon_default
+        self.args = args
+        self._terminate = False
+
+    def __signal_server(self,_signo,_frame):
+        self.logger.info("System requested termination using SIGTERM signal")
+        self._terminate = True
 
     def serve(self):
         """
         Serve away ...
         """
+        signal.signal(signal.SIGTERM, self.__signal_server)
         self.gdb_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.logger.info("Listening on port %s for gdb connection", self.port)
         # make sure that this message can be seen
@@ -67,22 +76,41 @@ class RspServer():
         self.connection, self.address = self.gdb_socket.accept()
         self.connection.setblocking(0)
         self.logger.info('Connection from %s', self.address)
-        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.mon_default)
-        while True:
-            ready = select.select([self.connection], [], [], 0.5)
-            if ready[0]:
-                data = self.connection.recv(RECEIVE_BUFFER)
-                #self.logger.debug("Received over TCP/IP: %s",data)
-                if len(data) > 0:
-                    self.handler.handle_data(data)
-            else:
-                self.handler.handle_data(None)
-            self.handler.poll_events()
+        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args)
+        try:
+            while not self._terminate:
+                ready = select.select([self.connection], [], [], 0.5)
+                if ready[0]:
+                    data = self.connection.recv(RECEIVE_BUFFER)
+                    if len(data) > 0:
+                        self.handler.handle_data(data)
+                    else:
+                        self._terminate = True
+                        self.logger.info("Connection closed by GDB")
+                else:
+                    self.handler.handle_data(None)
+                self.handler.poll_events()
+            return 0 # termination because of dropped connection or SIGTERM signal
+        except EndOfSession: # raised by 'detach' command
+            self.logger.info("End of session")
+            return 0
+        except KeyboardInterrupt: # caused by user interrupt 
+            self.logger.info("Terminated by Ctrl-C")
+            return 1
+        finally:
+            self.logger.info("Leaving GDB server")
+            if self.avrdebugger and self.avrdebugger.device:
+                if self.avrdebugger.iface == "debugwire" and \
+                  self.handler.mon.is_debugger_active() and \
+                  self.handler.mon.is_leaveonexit():
+                    self.avrdebugger.dw_disable()
+                self.avrdebugger.stop_debugging(graceful=False)
+                self.avrdebugger = None
 
 
     def __del__(self):
         try:
-            self.logger.info("Terminating GDB server and cleaning up ...")
+            self.logger.info("Terminating GDB server ...")
             if self.avrdebugger and self.avrdebugger.device:
                 self.avrdebugger.stop_debugging(graceful=True)
         except Exception as e:
@@ -94,13 +122,13 @@ class RspServer():
         finally:
             # sleep 0.5 seconds before closing in order to allow the client to close first
             time.sleep(0.5)
-            self.logger.info("Closing socket")
-            if self.gdb_socket:
-                self.gdb_socket.close()
-            self.logger.info("Closing connection")
             if self.connection:
                 self.connection.close()
-            self.logger.info("... terminating GDB server done")
+                self.logger.info("Connection closed")
+            if self.gdb_socket:
+                self.gdb_socket.close()
+                self.logger.info("Socket closed")
+            self.logger.info("... GDB server terminated")
 
 
 def _setup_tool_connection(args, logger):
@@ -139,9 +167,19 @@ def options():
     """
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
             fromfile_prefix_chars='@',
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog='  Use @filename to insert options from file filename in command line',
-            description='GDB server for AVR MCUs')
+            #formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            epilog='''Use @file to insert options from file in command line. 
+@pyavrocd.options will be inserted as last argument in command line.
+You can also use monitor command options, e.g., --timer=freeze.
+''',
+            description='GDB server for debugWIRE and JTAG AVR MCUs'
+                                         )
+
+    parser.add_argument("--allow-potentially-bricking-actions",
+                            dest='brick',
+                            action='store_true',
+                            default=False,
+                            help=argparse.SUPPRESS)
 
     parser.add_argument("-c", "--command",
                             action='append',
@@ -152,67 +190,118 @@ def options():
     parser.add_argument("-d", "--device",
                             dest='dev',
                             type=str,
-                            help="Device to debug")
+                            help="Device to debug, list supported MCUs with '?'")
 
-    parser.add_argument('-g', '--gede',  action="store_true",
-                            help='Start Gede debugger GUI')
+    parser.add_argument("-D", "--debug-clock",
+                            metavar="CD",
+                            dest='clkdeb',
+                            type=int,
+                            default=200,
+                            help="JTAG clock frequency for debugging (kHz) (def.: 200)")
 
+    interface_choices = ['debugwire', 'jtag', 'pdi', 'updi']
     parser.add_argument("-i", "--interface",
+                            metavar="IF",
                             type=str,
-                            choices=['debugwire', 'jtag', 'pdi', 'updi'],
-                            help="Debugging interface to use")
+                            choices= ['?'] + interface_choices,
+                            help="Debugging interface to use, use '?' for list")
 
+    manage_choices = ['all', 'none', 'bootrst', 'nobootrst', 'dwen', 'nodwen',
+                          'ocden', 'noocden', 'lockbits', 'nolockbits']
     parser.add_argument("-m", "--manage",
+                            metavar="FUSE",
                             action='append',
                             dest='manage',
+                            default = [],
                             type=str,
-                            choices=['all', 'none', 'bootrst', 'nobootrst', 'dwen', 'nodwen',
-                                         'ocden', 'noocden', 'lockbits', 'nolockbits'],
-                            help="Fuses to be managed by the GDB server")
-
-    parser.add_argument("-M", "--monitor",
-                            action='append',
-                            dest='monitor',
-                            type=str,
-                            choices=['b:a', 'b:s', 'b:h', 'c:e', 'c:d', 'l:r', 'l:w', 'o:e', 'o:d', 'r:e', 'r:d',
-                                         's:s', 's:i', 't:f', 't:r', 'v:e', 'v:d'],
-                            help="Initial values for monitor options")
+                            choices= ['?'] + manage_choices,
+                            help="Fuses to be managed, use '?' for list")
 
     parser.add_argument('-p', '--port',  type=int, default=2000, dest='port',
-                            help='Local port on machine (default 2000)')
+                            help='Local port on machine (default: 2000)')
+
+    parser.add_argument("-P", "--prog-clock",
+                            metavar="CP",
+                            dest='clkprg',
+                            type=int,
+                            default=1000,
+                            help="JTAG clock frequency for programming (kHz) (d.: 1000)")
 
     parser.add_argument('-s', '--start',  dest='prg',
                             help='Start specified program or "noop"')
 
+    tool_choices = ['atmelice', 'dwlink', 'edbg', 'jtagice3', 'medbg', 'nedbg',
+                        'pickit4', 'powerdebugger', 'snap']
     parser.add_argument("-t", "--tool",
+                            metavar="TOOL",
                             type=str,
-                            choices=['atmelice', 'dwlink', 'edbg', 'jtagice3', 'medbg', 'nedbg',
-                                          'pickit4', 'powerdebugger', 'snap'],
-                            help="Tool to connect to")
+                            choices= ['?'] + tool_choices,
+                            help="Tool to connect to, use '?' to list options")
 
     parser.add_argument("-u", "--usbsn",
+                            metavar="SN",
                             type=str,
                             dest='serialnumber',
                             help="USB serial number of the unit to use")
 
+    level_choices = ['all', 'debug', 'info', 'warning', 'error', 'critical']
     parser.add_argument("-v", "--verbose",
-                            default="info", choices=['all', 'debug', 'info',
-                                                         'warning', 'error', 'critical'],
-                            help="Verbosity level for logger")
+                            metavar="LEVEL",
+                            default="info", choices= ['?'] + level_choices,
+                            help="Verbosity level for logger, use '?' to list levels")
 
     parser.add_argument("-V", "--version",
                             help="Print pyavrocd version number and exit",
                             action="store_true")
 
+    parser.add_argument("-f", type=str, help=argparse.SUPPRESS)
+
     if platform.system() == 'Linux':
         parser.add_argument("--install-udev-rules",
-                                help="Install udev rules for Microchip hardware " +
-                                "debuggers under /etc/udev/rules.d/",
+                                help="Install necessary udev rules for Microchip debuggers",
                                 action="store_true")
+
+    for option_name, option_type in monopts.items():
+        if option_type[0] == 'cli':
+            default = option_type[1]
+            choices = option_type[2][1:]
+            parser.add_argument("--" + option_name, help=argparse.SUPPRESS,
+                                    type=str, choices=choices, default=default)
+        
     # Parse args and return
+    if len(sys.argv) == 1:
+        sys.argv.append('-h')
+    sys.argv.append('@pyavrocd.options')
     sys.argv[:] = [x for x in sys.argv if not x.startswith('@') or os.path.exists(x[1:]) ]
-    print(sys.argv)
-    return parser.parse_known_args()
+
+    args = parser.parse_args()
+
+    questionmark = False
+    if args.interface == '?':
+        questionmark = True
+        args.interface = None
+        print("Possible interface option arguments (-i) are: ")
+        print(', '.join(map(str, interface_choices)))
+    
+    if '?' in args.manage:
+        questionmark = True
+        print("Possible fuse management option arguments (-m) are: ")
+        print(', '.join(map(str, manage_choices)))
+
+    if args.tool == '?':
+        questionmark = True
+        print("Possible tool option arguments (-t) are: ")
+        print(', '.join(map(str, tool_choices)))
+
+    if args.verbose == '?':
+        questionmark = True
+        args.verbose = 'info'
+        print("Possible verbosity levels (-v) are: ")
+        print(', '.join(map(str, level_choices)))
+        
+    if questionmark and args.dev != '?':
+        sys.exit(0)
+    return args 
 
 def install_udev_rules(logger):
     """
@@ -292,7 +381,8 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
         return 0,None,None
 
     if args.cmd:
-        for portcmd in [c for c in args.cmd if 'gdb_port' in c]:
+        portcmd = [c for c in args.cmd if 'gdb_port' in c]
+        if portcmd:
             cmd = portcmd[0]
             args.port = int(cmd[cmd.index('gdb_port')+len('gdb_port'):])
 
@@ -303,24 +393,21 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
         args.dev = args.dev.strip()
 
     manage = []
-    if args.manage:
-        for f in args.manage:
-            if f == 'all':
-                manage = ['bootrst', 'dwen', 'ocden', 'lockbits']
-            elif f == 'none':
-                manage = []
-            elif f.startswith('no'):
+    for f in args.manage:
+        if f == 'all':
+            manage = ['bootrst', 'dwen', 'ocden', 'lockbits']
+        elif f == 'none':
+            manage = []
+        elif f.startswith('no'):
+            with contextlib.suppress(ValueError):
                 manage.remove(f[2:])
-            else:
-                manage.append(f)
+        else:
+            manage.append(f)
     args.manage = manage
 
-    monvals = []
-    if args.monitor:
-        for mv in args.monitor:
-            monvals[:] = [x for x in monvals if not x.startswith(mv[0])]
-            monvals.append(mv)
-    args.monitor = monvals
+    if args.clkprg < 0 or args.clkdeb < 0:
+        print("Negative frequency values are discouraged")
+        return 1, None, None
 
     if args.dev and args.dev == "?":
         if args.interface:
@@ -348,7 +435,7 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     device = device.lower()
 
     if device not in dev_id:
-        logger.critical("Device '%s' is not supported by pyavrocd", device)
+        print("Device '%s' is not supported by pyavrocd" % device)
         return 1, None, None
 
     if args.interface:
@@ -360,13 +447,13 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     logger.debug("Possible interfaces: %s", intf)
     logger.debug("Interfaces of chip: %s",  dev_iface[dev_id[device]].lower())
     if not intf:
-        logger.critical("Device '%s' does not have a compatible debugging interface", device)
+        print("Device '%s' does not have a compatible debugging interface" % device)
         return 1, None, None
     if len(intf) == 1 and intf[0] not in dev_iface[dev_id[device]].lower():
-        logger.critical("Device '%s' does not have the interface '%s'", device, intf[0])
+        print ("Device '%s' does not have the interface '%s'" % (device, intf[0]))
         return 1, None, None
     if len(intf) > 1:
-        logger.critical("Debugging interface for device '%s' ambiguous: '%s'", device, intf)
+        print("Debugging interface for device '%s' ambiguous: '%s'" % (device, intf))
         return 1, None, None
     intf = intf[0]
     return None, device, intf
@@ -375,8 +462,6 @@ def startup_helper_prog(args, logger):
     """
     Starts program requested by user, e.g., a debugger GUI
     """
-    if args.gede:
-        args.prg = "gede"
     if args.prg and args.prg != "noop":
         args.prg = args.prg.strip()
         logger.info("Starting %s", args.prg)
@@ -390,12 +475,6 @@ def run_server(server, logger):
     """
     try:
         server.serve()
-    except (EndOfSession, SystemExit):
-        logger.info("End of session")
-        return 0
-    except KeyboardInterrupt:
-        logger.info("Terminated by Ctrl-C")
-        return 1
     except (ValueError, Exception) as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)
@@ -412,10 +491,9 @@ def main():
     no_hw_dbg_error = False # will become true, when no HW debugger is found
     log_rsp = False
 
-    # Parse options
-    args, unknown = options()
+    args = options()
 
-    # verbose option 'all' is a spical one
+    # verbose option 'all' is a special one
     if args.verbose == "all":
         log_rsp = True
         args.verbose = "debug"
@@ -423,13 +501,10 @@ def main():
     # set up logging
     logger = setup_logging(args, log_rsp)
 
-    if unknown:
-        logger.warning("Unknown options: %s", ' '.join(unknown))
-
     result, device, intf = process_arguments(args, logger)
     if result is not None:
         return result
-
+    #print(args)
     if args.tool == "dwlink":
         dwlink.main(args, intf) # if we return, then there is no HW debugger
         no_hw_dbg_error = True
@@ -458,9 +533,21 @@ def main():
         finally:
             backend.disconnect_from_tool()
 
-        if device in ['atmega48', 'atmega88'] and (not args.tool or args.tool != 'dwlink'):
-            logger.critical("%s (w/o P or A suffix) will be bricked when trying to debug it", device)
+        if device in ['atmega48', 'atmega88']:
+            logger.critical("%s (without P or A suffix) will be bricked when trying to debug it", device)
             return 1
+        if device in ['atmega48a', 'atmega88a']:
+            logger.warning("Debugging this MCU can lead to bricking it,")
+            logger.warning("provided it does not have an A or P suffix.")
+            if args.brick:
+                logger.warning("You allowed debugging this MCU by specifing")
+                logger.warning("'--allow-potentially-bricking-actions'.")
+            else:
+                logger.warning("If you really want to do that, either specify")
+                logger.warning("'--allow-potentially-bricking-actions' on the")
+                logger.warning("command line or put that in a file named 'pyavrocd.options'.")
+                logger.critical("Only when you do that, the debugger will be started.")
+                return 1
         transport = hid_transport()
         if len(transport.devices) > 1:
             logger.critical("Too many hardware debuggers connected")
@@ -486,8 +573,8 @@ def main():
 
     logger.info("Starting GDB server")
     try:
-        avrdebugger = XAvrDebugger(transport, device, intf, args.manage)
-        server = RspServer(avrdebugger, device, args.port, args.monitor)
+        avrdebugger = XAvrDebugger(transport, device, intf, args.manage, args.clkprg, args.clkdeb)
+        server = RspServer(avrdebugger, device, args)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)

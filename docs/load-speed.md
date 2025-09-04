@@ -18,7 +18,7 @@ The first table is about debugWIRE targets.  As one can see, having verification
 
 There are a number of interesting observations to make. First, there is never any difference between the verifying and non-verifying settings. Probably, the reason is that writing into flash is much more expensive than reading. In fact, the debugWIRE protocol requires sending at least 10 bytes over the debugWIRE communication line for each byte to be written into flash memory. Further, each page programming operation needs an additional 4 msec. Reading flash memory, on the other hand, is comparatively inexpensive, which results, second, in a ten-fold speedup in the best case when using read-before-write. Since read-before-write is never slower, it is adapted as the default setting when dealing with debugWIRE targets. Third, the mEDBG debugger on the Xplained Mini board has only half the speed of the other debuggers. I believe the reason for that might be that the debugWIRE line is used with only half the speed (roughly 62500 baud) because otherwise one might run into trouble with the USB interrupts that are also served by the mEDBG chip.
 
-The next table is about programming the flash memory of JTAG targets. Here, the picture is entirely different.
+The next table is about programming the flash memory of JTAG targets with the default setting of 1 MHz for programming. Here, the picture is entirely different.
 
 | MCU                              | SNAP                | PICkit4           | Atmel-ICE           | Power Debugger      | JTAGICE3          | XPLAINED Pro 324PB  |
 | -------------------------------- | ------------------- | ----------------- | ------------------- | ------------------- | ----------------- | ------------------- |

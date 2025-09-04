@@ -4,23 +4,29 @@
 
 When starting pyavrocd, you can influence its behavior with several command-line options.
 
-| Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
+| Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `--allow-potentially-bricking-actions`                       | If one wants to debug ATmega48(A) or ATmega88(A), one should be aware that the non-A types will almost certainly be bricked when pyavrocd tries to switch them to debugWIRE mode. Since the debugger cannot distinguish between the non-A- and A-types (they have the same signature), the user must ensure that the chip is of the A-type. If you are sure that this is the case, use this option to enable debugging for these chips. You can specify it on the command line or in the file `pyavrocd.options`, located in the folder where pyavrocd is invoked. |
 | `--command`<br>`-c`                                          | Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2. This is an alternative to the `--port` option. |
 | `--device` <br>`-d`                                          | The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed. |
-| `--gede`<br>`-g`                                             | No argument for this option. This option will start the `Gede` debugger GUI. |
+| `--debugging-clock`<br>`-D`                                  | JTAG clock frequency for debugging (kHz). This value should be less than a quarter of the MCU clock frequency. The default is (a conservative) 200 kHz. |
+| `--help`<br> `-h`                                            | Gives help text and exits.                                   |
 | `--interface`<br>`-i`                                        | Debugging interface to use. Should be one of `debugwire`, `jtag`, `pdi`, or `updi`. Only necessary if an MCU supports more than one interface or if one wants to see only the supported chips with a particular interface. |
 | `--manage`<br/>`-m`                                          | Can be given multiple times and specifies which fuses should be managed by pyavrocd. Possible arguments are `all`, `none`, `bootrst`, `nobootrst`,  `dwen`, `nodwen`, `ocden`, `noocden`, `lockbits`, and `nolockbits`. Later values in the command line override earlier ones. Any fuses not managed by pyavrocd need to be changed 'manually' before and/or after the GDB server is activated. Note that dw-link ignores this option! |
-| `--monitor`<br> `-M`                                         | Can be given multiple times and specifies default values for [monitor options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md). These default values are given by using the first letter of the option and the first letter of the value separated by a colon. For instance, for setting the default for the `load` option to `readbeforewrite` use `-monitor l:r` .This option is currently ignored by dw-link. |
 | `--port` <br>`-p`                                            | IP port on the local host to which GDB can connect. The default is 2000. |
+| `--programming-clock`<br>-P                                  | JTAG programming clock frequency in kHz. This is limited only by the target MCU silicon, not by the actual MCU clock frequency used. The default is (a conservative) 1000 kHz. |
 | `--start` <br>`-s`                                           | Program to start or the string `noop`, when no program should be started |
 | `--tool`<br>`-t`                                             | Specifying the debug tool. Possible values are `atmelice`, `edbg`, `jtagice3`, `medbg`, `nedbg`, `pickit4`, `powerdebugger`, `snap`, `dwlink`. Use of this option is necessary only if more than one debugging tool is connected to the computer. |
 | `--usbsn` <br>`-u`                                           | USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer. |
-| `--verbose` <br>`-v`                                         | Specify verbosity level. Possible values are `all`, `debug`, `info`, `warning`, `error`, or `critical`. The default is `info`.The option value `all` means that, in addition to the debug output, all communication with GDB is logged. |
+| `--verbose` <br>`-v`                                         | Specify verbosity level. Possible values are `all`, `debug`, `info`, `warning`, `error`, or `critical`. The default is `info`. The option value `all` means that, in addition to the debug output, all communication with GDB is logged. |
 | `--version` <br>`-V`                                         | Print pyavrocd version number and exit.                      |
 | `--install-udev-rules`                                       | Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with `sudo` and is only present under Linux. |
 
+You can also use the [monitor command options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--timers freeze,` which has the same effect as issuing the command `monitor timers freeze` in the debugger at startup.
+
 In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.
+
+The argument `@pyavrocd.options` is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis. 
 
 ------
 

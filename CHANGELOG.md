@@ -1,10 +1,34 @@
 # Changelog
 
+### 0.13.0
+
+- **Fixed:**
+  - The Arduino IDE 2 was killing the server using SIGTERM without giving it a chance to clean up. Unfortunately, catching the signal did not help because the tool was apparently already disconnected somehow. We now capture both the SIGTERM signal and a disconnect from GDB, setting `self._terminate` to `True`, which ends the loop in the `server` method of `RspServer` and provides us a chance to terminate the GDB server cleanly.
+  - Address translation in memory.py assumed that all addresses have only 16 bits and that all digits before the 16-bit address are a memory segment identifier. That does not work with flash memory larger than 64k, though. So, this has been adapted. All addresses not starting with an '8' are taken literally. The '8' addresses are SRAM, EEPROM, etc.
+- **Added:**
+  - New option `-P`/`--prog-clock` for setting the JTAG programming clock frequency in kHz.
+  - New option `-D`/`--debug-clock` for setting the JTAG debugging clock frequency in kHz (should be at most a quarter of the MCU clock frequency).
+  - These two options are now set in the MightyCore/MegaCore board files according to the MCU speed.
+  - Two new monitor options: `monitor atexit leavedebugwire` and `monitor atexit stayindebugwire`, where the second is the default. The first one is useful when one has an embedded debugger.
+  - Two new monitor options: `monitor erasebeforeload enable` and `disable`. The first one is the default; however, it does not affect debugWIRE targets, because we can only erase page by page. Disabling it might be helpful for MightyCore and MegaCore in order to protect the bootloader, which offers some functionality. 
+  - All monitor commands that change state can now be used as command-line options. For example, one can specify `--timers=freeze` on the command line. 
+  - We now also accept the `-f` option and ignore everything about it. This option is not shown in the 'usage' text (because it is suppressed). 
+  - In order to safeguard the user against debugging non-A ATmega48/88, pyavrocd refuses to debug any such non-A/P device. If an A-device (e.g., ATmega88A) is specified, a warning message is given that it is necessary to specify `--allow-potentially-bricking-actions` on the command line or oin the `pyavrocd.options` file.  The option itslef is not displayed in the help text since it would clutter the help text too much.
+- **Removed:**
+  - The `-g/--gede` option has been removed because `-s` also gives its functionality.
+  - The `-M/--monitor` option has been removed because now all state-changing monitor commands can be used as command-line options. 
+  
+- **Changed:** 
+  - `monitor onlyloaded` was changed to `monitor onlywhenloaded`
+  - Since we now also deal with the `-f` option needed for the openOCD invocation by cortex-debug, we no longer tolerate unknown options.
+  - Because printing the possible choices for option values looked very ugly, the help text now states that the choices can be asked for by using a '?'.  The help text looks very tidy now.
+
+
 ### 0.12.0
 
 - **Added:**
   - `-M`/`--monitor` command line option can now be used to set monitor default option in the command line, e.g., `-M v:e` will enable verification after load.
-  - With a @-prefix to a file name, one can now request to read further command line options from a file. If the file does not exist, the @-argument is simply ignored. This can, e.g., be used to override options set by the IDE, when a fixed name such as `debug.arg` is used.
+  - With a @-prefix to a file name, one can now request to read further command-line options from a file. If the file does not exist, the @-argument is simply ignored. This can, for example, be used to override options set by the IDE when a fixed name, such as `debug.opt`, is used.
   - A new method in `handler` for telling the user that power-down has been sensed, and a new parameter in power cycle methods to pass this message method down to where it will be called.
 
 ### 0.11.1

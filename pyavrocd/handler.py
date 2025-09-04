@@ -32,12 +32,12 @@ class GdbHandler():
     GDB handler
     Maps between incoming GDB requests and AVR debugging protocols (via pymcuprog)
     """
-    def __init__ (self, comsocket, avrdebugger, devicename, mon_defaults):
+    def __init__ (self, comsocket, avrdebugger, devicename, args):
         self.packet_size = RECEIVE_BUFFER - 20
         self.logger = getLogger('pyavrocd.handler')
         self.rsp_logger = getLogger('pyavrocd.rsp')
         self.dbg = avrdebugger
-        self.mon = MonitorCommand(self.dbg.iface, mon_defaults)
+        self.mon = MonitorCommand(self.dbg.iface, args)
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
@@ -395,9 +395,9 @@ class GdbHandler():
                             response[1].format(dev_name[self.dbg.device_info['device_id']]))
             elif 'live_tests' in response[0]:
                 self._live_tests.run_tests()
-        except AvrIspProtocolError as e:
-            self.logger.critical("ISP programming failed: %s", e)
-            self.send_reply_packet("ISP programming failed: %s" % e)
+        except AvrIspProtocolError:
+            self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
+            self.send_reply_packet("ISP programming failed. Wrong connection or wrong MCU?")
         except (FatalError, PymcuprogNotSupportedError, PymcuprogError) as e:
             self.logger.critical(e)
             self.send_reply_packet("Fatal error: %s" % e)
@@ -676,7 +676,7 @@ class GdbHandler():
                 self.logger.info("Loading executable")
                 self.bp.cleanup_breakpoints() # cleanup breakpoints before load
                 self.mem.lazy_loading = True
-                self.dbg.device.avr.device.avr.switch_to_progmode()
+                self.dbg.device.avr.switch_to_progmode()
                 self.mem.programming_mode = True
                 self.logger.info("Switched to programming mode")
                 if not self.mon.is_read_before_write():

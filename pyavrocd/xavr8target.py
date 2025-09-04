@@ -85,6 +85,15 @@ class XTinyAvrTarget(TinyAvrTarget):
             # but no new EDBG firmware has/will be built)
             self.max_read_chunk_size = 256
 
+    def setup_debug_session(self, **kwargs):
+        """
+        Sets up a debugging session on an Tiny AVR (debugwire)
+        """
+        _dummy = kwargs
+        self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_TINYOCD)
+        self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
+        self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_DW)
+
     #pylint: disable=arguments-differ
     def memtype_read_from_string(self, memtype_string):
         """
@@ -120,6 +129,12 @@ class XTinyAvrTarget(TinyAvrTarget):
         prog mode or deb mode do not make a difference.
         """
         #self.protocol.leave_progmode()
+
+    def attach(self):
+        """
+        For debugWIRE, we will attach to the OCD just once.
+        """
+        self.protocol.attach()
 
     def setup_config(self, device_info):
         """
@@ -311,7 +326,13 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         self.switch_to_progmode()
         self.protocol.leave_progmode()
 
-    def setup_debug_session(self):
+    def attach(self):
+        """
+        For JTAG targets, the methods 'switch_to_progmode' and 'switch_to_debmode' make
+        sure that we are attached. So this is a no-op.
+        """
+
+    def setup_debug_session(self, clkprg=200, clkdeb=1000):
         """
         Sets up a programming session on an Mega AVR (JTAG)
         """
@@ -319,6 +340,8 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
         self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
+        self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_PRG_CLK, clkprg)
+        self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_DBG_CLK, clkdeb)
 
     # setup_config is done in the super class
     # However, it seems to be wrong. Instead of IO register addresses RAM addresses

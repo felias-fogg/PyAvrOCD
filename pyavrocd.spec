@@ -7,7 +7,7 @@ hiddenimports += collect_submodules('pyavrocd.deviceinfo.devices')
 
 
 a = Analysis(
-    ['pyavrocd/pyavrocd.py'],
+    ['pyavrocd/main.py'],
     pathex=['pyavrocd/deviceinfo/devices/', 'pyavrocd/deviceinfo'],
     binaries=[],
     datas=[],

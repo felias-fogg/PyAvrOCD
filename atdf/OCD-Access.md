@@ -1,6 +1,6 @@
 # **OCD Access and how to handle it in SVD files**
 
-Microchip's ATDF files contain the hardware description of their MCUs, including a hint of whether registers should be accessed read-write, read-only, write-only, or not at all by a debugger. This hint is stored in the attribute `ocd-rw` is relevant for any IDE/GUI during debugging. Unfortunately, the use of this attribute is not entirely consistent and sometimes somewhat ambiguous. A further observation is that the modern parts do not use this attribute at all.
+Microchip's ATDF files contain the hardware description of their MCUs, including a hint of whether registers should be accessed read-write, read-only, write-only, or not at all by a debugger. This hint is stored in the attribute `ocd-rw` and is relevant for any IDE/GUI during debugging. Unfortunately, the use of this attribute is not entirely consistent and sometimes somewhat ambiguous. A further observation is that the modern parts do not use this attribute at all.
 
 ### Write-only versus empty
 
@@ -58,9 +58,9 @@ These are the two entries that have not been marked, but should have:
 
 Based on the usage of the "write-only" and "empty" markers, I conclude that the intended meaning of the "empty" marker is "do not read" for the debugger.
 
-To support debugging, I use the `ocd-rw=""` marker to compile a `masked_register` list for each MCU (the harvest.py script does this). This list is applied when the debugger accesses the MCU. So, the debugger and the user will not be able to read anything from these registers. 0xFF is returned instead. Maybe I will patch the ATDF files so that the description is extended by something like "(reading impossible)".
+To support debugging, I use the `ocd-rw=""` marker to compile a `masked_register` list for each MCU (the harvest.py script does this). This list is applied when the debugger accesses the MCU. So, the debugger and the user will not be able to read anything from these registers. 0x00 is returned instead.  I patched the ATDF files so that the description is extended by something like "(reading impossible)".
 
-As is obvious, for some I/O registers, this mark is missing for some MCUs. I will write patches for those. It is not clear what to do about the ATmegaXC/M1 series. I guess, for now, I will not change anything.
+As is obvious, for some I/O registers, this mark is missing for some MCUs. I will write patches for those. It is not clear what to do about the ATmegaXC/M1 series. In the end, I decided to write patch files. I still have to test one of these chips with the debugger.
 
 ### Critical registers of ATtinys
 

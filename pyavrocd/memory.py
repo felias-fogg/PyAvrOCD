@@ -92,13 +92,10 @@ class Memory():
         (0, lambda *x: bytes(), lambda *x: 'E13')
         """
         addr_section = "00"
-        if len(addr) > 4:
-            if len(addr) == 6:
+        if len(addr) == 6:
+            if addr[0] == '8':
                 addr_section = addr[:2]
                 addr = addr[2:]
-            else:
-                addr_section = "0" + addr[0]
-                addr = addr[1:]
         iaddr = int(addr,16)
         self.logger.debug("Address section: %s",addr_section)
         if addr_section == "00": # flash

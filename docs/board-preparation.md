@@ -6,7 +6,7 @@ When you want to debug a program on a target board, usually some modifications o
 - download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and
 - record necessary physical changes on the target board.
 
-With that, it will be easy to [restore the original](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md) state after debugging, if desired.
+With that, it will be easy to [restore the original](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the Burn Bootloader function. However, you should record any physical changes. By the way, you can get some decent development boards from Microchip that contain embedded debuggers, which work pretty well with pyavrocd. In this case, preparations and restoring the original state are not an issue.
 
 
 
@@ -21,7 +21,7 @@ Sometimes it may be additionally necessary to change a few fuses before debuggin
 - `DWEN`: This fuse needs to be programmed to use the debugWIRE on-chip debugger. Pyavrocd will program this fuse when asked to do so by the command `monitor debugwire enable`. When the fuse is programmed, you must power-cycle to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed. Of course, DWEN programming by pyavrocd is only performed if pyavrocd is instructed to manage this fuse.
 - `OCDEN`: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if pyavrocd has been instructed to manage this fuse.
 
-If you want to leave all the fuse management to pyavorcd, then just specify `--manage all`, which is the default, e.g., with Arduino IDE2. If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
+If you want to leave all the fuse management to pyavorcd, then just specify `--manage all`, which is the default with Arduino IDE2. If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
 
 Finally, as already mentioned above, bootloaders will be deleted, so that they need to be reinstalled after debugging has finished.
 
