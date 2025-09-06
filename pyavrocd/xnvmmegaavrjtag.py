@@ -86,6 +86,8 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
 
         memtype_string = memory_info[DeviceMemoryInfoKeys.NAME]
         memtype = self.avr.memtype_read_from_string(memtype_string)
+        if memtype_string == MemoryNames.EEPROM and not prog_mode:
+            memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM
         self.logger_local.debug("Reading with memtype=0x%x", memtype)
         if memtype == 0:
             msg = "Unsupported memory type: {}".format(memtype_string)
@@ -111,7 +113,7 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         data = self.avr.read_memory_section(memtype, offset, numbytes, numbytes)
         return data
 
-    def write(self, memory_info, offset, data):
+    def write(self, memory_info, offset, data, prog_mode=False):
         """
         Write the memory with data
 
@@ -123,7 +125,9 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
             return
         memtype_string = memory_info[DeviceMemoryInfoKeys.NAME]
         memtype = self.avr.memtype_read_from_string(memtype_string)
-        self.logger_local.debug("Reading with memtype=0x%x from %s", memtype, memtype_string)
+        if memtype_string == MemoryNames.EEPROM and not prog_mode:
+            memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM
+        self.logger_local.debug("Writing to memtype=0x%x from %s", memtype, memtype_string)
         if memtype == 0:
             msg = "Unsupported memory type: {}".format(memtype_string)
             self.logger_local.error(msg)
@@ -160,7 +164,7 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
             # changed computation of first_chunk_size for SRAM:
             first_chunk_size = write_chunk_size
 
-        self.logger_local.info("Writing %d bytes of data in chunks of %d bytes to %s...",
+        self.logger_local.debug("Writing %d bytes of data in chunks of %d bytes to %s...",
                          len(data_to_write),
                          write_chunk_size,
                          memory_info[DeviceMemoryInfoKeys.NAME])
@@ -178,10 +182,26 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
                                           write_chunk_size,
                                           allow_blank_skip=allow_blank_skip)
 
-    def erase_page(self,pageaddr):
+    def erase_page(self, pageaddr, progmode):
         """
         Erase one page (in debug mode only)
         """
-        resp = self.avr.protocol.jtagice3_command_response(
+        if progmode:
+            self.avr.switch_to_debmode()
+        self.avr.protocol.jtagice3_command_response(
             bytearray([Avr8Protocol.CMD_AVR8_PAGE_ERASE, Avr8Protocol.CMD_VERSION0]) + binary.pack_le32(pageaddr))
-        return self.avr.protocol.check_response(resp)
+        if progmode:
+            self.avr.switch_to_progmode()
+        #self.avr.protocol.check_response(resp)
+        return True
+
+    def erase_chip(self, progmode):
+        """
+        Erasing entire chip
+        """
+        if not progmode:
+            self.avr.switch_to_progmode()
+        self.avr.erase(Avr8Protocol.ERASE_CHIP, 0)
+        if not progmode:
+            self.avr.switch_to_debmode()
+        return True

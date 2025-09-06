@@ -13,7 +13,7 @@ repos:
     name: codespell
     args: [ "--exclude-file=tests/util/all.lst,poetry.lock",
     	  "--skip=*.atdf,*.svd",
-    	  "-L ser, RCALL, datas, rcall, ACI, EXTINT" ]
+    	  "-L ser, RCALL, datas, rcall, ACI, EXTINT, THT" ]
 - repo: local
   hooks:
   - id: pylint

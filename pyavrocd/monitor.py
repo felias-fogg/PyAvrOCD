@@ -1,12 +1,19 @@
 """
 This module implements the 'monitor' command
 """
+# args, logging
+import importlib.metadata
+from logging import getLogger
+
+# error exceptions
+from pyavrocd.errors import FatalError
+
 
 # This is a list of monitor commands, of which many also be used as command line options
 # Key: option/monitor command name
-# 1st entry is type: 'cli' is command line option, 'full' needs full name as monitor command
+# 1st entry is type: 'cli' means command line option, 'full' needs full name as monitor command
 # 2nd entry: default value
-# 3rd entry: possible option values, '*' means don't care 
+# 3rd entry: possible option values, '*' means don't care
 monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwire', 'leavedebugwire']],
             'breakpoints'     : ['cli', 'all', [None, 'all', 'software', 'hardware']],
             'caching'         : ['cli', 'enable', [None, 'enable', 'disable']],
@@ -27,9 +34,6 @@ monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwi
             'Target'          : ['full', None, [None, 'on', 'off', 'query']],
             'LiveTests'       : ['full', None, [None]] }
 
-# args, logging
-import importlib.metadata
-
 class MonitorCommand():
     """
     This class implements all the monitor commands
@@ -41,7 +45,7 @@ class MonitorCommand():
         self._iface = iface
         self._debugger_active = False
         self._debugger_activated_once = False
-
+        self.logger = getLogger('pyavrocd.monitor')
         # state variables (will be set by set_default_values)
         self._noload = None # when true, one may start execution even without a previous load
         self._onlyhwbps = None # only hardware breakpoints permitted
@@ -58,10 +62,10 @@ class MonitorCommand():
         self._range = None # range-stepping is allowed
         self._erase_before_load = None # erase flash memory before load
         self._args = args # these are all the arguments -- needed to set initial monitor option values
-        
+
 
         # commands: merge monoopts and jump table (should have the same sets of keys!)
-        self.moncmds = dict()
+        self.moncmds = {}
         for key, value in {
             'atexit'          : self._mon_atexit,
             'breakpoints'     : self._mon_breakpoints,
@@ -85,9 +89,9 @@ class MonitorCommand():
             }.items():
             self.moncmds[key] = [value] + monopts[key]
             if len(self.moncmds[key]) != 4:
-                FatalError("Inconsistencies in the monitor command tables")
+                raise FatalError("Inconsistencies in the monitor command tables")
         if len(self.moncmds) != len(monopts):
-            FatalError("Inconsistencies in the monitor command tables: different sets of keys")
+            raise FatalError("Inconsistencies in the monitor command tables: different sets of keys")
 
         # default state values
         self.set_default_state()
@@ -97,19 +101,22 @@ class MonitorCommand():
         """
         Set state variables to default values.
         """
-        self._leaveonexit = self._args.atexit == 'leavedebugwire'
-        self._noload = self._args.onlywhenloaded == 'disable'
-        self._onlyhwbps = self._args.breakpoints == 'hardware'
-        self._onlyswbps = self._args.breakpoints == 'software'
-        self._read_before_write = (self._iface == 'debugwire' and self._args.load != 'writeonly') \
-                                    or self._args == 'readbeforewrite'
-        self._cache = self._args.caching != 'disable'
-        self._safe = self._args.singlestep != 'interruptible'
-        self._verify = self._args.verify != 'disable'
-        self._timersfreeze = self._args.timers == 'freeze'
-        self._range = self._args.rangestepping != 'disable'
+        self._leaveonexit = self._args.atexit[0] == 'l'      # default: stayindebugwire
+        self._noload = self._args.onlywhenloaded[0] == 'd'   # default: enable
+        self._onlyhwbps = self._args.breakpoints[0] == 'h'   # default: all
+        self._onlyswbps = self._args.breakpoints[0] == 's'   # default all
+        self._read_before_write = (self._iface == 'debugwire' and \
+                                       (not self._args.load or self._args.load[0] != 'w')) or \
+                                       (self._args.load and self._args.load[0] == 'r')
+                                       # default: readbeforewrite when debugWIRE, otherwise: writeonly
+        self._cache = self._args.caching[0] != 'd'           # default: enable
+        self._safe = self._args.singlestep[0] != 'i'         # default: safe
+        self._verify = self._args.verify[0] != 'd'           # default: enable
+        self._timersfreeze = self._args.timers[0] == 'f'     # default: run
+        self._range = self._args.rangestepping[0] != 'd'     # default: enable
         self._erase_before_load = self._iface != 'debugwire' and \
-          self._args.erasebeforeload != 'disable'
+          self._args.erasebeforeload[0] != 'd'               # default: enable on non-dw targets, on dw targets
+                                                             # it is always false!
         self._noxml = False
         self._power = True
         self._old_exec = False
@@ -220,6 +227,9 @@ class MonitorCommand():
         if not tokens:
             return self._mon_help(0)
         handler = self._mon_unknown_cmd
+        full = False
+        opts = None
+        name = None
         for cmd in self.moncmds.items():
             if cmd[0].startswith(tokens[0]):
                 if handler == self._mon_unknown_cmd:
@@ -232,23 +242,26 @@ class MonitorCommand():
                     opts = None
                     full = False
                     name = None
+
         # For the 'internal' monitor commands, we require that
         # they are fully spelled out so that they are not
         # invoked by a mistyped abbreviation
         if full:
             if tokens[0] != name:
-                handler = self._mon_unnown
+                handler = self._mon_unknown_cmd
                 opts = None
 
         # Now we parse the arguments
         optix = 0
         if opts and len(tokens) > 1:
+            self.logger.debug("opts=%s", opts)
             for i, poss in enumerate(opts):
                 if poss and poss.startswith(tokens[1]) or poss == '*':
                     optix = i
             if optix == 0: # no match found
                 handler = self._mon_unknown_arg
-        # call the determined handler with option index 
+        # call the determined handler with option index
+        self.logger.debug("optix=%s", optix)
         return handler(optix)
 
     def _mon_unknown_cmd(self, _):
@@ -303,9 +316,7 @@ class MonitorCommand():
 
     def _mon_debugwire(self, optix):
         if not self._iface == "debugwire":
-            if tokens[0] =="":
-                return("", "This is not a debugWIRE target")
-            return("reset", "This is not a debugWIRE target")
+            return("reset" if optix != 0 else "", "This is not a debugWIRE target")
         if optix == 0:
             if self._debugger_active:
                 return("", "debugWIRE is enabled")
@@ -322,10 +333,12 @@ class MonitorCommand():
             if self._debugger_active:
                 self._debugger_active = False
                 return("dwoff", "debugWIRE is disabled")
-            return("reset", "debugWIRE is disabled")
+            return("", "debugWIRE is disabled")
         return self._mon_unknown_arg(None)
 
-    def _mon_erase_before_load(self, tokens):
+    def _mon_erase_before_load(self, optix):
+        if self._iface == 'debugwire':
+            return("", "On debugWIRE targets, flash memory cannot be erased before loading executable")
         if optix == 1 or (optix == 0 and self._cache is True):
             self._erase_before_load = True
             return("", "Flash memory will be erased before loading executable")
@@ -334,11 +347,11 @@ class MonitorCommand():
             return("", "Flash memory will not be erased before loading executable")
         return self._mon_unknown_arg(None)
 
-    def _mon_flash_verify(self, tokens):
+    def _mon_flash_verify(self, optix):
         if optix == 1 or (optix == 0 and self._verify is True):
             self._verify = True
             return("", "Verifying flash after load")
-        if optix == 1 or (optix == 0 and self._verify is False):
+        if optix == 2 or (optix == 0 and self._verify is False):
             self._verify = False
             return("", "Load operations are not verified")
         return self._mon_unknown_arg(None)
@@ -349,26 +362,26 @@ monitor version                    - print version
 monitor info                       - print info about target and debugger
 monitor reset                      - reset MCU
 monitor atexit [stayindebugwire|leavedebugwire]
-                                   - stay in debugWIRE on exit (default) or leave 
+                                   - stay in debugWIRE on exit (def.) or leave
 monitor breakpoints [all|software|hardware]
                                    - allow breakpoints of a certain kind
 monitor caching [enable|disable]   - use loaded executable as cache (default)
 monitor debugwire [enable|disable] - activate/deactivate debugWIRE mode,
-monitor erasebeforeload [enable|disable] 
+monitor erasebeforeload [enable|disable]
                                    - erase flash memory before load (default)
                                      except for debugWIRE
 monitor load [readbeforewrite|writeonly]
                                    - optimize loading by first reading flash or
                                      write without reading before (default only
                                      for debugWIRE)
-monitor onlyloaded [enable|disable]
+monitor onlywhenloaded [enable|disable]
                                    - execute only with loaded executable
 monitor singlestep [safe|interruptible]
-                                   - single stepping mode
+                                   - single stepping mode; safe is default
 monitor rangestepping [enable|disable]
                                    - allow range stepping
-monitor timers [run|freeze]        - run/freeze timers when stopped
-monitor verify [enable|disable]    - verify that loading was successful
+monitor timers [run|freeze]        - run (default) or freeze timers when stopped
+monitor verify [enable|disable]    - verify that loading was successful (def.)
 If no parameter is specified, the current setting is returned""")
 
     def _mon_info(self, _):
@@ -388,12 +401,12 @@ Erase before load:        """ + ("enabled" if self._erase_before_load else "disa
 Verify after load:        """ + ("enabled" if self._verify else "disabled") + """
 Caching loaded binary:    """ + ("enabled" if self._cache else "disabled") + """
 Range-stepping:           """ + ("enabled" if self._range else "disabled") + """
-Single-stepping:          """ + ("safe" if self._safe else "interruptible"))  + """
+Single-stepping:          """ + ("safe" if self._safe else "interruptible")  + """
 Timers:                   """ + ("frozen when stopped"
-                                     if self._timersfreeze else "run when stopped")
+                                     if self._timersfreeze else "run when stopped"))
 
 
-    def _mon_load(self,tokens):
+    def _mon_load(self, optix):
         if optix == 1 or (optix == 0 and self._read_before_write is True):
             self._read_before_write = True
             return("", "Reading before writing when loading")
@@ -402,7 +415,7 @@ Timers:                   """ + ("frozen when stopped"
             return("", "No reading before writing when loading")
         return self._mon_unknown_arg(None)
 
-    def _mon_noload(self, tokens):
+    def _mon_noload(self, optix):
         if optix == 1 or(optix == 0 and self._noload is False):
             self._noload = False
             return("",  "Execution is only possible after a previous load command")
@@ -411,21 +424,21 @@ Timers:                   """ + ("frozen when stopped"
             return("", "Execution is always possible")
         return self._mon_unknown_arg(None)
 
-    def _mon_range_stepping(self, tokens):
+    def _mon_range_stepping(self, optix):
         if optix == 1 or (optix == 0 and self._range is True):
             self._range = True
             return("",  "Range stepping is enabled")
         if optix == 2 or (optix == 0 and self._range is False):
             self._range = False
             return("", "Range stepping is disabled")
-        return self._mon_unknow_arg(None)
+        return self._mon_unknown_arg(None)
 
     def _mon_reset(self, _):
         if self._debugger_active:
             return("reset", "MCU has been reset")
-        return("","Enable debugWIRE first")
+        return("","Debugger is not enabled")
 
-    def _mon_singlestep(self, tokens):
+    def _mon_singlestep(self, optix):
         if optix == 1 or (optix == 0 and self._safe is True):
             self._safe = True
             return("", "Single-stepping is interrupt-safe")
@@ -434,7 +447,7 @@ Timers:                   """ + ("frozen when stopped"
             return("", "Single-stepping is interruptible")
         return self._mon_unknown_arg(None)
 
-    def _mon_timers(self, tokens):
+    def _mon_timers(self, optix):
         if optix == 2 or (optix == 0 and self._timersfreeze is True):
             self._timersfreeze = True
             return(0, "Timers are frozen when execution is stopped")
@@ -455,7 +468,7 @@ Timers:                   """ + ("frozen when stopped"
         self._old_exec = True
         return("", "Old execution mode")
 
-    def _mon_target(self, tokens):
+    def _mon_target(self, optix):
         if optix == 1:
             self._power = True
             res = ("power on", "Target power on")

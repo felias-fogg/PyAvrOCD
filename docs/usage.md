@@ -53,15 +53,15 @@ If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most stra
 
 ### Compiling the sketch
 
-You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the `MiniCore` in the `Tools` menu.
-
-Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
+You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the `MiniCore` in the `Tools` menu. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).
 
 ![ide2-1](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-1.png)
 
+Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
+
 ### Starting the debugger
 
-After verifying the sketch (which also compiles it), it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
+After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
 
 Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](https://github.com/felias-fogg/pyavrocd/blob/main/INSTALL.md)). Or maybe you forgot to connect a hardware debugger altogether.
 
@@ -91,11 +91,11 @@ The debugging panes are organized as follows. Pane A contains the debug controls
 - *Restart*: Same as Reset
 - *Stop*: Terminate debugging
 
-Pane B shows the active threads, but there is just one in our case. Pane C displays the call stack starting from the bottom, i.e., the current frame is the topmost. Pane D displays variable values. Unfortunately, global variables are not shown if *link time optimizations* are enabled, which is the default. Pane E can be populated with watch expressions, for example, with the names of global variables.  Finally, in pane F, the active breakpoints are listed.
+Pane B shows the active threads, but there is just one in our case. Pane C displays the call stack starting from the bottom, i.e., the current frame is the topmost. Pane D displays variable values. Unfortunately, global variables are not shown if *link-time optimizations* are enabled, which is the default. Pane E can be populated with watch expressions, for example, with the names of global variables.  Finally, in pane F, the active breakpoints are listed.
 
 The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
 
-When you have decided to change the source code, remember to terminate the debugger (red square), then verify the sketch again using the left upper button, and finally start another debugging session.
+When you have decided to change the source code, remember to terminate the debugger (red square), then recompile the sketch using the upper left `Verify` button, and finally start another debugging session.
 
 ## Debugging using PlatformIO/VSC
 

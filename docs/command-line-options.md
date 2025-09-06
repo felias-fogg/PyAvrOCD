@@ -22,11 +22,11 @@ When starting pyavrocd, you can influence its behavior with several command-line
 | `--version` <br>`-V`                                         | Print pyavrocd version number and exit.                      |
 | `--install-udev-rules`                                       | Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with `sudo` and is only present under Linux. |
 
-You can also use the [monitor command options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--timers freeze,` which has the same effect as issuing the command `monitor timers freeze` in the debugger at startup.
+You can also use the [monitor command options](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--timers freeze,` which has the same effect as issuing the command `monitor timers freeze` in the debugger at startup. You can also use one-character abbreviations for such option values and the usual abbreviation rules for options, shortening it to `--ti f` .
 
 In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.
 
-The argument `@pyavrocd.options` is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis. 
+The argument `@pyavrocd.options` is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.
 
 ------
 

@@ -539,16 +539,10 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: vFlashDone")
         self._vflashdone = True
-        self.bp.cleanup_breakpoints()
         try:
             self.dbg.device.avr.switch_to_progmode()
             self.mem.programming_mode = True
             self.logger.info("Programming mode entered")
-            if not self.mon.is_read_before_write():
-                # if we do not read before write, try to erase page if possible
-                # if it is not possible explicitly, then it is done before flashing implicitly
-                self.dbg.device.erase()
-                self.logger.info("Chip erased before flashing")
             self.mem.flash_pages()
         except:
             self.logger.error("Flashing was unsuccessful")
@@ -568,6 +562,11 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: vFlashErase")
         if self.mon.is_debugger_active():
+            self.bp.cleanup_breakpoints()
+            if self.mon.is_erase_before_load():
+                # if erase is not possible or desired, then it is done before flashing each page (perhaps implicitly)
+                if self.dbg.device.erase_chip(self.mem.programming_mode):
+                    self.logger.info("Chip erased before flashing")
             if self._vflashdone:
                 self._vflashdone = False
                 self.mem.init_flash() # clear cache
@@ -679,10 +678,10 @@ class GdbHandler():
                 self.dbg.device.avr.switch_to_progmode()
                 self.mem.programming_mode = True
                 self.logger.info("Switched to programming mode")
-                if not self.mon.is_read_before_write():
-                    # if we do not read before write, then try to erase chip (debugWIRE and UPDI
-                    # do it on a page-by-page base). If successful, the method will return True.
-                    if self.dbg.device.erase_chip():
+                if self.mon.is_erase_before_load():
+                    # If erase before load is requested, we do that here
+                    # otherwise it will done implicitly before each page is programmed
+                    if self.dbg.device.erase_chip(self.mem.programming_mode):
                         self.logger.info("Chip erased before flashing")
         try:
             reply = self.mem.writemem(addr, bytearray(data))
@@ -802,7 +801,7 @@ class GdbHandler():
         to be acknowledged by a '+' from us.
         """
         if data is None: # timeout
-            self.dispatch(None,None)
+            self.dispatch(None, None)
             return
         while data:
             if data[0] == ord('+'): # ACK

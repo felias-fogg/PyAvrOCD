@@ -94,7 +94,7 @@ class RspServer():
         except EndOfSession: # raised by 'detach' command
             self.logger.info("End of session")
             return 0
-        except KeyboardInterrupt: # caused by user interrupt 
+        except KeyboardInterrupt: # caused by user interrupt
             self.logger.info("Terminated by Ctrl-C")
             return 1
         finally:
@@ -161,14 +161,14 @@ def _setup_tool_connection(args, logger):
     return toolconnection
 
 
-def options():
+def options(cmd):
     """
     Option processing. Returns a pair of processed options and unknown options.
     """
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
             fromfile_prefix_chars='@',
             #formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog='''Use @file to insert options from file in command line. 
+            epilog='''Use @file to insert options from file in command line.
 @pyavrocd.options will be inserted as last argument in command line.
 You can also use monitor command options, e.g., --timer=freeze.
 ''',
@@ -264,44 +264,45 @@ You can also use monitor command options, e.g., --timer=freeze.
     for option_name, option_type in monopts.items():
         if option_type[0] == 'cli':
             default = option_type[1]
-            choices = option_type[2][1:]
+            choices = option_type[2][1:] # copy all options after the None entry
+            choices += [ opt[0] for opt in choices ]
             parser.add_argument("--" + option_name, help=argparse.SUPPRESS,
                                     type=str, choices=choices, default=default)
-        
-    # Parse args and return
-    if len(sys.argv) == 1:
-        sys.argv.append('-h')
-    sys.argv.append('@pyavrocd.options')
-    sys.argv[:] = [x for x in sys.argv if not x.startswith('@') or os.path.exists(x[1:]) ]
 
-    args = parser.parse_args()
+    # Parse args and return
+    if len(cmd) == 1:
+        cmd.append('-h')
+    cmd.append('@pyavrocd.options')
+    cmd = [x for x in cmd if not x.startswith('@') or os.path.exists(x[1:]) ]
+
+    args = parser.parse_args(cmd)
 
     questionmark = False
     if args.interface == '?':
         questionmark = True
         args.interface = None
-        print("Possible interface option arguments (-i) are: ")
+        print("Possible interfaces (-i) are: ", end="")
         print(', '.join(map(str, interface_choices)))
-    
+
     if '?' in args.manage:
         questionmark = True
-        print("Possible fuse management option arguments (-m) are: ")
+        print("Possible (repeatable) fuse management options (-m) are: ")
         print(', '.join(map(str, manage_choices)))
 
     if args.tool == '?':
         questionmark = True
-        print("Possible tool option arguments (-t) are: ")
+        print("Possible tools (-t) are: ")
         print(', '.join(map(str, tool_choices)))
 
     if args.verbose == '?':
         questionmark = True
         args.verbose = 'info'
-        print("Possible verbosity levels (-v) are: ")
+        print("Possible verbosity levels (-v) are: ", end="")
         print(', '.join(map(str, level_choices)))
-        
+
     if questionmark and args.dev != '?':
         sys.exit(0)
-    return args 
+    return args
 
 def install_udev_rules(logger):
     """
@@ -491,7 +492,7 @@ def main():
     no_hw_dbg_error = False # will become true, when no HW debugger is found
     log_rsp = False
 
-    args = options()
+    args = options(sys.argv[1:])
 
     # verbose option 'all' is a special one
     if args.verbose == "all":
@@ -540,7 +541,7 @@ def main():
             logger.warning("Debugging this MCU can lead to bricking it,")
             logger.warning("provided it does not have an A or P suffix.")
             if args.brick:
-                logger.warning("You allowed debugging this MCU by specifing")
+                logger.warning("You allowed debugging this MCU by specifying")
                 logger.warning("'--allow-potentially-bricking-actions'.")
             else:
                 logger.warning("If you really want to do that, either specify")

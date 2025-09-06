@@ -27,6 +27,7 @@ class LiveTests():
         self.success = 0
         self.failure = 0
         self.tests_total = 0
+        self.flash_transparent = False
         self.sram_start = self.dbg.memory_info.\
           memory_info_by_name('internal_sram')['address']
         self.test_code = self.setup_test_code(self.sram_start == 0x60)
@@ -80,7 +81,9 @@ class LiveTests():
         self.mon.set_default_state()
         self.success = 0
         self.failure = 0
-        self.tests_total = 27
+        self.tests_total = 26
+        if self.dbg.iface == 'jtag' and self.dbg.architecture == 'avr8':
+            self.flash_transparent = True # breakpoints are filtered out
         self.mon._cache = False
         try:
             self.handler.send_debug_message("Running live tests ...")
@@ -97,7 +100,6 @@ class LiveTests():
             self._live_test_get_memory_flash()
             self._live_test_set_memory_sram()
             self._live_test_set_memory_eeprom()
-            self._live_test_set_memory_flash()
             self._live_test_get_one_data_register()
             self._live_test_get_sreg()
             self._live_test_get_sp()
@@ -115,7 +117,7 @@ class LiveTests():
             self._live_test_load_clean_bps()
         except Exception as e:
             self.failure += 1
-            self.logger.info("... failed")
+            self.logger.error("... failed")
             if self.logger.getEffectiveLevel() == logging.DEBUG:
                 raise
             self.logger.info("Graceful exception: %s", e)
@@ -145,7 +147,7 @@ class LiveTests():
             self.logger.info("... passed")
         else:
             self.failure += 1
-            self.logger.info("... failed")
+            self.logger.error("... failed")
 
     # pylint: disable=protected-access
     def _live_test_load(self):
@@ -153,12 +155,14 @@ class LiveTests():
         Loads test code and checks that load has been successful (X-packet)
         """
         self.logger.info("Running 'load' test ...")
+        verify_save = self.mon._verify
         self.mon._verify = False # because on mEDBG debuggers, first page is not always writeable
         test_code = self.handler.escape(self.test_code)
         header = "0001AA,%0X:" % len(test_code)
         self.send_string = ""
         self.handler.dispatch("X", header.encode("ascii") + test_code)
-        self.mon._verify = True
+        self.handler.dispatch(None, None) # signal timeout, so that last record will be written
+        self.mon._verify = verify_save
         self.check_result(self.send_string == "OK")
 
     def _live_test_verify_loaded(self):
@@ -168,6 +172,7 @@ class LiveTests():
         self.logger.info("Running 'verify loaded' test ...")
         self.mon._cache = False # disable caching
         codesnippet = self.mem.flash_read(0x1aa, len(self.test_code))
+        self.logger.debug("Code flashed: %s", ' '.join('0x{:02x}'.format(x) for x in codesnippet))
         self.mon._cache = True # re-enable caching
         self.check_result(codesnippet == self.test_code)
 
@@ -288,18 +293,10 @@ class LiveTests():
         """
         self.logger.info("Running 'set memory eeprom' test ...")
         data = bytearray([0x75,0x96,0x17,0x84,0x19])
+        self.logger.debug("Data to store: %s", ' '.join([format(n, "02X") for n in data]))
         self.handler.dispatch('M', b'81%04X,05:%s' % (2, binascii.hexlify(data)))
         newdata = self.dbg.eeprom_read(2, 5)
-        self.check_result(newdata == data and self.send_string == "OK")
-
-    def _live_test_set_memory_flash(self):
-        """
-        Tests 'set memory' function on flash
-        """
-        self.logger.info("Running 'set memory eeprom' test ...")
-        data = bytearray([0x96,0x17,0x84,0x19,0xFF])
-        self.handler.dispatch('M', b'0001D0,05:%s' % binascii.hexlify(data))
-        newdata = self.mem.flash_read(0x1D0, 5)
+        self.logger.debug("Retrieved data: %s", ' '.join([format(n, "02X") for n in newdata]))
         self.check_result(newdata == data and self.send_string == "OK")
 
     def _live_test_get_one_data_register(self):
@@ -454,6 +451,10 @@ class LiveTests():
         This SWBP should not be removed in order to avoid superfluous reprogramming
         """
         self.logger.info("Running 'vcont step' test with protected SWBP...")
+        if self.flash_transparent:
+            self.logger.info("Cannot be run on JTAG megaAVRs")
+            self.check_result(True)
+            return
         self.mon._onlyswbps = True
         self.dbg.program_counter_write(0x1c4 >> 1)
         self.dbg.stack_pointer_write(bytearray([0x34, 0x00]))
@@ -506,6 +507,10 @@ class LiveTests():
         this leads to reprogramming flash at each breakpoint hit.
         """
         self.logger.info("Running 'vcont step' test using old exec forcing 2xflashing ...")
+        if self.flash_transparent:
+            self.logger.info("Cannot be run on JTAG megaAVRs")
+            self.check_result(True)
+            return
         self.mon._onlyswbps = True
         self.mon._old_exec = True
         self.dbg.program_counter_write(0x1aa >> 1)
@@ -591,6 +596,10 @@ class LiveTests():
         Receives vFalshErase package and checks that all breakpoints are cleared
         """
         self.logger.info("Running test for cleaning BPs after vEraseFlash ...")
+        if self.flash_transparent:
+            self.logger.info("Cannot be run on JTAG megaAVRs")
+            self.check_result(True)
+            return
         self.bp.cleanup_breakpoints()
         self.mon._cache = False
         self.mon._onlyswbps = True
@@ -619,6 +628,10 @@ class LiveTests():
         Loads test code with X-package and checks that all breakpoints are cleared
         """
         self.logger.info("Running test for cleaning BPs before load ...")
+        if self.flash_transparent:
+            self.logger.info("Cannot be run on JTAG megaAVRs")
+            self.check_result(True)
+            return
         self.mon._cache = False
         self.mon._onlyswbps = True
         self.mon._noload = True
@@ -637,6 +650,7 @@ class LiveTests():
         test_code = self.handler.escape(self.test_code)
         header = "0001AA,%0X:" % len(test_code)
         self.handler.dispatch("X", header.encode("ascii") + test_code)
+        self.handler.dispatch(None, None) # simulate timeout to flash the last pending record
         opc3 = self.mem.flash_read_word(0x1b2)
         self.logger.debug("OPC after load: 0x%X", opc3)
         self.logger.debug("Debug table: %s", self.bp._bp)

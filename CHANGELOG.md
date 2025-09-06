@@ -1,5 +1,28 @@
 # Changelog
 
+### 0.13.1
+
+- **Fixed:**
+  - memory.py: In `flash_pages`, flash page reading before writing is only done when requested and we do not have erase-before-load!
+  - memory.py: In `flash_pages`, the test on a blank page before flash page erase is only done when the page has actually been read.
+  - memory.py: `eeprom_read` and `eeprom_write` moved from avrdebugger to memory.py because only at this place do we know whether we are in programming or debugging mode. And this is important to pass that on to the read/write routines in the nvm modules so that they can pick the right memory type.
+  - xnvmmegaavrjtag.py: `erase_page` did not have the progmode parameter and did not switch between progmode and debmode.
+  - xnvmmegaavrjtag.py: Added missing `erase_chip` method.
+  - handler.py: `self.bp.cleanup_breakpoints` has been moved from `_vflash_done_handler` to `_vflash_erase_handler`.
+  - handler.py: In `_vflash_erase_handler` the chip `erase` has been added (provided `is_erase_before_load` is True)
+  - test_memory.py: Added `self.mem.mon.is_read_before_write.return_value = True` and `self.mem.mon.is_erase_before_load.return_value = False` to `test_flash_pages...`.
+  - test_gdbhandler.py: Imported `options` function from `main.py` and used that to pass the `args` argument to GdbHandler.
+  - test_xavrdebugger.py: Added the two new clock parameters to the class creation call.
+  - test_monitorcommand.py: Imported `options` as above; wrong test with empty second string in `dispatch`.
+  - livetests.py: In `_live_test_load` a "virtual timeout" via `self.handler.dispatch(None, None)`  had to be added so that the simulated load will be terminated with flashing the last pending record (see `lazy_loading` added in 0.9.6).
+  - livetests.py: Four tests cannot be run on JTAG megaAVRs because reading from flash in debugging mode filters out the breakpoints.
+
+- **Added:**
+  - Now you can use one-character abbreviations of the option values for the monitor options on the command line, e.g., `--timers f` instead of `--timers freeze`. Since you can abbreviate command-line options anyway, `--ti f` also works.
+- **Changed:**
+  - The response from `monitor reset` when the debugger is not active has been changed to "Debugger is not enabled".
+
+
 ### 0.13.0
 
 - **Fixed:**
@@ -10,15 +33,15 @@
   - New option `-D`/`--debug-clock` for setting the JTAG debugging clock frequency in kHz (should be at most a quarter of the MCU clock frequency).
   - These two options are now set in the MightyCore/MegaCore board files according to the MCU speed.
   - Two new monitor options: `monitor atexit leavedebugwire` and `monitor atexit stayindebugwire`, where the second is the default. The first one is useful when one has an embedded debugger.
-  - Two new monitor options: `monitor erasebeforeload enable` and `disable`. The first one is the default; however, it does not affect debugWIRE targets, because we can only erase page by page. Disabling it might be helpful for MightyCore and MegaCore in order to protect the bootloader, which offers some functionality. 
-  - All monitor commands that change state can now be used as command-line options. For example, one can specify `--timers=freeze` on the command line. 
-  - We now also accept the `-f` option and ignore everything about it. This option is not shown in the 'usage' text (because it is suppressed). 
-  - In order to safeguard the user against debugging non-A ATmega48/88, pyavrocd refuses to debug any such non-A/P device. If an A-device (e.g., ATmega88A) is specified, a warning message is given that it is necessary to specify `--allow-potentially-bricking-actions` on the command line or oin the `pyavrocd.options` file.  The option itslef is not displayed in the help text since it would clutter the help text too much.
+  - Two new monitor options: `monitor erasebeforeload enable` and `disable`. The first one is the default; however, it does not affect debugWIRE targets, because we can only erase page by page. Disabling it might be helpful for MightyCore and MegaCore in order to protect the bootloader, which offers some functionality.
+  - All monitor commands that change state can now be used as command-line options. For example, one can specify `--timers=freeze` on the command line.
+  - We now also accept the `-f` option and ignore everything about it. This option is not shown in the 'usage' text (because it is suppressed).
+  - In order to safeguard the user against debugging non-A ATmega48/88, pyavrocd refuses to debug any such non-A/P device. If an A-device (e.g., ATmega88A) is specified, a warning message is given that it is necessary to specify `--allow-potentially-bricking-actions` on the command line or in the `pyavrocd.options` file.  The option itself is not displayed in the help text since it would clutter the help text too much.
 - **Removed:**
   - The `-g/--gede` option has been removed because `-s` also gives its functionality.
-  - The `-M/--monitor` option has been removed because now all state-changing monitor commands can be used as command-line options. 
-  
-- **Changed:** 
+  - The `-M/--monitor` option has been removed because now all state-changing monitor commands can be used as command-line options.
+
+- **Changed:**
   - `monitor onlyloaded` was changed to `monitor onlywhenloaded`
   - Since we now also deal with the `-f` option needed for the openOCD invocation by cortex-debug, we no longer tolerate unknown options.
   - Because printing the possible choices for option values looked very ugly, the help text now states that the choices can be asked for by using a '?'.  The help text looks very tidy now.

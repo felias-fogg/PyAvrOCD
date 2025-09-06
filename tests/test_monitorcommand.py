@@ -6,14 +6,15 @@ import logging
 import importlib
 from unittest import TestCase
 from pyavrocd.monitor import MonitorCommand
+from pyavrocd.main import options
 
 
-logging.basicConfig(level=logging.CRITICAL)
+logging.basicConfig(level=logging.DEBUG)
 
 class TestMonitorCommand(TestCase):
 
     def setUp(self):
-        self.mo = MonitorCommand('debugwire',[])
+        self.mo = MonitorCommand('debugwire', options([]))
 
     def test_dispatch_ambigious(self):
         self.assertEqual(self.mo.dispatch(["ver"]), ("", "Ambiguous 'monitor' command string"))
@@ -43,20 +44,21 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(["break", "software"]), ("", "Only software breakpoints"))
         self.assertEqual(self.mo._onlyhwbps, False)
         self.assertEqual(self.mo._onlyswbps, True)
-        self.assertEqual(self.mo.dispatch(["break", "X"]), ("", "Unknown 'monitor' command"))
+        self.assertEqual(self.mo.dispatch(["break", "X"]), ("", "Unknown argument in 'monitor' command"))
 
     def test_dispatch_Cache(self):
         self.mo._cache = False
         self.assertEqual(self.mo.dispatch(["caching", "enable"]), ("", "Flash memory will be cached"))
         self.assertEqual(self.mo._cache, True)
-        self.assertEqual(self.mo.dispatch(["ca", ""]), ("", "Flash memory will be cached"))
+        self.mo._cache = True
+        self.assertEqual(self.mo.dispatch(["caching"]), ("", "Flash memory will be cached"))
         self.assertEqual(self.mo.dispatch(["caching", "dis"]), ("", "Flash memory will not be cached"))
         self.assertEqual(self.mo._cache, False)
-        self.assertEqual(self.mo.dispatch(["ca", ""]), ("", "Flash memory will not be cached"))
+        self.assertEqual(self.mo.dispatch(["ca"]), ("", "Flash memory will not be cached"))
 
     def test_dispatch_debugWIRE(self):
         self.mo._debugger_active = False
-        self.assertEqual(self.mo.dispatch(["d", ""]), ("", "debugWIRE is disabled"))
+        self.assertEqual(self.mo.dispatch(["d"]), ("", "debugWIRE is disabled"))
         self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(["debugwire"]), ("", "debugWIRE is enabled"))
         self.mo._debugger_active = False
@@ -72,13 +74,13 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._debugger_activated_once)
 
     def test_dispatch_flashVerify(self):
-        self.assertFalse(self.mo._verify)
-        self.assertEqual(self.mo.dispatch(['veri']), ("", "Load operations are not verified"))
+        self.assertTrue(self.mo._verify)
+        self.assertEqual(self.mo.dispatch(['veri']), ("", "Verifying flash after load"))
         self.assertEqual(self.mo.dispatch(['verify', 'disable']), ("", "Load operations are not verified"))
         self.assertFalse(self.mo._verify)
         self.assertEqual(self.mo.dispatch(['veri', 'e']), ("", "Verifying flash after load"))
         self.assertTrue(self.mo._verify)
-        self.assertEqual(self.mo.dispatch(['veri', 'ex']), ("", "Unknown 'monitor' command"))
+        self.assertEqual(self.mo.dispatch(['veri', 'ex']), ("", "Unknown argument in 'monitor' command"))
         self.assertEqual(self.mo.dispatch(['ver']), ("", "Ambiguous 'monitor' command string"))
 
 
@@ -104,7 +106,7 @@ class TestMonitorCommand(TestCase):
 
     def test_dispatch_noload(self):
         self.assertFalse(self.mo._noload)
-        self.assertEqual(self.mo.dispatch(['onlyloaded', 'dis']), ("", "Execution is always possible"))
+        self.assertEqual(self.mo.dispatch(['onlywhenloaded', 'dis']), ("", "Execution is always possible"))
         self.assertTrue(self.mo._noload)
         self.assertEqual(self.mo.dispatch(['only', 'enable']), ("",  "Execution is only possible after a previous load command"))
         self.assertFalse(self.mo._noload)
@@ -120,7 +122,7 @@ class TestMonitorCommand(TestCase):
 
     def test_dispatch_reset(self):
         self.mo._debugger_active = False
-        self.assertEqual(self.mo.dispatch(['reset', 'halt']), ("","Enable debugWIRE first"))
+        self.assertEqual(self.mo.dispatch(['reset', 'halt']), ("","Debugger is not enabled"))
         self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(['res']), ("reset", "MCU has been reset"))
 

@@ -1,6 +1,6 @@
 [project]
 name = "pyavrocd"
-version = "0.13.0"
+version = "0.13.1"
 description = "A platform-agnostic GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
@@ -54,24 +54,6 @@ markers = [
 [tool.pylint.main]
 ignore-patterns = ["at(tiny|mega|90).*\\.py"]
 jobs = 1
-
-[tool.pylint.messages_control]
-disable = [
-    "missing-module-docstring",
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "too-few-public-methods",
-    "too-many-arguments",
-    "too-many-locals",
-    "too-many-branches",
-    "too-many-statements",
-    "line-too-long",
-    "invalid-name",
-    "broad-exception-caught",
-    "consider-using-f-string",
-    "trailing-whitespace",
-    "protected-access"
-]
 
 [tool.pylint.format]
 max-line-length = 100

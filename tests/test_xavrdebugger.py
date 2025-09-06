@@ -16,7 +16,7 @@ class TestXAvrDebugger(TestCase):
 
     def setUp(self):
         mock_transport = MagicMock()
-        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", ['bootrst', 'lockbits', 'dwen'])
+        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", ['bootrst', 'lockbits', 'dwen'], 4000, 500)
         self.xa.logger = MagicMock()
         self.xa.transport = mock_transport
         self.xa.memory_info = MagicMock()
@@ -84,6 +84,7 @@ class TestXAvrDebugger(TestCase):
                MagicMock(side_effect = [bytearray([0x00]), bytearray([0x08]),
                                         bytearray([0x14])]))
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.write_fuse_byte', MagicMock())
+    #pylint: disable=no-member
     def test_prepare_debugging_debugWIRE(self):
         self.xa.manage = ['bootrst', 'lockbits', 'dwen']
         self.xa.device_info['bootrst_base'] = 0x01

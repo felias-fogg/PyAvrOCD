@@ -99,7 +99,7 @@ class Memory():
         iaddr = int(addr,16)
         self.logger.debug("Address section: %s",addr_section)
         if addr_section == "00": # flash
-            if self.dbg.iface == "debugwire" or self.programming_mode:
+            if self.programming_mode:
                 return(iaddr, self.flash_read, self.flash_write)
             return(iaddr, self.flash_read, lambda *x: 'E13')
         if addr_section == "80": # ram
@@ -207,7 +207,8 @@ class Memory():
         Write pages to flash memory, starting at _flashmem_start_prog up to len(self._flash)-1.
         Since programming takes place in chunks of size self._multi_page_size, beginning and end
         needs to be adjusted. At the end, we may add some 0xFFs.
-        If mon.is_fast_load() is true (read before write), the we will read a page before it is written.
+        If mon.is_read_before_write() is true (read before write), the we will read a page
+        before it is written.
         If it is nothing new, we skip. Otherwise, when "jtag", we check whether the page is blank.
         If not, the we need to erase this page by temporarily leaving progmode.
         This out of the way, we program.
@@ -228,7 +229,7 @@ class Memory():
             self.logger.debug("Flashing page starting at 0x%X", pgaddr)
             pagetoflash = self._flash[pgaddr:pgaddr + self._multi_page_size]
             currentpage = bytearray([])
-            if self.mon.is_read_before_write():
+            if self.mon.is_read_before_write() and not self.mon.is_erase_before_load():
                 # interestingly, it is faster to read single pages than a multi-page chunk!
                 for p in range(self._multi_buffer):
                     currentpage += self.dbg.flash_read(pgaddr+(p*self._flash_page_size),
@@ -238,8 +239,10 @@ class Memory():
             if currentpage[:len(pagetoflash)] == pagetoflash:
                 self.logger.debug("Skip flashing page because already flashed at 0x%X", pgaddr)
             else:
-                if self.mon.is_read_before_write() and not self.dbg.device.avr.is_blank(currentpage):
+                if not self.mon.is_erase_before_load() and (not currentpage or \
+                  not self.dbg.device.avr.is_blank(currentpage)):
                     # will erase if necessary and return True if it did
+                    self.logger.debug("Will now erase ...")
                     if self.dbg.device.erase_page(pgaddr, self.programming_mode):
                         self.logger.debug("Page at 0x%x erased", pgaddr)
                 self.logger.debug("Flashing now from 0x%X to 0x%X", pgaddr, pgaddr+len(pagetoflash))
@@ -352,7 +355,7 @@ class Memory():
 
     def usig_write(self, addr, data):
         """
-        Write user signature
+        Write user signature (does not work with debugWIRE)
         """
         try:
             self.dbg.write_usig(addr, data)
@@ -360,3 +363,33 @@ class Memory():
             self.logger.error("Error writing the user signature: %s", e)
             return 'E13'
         return None
+
+    def eeprom_read(self, address, numbytes):
+        """
+        Read EEPROM content from the AVR
+        Needs to be handled here because depending on programm_mode, different memtypes have to be used
+
+        :param address: absolute address to start reading from
+        :param numbytes: number of bytes to read
+        """
+        self.logger.debug("Reading %d bytes from EEPROM at %X", numbytes, address)
+        # The debugger protocols (via pymcuprog) use memory-types with zero-offsets
+        # So the offset is subtracted here (and added later in the debugger)
+        offset = (self.dbg.memory_info.memory_info_by_name('eeprom'))['address']
+        return self.dbg.device.read(self.dbg.memory_info.memory_info_by_name('eeprom'), address-offset,
+                                        numbytes, self.programming_mode)
+
+    def eeprom_write(self, address, data):
+        """
+        Write EEPROM content to the AVR
+        Needs to be handled here because depending on programm_mode, different memtypes have to be used
+
+        :param address: absolute address in EEPROM to start writing
+        :param data: content to store to EEPROM
+        """
+        self.logger.debug("Writing %d bytes to EEPROM at %X", len(data), address)
+        # The debugger protocols (via pymcuprog) use memory-types with zero-offsets
+        # So the offset is subtracted here (and added later in the debugger)
+        offset = (self.dbg.memory_info.memory_info_by_name('eeprom'))['address']
+        return self.dbg.device.write(self.dbg.memory_info.memory_info_by_name('eeprom'), address-offset,
+                                         data, self.programming_mode)

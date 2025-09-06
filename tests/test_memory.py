@@ -109,6 +109,8 @@ class TestMemory(TestCase):
 
     def test_flash_pages_no_write(self):
         self.mem.dbg.device.avr.write_memory_section = Mock()
+        self.mem.mon.is_read_before_write.return_value = True
+        self.mem.mon.is_erase_before_load.return_value = False
         self.mem._flash = bytearray(range(4))
         self.mem.dbg.flash_read.side_effect = [bytearray([0,1]), bytearray([2,3]),
                                                    bytearray([0,1]), bytearray([2,3]), bytearray([0xFF,0xFF])]
@@ -118,6 +120,8 @@ class TestMemory(TestCase):
     def test_flash_pages_write(self):
         self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem._flash = bytearray(range(4))
+        self.mem.mon.is_read_before_write.return_value = True
+        self.mem.mon.is_erase_before_load.return_value = False
         self.mem.dbg.flash_read.side_effect = [bytearray([0,0]), bytearray([2,3]), bytearray([0,0]),
                                                    bytearray([0,1]), bytearray([2,3]), bytearray([0xFF,0xFF])]
         self.mem.flash_pages()
