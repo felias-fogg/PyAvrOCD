@@ -29,6 +29,49 @@
   defined(__AVR_ATmega168P__) || defined(__AVR_ATmega168PA__) || defined(__AVR_ATmega168PB__) || \
   defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)
 #define IRQPIN 2
+#elif defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+# Mega pinout (default)
+#define IRQPIN 21
+#elif defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) || \
+  defined(__AVR_ATmega128__) || defined(__AVR_ATmega2560__) ||	 \
+  defined(__AVR_AT90CAN32__) || defined(__AVR_AT90CAN64__) || defined(__AVR_AT90CAN128__)
+#define IRQPIN 18
+#elif defined(__AVR_ATmega169__) || defined(__AVR_ATmega169A__) || \
+  defined(__AVR_ATmega169P__) || defined(__AVR_ATmega169PA__) || \
+  defined(__AVR_ATmega329__) || defined(__AVR_ATmega329A__) || \
+  defined(__AVR_ATmega329P__) || defined(__AVR_ATmega329PA__) || \
+  defined(__AVR_ATmega649__) || defined(__AVR_ATmega649A__) || \
+  defined(__AVR_ATmega649P__) || defined(__AVR_ATmega649PA__) || \
+  defined(__AVR_ATmega165__) || defined(__AVR_ATmega165A__) || \
+  defined(__AVR_ATmega165P__) || defined(__AVR_ATmega165PA__) || \
+  defined(__AVR_ATmega325__) || defined(__AVR_ATmega325A__) || \
+  defined(__AVR_ATmega325P__) || defined(__AVR_ATmega325PA__) || \
+  defined(__AVR_ATmega645__) || defined(__AVR_ATmega645A__) || \
+  defined(__AVR_ATmega645P__) || defined(__AVR_ATmega645PA__)
+#define IRQPIN 19
+#elif defined(__AVR_ATmega3290__) || defined(__AVR_ATmega3290A__) || \
+  defined(__AVR_ATmega3290P__) || defined(__AVR_ATmega3290PA__) || \
+  defined(__AVR_ATmega6490__) || defined(__AVR_ATmega6490A__) || \
+  defined(__AVR_ATmega6490P__) || defined(__AVR_ATmega6490PA__) || \
+  defined(__AVR_ATmega3250__) || defined(__AVR_ATmega3250A__) || \
+  defined(__AVR_ATmega3250P__) || defined(__AVR_ATmega3250PA__) || \
+  defined(__AVR_ATmega6450__) || defined(__AVR_ATmega6450A__) || \
+  defined(__AVR_ATmega6450P__) || defined(__AVR_ATmega6450PA__)
+#define IRQPIN 26
+#elif defined(__AVR_ATmega16__) || defined(__AVR_ATmega16A__) ||  \
+  defined(__AVR_ATmega32__) || defined(__AVR_ATmega32A__) ||  \
+  defined(__AVR_ATmega164__) || defined(__AVR_ATmega164A__) ||	 \
+  defined(__AVR_ATmega164P__) || defined(__AVR_ATmega164PA__) || \
+  defined(__AVR_ATmega324__) || defined(__AVR_ATmega324A__) ||	 \
+  defined(__AVR_ATmega324P__) || defined(__AVR_ATmega324PA__) || defined(__AVR_ATmega324PB__) || \
+  defined(__AVR_ATmega644__) || defined(__AVR_ATmega644A__) ||	 \
+  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644PA__) || \
+  defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284A__) || \
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284PA__)
+#define IRQPIN 10
+#elif defined(__AVR_ATmega162__) || defined(__AVR_ATmega162A__) || \
+  defined(__AVR_ATmega162P__) || defined(__AVR_ATmega162PA__)
+#define IRQPIN 10
 #else
 #error "MCU not supported"
 #endif
@@ -51,7 +94,7 @@ void setup()
 void loop()
 {
   digitalWrite(IRQPIN, LOW);
-  delay(1);
+  shortwait(1);
   outsidecount++;
   digitalWrite(IRQPIN, HIGH);
   delay(100); // necessary to give enough time for printing!
@@ -59,6 +102,11 @@ void loop()
   Serial.print("IRQ count: ");
   Serial.println(irqcount);
 #endif
+}
+
+void shortwait(unsigned long ms)
+{
+  delay(ms);
 }
 
 void irqserver()

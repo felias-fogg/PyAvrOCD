@@ -7,7 +7,7 @@ from logging import getLogger
 
 # debugger modules
 from pyavrocd.errors import  FatalError
-
+from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
 class Memory():
     """
@@ -90,6 +90,7 @@ class Memory():
         This function returns a triple consisting of the real address as an int, the read,
         and the write method. If illegal address section, report and return
         (0, lambda *x: bytes(), lambda *x: 'E13')
+        For fuses, lockbits, signatures, and user signatures, access is denied.
         """
         addr_section = "00"
         if len(addr) == 6:
@@ -108,18 +109,25 @@ class Memory():
         if addr_section == "81": # eeprom
             return(iaddr, self.dbg.eeprom_read, self.dbg.eeprom_write)
         if addr_section == "82": # fuse
-            if self.programming_mode and self.dbg.iface in ['jtag', 'updi']:
-                return(iaddr, self.fuse_read, self.fuse_write)
+            self.logger.error("Fuses cannot be accessed: request ignored")
+            return (0, lambda *x: bytes(), lambda *x: None)
+            #if self.programming_mode and self.dbg.iface in ['jtag', 'updi']:
+            #    return(iaddr, self.fuse_read, self.fuse_write)
         if addr_section == "83": #  lock
-            if (self.programming_mode and self.dbg.iface == 'jtag') or self.dbg.iface == 'updi':
-                return(iaddr, self.lock_read, self.lock_write)
+            self.logger.error("Lock bits cannot be accessed: request ignored")
+            return (0, lambda *x: bytes(), lambda *x: None)
+            #if (self.programming_mode and self.dbg.iface == 'jtag') or self.dbg.iface == 'updi':
+            #    return(iaddr, self.lock_read, self.lock_write)
         if addr_section == "84": # signature
-            if (self.programming_mode and self.dbg.iface in ['jtag', 'updi']) \
-              or self.dbg.iface == 'debugwire':
-                return(iaddr, self.sig_read, lambda *x: 'E13')
+            return (0, lambda *x: bytes(), self.compare_signatures)
+            #if (self.programming_mode and self.dbg.iface in ['jtag', 'updi']) \
+            #  or self.dbg.iface == 'debugwire':
+            #    return(iaddr, self.sig_read, lambda *x: 'E13')
         if addr_section == "85":  # user signature
-            if self.dbg.iface in ['jtag', 'updi']:
-                return(iaddr, self.usig_read, self.usig_write)
+            self.logger.error("User signature cannot be accessed: request ignored")
+            return (0, lambda *x: bytes(), lambda *x: None)
+            #if self.dbg.iface in ['jtag', 'updi']:
+            #    return(iaddr, self.usig_read, self.usig_write)
         self.logger.error("Illegal memtype in memory access operation at %s: %s",
                               addr, addr_section)
         return (0, lambda *x: bytes(), lambda *x: 'E13')
@@ -303,7 +311,7 @@ class Memory():
         Write fuses (does not work with debugWIRE)
         """
         try:
-            self.dbg.write_fuse(self, addr, data)
+            self.dbg.write_fuse(addr, data)
         except Exception as e:
             self.logger.error("Error writing fuses: %s", e)
             return 'E13'
@@ -341,6 +349,19 @@ class Memory():
             self.logger.error("Error reading the signature: %s", e)
             return bytearray([0xFF]*size)
         return bytearray(resp)
+
+    def compare_signatures(self, addr, data):
+        """
+        Compare signature supplied by ELF file with the one specified on
+        the command-line of the GDB server. If mismatch, report Fatal Error
+        """
+        _dummy = addr
+        filesig = (data[2]<<16) + (data[1]<<8) + data[0]
+        if filesig != self.dbg.device_info['device_id']:
+            raise FatalError("File compiled for %s, current MCU is: %s" %
+                                 (dev_name.get(filesig, "Unknown"),
+                                    dev_name[self.dbg.device_info['device_id']]))
+        self.logger.info("MCU signature read and verified")
 
     def usig_read(self, addr, size):
         """

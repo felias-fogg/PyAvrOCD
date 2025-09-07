@@ -1,5 +1,17 @@
 # Changelog
 
+### 0.13.2
+
+- **Fixed:**
+  - nvmmegajtag.py: EEPROM is saved when JTAG 'chip erase' is performed. This is done by temporarily programming the `EESAVE` fuse. Without it, one could not load the EEPROM in an ELF file when `EESAVE` was not programmed.
+  - memory.py: For fuses and lock bits, an error log message is printed when trying to access these memory areas. However, we fail silently, i.e., loading will nevertheless be successful. This kind of handling of these areas will avoid problems during debugging (by fuse or lock bits), but it will nonetheless allow debugging programs that contain such data.
+- **Added:**
+  - When adding #include <signature.h> to your file, the signature of the MCU you provided at compilation time is added to the ELF file. The GDB server compares this to the device specified when starting the server, and loading will fail if there is a mismatch.
+  - harvest.py: `eesave_base` and `_mask` is harvested.
+  - `eeprom.ino` sketch has been added to the test suite.
+  - The `ledsignal.h` header has been added to the test suite that provides blinking/error signaling in a uniform way. This needs to be added by a soft link to every sketch that wants to use it.
+
+
 ### 0.13.1
 
 - **Fixed:**

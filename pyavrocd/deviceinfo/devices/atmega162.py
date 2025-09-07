@@ -73,6 +73,8 @@ DEVICE_INFO = {
     'ocden_mask' : 0x80,
     'bootrst_base' : 0x01,
     'bootrst_mask' : 0x01,
+    'eesave_base' : 0x01,
+    'eesave_mask' : 0x08,
     'masked_registers' : [0x23, 0x24, 0x2c, 0x2f, 0x40, 0x5c],
     'device_id': 0x1E9404,
     'interface': 'ISP+HVPP+JTAG'

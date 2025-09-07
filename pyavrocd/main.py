@@ -501,6 +501,7 @@ def main():
 
     # set up logging
     logger = setup_logging(args, log_rsp)
+    logger.info("This is pyavrocd version %s", importlib.metadata.version("pyavrocd"))
 
     result, device, intf = process_arguments(args, logger)
     if result is not None:

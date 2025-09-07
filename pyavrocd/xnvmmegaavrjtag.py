@@ -197,11 +197,29 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
 
     def erase_chip(self, progmode):
         """
-        Erasing entire chip
+        Erasing entire chip. Save EEPROM by, potentially, reprogramming EESAVE fuse
         """
+        eesave_fuse_byte = None
+        eesave_mask = self.device_info.get('eesave_mask')
+        eesave_base = self.device_info.get('eesave_base')
         if not progmode:
             self.avr.switch_to_progmode()
+        if eesave_base and eesave_mask:
+            eesave_fuse_byte = self.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_FUSES,
+                                                        eesave_base, 1)
+            if  eesave_fuse_byte[0] & eesave_mask: # needs to be temporarily programmed
+                self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base,
+                                          bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
+                self.logger_local.info("Programmed EESAVE fuse temporarily")
+            else:
+                eesave_fuse_byte = None
+        else:
+            self.logger_local.error("EESAVE fuse data unknown. EEPROM will be deleted")
         self.avr.erase(Avr8Protocol.ERASE_CHIP, 0)
+        self.logger_local.info("Flash memory erased")
+        if eesave_fuse_byte: # needs to be restored
+            self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base, eesave_fuse_byte)
+            self.logger_local.info("EESAVE fuse restored")
         if not progmode:
             self.avr.switch_to_debmode()
         return True

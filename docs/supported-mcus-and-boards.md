@@ -48,7 +48,7 @@ I suspect that this applies to all chips labeled this way. Even chips recently p
 
 All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that in most cases, the [board must be physically changed](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md) before debugging is possible.
 
-<!--
+
 
 ### ATmegas with JTAG interface
 
@@ -56,23 +56,23 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 #### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-* ATmega16(A), ATmega32(A)
-* ATmega164(P)(A), ATmega324(P)(A/B), ATmega644(P), ATmega1284(P)
+* **ATmega16**, ATmega16A, **ATmega32**, ATmega32A
+* ATmega164, ATmega164A, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
 
 #### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
-* ATmega64(A), ATmega128(A) (no SW breakpoints?)
-* ATmega640, ATmega1280, ATmega2560
+* ATmega64, ATmega64A, **ATmega128**, ATmega128A
+* ATmega640, **ATmega1280**, **ATmega2560**
 * ATmega1281, ATmega2561
-* ATmega165(P)(A), ATmega325(P)(A), ATmega645(P)(A)
-* ATmega169(P)(A), ATmega329(P)(A), ATmega649
-* ATmega3250(P)(A), ATmega6450(P)(A)
-* ATmega3290(P)(A), ATmega6490(P)(A)
+* ATmega165, ATmega165A, ATmega165P, ATmega165PA, ATmega325, ATmega325A, ATmega325P, ATmega325PA, ATmega645, ATmega645A, ATmega645P, ATmega645PA
+* ATmega169, ATmega169A, **ATmega169P**, ATmega169PA, ATmega329, ATmega329A, ATmega329P, ATmega329PA, ATmega649, ATmega649A, ATmega649P, ATmega649PA
+* ATmega3250, ATmega3250A, ATmega3250P, ATmega3250PA, ATmega6450, ATmega6450A, ATmega6450P, ATmega6450PA
+* ATmega3290, ATmega3290A, ATmega3290P, ATmega3290PA, ATmega6490, ATmega6490A, ATmega6490P, ATmega6490PA
 * AT90CAN32, AT90CAN64, AT90CAN128
 
 #### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
-* ATmega162
+* **ATmega162**
 
 #### Other ATmegas
 
@@ -80,11 +80,10 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
 * ATmega128rfa1
-* ATmega16U4, ATmega32U4
+* ATmega16U4, **ATmega32U4**
 * ATmega406
 
 #### Supported Arduino boards
 
 All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by SPI programming because on the Arduino boards, JTAG is disabled by default.
 
--->

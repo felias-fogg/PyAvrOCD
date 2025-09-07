@@ -123,7 +123,7 @@ class XAvrDebugger(AvrDebugger):
         self.device.avr.switch_to_debmode()
         self.logger.info("Switched to debugging mode")
         self._check_stuck_at_one_pc()
-        self.logger.info("Checked that there is no stuck-at-1-bit in the PC")
+        self.logger.info("Checked for PC stuck-at-1-bit")
         self.logger.info("... debug session startup done")
         return True
 

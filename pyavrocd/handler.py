@@ -46,7 +46,7 @@ class GdbHandler():
         self._lastmessage = ""
         self._extended_remote_mode = False
         self._vflashdone = False # set to True after vFlashDone received
-        self._connection_error = None
+        self.critical = None
         self._live_tests = LiveTests(self)
         self.packettypes = {
             '!'           : self._extended_remote_handler,
@@ -106,6 +106,8 @@ class GdbHandler():
             handler(packet)
         except (FatalError, PymcuprogNotSupportedError, PymcuprogError, AssertionError) as e:
             self.logger.critical(e)
+            if not self.critical:
+                self.critical = e
             self.send_signal(SIGABRT)
 
     def _extended_remote_handler(self, _):
@@ -132,6 +134,11 @@ class GdbHandler():
         Checks whether debugger is active and flash is loaded. If not,
         a signal is sent, a warning message is printed and False is returned
         """
+        if self.critical:
+            self.send_debug_message("Cannot execute after critical error:")
+            self.send_debug_message(str(self.critical))
+            self.send_signal(SIGABRT)
+            return False
         if not self.mon.is_debugger_active():
             self.logger.warning("Cannot start execution because not connected to OCD")
             if "debugwire" == self.dbg.iface:
@@ -367,8 +374,8 @@ class GdbHandler():
         try:
             response = self.mon.dispatch(tokens)
             if response[0] == 'dwon':
-                if self._connection_error:
-                    raise FatalError(self._connection_error)
+                if self.critical:
+                    raise FatalError(self.critical)
                 self.dbg.prepare_debugging(callback=self.__send_power_cycle,
                                                recognition=self.__send_ready_message)
                 self.dbg.start_debugging()
@@ -400,6 +407,8 @@ class GdbHandler():
             self.send_reply_packet("ISP programming failed. Wrong connection or wrong MCU?")
         except (FatalError, PymcuprogNotSupportedError, PymcuprogError) as e:
             self.logger.critical(e)
+            if not self.critical:
+                self.critical = e
             self.send_reply_packet("Fatal error: %s" % e)
         else:
             self.send_reply_packet(response[1])
@@ -452,7 +461,8 @@ class GdbHandler():
                 self.mon.set_debug_mode_active()
         except FatalError as e:
             self.logger.critical("Error while connecting to target OCD: %s", e)
-            self._connection_error = e
+            if not self.critical:
+                self.critical = e
             self.dbg.stop_debugging()
         self.logger.debug("debugger_active=%d",self.mon.is_debugger_active())
         self.send_packet("PacketSize={0:X};qXfer:memory-map:read+".format(self.packet_size))
@@ -556,17 +566,15 @@ class GdbHandler():
 
     def _vflash_erase_handler(self, _):
         """
-        'vFlashErase': Since we cannot and need not to erase pages,
-        we only use this command to clear the cache when there was a previous
-        vFlashDone command.
+        'vFlashErase': We use this command to clear the cache when there was a previous
+        vFlashDone command, and erase chip if possible.
         """
         self.logger.debug("RSP packet: vFlashErase")
         if self.mon.is_debugger_active():
             self.bp.cleanup_breakpoints()
             if self.mon.is_erase_before_load():
                 # if erase is not possible or desired, then it is done before flashing each page (perhaps implicitly)
-                if self.dbg.device.erase_chip(self.mem.programming_mode):
-                    self.logger.info("Chip erased before flashing")
+                self.dbg.device.erase_chip(self.mem.programming_mode)
             if self._vflashdone:
                 self._vflashdone = False
                 self.mem.init_flash() # clear cache
@@ -681,8 +689,7 @@ class GdbHandler():
                 if self.mon.is_erase_before_load():
                     # If erase before load is requested, we do that here
                     # otherwise it will done implicitly before each page is programmed
-                    if self.dbg.device.erase_chip(self.mem.programming_mode):
-                        self.logger.info("Chip erased before flashing")
+                    self.dbg.device.erase_chip(self.mem.programming_mode)
         try:
             reply = self.mem.writemem(addr, bytearray(data))
         except:
@@ -697,6 +704,7 @@ class GdbHandler():
         while mem.lazy_loading = True, meaning there is an executable loaded using
         the X-records.
         """
+        self.logger.debug("Finalize binary programming")
         self.mem.lazy_loading = False
         self.mem.flash_pages() # program the remaining bytes
         self.dbg.device.avr.switch_to_debmode()
