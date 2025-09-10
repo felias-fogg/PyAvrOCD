@@ -123,7 +123,7 @@ class XAvrDebugger(AvrDebugger):
         self.device.avr.switch_to_debmode()
         self.logger.info("Switched to debugging mode")
         self._check_stuck_at_one_pc()
-        self.logger.info("Checked for PC stuck-at-1-bit")
+        self.logger.info("Checked for dirty PC")
         self.logger.info("... debug session startup done")
         return True
 
@@ -251,9 +251,11 @@ class XAvrDebugger(AvrDebugger):
     def _check_stuck_at_one_pc(self):
         """
         Check that the connected MCU does not suffer from stuck-at-1-bits in the program counter.
-        There are only very few MCUs with this issue and GDB cannot deal with it at all. Since they
-        also lead to other issues, we try to terminate debugWIRE mode immediately and then initiate
-        a shutdown sequence.
+        There are only very few MCUs with this issue and GDB cannot deal with it at all. Since for the
+        MCUs with debugWIRE OCD  (ATmega48, ATmega88), this also lead to other issues,
+        we try to terminate debugWIRE mode immediately and then initiate a shutdown sequence.
+        For some JTAG MCUs (ATmega16), the debuggers apparently mask out the stuck bit, but
+        the stuck bits show when the return address is pushed on the stack.
         """
         self.reset()
         pc = self.program_counter_read()
@@ -261,7 +263,49 @@ class XAvrDebugger(AvrDebugger):
         if pc << 1 >= self.memory_info.memory_info_by_name('flash')['size']:
             if self.iface == 'debugwire':
                 self.device.avr.protocol.debugwire_disable()
-            raise FatalError("Stopping debugging immediately because of stuck-at-1 bit in PC")
+            raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
+        # special purpose check for ATmega16 (and we try it also for fun an ATmega32)
+        if self.device_info['device_id'] in [ 0x1E9403, 0x1E9502 ]:
+            self._check_atmega16()
+
+    def _check_atmega16(self):
+        """
+        Single out the ATmega16 without an A-suffix. In theory that should be possible
+        via the revision code present in the JTAG id code. However, unfortunately,
+        the data sheets are not conclusive. For this reason, we use the test of
+        setting the stack pointer, raising an interrupt, making a single step,
+        and then examine the stack.
+        """
+        self.logger.debug("Check ATmega16 PC pushed to stack")
+        sp = self.memory_info.memory_info_by_name('internal_sram')['size'] + \
+          self.memory_info.memory_info_by_name('internal_sram')['address'] - 1
+        self.logger.debug("New stack pointer: 0x%X", sp)
+        # set stack pointer to top of SRAM
+        self.stack_pointer_write(sp.to_bytes(2,byteorder='little'))
+        # set INT0 to low level static interrupt
+        self.sram_write(0x55, bytearray([0x00]))
+        # enable INT0 in GICR
+        self.sram_write(0x5B, bytearray([0x40]))
+        # enable interrupts in SREG
+        self.status_register_write(bytearray([0x80]))
+        # set DDR PD2 bit
+        self.sram_write(0x31, bytearray([0x04]))
+        # now set PD2 = LOW
+        self.sram_write(0x32, bytearray([0x00]))
+        # make a single step (at 0, instruction does not matter!)
+        self.step()
+        # PC is pushed to stack
+        sp -= 2
+        if sp != int.from_bytes(self.stack_pointer_read(),byteorder='little'):
+            self.logger.error("IRQ has not been raised!")
+            self.reset()
+            return
+        # now check return address
+        retpc = int.from_bytes(self.sram_read(sp+1, 2), byteorder='big')
+        self.logger.debug("Return address: 0x%X", retpc)
+        if retpc << 1 > self.memory_info.memory_info_by_name('flash')['size']:
+            raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
+        self.reset()
 
     def _activate_interface(self):
         """

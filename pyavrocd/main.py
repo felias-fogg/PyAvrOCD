@@ -72,12 +72,12 @@ class RspServer():
         if self.logger.getEffectiveLevel() not in {logging.DEBUG, logging.INFO}:
             print("Listening on port {} for gdb connection".format(self.port))
         self.gdb_socket.bind(("127.0.0.1", self.port))
-        self.gdb_socket.listen()
-        self.connection, self.address = self.gdb_socket.accept()
-        self.connection.setblocking(0)
-        self.logger.info('Connection from %s', self.address)
-        self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args)
         try:
+            self.gdb_socket.listen()
+            self.connection, self.address = self.gdb_socket.accept()
+            self.connection.setblocking(0)
+            self.logger.info('Connection from %s', self.address)
+            self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args)
             while not self._terminate:
                 ready = select.select([self.connection], [], [], 0.5)
                 if ready[0]:
@@ -475,7 +475,7 @@ def run_server(server, logger):
     Startup server and serve until done.
     """
     try:
-        server.serve()
+        return server.serve()
     except (ValueError, Exception) as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)

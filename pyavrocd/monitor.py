@@ -385,8 +385,7 @@ monitor verify [enable|disable]    - verify that loading was successful (def.)
 If no parameter is specified, the current setting is returned""")
 
     def _mon_info(self, _):
-        return ('info',"""
-Pyavrocd version:         """ + importlib.metadata.version("pyavrocd") + """
+        return ('info',"""Pyavrocd version:         """ + importlib.metadata.version("pyavrocd") + """
 Target:                   {}
 Debugging interface:      """ + self._iface + ((" (leave on exit)" if self._leaveonexit else " (stay on exit)") \
                                                    if self._iface == "debugwire" else "") + """
@@ -403,7 +402,7 @@ Caching loaded binary:    """ + ("enabled" if self._cache else "disabled") + """
 Range-stepping:           """ + ("enabled" if self._range else "disabled") + """
 Single-stepping:          """ + ("safe" if self._safe else "interruptible")  + """
 Timers:                   """ + ("frozen when stopped"
-                                     if self._timersfreeze else "run when stopped"))
+                                     if self._timersfreeze else "run when stopped") + "{}")
 
 
     def _mon_load(self, optix):
@@ -489,6 +488,6 @@ Timers:                   """ + ("frozen when stopped"
     def _mon_live_tests(self, _):
         if self._debugger_active:
             return("live_tests", "Tests done")
-        return("", "Enable debugWIRE first")
+        return("", "Cannot run tests because debugging is not enabled")
 
 

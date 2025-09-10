@@ -11,6 +11,8 @@ int count;
 
 void setup() {
   Serial.begin(19200);
+  eeprom_write_byte(ee_data, 'd');
+  ver[0] = 'd';
 }
 
 void loop() {

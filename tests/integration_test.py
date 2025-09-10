@@ -12,7 +12,7 @@ import pexpect
 
 # enables debugging
 # and runs live tests
-dwon_script = ("live", "", "",
+on_script = ("live", "", "",
     ("set style enabled off", ""),
     ("set trace-commands on", ""),
     ("set logging file tests/log/live.log", ""),
@@ -26,7 +26,7 @@ dwon_script = ("live", "", "",
     ("quit", ""))
 
 # tests monitor commands across different gdb servers
-mon_script = ("monitor", "blink", "",
+mon_script = ("monitor commands", "blink", "",
     ("set style enabled off", ""),
     ("set trace-commands on", ""),
     ("set logging file tests/log/monitor.log", ""),
@@ -38,6 +38,8 @@ mon_script = ("monitor", "blink", "",
     ("monitor help", "monitor info"),
     ("monitor info", "Target:"),
     ("monitor version", "version"),
+    ("monitor atexit leave", "MCU will leave debugWIRE mode on exit"),
+    ("monitor atexit stayindebugwire", "MCU will stay in debugWIRE mode on exit"),
     ("monitor load readbeforewrite", "Reading before writing when loading"),
     ("monitor load writeonly", "No reading before writing when loading"),
     ("monitor load",  "No reading before writing when loading"),
@@ -80,37 +82,31 @@ blink_script =("blink", "blink", "",
     ("monitor debugwire enable", "enabled", "This is not a debugWIRE target"),
     ("monitor reset", ""),
     ("load", "Start address 0x"),
-    ("list blink.ino:10", "ISR(TIMER0_COMPA_vect)"),
-    ("break blink.ino:13",  "line 13"),
-    ("continue",  "Breakpoint 1, __vector_"),
+    ("break irq_routine",  "Breakpoint 1"),
+    ("continue",  "if (cycle < 5)"),
     ("display privmillis", "privmillis = 0"),
     ("continue", "privmillis ="),
-    ("print cycle", "$1 = "),
-    ("break loop", "Breakpoint 2 at"),
+    ("print cycle", "$1 = 0"),
+    ("break loop", "Breakpoint 2"),
     ("delete 1", ""),
     ("continue", "Breakpoint 2, loop"),
     ("next", "mydelay(1000)"),
-    ("break 14", "Breakpoint 3 at"),
+    ("break irq_routine", "Breakpoint 3 at"),
     ("continue", "if (cycle < 5)" ),
     ("continue", "if (cycle < 5)" ),
     ("print cycle", "$2 = " ),
     ("delete 3", ""),
-    ("break 64", "Breakpoint 4 at"),
+    ("break test_cycle", "Breakpoint 4"),
     ("cond 4 cycle == 4", ""),
     ("disable 2", ""),
     ("info b",  "stop only if cycle == 4"),
-    ("continue", "Breakpoint 4, loop"),
-    ("next", ""),
-    ("print cycle", "$3 = 5 "),
-    ("break 13", "Breakpoint 5"),
-    ("continue", "Breakpoint 5"),
+    ("continue", "Breakpoint 4"),
     ("delete 1-10", "No breakpoint number 10"),
     ("continue&", ""),
     ("$SLEEP", 3),
     ("interrupt", ""),
     ("$SLEEP", 0.5),
     ("", "Program received signal SIGINT, Interrupt"), # this message comes asynchronously
-    ("set debug remote 1", ""),
     ("i b","No breakpoints"),
     ("detach",  "Detaching from"),
     ("quit", ""))
@@ -137,7 +133,7 @@ break_script = ("break", "blink", "",
     ("next", "SIGABRT"),
     ("step", "SIGABRT"),
     ("delete 3", ""),
-    ("next", "mydelay"),
+    ("finish", "mydelay"),
     ("monitor breakpoints all", "All breakpoints"),
     ("break loop", "Breakpoint 4"),
     ("continue", "Breakpoint 4, loop"),
@@ -194,11 +190,15 @@ fib_script = ("fibonacci", "fibonacci", "",
     ("continue", "Breakpoint 3, fib (n=5)"),
     ("continue", "Breakpoint 3, fib (n=4)"),
     ("continue", "Breakpoint 3, fib (n=3)"),
+    ("backtrace", "in fib (n=7)"),
+    ("backtrace", "in loop ()"),
     ("up", "in fib (n=4)"),
     ("up", "in fib (n=5)"),
     ("up", "in fib (n=6)"),
-    ("p n", "$5 = 6"),
-    ("dis 3", ""),
+    ("down", "in fib (n=5)"),
+    ("down", "in fib (n=4)"),
+    ("p n", "$5 = 4"),
+    ("clear fib", "Deleted breakpoint 3"),
     ("continue", "Breakpoint 4, mfib (n=7)"),
     ("set remote hardware-watchpoint-limit 0", ""),
     ("watch memo[7]", "Watchpoint 5: memo[7]"),
@@ -229,6 +229,8 @@ oop_script = ("oop", "oop", "-fno-lto",
     ("monitor debugwire enable",  "enabled", "This is not a debugWIRE target"),
     ("monitor reset", ""),
     ("load", "Start address 0x"),
+    ("whatis r", "Rectangle"),
+    ("ptype r", "type = class Rectangle : public TwoDObject"),
     ("print r", "$1 = {<TwoDObject> = {x ="),
     ("list setup", "setup(void)"),
     ("b 83", "Breakpoint 1"),
@@ -313,16 +315,97 @@ isr_script = ("single-step", "isr", "",
     ("detach", "Detaching from"),
     ("quit", ""))
 
-# switch off debugWIRE mode
-# this test script should be run last for each MCU/clock combination
-dwoff_script = ("dwoff", "", "",
+# load something into EEPROM
+eeprom_script = ("eeprom", "eeprom", "",
     ("set style enabled off", ""),
     ("set trace-commands on", ""),
-    ("set logging file tests/log/dwoff.log", ""),
+    ("set logging file tests/log/eeprom.log", ""),
+    ("set logging overwrite on", ""),
+    ("set logging on",  ""),
+    ("target extended-remote :2000", "0x00000000 in __vectors ()"),
+    ("monitor debugwire enable",  "enabled", "This is not a debugWIRE target"),
+    ("monitor reset", ""),
+    ("load", "Start address 0x"),
+    ("break loop", ""),
+    ("continue", "Breakpoint 1, loop"),
+    ("p ee_data", "data that's loaded straight into EEPROM"),
+    ("p ver", "data that's loaded straight into EEPROM"),
+    ("delete 1", ""),
+    ("break blink_exit", "Breakpoint 2"),
+    ("cont", "Breakpoint 2, blink_exit (OK=true)"),
+    ("set var ee_data[0] = 'X'", ""),
+    ("p ee_data", "Xata that's loaded straight into EEPROM"),
+    ("detach", "Detaching from"),
+    ("quit", ""))
+
+# loads fuses and lockbits, which is silently ignored
+# also loads signature, which is compared with the signature
+# given when inoking pyavrocd
+fuse_script = ("fuses, lockbits, and signature", "fuses", "",
+    ("set style enabled off", ""),
+    ("set trace-commands on", ""),
+    ("set logging file tests/log/fuses.log", ""),
+    ("set logging overwrite on", ""),
+    ("set logging on",  ""),
+    ("target extended-remote :2000", "0x00000000 in __vectors ()"),
+    ("monitor debugwire enable",  "enabled", "This is not a debugWIRE target"),
+    ("monitor reset", ""),
+    ("load", "Start address 0x"),
+    ("detach", "Detaching from"),
+    ("quit", ""))
+
+# tests of the ability to simulate a two-word call/jmp instruction
+# on a ATmega2560 in the high area of the memory (for all others
+# it is just computing the average of 10 numbers)
+simhigh_script = ("simulate 2 word call in high memory (if possible)", "sim2word_highjmp", "",
+    ("set style enabled off", ""),
+    ("set trace-commands on", ""),
+    ("set logging file tests/log/sim2word_highjmp.log", ""),
+    ("set logging overwrite on", ""),
+    ("set logging on",  ""),
+    ("target remote :2000", "0x00000000 in __vectors ()"),
+    ("monitor debugwire enable",  "enabled", "This is not a debugWIRE target"),
+    ("monitor reset", ""),
+    ("load", "Start address 0x"),
+    ("monitor break soft", ""),
+    ("break loop", ""),
+    ("continue", "Breakpoint 1, loop ()"),
+    ("break +4", "Breakpoint 2"),
+    ("break +8", "Breakpoint 3"),
+    ("continue", "val = random();"),
+    ("continue", "val = random();"),
+    ("continue", "val = random();"),
+    ("delete 2", ""),
+    ("continue", "Serial.println(avg);"),
+    ("print avg", "= -7196"),
+    ("detach", "Detaching from"),
+    ("quit", ""))
+
+
+
+# switch off debugWIRE mode (if applicable)
+# this test script should be run last for each MCU/clock combination
+off_script = ("off", "", "",
+    ("set style enabled off", ""),
+    ("set trace-commands on", ""),
+    ("set logging file tests/log/off.log", ""),
     ("set logging overwrite on", ""),
     ("set logging on",  ""),
     ("target extended-remote :2000", "0x00000000 in ?? ()"),
     ("monitor debugwire disable",  "disabled", "This is not a debugWIRE target"),
+    ("detach","Detaching from"),
+    ("quit", ""))
+
+# check that MCU is categorized as a MCU with a dirty PC
+dirty_script = ("dirty", "", "",
+    ("set style enabled off", ""),
+    ("set trace-commands on", ""),
+    ("set logging file tests/log/dirty.log", ""),
+    ("set logging overwrite on", ""),
+    ("set logging on",  ""),
+    ("target extended-remote :2000", "0x00000000 in ?? ()"),
+    ("monitor debugwire enable",  "Fatal error:", "This is not a debugWIRE target"),
+    ("monitor info", "MCU cannot be debugged because of stuck-at-1 bit"),
     ("detach","Detaching from"),
     ("quit", ""))
 
@@ -333,15 +416,17 @@ MiniClock = {'1' : '1MHz_internal', '8' : '8MHz_internal', '16' : '16MHz_externa
 ATTRcClock = {'1' : '1internal', '8' : '8internal'}
 ATTClock = {'1' : '1internal', '8' : '8internal', '16' : '16external'}
 
-# the dwon_script needs always to run first because it enables debugWIRE
-# the dwoff_script should run last in order to set the MCU back to normal mode
-small_arduino = (dwon_script, blink_script, mon_script, break_script, flash_script, fib_script,
-                     isr_script, dwoff_script)
-medium_arduino = (dwon_script, blink_script, mon_script ,break_script, flash_script, fib_script,
-                      oop_script, isr_script, dwoff_script)
-large_arduino =  (dwon_script, blink_script, mon_script, break_script, flash_script, fib_script,
-                      oop_script, tictactoe_script, isr_script, dwoff_script)
-exotic_arduino =  (dwon_script, isr_script, dwoff_script)
+# the on_script needs always to run first because it enables debugWIRE
+# the off_script should run last in order to set the MCU back to normal mode
+small_arduino = (on_script, blink_script, mon_script, break_script, flash_script, fib_script,
+                     isr_script, off_script)
+medium_arduino = (on_script, blink_script, mon_script ,break_script, flash_script, fib_script,
+                      oop_script, isr_script, eeprom_script, fuse_script, off_script)
+large_arduino =  (on_script, blink_script, mon_script, break_script, flash_script, fib_script,
+                      oop_script, tictactoe_script, isr_script, eeprom_script,
+                      fuse_script, simhigh_script, off_script)
+exotic_arduino =  (on_script, fuse_script, off_script)
+dirty_arduino  =  (dirty_script,)
 
 test_devices = {"attiny13" : (MicroClock, small_arduino,
                                    "MicroCore:avr:13:clock=", "Dev Board"),
@@ -406,16 +491,54 @@ test_devices = {"attiny13" : (MicroClock, small_arduino,
                 "atmega328" : (MiniClock, large_arduino,
                                     "MiniCore:avr:328:variant=modelNonP,bootloader=no_bootloader,clock=",
                                     "Programmer-ZF"),
-                "atmega328p" : (MiniClock, exotic_arduino,
+                "atmega328p" : (MiniClock, large_arduino,
                                     "MiniCore:avr:328:variant=modelP,bootloader=no_bootloader,clock=",
                                     "Programmer-ZF / XPLAINED Mini Board"),
                 "atmega328pb" : (MiniClock, large_arduino,
                                     "MiniCore:avr:328:variant=modelPB,bootloader=no_bootloader,clock=",
                                     "XPLAINED Mini Board"),
-                # JTAG targets:
-                "atmega324pb" : (MiniClock, exotic_arduino,
+
+                # JTAG targets: MightyCore
+                "atmega324pb" : (MiniClock, large_arduino,
                                      "MightyCore:avr:324:variant=modelPB,bootloader=no_bootloader,clock=",
-                                     "XPLAINED Pro Board")
+                                     "XPLAINED Pro Board"),
+                "atmega16" : (MiniClock, dirty_arduino,
+                                     "MightyCore:avr:16:bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega32" : (MiniClock, large_arduino,
+                                     "MightyCore:avr:32:bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega164pa" : (MiniClock, large_arduino,
+                                     "MightyCore:avr:164:variant=modelP,bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega644" : (MiniClock, large_arduino,
+                                     "MightyCore:avr:644:variant=modelA,bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega1284p" : (MiniClock, large_arduino,
+                                     "MightyCore:avr:1284:variant=modelP,bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+
+                # JTAG targets: MegaCore
+                "atmega2560": (MiniClock, large_arduino,
+                                   "MegaCore:avr:2560:bootloader=no_bootloader,clock=",
+                                   "Arduino Mega"),
+                "atmega1280": (MiniClock, large_arduino,
+                                   "MegaCore:avr:1280:bootloader=no_bootloader,clock=",
+                                   "Arduino Mega 1280"),
+                "atmega169P": (MiniClock, large_arduino,
+                                   "MegaCore:avr:169:variant=modelP,bootloader=no_bootloader,clock=",
+                                   "Butterfly"),
+
+                # JTAG targets: MajorCore
+                "atmega162": (MiniClock, large_arduino,
+                                   "MajorCore:avr:162:bootloader=no_bootloader,clock=",
+                                   "Butterfly"),
+
+                # JTAG targets: Arduino AVR Core
+                "atmega32u2": (MiniClock, large_arduino,
+                                   "arduino:avr:leonardo",
+                                   "Leonardo"),
+
                     }
 
 #pylint: disable=too-many-statements
@@ -511,7 +634,7 @@ def run_script(logger, script):
     Execute one script and compare with expected replies.
     """
     test_name = script[0]
-    logger.info("Running %s test", test_name)
+    print("Running", test_name, end='')
     test_binary = "tests/sketches/" + script[1] + "/" + script[1] + ".ino.elf"
     if script[1] == "":
         test_binary = ""
@@ -523,8 +646,11 @@ def run_script(logger, script):
     if resp >= 1:
         logger.error("Failed %s calling avr-gdb", test_name)
         child.close()
+        print()
         return False
     while ix < len(script):
+        print(".",end='')
+        sys.stdout.flush()
         interact = script[ix]
         if interact[0] == "$SLEEP":
             logger.debug("COMMAND: Sleep(%s)",interact[1])
@@ -540,17 +666,20 @@ def run_script(logger, script):
             if interact[1] == pexpect.TIMEOUT:
                 logger.debug("RESPONSE: TIMEOUT")
                 continue
-            logger.debug("Failed %s in line %s with TIMEOUT", test_name, ix-1)
-            logger.debug("Expected: '%s' in response to: '%s'", interact[1], interact[0])
+            logger.error("Failed %s in line %s with TIMEOUT", test_name, ix-1)
+            logger.error("Expected: '%s' in response to: '%s'", interact[1], interact[0])
             logger.debug("FAILED: %s", script[0])
             child.close()
+            print()
             return False
         if resp == 2:
             if ix == len(script) - 1:
                 logger.debug("SUCCEEDED: " + script[0])
+                print("OK")
                 return True
             logger.debug("FAILED: %s in line %s with EOF from child",  test_name, ix-1)
             child.close()
+            print()
             return False
         if resp == 3:
             logger.warning("*** Power-cycle target system! ***")
@@ -558,6 +687,7 @@ def run_script(logger, script):
             if resp != 0:
                 logger.debug("Failed during power-cycling")
                 child.close()
+                print()
                 return False
         logger.debug("RESPONSE: '%s'", child.before.decode())
         if child.before.decode().find(interact[1]) >= 0 or \
@@ -565,14 +695,16 @@ def run_script(logger, script):
             len(interact) > 3 and child.before.decode().find(interact[3]):
             ix += 1
         else:
-            logger.debug("Failed %s in line %s with unexpected response:", test_name, ix-1)
-            logger.debug("      '%s'",  child.before.decode())
-            logger.debug("Expected: '%s' in response to: '%s'", interact[1], interact[0])
+            logger.error("Failed %s in line %s with unexpected response:", test_name, ix-1)
+            logger.error("      '%s'",  child.before.decode())
+            logger.error("Expected: '%s' in response to: '%s'", interact[1], interact[0])
             logger.debug("FAILED: %s", script[0])
+            print()
             child.close()
             return False
     logger.debug("SUCCEEDED: %s", script[0])
     child.close()
+    print("OK")
     return True
 
 if __name__ == '__main__':

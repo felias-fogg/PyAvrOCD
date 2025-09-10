@@ -30,7 +30,7 @@
   defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328PB__)
 #define IRQPIN 2
 #elif defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-# Mega pinout (default)
+// Mega pinout (default)
 #define IRQPIN 21
 #elif defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) || \
   defined(__AVR_ATmega128__) || defined(__AVR_ATmega2560__) ||	 \
@@ -82,9 +82,9 @@ volatile int outsidecount = 0;
 void setup()
 {
 #if FLASHEND >= 4095
-  Serial.begin(9600);
+  Serial.begin(38400);
   Serial.println(F("Startup ..."));
-  delay(300);
+  delay(500);
 #endif
   pinMode(IRQPIN, OUTPUT);
   digitalWrite(IRQPIN, LOW);
@@ -97,7 +97,7 @@ void loop()
   shortwait(1);
   outsidecount++;
   digitalWrite(IRQPIN, HIGH);
-  delay(100); // necessary to give enough time for printing!
+  delay(200); // necessary to give enough time for printing!
 #if FLASHEND >= 4095
   Serial.print("IRQ count: ");
   Serial.println(irqcount);

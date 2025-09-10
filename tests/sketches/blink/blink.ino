@@ -1,16 +1,21 @@
-// Program intended to be used for testing dw-link
-
-#define LED SCK // use always the SCK pin so one can see something flashing.
+// Program intended to be used for testing pyavrocd
+#include "ledsignal.h"
 
 volatile byte cycle = 0; // cycle counter
 volatile unsigned long privmillis = 0;
 
 #ifdef TIM0_COMPA_vect
 ISR(TIM0_COMPA_vect)
-#else
+#elif defined(TIMER0_COMPA_vect)
 ISR(TIMER0_COMPA_vect)
+#else
+ISR(TIMER0_COMP_vect)
 #endif
 {
+  irq_routine();
+}
+
+void irq_routine(void) {
   if (cycle < 5)
     privmillis += (16000000UL/F_CPU);
   else
@@ -32,11 +37,23 @@ void mydelay(unsigned long wait) {
   while (mymillis() - start < wait);
 }
 
+void test_cycle() {
+  if (++cycle >= 10) cycle = 0;  // cyclic counter
+}
+
 void setup() {
-  pinMode(LED, OUTPUT);   // initialize digital pin LED as an output.
+  LedInit();   // initialize digital pin LED as an output.
+#ifdef OCR0A
   OCR0A = 0x80;           // prepare for having a COMPA interrupt
+#else
+  OCR0 = 0x80;           // prepare for having a COMP interrupt
+#endif
 #ifdef TIMSK
-  TIMSK |= _BV(OCIE0A);   // enable COMPA interrupt on Timer0
+  #ifdef OCIE0A
+      TIMSK |= _BV(OCIE0A);   // enable COMPA interrupt on Timer0
+  #else
+      TIMSK |= _BV(OCIE0);   // enable COMP interrupt on Timer0
+  #endif
 #else
   TIMSK0 |= _BV(OCIE0A);  // enable COMPA interrupt on Timer0
 #endif
@@ -57,9 +74,9 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  digitalWrite(LED, HIGH);       // turn the LED on (HIGH is the voltage level)
+  LedOn();                       // turn the LEDs on (HIGH is the voltage level)
   mydelay(1000);                 // wait for approximately one second or 1/5 of a second
-  digitalWrite(LED, LOW);        // turn the LED off by making the voltage LOW
+  LedOff();                      // turn the LEDs off by making the voltage LOW
   delay(1000);                   // wait for a second
-  if (++cycle >= 10) cycle = 0;  // cyclic counter
+  test_cycle();                  // test and reset cyclic counter
 }

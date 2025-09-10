@@ -1,5 +1,19 @@
 # Changelog
 
+### 0.13.3
+
+- **Fixed:**
+  - livetests.py: Also cater now for the case that sram_start can be 0x200. Until then, only the cases 0x60 and 0x100 were considered, which broke the step test.
+  - isr.ino: In this test sketch, a lot of interrupts are raised that may stop the printing process, a problem that came up before. I increased the waiting time and increased the communication speed so that the test could be passed. I had this before!
+  - breakandexec.py: sim_two_words needed to be adapted so that it can be used for interrupt-safe single-stepping. The isr.ino test works now, but the implementation should be tested in the upper part of memory (maybe a special LiveTest?).
+  - main.py: Now, a CTRL-C will stop the server so that we terminate with an error code.
+  - xavrdebug.py: A special test for ATmega16 has been introduced for testing whether it is a non-A version, which has a stuck-at-1-bit. Interestingly, this only shows when looking at return addresses on the stack, but not when reading the PC through the debugger.
+- **Added:**
+  - A `sim2word_jmphigh.ino` test sketch that checks whether single-stepping (by simulation) over two-word instructions works even in the high part of flash memory
+  - A `fuses.ino` test sketch has been added to the integration tests, testing fuses, lockbits, and signature loading.
+  - Added test "(the pagetoflash is not blank or memory has not been erased before loading)" before programming a flash page and before verifying it. This speeds up the  `sim2word_jmphigh.ino`  test sketch.
+
+
 ### 0.13.2
 
 - **Fixed:**

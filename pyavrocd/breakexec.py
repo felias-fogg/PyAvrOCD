@@ -5,7 +5,6 @@ This module deals with breakpoints and execution.
 # args, logging
 from logging import getLogger
 
-
 # special opcodes
 BREAKCODE = 0x9598
 SLEEPCODE = 0x9588
@@ -42,9 +41,6 @@ class BreakAndExec():
         self._range_word = []
         self._range_branch = []
         self._range_exit = set()
-        if self._bigmem:
-            self.logger.warning("Flash address are beyond the 64 k word space!")
-            self.logger.warning("Implying two-step reflashing on BP hits.")
 
     def _read_filtered_flash_word(self, address):
         """
@@ -304,9 +300,9 @@ class BreakAndExec():
         # If there is a SWBP at the place where we want to step,
         # use the internal single-step (which will execute the instruction offline)
         # or, if a two-word instruction, simulate the step. That is, if memory
-        # is not 256k! 
+        # is not 256k!
         if addr in self._bp and self._bp[addr]['inflash']:
-            if self.two_word_instr(self._bp[addr]['opcode']) and not self._bigmem:
+            if self.two_word_instr(self._bp[addr]['opcode']):
             # if there is a two word instruction, simulate
                 self.logger.debug("Two-word instruction at SWBP: simulate")
                 addr = self.sim_two_word_instr(self._bp[addr]['opcode'],
@@ -560,10 +556,11 @@ class BreakAndExec():
 
     def sim_two_word_instr(self, opcode, secondword, addr):
         """
-        Simulate a two-word instruction with opcode and 2nd word secondword.
+        Simulate a two-word instruction with opcode and 2nd word secondword at addr (byte address).
         Update all registers (except PC) and return the (byte-) address
         where execution will continue.
         """
+        newaddr = (secondword << 1) + ((opcode & 1) << 17) # new byte addr, only for branching instructions
         if (opcode & ~0x1F0) == 0x9000: # lds
             register = (opcode & 0x1F0) >> 4
             val = self.dbg.sram_read(secondword, 1)
@@ -577,23 +574,21 @@ class BreakAndExec():
             self.logger.debug("Simulating sts")
             addr += 4
         elif (opcode & 0x0FE0E) == 0x940C: # jmp
-            # since debugWIRE works only on MCUs with a flash address space <= 64 kwords
-            # we do not need to use the bits from the opcode. Just put in a reminder: #BIGMEM
-            addr = secondword << 1 ## now byte address
-            self.logger.debug("Simulating jmp 0x%X", addr << 1)
+            addr = newaddr
+            self.logger.debug("Simulating jmp 0x%X", addr)
         elif (opcode & 0x0FE0E) == 0x940E: # call
             returnaddr = (addr + 4) >> 1 # now word address
-            self.logger.debug("Simulating call to 0x%X", secondword << 1)
+            self.logger.debug("Simulating call to 0x%X", newaddr)
+            self.logger.debug("Pushing return addr on stack: 0x%X", returnaddr << 1)
             sp = int.from_bytes(self.dbg.stack_pointer_read(),byteorder='little')
             self.logger.debug("Current stack pointer: 0x%X", sp)
-            # since debugWIRE works only on MCUs with a flash address space <= 64 kwords
-            # we only need to decrement the SP by 2. Just put in a reminder: #BIGMEM
-            sp -= 2
+            sp -= (2 + int(self._bigmem))
             self.logger.debug("New stack pointer: 0x%X", sp)
             self.dbg.stack_pointer_write(sp.to_bytes(2,byteorder='little'))
-            self.dbg.sram_write(sp+1, returnaddr.to_bytes(2,byteorder='big'))
-            # since debugWIRE works only on MCUs with a flash address space <= 64 kwords
-            # we do not need to use the bits from the opcode. Just put in a reminder: #BIGMEM
-            addr = secondword << 1
+            if self._bigmem:
+                self.dbg.sram_write(sp+1, returnaddr.to_bytes(3,byteorder='big'))
+            else:
+                self.dbg.sram_write(sp+1, returnaddr.to_bytes(2,byteorder='big'))
+            addr = newaddr
         return addr
 

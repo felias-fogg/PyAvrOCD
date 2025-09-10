@@ -52,27 +52,29 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 ### ATmegas with JTAG interface
 
-*(not yet supported, but will be real soon)*
+Note that the MCUs are supported by pyavrocd. However, the cores have not been extended yet to allow for debugging inside the Arduino IDE 2.
 
 #### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-* **ATmega16**, ATmega16A, **ATmega32**, ATmega32A
-* ATmega164, ATmega164A, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
+* **~~ATmega16~~**, ATmega16A, <u>**ATmega32**</u>, ATmega32A
+* ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
+
+The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged.
 
 #### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
-* ATmega64, ATmega64A, **ATmega128**, ATmega128A
+* ATmega64, ATmega64A, ATmega128, <u>**ATmega128A**</u>
 * ATmega640, **ATmega1280**, **ATmega2560**
 * ATmega1281, ATmega2561
 * ATmega165, ATmega165A, ATmega165P, ATmega165PA, ATmega325, ATmega325A, ATmega325P, ATmega325PA, ATmega645, ATmega645A, ATmega645P, ATmega645PA
-* ATmega169, ATmega169A, **ATmega169P**, ATmega169PA, ATmega329, ATmega329A, ATmega329P, ATmega329PA, ATmega649, ATmega649A, ATmega649P, ATmega649PA
+* ATmega169, ATmega169A, <u>**ATmega169P**</u>, ATmega169PA, ATmega329, ATmega329A, ATmega329P, ATmega329PA, ATmega649, ATmega649A, ATmega649P, ATmega649PA
 * ATmega3250, ATmega3250A, ATmega3250P, ATmega3250PA, ATmega6450, ATmega6450A, ATmega6450P, ATmega6450PA
 * ATmega3290, ATmega3290A, ATmega3290P, ATmega3290PA, ATmega6490, ATmega6490A, ATmega6490P, ATmega6490PA
 * AT90CAN32, AT90CAN64, AT90CAN128
 
 #### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
-* **ATmega162**
+* <u>**ATmega162**</u>
 
 #### Other ATmegas
 
@@ -80,7 +82,7 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
 * ATmega128rfa1
-* ATmega16U4, **ATmega32U4**
+* ATmega16U4, <u>**ATmega32U4**</u>
 * ATmega406
 
 #### Supported Arduino boards

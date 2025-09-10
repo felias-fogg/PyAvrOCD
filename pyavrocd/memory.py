@@ -256,13 +256,19 @@ class Memory():
                 self.logger.debug("Flashing now from 0x%X to 0x%X", pgaddr, pgaddr+len(pagetoflash))
                 pagetoflash.extend(bytearray([0xFF]*(self._multi_page_size-len(pagetoflash))))
                 flashmemtype = self.dbg.device.avr.memtype_write_from_string('flash')
-                self.dbg.device.avr.write_memory_section(flashmemtype,
-                                                            pgaddr,
-                                                            pagetoflash,
-                                                            self._flash_page_size,
-                                                            allow_blank_skip=
-                                                             self._multi_buffer == 1)
-                if self.mon.is_verify():
+                # program flash page only when 'pagetoflash' is not blank
+                # or memory has not been erased beforehand
+                if not self.dbg.device.avr.is_blank(pagetoflash) or not self.mon.is_erase_before_load():
+                    self.dbg.device.avr.write_memory_section(flashmemtype,
+                                                                pgaddr,
+                                                                pagetoflash,
+                                                                self._flash_page_size,
+                                                                allow_blank_skip=
+                                                                self._multi_buffer == 1)
+                # verify flash programming when verification is requested AND
+                # (the pagetoflash is not blank or memory has not been erased before loading)
+                if self.mon.is_verify() and (not self.dbg.device.avr.is_blank(pagetoflash) or \
+                                                 not self.mon.is_erase_before_load()):
                     readbackpage = bytearray([])
                     for p in range(self._multi_buffer):
                         readbackpage += self.dbg.flash_read(pgaddr+(p*self._flash_page_size),

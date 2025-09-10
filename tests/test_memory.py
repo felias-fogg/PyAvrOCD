@@ -10,7 +10,7 @@ from pyavrocd.errors import FatalError
 from pyavrocd.memory import Memory
 from pyavrocd.monitor import MonitorCommand
 
-logging.basicConfig(level=logging.CRITICAL)
+logging.basicConfig(level=logging.DEBUG)
 
 class TestMemory(TestCase):
 
@@ -131,6 +131,9 @@ class TestMemory(TestCase):
                                                                             2, allow_blank_skip=False)
 
     def test_flash_pages_error(self):
+        self.mem.mon.is_verify.return_value = True
+        self.mem.mon.is_read_before_write.return_value = False
+        self.mem.mon.is_erase_before_load.return_value = False
         self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem._flash = bytearray(range(4))
         self.mem.dbg.flash_read.return_value = bytearray(2)

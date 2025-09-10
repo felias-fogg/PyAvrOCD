@@ -398,12 +398,17 @@ class GdbHandler():
                 resp = self.dbg.edbg_protocol.query(EdbgProtocol.EDBG_QUERY_COMMANDS)
                 self.logger.info("Commands: %s", resp)
             elif 'info' in response[0]:
+                error_line = ""
+                if self.critical:
+                    error_line = "\nLast critical error:      " + str(self.critical)
                 response = ("",
-                            response[1].format(dev_name[self.dbg.device_info['device_id']]))
+                            response[1].format(dev_name[self.dbg.device_info['device_id']],
+                                                   error_line))
             elif 'live_tests' in response[0]:
                 self._live_tests.run_tests()
         except AvrIspProtocolError:
             self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
+            self.critical = "ISP programming failed. Wrong connection or wrong MCU?"
             self.send_reply_packet("ISP programming failed. Wrong connection or wrong MCU?")
         except (FatalError, PymcuprogNotSupportedError, PymcuprogError) as e:
             self.logger.critical(e)
@@ -582,6 +587,7 @@ class GdbHandler():
                 self.logger.info("Loading executable")
             self.send_packet("OK")
         else:
+            self.logger.error("Cannot load executable because debugger is not active")
             self.send_packet("E01")
 
     def _vflash_write_handler(self, packet):

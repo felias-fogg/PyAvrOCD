@@ -30,12 +30,12 @@ class LiveTests():
         self.flash_transparent = False
         self.sram_start = self.dbg.memory_info.\
           memory_info_by_name('internal_sram')['address']
-        self.test_code = self.setup_test_code(self.sram_start == 0x60)
+        self.test_code = self.setup_test_code(self.sram_start)
 
-    def setup_test_code(self, small):
+    def setup_test_code(self, sram_addr):
         """
-        This sets up the test code in a bytearray. If small is True,
-        then the SRAM address is 0x0060 instead of 0x0100.
+        This sets up the test code in a bytearray. The parameter sram_addr
+        is our special special sram address that we need for test purposes.
         bADDR   wADDR
         1aa:	d5:   00 00       	nop
         1ac:	d6:   00 00       	nop
@@ -52,12 +52,8 @@ class LiveTests():
         1ca:	e5:   08 95       	ret
         1cc:    e6:   98 95         break
         """
-        if small:
-            msb = 0x00
-            lsb = 0x60
-        else:
-            msb = 0x01
-            lsb = 0x00
+        msb = (sram_addr>>8)&0xFF
+        lsb = sram_addr&0xFF
         return bytearray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xcf, 0x29, 0xe4,
                               0x20, 0x93, lsb, msb, 0x00, 0x91, lsb, msb, 0x00, 0x00,
                               0xf5, 0xcf, 0x0e, 0x94, 0xe4, 0x00, 0x0c, 0x94, 0xd9, 0x00,
