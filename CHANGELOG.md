@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.13.4
+
+- **Added:**
+  - A somewhat convoluted procedure for recognizing the bad apples among the ATmega48/88 has been added to xavrdebug.py. ATmega48 and 88 with stuck-at-1 bits in their program counter (and other issues) are now identified before the DWEN fuse is programmed. This means that they will not be bricked!
+- **Removed:**
+  - The option `--allow-potentially-bricking-actions` has been removed because it is not needed any longer.
+
 ### 0.13.3
 
 - **Fixed:**

@@ -385,7 +385,8 @@ class GdbHandler():
                 self.dbg.dw_disable()
                 self.mon.set_debug_mode_active(False)
             elif response[0] == 'reset':
-                self.dbg.reset()
+                if self.mon.is_debugger_active():
+                    self.dbg.reset()
             elif response[0] in [0, 1]:
                 self.dbg.device.avr.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
                                                     Avr8Protocol.AVR8_OPT_RUN_TIMERS,
@@ -408,7 +409,8 @@ class GdbHandler():
                 self._live_tests.run_tests()
         except AvrIspProtocolError:
             self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
-            self.critical = "ISP programming failed. Wrong connection or wrong MCU?"
+            if not self.critical:
+                self.critical = "ISP programming failed. Wrong connection or wrong MCU?"
             self.send_reply_packet("ISP programming failed. Wrong connection or wrong MCU?")
         except (FatalError, PymcuprogNotSupportedError, PymcuprogError) as e:
             self.logger.critical(e)

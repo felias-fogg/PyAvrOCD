@@ -175,12 +175,6 @@ You can also use monitor command options, e.g., --timer=freeze.
             description='GDB server for debugWIRE and JTAG AVR MCUs'
                                          )
 
-    parser.add_argument("--allow-potentially-bricking-actions",
-                            dest='brick',
-                            action='store_true',
-                            default=False,
-                            help=argparse.SUPPRESS)
-
     parser.add_argument("-c", "--command",
                             action='append',
                             dest='cmd',
@@ -535,21 +529,6 @@ def main():
         finally:
             backend.disconnect_from_tool()
 
-        if device in ['atmega48', 'atmega88']:
-            logger.critical("%s (without P or A suffix) will be bricked when trying to debug it", device)
-            return 1
-        if device in ['atmega48a', 'atmega88a']:
-            logger.warning("Debugging this MCU can lead to bricking it,")
-            logger.warning("provided it does not have an A or P suffix.")
-            if args.brick:
-                logger.warning("You allowed debugging this MCU by specifying")
-                logger.warning("'--allow-potentially-bricking-actions'.")
-            else:
-                logger.warning("If you really want to do that, either specify")
-                logger.warning("'--allow-potentially-bricking-actions' on the")
-                logger.warning("command line or put that in a file named 'pyavrocd.options'.")
-                logger.critical("Only when you do that, the debugger will be started.")
-                return 1
         transport = hid_transport()
         if len(transport.devices) > 1:
             logger.critical("Too many hardware debuggers connected")

@@ -276,7 +276,7 @@ class XAvrDebugger(AvrDebugger):
         setting the stack pointer, raising an interrupt, making a single step,
         and then examine the stack.
         """
-        self.logger.debug("Check ATmega16 PC pushed to stack")
+        self.logger.debug("Check ATmega16 for dirty PC")
         sp = self.memory_info.memory_info_by_name('internal_sram')['size'] + \
           self.memory_info.memory_info_by_name('internal_sram')['address'] - 1
         self.logger.debug("New stack pointer: 0x%X", sp)
@@ -290,7 +290,7 @@ class XAvrDebugger(AvrDebugger):
         self.status_register_write(bytearray([0x80]))
         # set DDR PD2 bit
         self.sram_write(0x31, bytearray([0x04]))
-        # now set PD2 = LOW
+        # now set PD2 = LOW, IRQs are raised now
         self.sram_write(0x32, bytearray([0x00]))
         # make a single step (at 0, instruction does not matter!)
         self.step()
@@ -429,6 +429,8 @@ class XAvrDebugger(AvrDebugger):
                     self.logger.warning("In order to allow debugging, you need to program this fuse manually.")
                     self.logger.warning("Or let payavrocd manage this fuse: '-m dwen'.")
                     raise FatalError("Debugging is impossible when DWEN is not programmed.")
+                if device_id in [ 0x1E9205, 0x1E930A ]:
+                    self._check_atmega48_and_88(device_id)
                 newfuse = dwen_byte[0] & (0xFF & ~(dwen_mask))
                 self.logger.debug("New DWEN fuse: 0x%X", newfuse)
                 self.logger.debug("Writing fuse byte: 0x%X", newfuse)
@@ -447,6 +449,49 @@ class XAvrDebugger(AvrDebugger):
             self.housekeeper.end_session()
             self.logger.info("Signed off from tool")
             self.logger.info("... preparation for debugWIRE debugging done")
+
+    def _check_atmega48_and_88(self, device_id):
+        """
+        The ATmega48 and ATmega88 (without A or P suffix) have a dirty program counter
+        and in addition get semi-bricked when trying to program the DWEN fuse. Even
+        avrdude cannot resurrect them (but Studio and MPLABX have no problems). The
+        only way to recognize them is through looking into the boot_signature, which
+        however, is not accessible by SPI programming. So, we flash a short program for
+        checking the boot_signature, run the program, and check the lock bits, where
+        the result will be stored.
+        """
+        self.logger.info("Test for dirty PC on ATmega48/88")
+        # erase flash (and maybe EEPROM)
+        self.spidevice.isp.erase()
+        # program flash with test program, depending on MCU type
+        if device_id == 0x1E9205: # ATmega48(A)
+            self.spidevice.write(self.memory_info.memory_info_by_name('flash'), 0,
+                    bytearray.fromhex("19C02CC02BC02AC029C028C027C026C025C024C023C022C021C020C01FC01EC0" +
+                                      "1DC01CC01BC01AC019C018C017C016C015C014C011241FBECFEFD2E0DEBFCDBF" +
+                                      "14BE0FB6F894A89580916000886180936000109260000FBE02D014C0D1CF81E2" +
+                                      "F0E0E0E08093570084918E3141F089E09EEFE1E0F0E0092E80935700E89590E0" +
+                                      "80E00895F894FFCF"))
+        else:
+            self.spidevice.write(self.memory_info.memory_info_by_name('flash'), 0,
+                    bytearray.fromhex("19CE2CCE2BCE2ACE29CE28CE27CE26CE25CE24CE23CE22CE21CE20CE1FCE1ECE" +
+                                      "1DCE1CCE1BCE1ACE19CE18CE17CE16CE15CE14CEFFFFFFFFFFFFFFFFFFFFFFFF"))
+            self.spidevice.write(self.memory_info.memory_info_by_name('flash'), 0x1C30,
+                    bytearray.fromhex("FFFFFFFF11241FBECFEFD4E0DEBFCDBF14BE0FB6F894A8958091600088618093" +
+                                      "6000109260000FBE02D018C0D1C181E2F0E0E0E08093570084918E3141F089E0" +
+                                      "9BEFE1E0F0E0092E80935700E895E4E3F0E0E491E5B990E080E00895F894FFCF"))
+        self.spidevice.isp.leave_progmode()
+        # now wait a couple of milliseconds
+        time.sleep(0.1)
+        # start programming mode again and read result
+        self.spidevice.isp.enter_progmode()
+        result_lockbits = self.spidevice.read(self.memory_info.memory_info_by_name('lockbits'), 0, 1)
+        # check result
+        self.logger.debug("Result from lockbits: 0x%X",   result_lockbits[0])
+        # Now erase chip again
+        self.spidevice.isp.erase()
+        # and check results
+        if result_lockbits[0] != 0xFF:
+            raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
 
     def _power_cycle(self, callback=None, recognition=None):
         """
