@@ -5,7 +5,7 @@ You invoke pyavrocd as follows:
 > pyavrocd [options]
 ```
 
-Pyavrocd will then look for a hardware debugger, establish a connection to it, and waits for the GDB debugger to connect to it. You can influence its behavior by the following command-line options.
+Pyavrocd will then look for a hardware debugger, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the following command-line options.
 
 | Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -29,5 +29,4 @@ You can also use the [monitor command options](monitor-commands.md) as command-l
 In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.
 
 The argument `@pyavrocd.options` is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.
-
 
