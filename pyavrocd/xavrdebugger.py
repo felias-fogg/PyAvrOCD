@@ -85,8 +85,8 @@ class XAvrDebugger(AvrDebugger):
         elif self.iface == "debugwire":
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info)
         elif self.iface == "jtag" and self.architecture =="avr8":
-            self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info)
-        self.logger.info("Nvm instance created")
+            self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info, manage=manage)
+        self.logger.debug("Nvm instance created")
 
 
     def start_debugging(self, flash_data=None, warmstart=False):
@@ -462,6 +462,17 @@ class XAvrDebugger(AvrDebugger):
         """
         self.logger.info("Test for dirty PC on ATmega48/88")
         # erase flash (and maybe EEPROM)
+        eesave_fuse_byte = None
+        eesave_mask = self.device_info.get('eesave_mask')
+        eesave_base = self.device_info.get('eesave_base')
+        if eesave_base and eesave_mask and 'eesave' in self.manage:
+            eesave_fuse_byte = self.spidevice.isp.read_fuse_byte(eesave_base)
+            if eesave_fuse_byte[0] & eesave_mask:
+                self.spidevice.isp.write_fuse_byte(eesave_base,
+                                            bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
+                self.logger.debug("EESAVE temporarily set")
+            else:
+                eesave_fuse_byte = None
         self.spidevice.isp.erase()
         # program flash with test program, depending on MCU type
         if device_id == 0x1E9205: # ATmega48(A)
@@ -489,6 +500,10 @@ class XAvrDebugger(AvrDebugger):
         self.logger.debug("Result from lockbits: 0x%X",   result_lockbits[0])
         # Now erase chip again
         self.spidevice.isp.erase()
+        # Restore EESAVE bit if necessary
+        if eesave_fuse_byte:
+            self.spidevice.isp.write_fuse_byte(eesave_base, eesave_fuse_byte)
+            self.logger_local.debug("EESAVE fuse restored")
         # and check results
         if result_lockbits[0] != 0xFF:
             raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")

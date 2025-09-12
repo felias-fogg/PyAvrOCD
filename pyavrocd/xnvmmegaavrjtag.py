@@ -27,7 +27,8 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
     """
     #pylint: disable=non-parent-init-called, super-init-not-called
     #we want to set up the debug session much later
-    def __init__(self, transport, device_info):
+    def __init__(self, transport, device_info, manage=None):
+        self.manage = [] if manage is None else manage
         self.logger_local = getLogger('pyavrocd.nvmjtag')
         NvmAccessProviderCmsisDapAvr.__init__(self, device_info)
         self.avr = XMegaAvrJtagTarget(transport)
@@ -204,13 +205,13 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         eesave_base = self.device_info.get('eesave_base')
         if not progmode:
             self.avr.switch_to_progmode()
-        if eesave_base and eesave_mask:
+        if eesave_base and eesave_mask and 'eesave' in self.manage:
             eesave_fuse_byte = self.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_FUSES,
                                                         eesave_base, 1)
             if  eesave_fuse_byte[0] & eesave_mask: # needs to be temporarily programmed
                 self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base,
                                           bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
-                self.logger_local.info("Programmed EESAVE fuse temporarily")
+                self.logger_local.debug("Programmed EESAVE fuse temporarily")
             else:
                 eesave_fuse_byte = None
         else:
@@ -219,7 +220,7 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         self.logger_local.info("Flash memory erased")
         if eesave_fuse_byte: # needs to be restored
             self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base, eesave_fuse_byte)
-            self.logger_local.info("EESAVE fuse restored")
+            self.logger_local.debug("EESAVE fuse restored")
         if not progmode:
             self.avr.switch_to_debmode()
         return True
