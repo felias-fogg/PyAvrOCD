@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>pyavrocd</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "pyavrocd";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> pyavrocd
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="INSTALL/">GDB server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="board-preparation/">Preparing the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="connect-to-target/">Connecting to target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="usage/">Debugging the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="restore-original-state/">Restore target</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="supported-mcus-and-boards/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="supported-debuggers/">Hardware debuggers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="debugwire-risks/">debugWIRE</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">pyavrocd</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">pyavrocd</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="pyavrocd">pyavrocd</h1>
+<p>Pyavrocd is a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Server.html">GDB server</a> for 8-bit AVR MCUs (<a href="supported-mcus-and-boards/">list of supported MCUs and boards</a>). It can communicate with Microchip debuggers such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a> (<a href="supported-debuggers/#switching-to-avr-mode">in AVR mode</a>), and provides a pass-through service for the Uno-based debugger <a href="https://github.com/felias-fogg/dw-link">dw-link</a>. For Microchip debuggers, pyavrocd uses the infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>.</p>
+<p>Why another open-source GDB server for AVR MCUs (others are <a href="https://github.com/avrdudes/avarice">AVaRICE</a> and <a href="https://bloom.oscillate.io">Bloom</a>)? The main intention is to provide a <em>platform-agnostic</em> AVR GDB server. In other words, it is the missing AVR debugging solution for <a href="https://platformio.org">PlatformIO</a> and the <a href="https://www.arduino.cc/en/software/">Arduino IDE 2</a>.</p>
+<p><img alt="ide2-6" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png" /></p>
+<p>In addition to being platform agnostic, pyavrocd offers some enhancements over its "competitors", particularly in terms of <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/">flash wear</a> and <a href="https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/">single-stepping</a>.</p>
+<p>After <a href="INSTALL/">installing the package</a>, the following steps are necessary for successful debugging:</p>
+<ol>
+<li><a href="debugging-software/">Installing and configuring the appropriate debugging software</a></li>
+<li><a href="board-preparation/">Preparing the target board for debugging</a></li>
+<li><a href="connect-to-target/">Connecting the hardware debugger to the target</a></li>
+<li><a href="command-line-options/">Invoking the GDB server</a></li>
+<li><a href="usage/">Debugging a program on the target</a></li>
+<li><a href="restore-original-state/">Restoring the target to its original state</a></li>
+</ol>
+<p>Once you have a debugger connected to the server, you can control the server's behavior using <em><a href="monitor-commands/"><code>monitor</code> commands</a>.</em></p>
+<p>While the package appears to function as intended, there is always the chance of a bug. If you run across a behavior that seems odd, you can report it as an <a href="https://github.com/felias-fogg/pyavrocd/issues">issue</a>. I hope to resolve those over time.</p>
+<p><strong>Disclaimer</strong>: Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="debugwire-risks/">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU, target board or attached devices. Bear in mind that <a href="LICENSE">the software is provided "as is", without warranty of any kind</a>.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/pyavrocd" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-09-12 14:02:16.214092+00:00
+-->
