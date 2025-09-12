@@ -79,6 +79,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restore target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
               <ul>
@@ -89,7 +91,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
                   </li>
               </ul>
       </div>
@@ -120,7 +126,7 @@
                 <h1 id="usage">Usage</h1>
 <h2 id="debugging-with-a-command-line-interface">Debugging with a command-line interface</h2>
 <p>After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: <code>-Og</code> and <code>-ggdb3</code>. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.</p>
-<p>When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md">board preparations</a>):</p>
+<p>When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../board-preparation/#general-considerations">Preparing a target board</a>):</p>
 <pre><code>&gt; pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP

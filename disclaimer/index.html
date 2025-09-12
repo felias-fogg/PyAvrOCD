@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>GDB server - pyavrocd</title>
+    <title>Disclaimer - pyavrocd</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "GDB server";
-        var mkdocs_page_input_path = "INSTALL.md";
+        var mkdocs_page_name = "Disclaimer";
+        var mkdocs_page_input_path = "disclaimer.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -41,24 +41,8 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">GDB server</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#downloading-binaries">Downloading binaries</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#pypi">PyPI</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#on-linux">On Linux</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#windows-and-macos">Windows and macOS</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#github">GitHub</a>
-    </li>
-    </ul>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -88,8 +72,10 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Disclaimer</a>
+    <ul class="current">
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
                   </li>
@@ -110,10 +96,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Installation</li>
-      <li class="breadcrumb-item active">GDB server</li>
+          <li class="breadcrumb-item">Caveats</li>
+      <li class="breadcrumb-item active">Disclaimer</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/INSTALL.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/disclaimer.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -121,45 +107,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="pyavrocd-installation">pyavrocd Installation</h1>
-<h2 id="arduino-ide-2">Arduino IDE 2</h2>
-<p>If you want to use pyavrocd as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
-<p>If you want to use pyavrocd stand-alone or as part of another IDE, you need to install the pyavrocd package explicitly.</p>
-<h2 id="downloading-binaries">Downloading binaries</h2>
-<p>Go to the GitHub page (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable pyavrocd, a folder pyavrocd-util, and additionally avr-gdb, the GDB debugger for AVR chips. Store pyavrocd and pyavrocd-util somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
-<p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
-<h2 id="pypi">PyPI</h2>
-<p>I assume you already installed a recent Python version (&gt;=3.9).</p>
-<p>It will be necessary to install <a href="https://pipx.pypa.io/">pipx</a> first. If you haven't done so already, follow the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
-<h3 id="on-linux">On Linux</h3>
-<pre><code>pipx install pyavrocd
-pipx ensurepath
-sudo ~/.local/bin/pyavrocd --install-udev-rules
-</code></pre>
-<p>The last command will install the necessary udev rules. This can also be done manually by following the instructions in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md">pyedbglib README</a>.</p>
-<p>After unplugging and replugging the debugger and restarting your shell, you can invoke the GDB server by simply typing <code>pyavrocd</code> into a shell. The binary is stored under <code>~/.local/bin/</code></p>
-<h3 id="windows-and-macos">Windows and macOS</h3>
-<pre><code>pipx install pyavrocd
-pipx ensurepath
-</code></pre>
-<p>After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code></p>
-<h2 id="github">GitHub</h2>
-<p>Alternatively, you can download or clone the GitHub repository. Additionally, you need to install the Python package manager <a href="https://python-poetry.org">poetry</a>:</p>
-<pre><code>pipx install poetry
-</code></pre>
-<p>With that, you can start executing the script inside the downloaded folder as follows:</p>
-<pre><code>poetry install
-poetry run pyavrocd ...
-</code></pre>
-<p>Furthermore, you can create a binary standalone package as follows (after having installed the <a href="https://pyinstaller.org/en/stable/">pyinstaller package</a>):</p>
-<pre><code>poetry run pyinstaller pyavrocd.spec
-</code></pre>
-<p>After that, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those to a place in your <code>PATH</code>. If you want to generate a binary on a Mac that can be shipped to other Macs, you should use <code>arm64-apple-pyavrocd.spec</code> or <code>intel-apple-pyavrocd.spec</code> in order to include the right <code>libusb</code> for the host architecture. Note that fat binaries cannot be generated.</p>
+                <h1 id="disclaimer">Disclaimer</h1>
+<p>Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="../debugwire-risks/">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU, to the target board, or to the attached devices. <a href="../flash-wear/">Flash wear</a>, for instance, is an issue when you use software breakpoints. Further, when using a debugger on an MCU that controls a system, stopping the execution of the controlling program might lead to erroneous behavior of the controlled system.</p>
+<p>All in all, bear always in mind that <a href="../LICENSE">the software is provided "as is", without warranty of any kind</a>.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../debugging-software/" class="btn btn-neutral float-right" title="Debugging software">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../supported-debuggers/" class="btn btn-neutral float-left" title="Hardware debuggers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../debugwire-risks/" class="btn btn-neutral float-right" title="debugWIRE">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -186,8 +142,10 @@ poetry run pyavrocd ...
         </span>
     
     
+      <span><a href="../supported-debuggers/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-      <span><a href="../debugging-software/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+      <span><a href="../debugwire-risks/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

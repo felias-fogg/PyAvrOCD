@@ -56,12 +56,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#connecting-to-a-debugwire-target">Connecting to a debugWIRE target</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#spi-programming-header">SPI programming header</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#connecting-to-targets-with-an-spi-programming-header">Connecting to targets with an SPI programming header</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#connecting-to-targets-without-an-spi-programming-header">Connecting to targets without an SPI programming header</a>
+    <li class="toctree-l3"><a class="reference internal" href="#connecting-to-targets-with-an-spi-programming-header">Connecting to targets with an SPI programming header</a>
     </li>
-        </ul>
+    <li class="toctree-l3"><a class="reference internal" href="#connecting-to-targets-without-an-spi-programming-header">Connecting to targets without an SPI programming header</a>
     </li>
         </ul>
     </li>
@@ -85,6 +83,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restore target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
               <ul>
@@ -95,7 +95,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
                   </li>
               </ul>
       </div>
@@ -158,13 +162,13 @@
 </p>
 
 <p>Note the notches on the left side of the headers. Since almost all SPI programming plugs are keyed, you can only plug them in in the correct orientation. However, the headers sometimes do not have notches. In this case, pin 1 is usually marked in some way, either with a dot, a star, or with the number 1. Similarly, plugs also come unkeyed. In this case, again, pin 1 is marked in some way.</p>
-<h4 id="connecting-to-targets-with-an-spi-programming-header">Connecting to targets with an SPI programming header</h4>
+<h3 id="connecting-to-targets-with-an-spi-programming-header">Connecting to targets with an SPI programming header</h3>
 <p>If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! For all the Arduino boards, pin 1 is always oriented towards the USB connector. However, if you plug it in the wrong way, nothing will be destroyed.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmel-ice-connect.png" width="70%">
 </p>
 
-<h4 id="connecting-to-targets-without-an-spi-programming-header">Connecting to targets without an SPI programming header</h4>
+<h3 id="connecting-to-targets-without-an-spi-programming-header">Connecting to targets without an SPI programming header</h3>
 <p>If the target does not feature an SPI programming header, you need to connect 6 cables. If you are working with a breadboard, you may consider buying an <a href="https://www.adafruit.com/product/1465">SPI header breadboard adapter</a>. Otherwise, you need to connect each pin individually. <strong>Atmel-ICE</strong>, <strong>Power Debugge</strong>r, and <strong>JTAGICE3</strong> have a so-called 10-pin mini-squid cable. The pin mapping for those debuggers is as follows.</p>
 <table>
 <thead>
