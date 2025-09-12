@@ -80,7 +80,7 @@ JTAG targets are easier to deal with. Simply do not connect anything to the JTAG
 
 ### Fuse settings
 
-Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.
+Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  `JTAGEN` fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.
 
 As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
 
@@ -96,7 +96,7 @@ If the PDI interface is used, then the RESET line will be employed as a clock li
 
 ### Fuse settings
 
-SPIEN could be disabled. In this case, the above comments apply. Otherwise, there is no need to change any fuses before beginning the debugging process.
+The `SPIEN` fuse could be disabled. In this case, the above comments apply. Otherwise, there is no need to change any fuses before beginning the debugging process.
 
 
 
@@ -113,5 +113,4 @@ On the **Uno WIFI Rev2**, again the UPDI pin is not exposed. But on this board, 
 ### Fuse settings
 
 If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. To enable debugging and programming over this pin again, you will need to use a [high-voltage UPDI programmer.](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) Here, you must ensure that the 12 V pulse does not damage any components on your board.
-
 
