@@ -13,8 +13,3 @@ If, after debugging, you want to restore a target board to its original state, a
    To restore the board to its exact original state before debugging, you must download the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using an SPI programmer.
 
 
-
-------
-
-[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)
-

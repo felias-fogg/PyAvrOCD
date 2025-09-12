@@ -4,7 +4,7 @@
 
 After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: `-Og` and `-ggdb3`. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.
 
-When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [board preparations](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md)):
+When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Preparing a target board](board-preparation.md#general-considerations)):
 
 ```
 > pyavrocd -d atmega328p -m all
@@ -63,7 +63,7 @@ Before clicking the `Verify` button in the upper left corner, choose `Optimize f
 
 After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
 
-Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](https://github.com/felias-fogg/pyavrocd/blob/main/INSTALL.md)). Or maybe you forgot to connect a hardware debugger altogether.
+Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](INSTALL.md#on-linux)). Or maybe you forgot to connect a hardware debugger altogether.
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-2.png)
 
@@ -71,7 +71,7 @@ If there is a connection to the debugger and the target, the GDB server will sta
 
 After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
 
-After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular the [`monitor` commands](https://github.com/felias-fogg/pyavrocd/blob/main/docs/monitor-commands.md) to control the GDB server. Here, the command `monitor debugwire disable` is crucial because it will disable the debugWIRE mode.
+After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular the [`monitor` commands](monitor-commands.md) to control the GDB server. Here, the command `monitor debugwire disable` is crucial because it will disable the debugWIRE mode.
 
 ![ide2-3](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-3.png)
 
@@ -99,7 +99,7 @@ When you have decided to change the source code, remember to terminate the debug
 
 ## Debugging using PlatformIO/VSC
 
-Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. A `platform.ini`  that can be used to start the debugger is provided [here](https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugging-software.md#platformio-and-visual-studio-code).
+Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. A `platform.ini`  that can be used to start the debugger is provided [here](debugging-software.md#platformio-and-visual-studio-code).
 
 ## Debugging using Gede
 
@@ -115,6 +115,3 @@ Clicking on OK, you start a debugging session. The startup may take a while beca
 
 ![Gede section](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-window.png)
 
-------
-
-[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)

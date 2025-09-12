@@ -4,13 +4,13 @@
 
 This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs tested with pyavrocd are marked bold. MCUs known not to work with pyavrocd are struck out.
 
-### Classic ATtinys and ATmegas with debugWIRE interface
+## MCUs with debugWIRE interface
 
-#### ATtiny supported by [*MicroCore*](https://github.com/MCUdude/MicroCore)
+### ATtiny supported by [*MicroCore*](https://github.com/MCUdude/MicroCore)
 
 - **ATtiny13**
 
-#### ATtinys supported by the [*ATTinyCore*](https://github.com/SpenceKonde/ATTinyCore)
+### ATtinys supported by the [*ATTinyCore*](https://github.com/SpenceKonde/ATTinyCore)
 
 * **ATtiny43U**
 * **ATtiny2313, ATtiny2313A, ATtiny4313**
@@ -23,7 +23,7 @@ This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs
 * **ATtiny48, ATtiny88**
 * **ATtiny1634**
 
-#### ATmegas supported by [*MiniCore*](https://github.com/MCUdude/MiniCore)
+### ATmegas supported by [*MiniCore*](https://github.com/MCUdude/MiniCore)
 
 * <s>__ATmega48__</s>, __ATmega48A__, __ATmega48PA__, ATmega48PB,
 * <s>__ATmega88__</s>, __ATmega88A__, __ATmega88PA__, Atmega88PB,
@@ -34,7 +34,7 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, pyavrocd will refuse to handle them.
 
-#### Other ATmegas
+### Other ATmegas
 
 * ATmega8U2, ATmega16U2, ATmega32U2
 * ATmega32C1, ATmega64C1, ATmega16M1, ATmega32M1, ATmega64M1
@@ -44,26 +44,26 @@ I suspect that this applies to all chips labeled this way. Even chips recently p
 * AT90PWM216, AT90PWM316
 * ATmega8HVA, ATmega16HVA, ATmega16HVB, ATmega32HVB, ATmega32HVBrevB, ATmega64HVE2
 
-#### Supported Arduino boards
+### Supported Arduino boards
 
-All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that in most cases, the [board must be physically changed](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md) before debugging is possible.
+All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the **Arduino Uno R3**, **Arduino Nano**, and **Arduino Pro Mini** (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that in most cases, the [board must be physically changed](board-preparation.md) before debugging is possible.
 
 
 
-### ATmegas with JTAG interface
+## ATmegas with JTAG interface
 
 Note that the MCUs are supported by pyavrocd. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.
 
-#### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
+### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-* **~~ATmega16~~**, ATmega16A, **ATmega32**, ATmega32A
+* <s>**ATmega16**</s>, ATmega16A, **ATmega32**, ATmega32A
 * ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
 
 The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged.
 
-#### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
+### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
-* ATmega64, ATmega64A, ~~**ATmega128**~~, ~~**ATmega128A**~~
+* ATmega64, ATmega64A, <s>**ATmega128**</s>, <s>**ATmega128A**</s>
 * ATmega640, **ATmega1280**, **ATmega2560**
 * ATmega1281, ATmega2561
 * ATmega165, ATmega165A, ATmega165P, ATmega165PA, ATmega325, ATmega325A, ATmega325P, ATmega325PA, ATmega645, ATmega645A, ATmega645P, ATmega645PA
@@ -74,11 +74,11 @@ The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program cou
 
 The ATmega128 MCUs do not allow software breakpoints. For this reason, debugging is currently impossible because only 1 hardware breakpoint is permitted. This will change in the near future.
 
-#### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
+### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
 * <u>**ATmega162**</u>
 
-#### Other ATmegas
+### Other ATmegas
 
 * AT90USB646, AT90USB647, AT90USB1286, AT90USB1287
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
@@ -87,7 +87,7 @@ The ATmega128 MCUs do not allow software breakpoints. For this reason, debugging
 * ATmega16U4, **<u>ATmega32U4</u>**
 * ATmega406
 
-#### Supported Arduino boards
+### Supported Arduino boards
 
 All boards with the chips listed above can be debugged. This is, in particular, the **Arduino Mega (2560)**, **Arduino Leonardo**, and **Arduino Micro**. Note that you should not connect any load to the JTAG lines. Furthermore, you must first enable the JTAG pins by SPI programming because on the Arduino boards, JTAG is disabled by default.
 

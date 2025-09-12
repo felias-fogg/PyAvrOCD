@@ -6,7 +6,7 @@ When you want to debug a program on a target board, usually some modifications o
 - download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and
 - record necessary physical changes on the target board.
 
-With that, it will be easy to [restore the original](https://github.com/felias-fogg/pyavrocd/blob/main/docs/restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the Burn Bootloader function. However, you should record any physical changes. You can get some decent development boards from Microchip that contain embedded debuggers, which work well with pyavrocd. In this case, preparations and restoring the original state are not an issue.
+With that, it will be easy to [restore the original](restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the Burn Bootloader function. However, you should record any physical changes. You can get some decent development boards from Microchip that contain embedded debuggers, which work well with pyavrocd. In this case, preparations and restoring the original state are not an issue.
 
 
 
@@ -14,7 +14,7 @@ With that, it will be easy to [restore the original](https://github.com/felias-f
 
 Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.
 
-Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided pyavrocd is asked to manage these fuses by a command line option, e.g., `--manage dwen`, when [calling the GDB server](https://github.com/felias-fogg/pyavrocd/blob/main/docs/command-line-options.md):
+Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided pyavrocd is asked to manage these fuses by a command line option, e.g., `--manage dwen`, when [invoking the GDB server](command-line-options.md):
 
 - `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and perhaps EEPROM) memory, provided pyavrocd has been instructed to manage the lockbits.
 - `BOOTRST`: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including `bootrst` as a fuse to be managed by the server when starting the GDB server from the command line.
@@ -114,7 +114,4 @@ On the **Uno WIFI Rev2**, again the UPDI pin is not exposed. But on this board, 
 
 If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. To enable debugging and programming over this pin again, you will need to use a [high-voltage UPDI programmer.](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) Here, you must ensure that the 12 V pulse does not damage any components on your board.
 
-------
-
-[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)
 

@@ -22,7 +22,7 @@ The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header o
 
 Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
 
-Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works. 
+Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works.
 
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
@@ -48,7 +48,7 @@ There are two types of SPI programming connectors. The more recent type has six 
 
 Note the notches on the left side of the headers. Since almost all SPI programming plugs are keyed, you can only plug them in in the correct orientation. However, the headers sometimes do not have notches. In this case, pin 1 is usually marked in some way, either with a dot, a star, or with the number 1. Similarly, plugs also come unkeyed. In this case, again, pin 1 is marked in some way.
 
-#### Connecting to targets with an SPI programming header
+### Connecting to targets with an SPI programming header
 
 If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! For all the Arduino boards, pin 1 is always oriented towards the USB connector. However, if you plug it in the wrong way, nothing will be destroyed.
 
@@ -57,7 +57,7 @@ If the target board has an SPI programming header, it is easy to connect to it. 
 </p>
 
 
-#### Connecting to targets without an SPI programming header
+### Connecting to targets without an SPI programming header
 
 If the target does not feature an SPI programming header, you need to connect 6 cables. If you are working with a breadboard, you may consider buying an [SPI header breadboard adapter](https://www.adafruit.com/product/1465). Otherwise, you need to connect each pin individually. **Atmel-ICE**, **Power Debugge**r, and **JTAGICE3** have a so-called 10-pin mini-squid cable. The pin mapping for those debuggers is as follows.
 
@@ -102,7 +102,7 @@ With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin
 
 ## Connecting to a JTAG target
 
-Note that in order to use the JTAG connection, you might first need to enable the JTAG pins by programming the JTAGEN fuse via SPI programming. On chips fresh from the factory, this fuse is programmed. On Arduino boards, JTAGEN is disabled. 
+Note that in order to use the JTAG connection, you might first need to enable the JTAG pins by programming the JTAGEN fuse via SPI programming. On chips fresh from the factory, this fuse is programmed. On Arduino boards, JTAGEN is disabled.
 
 For AVR MCUs, there is a standard pinout as follows.
 
@@ -163,8 +163,4 @@ For the Atmel debuggers, the setup appears as follows, where the JTAG pin corres
 ## Connecting to UPDI and PDI
 
 Will be treated later when implemented.
-
-------
-
-[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)
 

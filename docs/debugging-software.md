@@ -75,7 +75,3 @@ There are a few other possible options. The most crucial point is that remote de
 
 If you have a clear description of how to integrate pyavrocd in an IDE, I'd be happy to add it here.
 
-------
-
-[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)
-

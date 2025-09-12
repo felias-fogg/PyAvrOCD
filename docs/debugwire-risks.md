@@ -1,4 +1,4 @@
-## ~~Smoking~~ debugWIRE can be Dangerous to the Health of your MCU
+# <s>Smoking</s> debugWIRE can be Dangerous to the Health of your MCU
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/smoking_ic_breit.png" width="90%">
@@ -9,8 +9,7 @@ While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for de
 There are essentially five different scenarios:
 
 1. The classical problem is a capacitor on the RESET line, either for noise suppression or as a means to implement auto-reset on an Arduino board such as the Uno. Similarly, a resistor that is too strong or a dedicated reset circuit could pose a problem. In these cases, one can change the DWEN fuse using SPI programming, but communication over the debugWIRE line (the RESET line) is impossible.
-
-   The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via pyavrocd).
+The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via pyavrocd).
 
 2. All **ATmega48** and **ATmega88** variants without a P or A suffix exhibit unusual behavior. Note that this applies to MCUs purchased from official distributors.  They have stuck-at-1 bits in the program counter, they refuse to let their DWEN fuse be set, or, if one is successful, it is impossible to leave debugWIRE mode again. By now, they are identified by pyavrocd before the DWEN bit is set, so that the only annoying thing about them is that they are not debuggable.
 
@@ -25,8 +24,4 @@ There are essentially five different scenarios:
 If none of the above-mentioned recovery methods work, the last resort is *high-voltage programming*. This means that 12 volts are applied to the RESET line and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a [breadboard high-voltage programmer](https://github.com/felias-fogg/RescueAVR) or a specially designed ["HV fuse programmer"](https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/). For MCUs with an SMD footprint, you would need to buy a breadboard adapter.
 
 Having said all that, my experience is that if you take care of the potential problems mentioned in points 1-5, it is unlikely that your MCU will get bricked. But it doesn't mean that it is impossible either. JTAG and UPDI are definitely the more robust debugging interfaces.
-
-------
-
-[<small><i>Back to pyavrocd README</i></small>](https://github.com/felias-fogg/pyavrocd/blob/main/README.md)
 

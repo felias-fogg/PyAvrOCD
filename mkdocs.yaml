@@ -1,0 +1,34 @@
+theme:
+  name: readthedocs
+  locale: en
+  include_sidebar: true
+
+extra_css:
+  - style.css
+
+site_name: pyavrocd
+repo_url: https://github.com/felias-fogg/pyavrocd
+nav:
+  - Installation:
+    - GDB server: 'INSTALL.md'
+    - Debugging software: 'debugging-software.md'
+  - Usage:
+    - Preparing the target: 'board-preparation.md'
+    - Connecting to target: 'connect-to-target.md'
+    - Invoking the server: 'command-line-options.md'
+    - Debugging the target: 'usage.md'
+    - Monitor commands: 'monitor-commands.md'
+    - Restore target: 'restore-original-state.md'
+    - Configuration: 'configuration.md'
+  - Supported devices:
+    - MCUs: 'supported-mcus-and-boards.md'
+    - Hardware debuggers: 'supported-debuggers.md'
+  - Caveats:
+    - Disclaimer: 'disclaimer.md'
+    - debugWIRE: 'debugwire-risks.md'
+    - Flash wear: 'flash-wear.md'
+not_in_nav:
+  generate-new-version.md
+  load-speed.md
+  snap-connector.md
+  index.md

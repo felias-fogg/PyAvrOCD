@@ -3,6 +3,7 @@
 ### New:
 
 - **Added:**
+  - Installed mkdocs in order to provide a nice UI for the documentation.
   - `eesave` and `noeesave` are now values for the `--manage` option. If the EESAVE fuse is managed, EEPROM will be preserved when chip erase operations are necessary.
   - Setting EESAVE temporarily has been added to `_check_atmega48_and_88`  in xavrdebugger.py.
 
