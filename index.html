@@ -29,7 +29,11 @@
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
 <a class="icon icon-home" href="."> pyavrocd
-        </a>
+        </a><div role="search">
+<form action="./search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
 </div>
 <div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
 <p class="caption"><span class="caption-text">Installation</span></p>
@@ -101,7 +105,7 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="pyavrocd">pyavrocd</h1>
-<p>Pyavrocd is a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Server.html">GDB server</a> for 8-bit AVR MCUs (<a href="supported-mcus-and-boards/">list of supported MCUs and boards</a>). It can communicate with Microchip debuggers such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a> (<a href="supported-debuggers/#switching-to-avr-mode">in AVR mode</a>), and provides a pass-through service for the Uno-based debugger <a href="https://github.com/felias-fogg/dw-link">dw-link</a>. For Microchip debuggers, pyavrocd uses the infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>.</p>
+<p>Pyavrocd is a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Server.html">GDB server</a> for 8-bit AVR MCUs. It can communicate with Microchip debuggers such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a>, and provides a pass-through service for the Uno-based debugger <a href="https://github.com/felias-fogg/dw-link">dw-link</a>. For Microchip debuggers, pyavrocd uses the infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>.</p>
 <p>Why another open-source GDB server for AVR MCUs (others are <a href="https://github.com/avrdudes/avarice">AVaRICE</a> and <a href="https://bloom.oscillate.io">Bloom</a>)? The main intention is to provide a <em>platform-agnostic</em> AVR GDB server. In other words, it is the missing AVR debugging solution for <a href="https://platformio.org">PlatformIO</a> and the <a href="https://www.arduino.cc/en/software/">Arduino IDE 2</a>.</p>
 <p><img alt="ide2-6" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png"/></p>
 <p>In addition to being platform agnostic, pyavrocd offers some enhancements over its "competitors", particularly in terms of <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/">flash wear</a> and <a href="https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/">single-stepping</a>.</p>
@@ -114,7 +118,7 @@
 <li><a href="usage/">Debugging a program on the target</a></li>
 <li><a href="restore-original-state/">Restoring the target to its original state</a></li>
 </ol>
-<p>Once you have a debugger connected to the server, you can control the server's behavior using <em><a href="monitor-commands/"><code>monitor</code> commands</a>.</em></p>
+<p>Once you have a debugger connected to the server, you can control the server's behavior using <a href="monitor-commands/"><code>monitor</code> commands</a>.</p>
 <p>While the package appears to function as intended, there is always the chance of a bug. If you run across a behavior that seems odd, you can report it as an <a href="https://github.com/felias-fogg/pyavrocd/issues">issue</a>. I hope to resolve those over time.</p>
 </div>
 </div><footer>
@@ -140,6 +144,7 @@
 <script>var base_url = ".";</script>
 <script src="js/theme_extra.js"></script>
 <script src="js/theme.js"></script>
+<script src="search/main.js"></script>
 <script>
         jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
@@ -149,5 +154,5 @@
 </html>
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-09-12 19:15:08.713572+00:00
+Build Date UTC : 2025-09-12 19:49:06.684069+00:00
 -->
