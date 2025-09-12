@@ -1,113 +1,109 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+
+<html class="writer-html5" lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Invoking the server - pyavrocd</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
-        <link href="../style.css" rel="stylesheet" />
-    
-      <script>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>Invoking the server - pyavrocd</title>
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
+<link href="../style.css" rel="stylesheet"/>
+<script>
         // Current page data
         var mkdocs_page_name = "Invoking the server";
         var mkdocs_page_input_path = "command-line-options.md";
         var mkdocs_page_url = null;
       </script>
-    
-    <!--[if lt IE 9]>
+<!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
-</head>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> pyavrocd
-        </a><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> pyavrocd
+        </a>
 </div>
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Installation</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Usage</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Invoking the server</a>
-    <ul class="current">
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restore target</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Supported devices</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus-and-boards/">MCUs</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Caveats</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
-                  </li>
-              </ul>
-      </div>
-    </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">pyavrocd</a>
-        
-      </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Usage</li>
-      <li class="breadcrumb-item active">Invoking the server</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/command-line-options.md" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Usage</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="#">Invoking the server</a>
+<ul class="current">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restore target</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Supported devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../supported-mcus-and-boards/">MCUs</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../LICENSE.txt">License</a>
+</li>
+</ul>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
-              
-                <h1 id="invoking-pyavrocd">Invoking pyavrocd</h1>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">pyavrocd</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
+<li class="breadcrumb-item">Usage</li>
+<li class="breadcrumb-item active">Invoking the server</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/command-line-options.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="invoking-pyavrocd">Invoking pyavrocd</h1>
 <p>You invoke pyavrocd as follows:</p>
 <pre><code>&gt; pyavrocd [options]
 </code></pre>
@@ -115,61 +111,61 @@
 <table>
 <thead>
 <tr>
-<th>Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+<th>Option Name                 </th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>--command</code><br><code>-c</code></td>
+<td><code>--command</code><br/><code>-c</code></td>
 <td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2. This is an alternative to the <code>--port</code> option.</td>
 </tr>
 <tr>
-<td><code>--device</code> <br><code>-d</code></td>
+<td><code>--device</code> <br/><code>-d</code></td>
 <td>The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed.</td>
 </tr>
 <tr>
-<td><code>--debug-clock</code><br><code>-D</code></td>
+<td><code>--debug-clock</code><br/><code>-D</code></td>
 <td>JTAG clock frequency for debugging (kHz). This value should be less than a quarter of the MCU clock frequency. The default is (a conservative) 200 kHz.</td>
 </tr>
 <tr>
-<td><code>--help</code><br> <code>-h</code></td>
+<td><code>--help</code><br/> <code>-h</code></td>
 <td>Gives help text and exits.</td>
 </tr>
 <tr>
-<td><code>--interface</code><br><code>-i</code></td>
+<td><code>--interface</code><br/><code>-i</code></td>
 <td>Debugging interface to use. Should be one of <code>debugwire</code>, <code>jtag</code>, <code>pdi</code>, or <code>updi</code>. Only necessary if an MCU supports more than one interface or if one wants to see only the supported chips with a particular interface.</td>
 </tr>
 <tr>
-<td><code>--manage</code><br/><code>-m</code></td>
+<td><code>--manage</code><br><code>-m</code></br></td>
 <td>Can be given multiple times and specifies which fuses should be managed by pyavrocd. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by pyavrocd need to be changed 'manually' before and/or after the GDB server is activated. Note that dw-link ignores this option!</td>
 </tr>
 <tr>
-<td><code>--port</code> <br><code>-p</code></td>
+<td><code>--port</code> <br/><code>-p</code></td>
 <td>IP port on the local host to which GDB can connect. The default is 2000.</td>
 </tr>
 <tr>
-<td><code>--prog-clock</code><br><code>-P</code></td>
+<td><code>--prog-clock</code><br/><code>-P</code></td>
 <td>JTAG programming clock frequency in kHz. This is limited only by the target MCU silicon, not by the actual MCU clock frequency used. The default is (a conservative) 1000 kHz.</td>
 </tr>
 <tr>
-<td><code>--start</code> <br><code>-s</code></td>
+<td><code>--start</code> <br/><code>-s</code></td>
 <td>Program to start or the string <code>noop</code>, when no program should be started</td>
 </tr>
 <tr>
-<td><code>--tool</code><br><code>-t</code></td>
+<td><code>--tool</code><br/><code>-t</code></td>
 <td>Specifying the debug tool. Possible values are <code>atmelice</code>, <code>edbg</code>, <code>jtagice3</code>, <code>medbg</code>, <code>nedbg</code>, <code>pickit4</code>, <code>powerdebugger</code>, <code>snap</code>, <code>dwlink</code>. Use of this option is necessary only if more than one debugging tool is connected to the computer.</td>
 </tr>
 <tr>
-<td><code>--usbsn</code> <br><code>-u</code></td>
+<td><code>--usbsn</code> <br/><code>-u</code></td>
 <td>USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer.</td>
 </tr>
 <tr>
-<td><code>--verbose</code> <br><code>-v</code></td>
+<td><code>--verbose</code> <br/><code>-v</code></td>
 <td>Specify verbosity level. Possible values are <code>all</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, or <code>critical</code>. The default is <code>info</code>. The option value <code>all</code> means that, in addition to the debug output, all communication with GDB is logged.</td>
 </tr>
 <tr>
-<td><code>--version</code> <br><code>-V</code></td>
+<td><code>--version</code> <br/><code>-V</code></td>
 <td>Print pyavrocd version number and exit.</td>
 </tr>
 <tr>
@@ -181,55 +177,40 @@
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options in order to set debugger values already at startup. For example, you may specify <code>--timers freeze,</code> which has the same effect as issuing the command <code>monitor timers freeze</code> in the debugger at startup. You can also use one-character abbreviations for such option values and the usual abbreviation rules for options, shortening it to <code>--ti f</code> .</p>
 <p>In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.</p>
 <p>The argument <code>@pyavrocd.options</code> is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.</p>
-              
-            </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../connect-to-target/" class="btn btn-neutral float-left" title="Connecting to target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../usage/" class="btn btn-neutral float-right" title="Debugging the target">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../connect-to-target/" title="Connecting to target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../usage/" title="Debugging the target">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+</div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-          
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/felias-fogg/pyavrocd" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../connect-to-target/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../usage/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
 </div>
-    <script src="../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "..";</script>
-    <script src="../js/theme_extra.js"></script>
-    <script src="../js/theme.js"></script>
-      <script src="../search/main.js"></script>
-    <script>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../connect-to-target/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../usage/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script src="../js/jquery-3.6.0.min.js"></script>
+<script>var base_url = "..";</script>
+<script src="../js/theme_extra.js"></script>
+<script src="../js/theme.js"></script>
+<script>
         jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
         });
     </script>
-
 </body>
 </html>
