@@ -190,14 +190,14 @@
 <h3 id="physical-preparation">Physical preparation</h3>
 <p>JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (<code>TDI</code>, <code>TDO</code>, <code>TMS</code>, <code>TCK</code>) or disconnect those components.</p>
 <h3 id="fuse-settings_1">Fuse settings</h3>
-<p>Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  JTAGEN fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the <code>JTAG</code> attribute in the <code>Tools</code> menu to <code>enabled</code> and then performing the <code>Burn Bootloader</code> action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.</p>
+<p>Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  <code>JTAGEN</code> fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the <code>JTAG</code> attribute in the <code>Tools</code> menu to <code>enabled</code> and then performing the <code>Burn Bootloader</code> action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.</p>
 <p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.</p>
 <p>The <code>OCDEN</code> , <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by pyavrocd (see above).</p>
 <h2 id="preparing-a-pdi-target">Preparing a PDI target</h2>
 <h3 id="physical-preparation_1">Physical preparation</h3>
 <p>If the PDI interface is used, then the RESET line will be employed as a clock line. Here, we have the same restrictions as in the case of debugWIRE: no resistive or capacitive load, or active reset circuit, on the reset line.</p>
 <h3 id="fuse-settings_2">Fuse settings</h3>
-<p>SPIEN could be disabled. In this case, the above comments apply. Otherwise, there is no need to change any fuses before beginning the debugging process.</p>
+<p>The <code>SPIEN</code> fuse could be disabled. In this case, the above comments apply. Otherwise, there is no need to change any fuses before beginning the debugging process.</p>
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
 <h3 id="physical-preparations_1">Physical preparations</h3>
 <p>Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible.</p>
