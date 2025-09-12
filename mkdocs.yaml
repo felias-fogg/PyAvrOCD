@@ -6,6 +6,15 @@ theme:
 extra_css:
   - style.css
 
+plugins:
+  - with-pdf:
+      author: Bernhard Nebel
+      cover: true
+      cover_title: Pyavrocd
+      cover_subtitle: A Platform-Agnostic GDB Server
+      copyright: Copyright 2025
+      output_path: ../docs/pyavrocd.pdf
+
 site_name: pyavrocd
 repo_url: https://github.com/felias-fogg/pyavrocd
 nav:
@@ -27,6 +36,9 @@ nav:
     - Disclaimer: 'disclaimer.md'
     - debugWIRE: 'debugwire-risks.md'
     - Flash wear: 'flash-wear.md'
+  - About:
+    - Release notes: 'release-notes.md'
+    - License: 'LICENSE.txt'
 not_in_nav:
   generate-new-version.md
   load-speed.md

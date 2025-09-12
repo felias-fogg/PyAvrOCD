@@ -1,4 +1,4 @@
-# Usage
+# Debugging the target
 
 ## Debugging with a command-line interface
 

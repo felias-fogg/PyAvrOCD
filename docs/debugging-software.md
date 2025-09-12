@@ -1,6 +1,6 @@
 # Debugging software
 
-There are several possible options for debugging software.
+The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means you still need to install the debugger, which in our case means avr-gdb. However, perhaps you even want more than that.
 
 ## CLI debugging
 
@@ -18,7 +18,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
-After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you might need to [modify the board](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md), and you need to [connect the hardware debugger to the target board](https://github.com/felias-fogg/pyavrocd/blob/main/docs/connect-to-target.md).
+After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to [modify the board](https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md), and you need to [connect the hardware debugger to the target board](https://github.com/felias-fogg/pyavrocd/blob/main/docs/connect-to-target.md).
 
 Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute pyavrocd once as root using the command-line option `--install-udev-rules`. Instead, you can create a udev-rules file along the lines described in the [README file of pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md).
 
@@ -50,7 +50,7 @@ debug_init_cmds =
     end
     define pio_reset_run_target
          monitor reset
-	       continue
+         continue
     end
     target remote $DEBUG_PORT
     monitor debugwire enable
@@ -67,7 +67,7 @@ I further noticed that the avr-gdb debugger in the PlatformIO toolchain is quite
 
 ## Gede
 
-[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, pyavrocd will start Gede in the background if you specify the option `--gede` or `-g` when starting pyavrocd.
+[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, pyavrocd will start Gede in the background if you specify the option `--start gede` when starting pyavrocd.
 
 ## Other options
 

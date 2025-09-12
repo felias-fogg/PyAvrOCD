@@ -25,4 +25,4 @@ With the usual abbreviation rules, the fact that the equal sign can simply be su
 pyavrocd --manage eesave --prog-clock 3000 --tool atmelice --verify enable
 ```
 
-Note that implicitly `@pyavrocd.options` to the end of the command line. This means that even if you cannot change the command line that invokes pyavrocd, because pyavrocd is invoked by an IDE, you still can specify arguments that have precedence.
+Note that implicitly `@pyavrocd.options` is added to the end of the command line. This means that even if you cannot change the command line that invokes pyavrocd, because, e.g., pyavrocd is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file `pyavrocd.options`.

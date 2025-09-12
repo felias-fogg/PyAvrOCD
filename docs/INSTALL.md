@@ -8,7 +8,7 @@ If you want to use pyavrocd stand-alone or as part of another IDE, you need to i
 
 ## Downloading binaries
 
-Go to the GitHub page (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable pyavrocd, a folder pyavrocd-util, and additionally avr-gdb, the GDB debugger for AVR chips. Store pyavrocd and pyavrocd-util somewhere in the same folder and include this folder in your `PATH` variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
+Go to the [GitHub page](https://github.com/felias-fogg/pyavrocd) (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable pyavrocd, a folder pyavrocd-util, and additionally avr-gdb, the GDB debugger for AVR chips. Store pyavrocd and pyavrocd-util somewhere in the same folder and include this folder in your `PATH` variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
 
 Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
 
@@ -18,7 +18,7 @@ I assume you already installed a recent Python version (>=3.9).
 
 It will be necessary to install [pipx](https://pipx.pypa.io/) first. If you haven't done so already, follow the instructions on the [pipx website](https://pipx.pypa.io/stable/installation/). Then proceed as follows.
 
-### On Linux
+### Linux
 
 ```
 pipx install pyavrocd
