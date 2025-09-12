@@ -1,6 +1,6 @@
 #  pyavrocd
 
-This is a Python GDB server for 8-bit AVR MCUs ([list of supported MCUs and boards](https://github.com/felias-fogg/pyavrocd/blob/main/docs/supported-mcus-and-boards.md)). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) ([in AVR mode](#switching-to-avr-mode)), and provides a pass-through service for the Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib).
+Pyavrocd is a [GDB server](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Server.html) for 8-bit AVR MCUs ([list of supported MCUs and boards](https://github.com/felias-fogg/pyavrocd/blob/main/docs/supported-mcus-and-boards.md)). It can communicate with Microchip debuggers such as [Atmel-ICE](https://www.microchip.com/en-us/development-tool/atatmel-ice) and [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) ([in AVR mode](#switching-to-avr-mode)), and provides a pass-through service for the Uno-based debugger [dw-link](https://github.com/felias-fogg/dw-link). For Microchip debuggers, pyavrocd uses the infrastructure provided by [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog) and [pyedgblib](https://github.com/microchip-pic-avr-tools/pyedbglib).
 
 So, why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://github.com/avrdudes/avarice) and [Bloom](https://bloom.oscillate.io))? The main intention is to provide a *platform-agnostic* AVR GDB server. In other words, it is the missing AVR debugging solution for [PlatformIO](https://platformio.org) and the [Arduino IDE 2](https://www.arduino.cc/en/software/).
 
@@ -37,7 +37,7 @@ Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copie
 * nEDBG - on-board debuggers on Curiosity Nano
 * **[dw-link](https://github.com/felias-fogg/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
 
-JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
+My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
 
 ### Switching to AVR mode
 
@@ -59,5 +59,5 @@ In both cases, you can check whether you were successful by typing the same comm
 
 ## What to expect in the future
 
-The GDB server has been integrated into MiniCore, MicroCore, and my fork of ATTinyCore. Currently, I am working on implementing the JTAG part. UPDI will follow soon, hopefully.
+The GDB server has been integrated into MiniCore, MicroCore, and my fork of ATTinyCore. Support for JTAG mega chips has been added, but pyavrocd has not been incorporated into the respective cores yet, but will soon be. UPDI targets will follow next.
 

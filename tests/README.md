@@ -56,7 +56,7 @@ The integration tests test the interaction in the entire system from the MCU ove
 
 
 
-#### Challenges of the different test sketches
+#### Challenges of the different test scripts
 
 - **live:** Running live tests with optionally enable debugWIRE and then the live tests `monitor Livetests`
 - **monitor commands**: Check all monitor command outputs that work on all servers, check timers run/freeze
@@ -67,9 +67,10 @@ The integration tests test the interaction in the entire system from the MCU ove
 - **oop:** Debug OOP program (no-lto!), whatis, ptype
 - **tictactoe:** Complex program, input simulated by setting variables.
 - **single-step:** demonstrates interrupt-safe single-stepping
-- **eeprom**: Demonstrates loading directly into EEPROM, EEPROM manipulation in the program and on the debugger level.
-- **fuse:** Demonstrates that including fuses and lockbits is tolerated but ignored. Signatures are  compared, however.
-- **off**: Disables debugWIRE.
+- **eeprom**: Demonstrates loading directly into EEPROM, EEPROM manipulation in the program, and on the debugger level.
+- **fuse:** Demonstrates that including fuses and lockbits is tolerated but ignored. Signatures are compared to the actual MCU, however.
+- **off**: Disables debugWIRE,
+- **dirty:** Script for testing whether MCUs with stuck-at-1 bits are identified. This is the only sk
 
 
 

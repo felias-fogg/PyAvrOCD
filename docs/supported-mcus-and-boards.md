@@ -52,18 +52,18 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 ### ATmegas with JTAG interface
 
-Note that the MCUs are supported by pyavrocd. However, the cores have not been extended yet to allow for debugging inside the Arduino IDE 2.
+Note that the MCUs are supported by pyavrocd. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.
 
 #### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-* **~~ATmega16~~**, ATmega16A, <u>**ATmega32**</u>, ATmega32A
+* **~~ATmega16~~**, ATmega16A, **ATmega32**, ATmega32A
 * ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
 
 The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged.
 
 #### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
-* ATmega64, ATmega64A, ATmega128, <u>**ATmega128A**</u>
+* ATmega64, ATmega64A, ~~**ATmega128**~~, ~~**ATmega128A**~~
 * ATmega640, **ATmega1280**, **ATmega2560**
 * ATmega1281, ATmega2561
 * ATmega165, ATmega165A, ATmega165P, ATmega165PA, ATmega325, ATmega325A, ATmega325P, ATmega325PA, ATmega645, ATmega645A, ATmega645P, ATmega645PA
@@ -71,6 +71,8 @@ The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program cou
 * ATmega3250, ATmega3250A, ATmega3250P, ATmega3250PA, ATmega6450, ATmega6450A, ATmega6450P, ATmega6450PA
 * ATmega3290, ATmega3290A, ATmega3290P, ATmega3290PA, ATmega6490, ATmega6490A, ATmega6490P, ATmega6490PA
 * AT90CAN32, AT90CAN64, AT90CAN128
+
+The ATmega128 MCUs do not allow software breakpoints. For this reason, debugging is currently impossible because only 1 hardware breakpoint is permitted. This will change in the near future.
 
 #### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
@@ -82,7 +84,7 @@ The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program cou
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
 * ATmega128rfa1
-* ATmega16U4, <u>**ATmega32U4**</u>
+* ATmega16U4, **<u>ATmega32U4</u>**
 * ATmega406
 
 #### Supported Arduino boards

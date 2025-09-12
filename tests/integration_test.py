@@ -415,6 +415,7 @@ MicroClock = {'1.2' : '1M2', '9.6' : '9M6', '16' : '16M'}
 MiniClock = {'1' : '1MHz_internal', '8' : '8MHz_internal', '16' : '16MHz_external'}
 ATTRcClock = {'1' : '1internal', '8' : '8internal'}
 ATTClock = {'1' : '1internal', '8' : '8internal', '16' : '16external'}
+NoClock = {'none' : ''}
 
 # the on_script needs always to run first because it enables debugWIRE
 # the off_script should run last in order to set the MCU back to normal mode
@@ -529,13 +530,17 @@ test_devices = {"attiny13" : (MicroClock, small_arduino,
                                    "MegaCore:avr:169:variant=modelP,bootloader=no_bootloader,clock=",
                                    "Butterfly"),
 
+                "atmega128": (MiniClock, large_arduino,
+                                   "MegaCore:avr:128:bootloader=no_bootloader,clock=",
+                                   "Olimex AVR-MT-128"),
+
                 # JTAG targets: MajorCore
                 "atmega162": (MiniClock, large_arduino,
                                    "MajorCore:avr:162:bootloader=no_bootloader,clock=",
                                    "Butterfly"),
 
                 # JTAG targets: Arduino AVR Core
-                "atmega32u2": (MiniClock, large_arduino,
+                "atmega32u4": (NoClock, large_arduino,
                                    "arduino:avr:leonardo",
                                    "Leonardo"),
 
@@ -555,7 +560,7 @@ def main():
                             type=str,
                             dest='clock',
                             help='MCU clock frequency in MHz',
-                            choices=['1', '8', '16', '1.2', '9.6' ],
+                            choices=['1', '8', '16', '1.2', '9.6', 'none' ],
                             required=True)
     parser.add_argument('-d', '--device',
                             type=str,
@@ -604,7 +609,7 @@ def main():
         exit_status = 0
         cmd_out = ""
         if script[1]:
-            logger.info("Compile %s.ino for %s clock on %s", script[1], clock, mcu_name)
+            logger.info("Compile %s.ino for '%s' clock on %s", script[1], clock, mcu_name)
             cmd = "arduino-cli compile -b " + fqbn + clock + \
                   ' -e --build-property="build.extra_flags=-Og -ggdb3 ' + script[2] + '" --output-dir ' + \
                   "tests/sketches/" + script[1] + " tests/sketches/" + script[1]
