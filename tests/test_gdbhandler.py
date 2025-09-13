@@ -35,7 +35,7 @@ class TestGdbHandler(TestCase):
         mock_dbg.iface = 'debugwire'
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
-        self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p", options([]))
+        self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p", options(['-f', 'foo']))
         self.gh.mon = create_autospec(MonitorCommand, specSet=True, instance=True)
         self.gh.mem = create_autospec(Memory, specSet=True, instance=True)
         self.gh.mem.programming_mode = False

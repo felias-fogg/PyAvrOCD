@@ -1,6 +1,6 @@
 # Monitor commands
 
-Pyavrocd implements several `monitor` commands. These can be used to control important aspects of the GDB server. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
+PyAvrOCD implements several `monitor` commands. These can be used to control important aspects of the GDB server. One important command is the `monitor debugwire enable` command, which enables debugWIRE mode on MCUs supporting this interface.
 
 | Command                                                | Action                                                       |
 | ------------------------------------------------------ | ------------------------------------------------------------ |

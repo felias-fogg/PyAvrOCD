@@ -10,14 +10,14 @@ plugins:
   - with-pdf:
       author: Bernhard Nebel
       cover: true
-      cover_title: Pyavrocd
+      cover_title: PyAvrOCD
       cover_subtitle: A Platform-Agnostic GDB Server
       copyright: Copyright 2025
-      output_path: ../docs/pyavrocd.pdf
+      output_path: ../docs/PyAvrOCD.pdf
   - search
 
-site_name: pyavrocd
-repo_url: https://github.com/felias-fogg/pyavrocd
+site_name: PyAvrOCD
+repo_url: https://github.com/felias-fogg/PyAvrOCD
 nav:
   - Installation:
     - GDB server: 'INSTALL.md'
@@ -26,7 +26,7 @@ nav:
     - Preparing the target: 'board-preparation.md'
     - Connecting to target: 'connect-to-target.md'
     - Invoking the server: 'command-line-options.md'
-    - Debugging the target: 'usage.md'
+    - Debugging the target: 'debugging.md'
     - Monitor commands: 'monitor-commands.md'
     - Restoring the target: 'restore-original-state.md'
     - Configuration: 'configuration.md'

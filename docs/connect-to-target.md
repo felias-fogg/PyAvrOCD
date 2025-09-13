@@ -5,19 +5,19 @@ The hardware debuggers have different connectors. The Microchip debuggers Snap a
 If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as shown in the following picture.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/SNAP-adapter.JPG" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/SNAP-adapter.JPG" width="70%">
 </p>
 
 Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG header. For these debuggers, adapters are either already included or must be purchased separately. For AVR targets, one should, of course, use the header marked `AVR`.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
 </p>
 
 The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header on the Arduino Uno. If a dw-link shield is used, one can use the standard 6-pin SPI header.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/dw-link.jpeg" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link.jpeg" width="70%">
 </p>
 
 Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
@@ -27,7 +27,7 @@ Depending on which debugging interface the target has, the target board may prov
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pickit4-connect.png" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/pickit4-connect.png" width="70%">
 </p>
 
 In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the correct connections.
@@ -43,7 +43,7 @@ Since one also wants to change into and out of debugWIRE mode, change fuses, or 
 There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from [Wikipedia](https://commons.wikimedia.org/wiki/File:Isp_headers.svg), which provides a top view of the headers on a PCB.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Isp_headers.svg.png" width="40%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Isp_headers.svg.png" width="40%">
 </p>
 
 Note the notches on the left side of the headers. Since almost all SPI programming plugs are keyed, you can only plug them in in the correct orientation. However, the headers sometimes do not have notches. In this case, pin 1 is usually marked in some way, either with a dot, a star, or with the number 1. Similarly, plugs also come unkeyed. In this case, again, pin 1 is marked in some way.
@@ -53,7 +53,7 @@ Note the notches on the left side of the headers. Since almost all SPI programmi
 If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! For all the Arduino boards, pin 1 is always oriented towards the USB connector. However, if you plug it in the wrong way, nothing will be destroyed.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmel-ice-connect.png" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/atmel-ice-connect.png" width="70%">
 </p>
 
 
@@ -106,7 +106,7 @@ Note that in order to use the JTAG connection, you might first need to enable th
 
 For AVR MCUs, there is a standard pinout as follows.
 
-<p align="cener"> <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
+<p align="cener"> <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
 </p>
 
 Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), and TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND.
@@ -116,20 +116,20 @@ Sometimes, pin 8 is connected to nTREST, which we do not need, though. The cruci
 Again, if there is a JTAG header on the board, connecting the board is a breeze. Simply use the right cable.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Atmel-ICE+MCUdude.jpeg" width="80%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Atmel-ICE+MCUdude.jpeg" width="80%">
 </p>
 ### Connecting to targets without a JTAG header
 
-When debugging a program running on an Arduino Mega or Leonardo, you could use an [adapter](https://github.com/felias-fogg/pyavrocd/tree/main/pcbs/arduino-jtag/) that plugs into the header, as shown in the following picture.
+When debugging a program running on an Arduino Mega or Leonardo, you could use an [adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag/) that plugs into the header, as shown in the following picture.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Mega-Adapter.png" width="70%">
+  <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Mega-Adapter.png" width="70%">
 </p>
 
 Otherwise, you must connect the wires individually, referring to the Arduino Mega's pinout and the header on the debugger. Here is an example for connecting PICkit4 (or Snap) to an Arduino Mega 2560.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pickit4+mega.jpeg" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/pickit4+mega.jpeg" width="70%">
 </p>
 
 The pin mapping for the PICkit4 looks as follows, where I have added the Arduino pins in the last column.

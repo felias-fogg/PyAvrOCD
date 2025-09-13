@@ -10,7 +10,7 @@ So, how severe is the flash wear problem? The data sheets state that for classic
 
 Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. That will probably result on average in 3 additional reprogramming operations on an individual page, leading to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so. Further, the software debugger needs to make sure not to require superfluous breakpoint set/clear operations.
 
-Different [GDB servers vary in their ability to minimize flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/), with pyavrocd being very competitive. However, all in all, as Microchip states, you should not ship MCUs to customers that have been used heavily in testing.
+Different [GDB servers vary in their ability to minimize flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/), with PyAvrOCD being very competitive. However, all in all, as Microchip states, you should not ship MCUs to customers that have been used heavily in testing.
 
 ## Using only hardware breakpoints
 

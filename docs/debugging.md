@@ -45,7 +45,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 
 If you have reached this point, I trust that you are familiar with GDB and know how to proceed.
 
-Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.
+Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.
 
 ## Debugging using the Arduino IDE 2
 
@@ -55,7 +55,7 @@ If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most stra
 
 You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the `MiniCore` in the `Tools` menu. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).
 
-![ide2-1](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-1.png)
+![ide2-1](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png)
 
 Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
 
@@ -65,7 +65,7 @@ After compiling the sketch, it is time to start debugging by clicking the debug 
 
 Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](INSTALL.md#on-linux)). Or maybe you forgot to connect a hardware debugger altogether.
 
-![ide2-2](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-2.png)
+![ide2-2](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png)
 
 If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
 
@@ -73,13 +73,13 @@ After power-cycling the target, the debugger starts. Eventually, execution is st
 
 After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular the [`monitor` commands](monitor-commands.md) to control the GDB server. Here, the command `monitor debugwire disable` is crucial because it will disable the debugWIRE mode.
 
-![ide2-3](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-3.png)
+![ide2-3](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3.png)
 
 Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13.
 
 ### Debugging
 
-![ide2-4](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-4.png)
+![ide2-4](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-4.png)
 
 The debugging panes are organized as follows. Pane A contains the debug controls. From left to right:
 
@@ -103,15 +103,15 @@ Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same t
 
 ## Debugging using Gede
 
-[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--gede` or `-g` when starting pyavrocd.
+[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--gede` or `-g` when starting PyAvrOCD.
 
-![Gede](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede.png)
+![Gede](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png)
 
 `Project dir` and `Program` are specific to your debugging session. The rest should be copied as it is shown. Before you click `OK`, you should switch to the `Commands` section, where you need to enter the command `monitor debugwire enable` if you are working with a debugWIRE target (otherwise it does not hurt).
 
-![ ](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-cmds.png)
+![ ](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-cmds.png)
 
 Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory. After a while, you will see a window similar to what is shown below.
 
-![Gede section](https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-window.png)
+![Gede section](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-window.png)
 

@@ -2,7 +2,7 @@
 
 
 
-This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs tested with pyavrocd are marked bold. MCUs known not to work with pyavrocd are struck out.
+This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked bold. MCUs known not to work with PyAvrOCD are struck out.
 
 ## MCUs with debugWIRE interface
 
@@ -32,7 +32,7 @@ This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs
 
 The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. They also act strangely when trying to switch to debugWIRE mode or back (you can easily brick them this way).
 
-I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, pyavrocd will refuse to handle them.
+I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will refuse to handle them.
 
 ### Other ATmegas
 
@@ -52,7 +52,7 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 ## ATmegas with JTAG interface
 
-Note that the MCUs are supported by pyavrocd. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.
+Note that the MCUs are supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.
 
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 

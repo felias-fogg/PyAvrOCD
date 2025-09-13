@@ -1,6 +1,6 @@
 # Supported hardware debuggers
 
-Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with pyavrocd.
+Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD.
 
 
 * **[MPLAB PICkit 4 In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164140)** ([when in 'AVR mode'](#switching-to-avr-mode))

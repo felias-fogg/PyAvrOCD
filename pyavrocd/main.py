@@ -264,7 +264,7 @@ You can also use monitor command options, e.g., --timer=freeze.
                                     type=str, choices=choices, default=default)
 
     # Parse args and return
-    if len(cmd) == 1:
+    if len(cmd) == 0:
         cmd.append('-h')
     cmd.append('@pyavrocd.options')
     cmd = [x for x in cmd if not x.startswith('@') or os.path.exists(x[1:]) ]
@@ -296,6 +296,7 @@ You can also use monitor command options, e.g., --timer=freeze.
 
     if questionmark and args.dev != '?':
         sys.exit(0)
+
     return args
 
 def install_udev_rules(logger):
