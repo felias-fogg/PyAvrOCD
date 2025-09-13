@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>MCUs - pyavrocd</title>
+<title>MCUs - PyAvrOCD</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -22,13 +22,13 @@
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
-<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
 <div class="wy-grid-for-nav">
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> pyavrocd
+<a class="icon icon-home" href=".."> PyAvrOCD
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -51,7 +51,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
 </li>
@@ -119,7 +119,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">pyavrocd</a>
+<a href="..">PyAvrOCD</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -128,7 +128,7 @@
 <li class="breadcrumb-item">Supported devices</li>
 <li class="breadcrumb-item active">MCUs</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/supported-mcus-and-boards.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/supported-mcus-and-boards.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -136,7 +136,7 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="supported-mcus-and-boards">Supported MCUs and Boards</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with pyavrocd. MCUs tested with pyavrocd are marked bold. MCUs known not to work with pyavrocd are struck out.</p>
+<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked bold. MCUs known not to work with PyAvrOCD are struck out.</p>
 <h2 id="mcus-with-debugwire-interface">MCUs with debugWIRE interface</h2>
 <h3 id="attiny-supported-by-microcore">ATtiny supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a></h3>
 <ul>
@@ -163,7 +163,7 @@
 <li><strong>ATmega328</strong>, <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
 <p>The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. They also act strangely when trying to switch to debugWIRE mode or back (you can easily brick them this way).</p>
-<p>I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, pyavrocd will refuse to handle them.</p>
+<p>I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will refuse to handle them.</p>
 <h3 id="other-atmegas">Other ATmegas</h3>
 <ul>
 <li>ATmega8U2, ATmega16U2, ATmega32U2</li>
@@ -177,7 +177,7 @@
 <h3 id="supported-arduino-boards">Supported Arduino boards</h3>
 <p>All Arduino boards equipped with one of the chips mentioned above can be debugged. This includes the <strong>Arduino Uno R3</strong>, <strong>Arduino Nano</strong>, and <strong>Arduino Pro Mini</strong> (as well as clones). Note that in all these cases, one must ensure that the RESET line is not connected to a capacitor and that the pull-up resistor on the RESET line is not stronger than 10 kΩ. This means that in most cases, the <a href="../board-preparation/">board must be physically changed</a> before debugging is possible.</p>
 <h2 id="atmegas-with-jtag-interface">ATmegas with JTAG interface</h2>
-<p>Note that the MCUs are supported by pyavrocd. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.</p>
+<p>Note that the MCUs are supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.</p>
 <h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a></h3>
 <ul>
 <li><s><strong>ATmega16</strong></s>, ATmega16A, <strong>ATmega32</strong>, ATmega32A</li>
@@ -231,7 +231,7 @@
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../configuration/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../supported-debuggers/" style="color: #fcfcfc">Next »</a></span>

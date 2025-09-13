@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Debugging software - pyavrocd</title>
+<title>Debugging software - PyAvrOCD</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -22,13 +22,13 @@
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
-<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
 <div class="wy-grid-for-nav">
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> pyavrocd
+<a class="icon icon-home" href=".."> PyAvrOCD
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -63,7 +63,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
 </li>
@@ -101,7 +101,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">pyavrocd</a>
+<a href="..">PyAvrOCD</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -110,7 +110,7 @@
 <li class="breadcrumb-item">Installation</li>
 <li class="breadcrumb-item active">Debugging software</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/debugging-software.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/debugging-software.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -120,7 +120,7 @@
 <h1 id="debugging-software">Debugging software</h1>
 <p>The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means you still need to install the debugger, which in our case means avr-gdb. However, perhaps you even want more than that.</p>
 <h2 id="cli-debugging">CLI debugging</h2>
-<p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the pyavrocd binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's <a href="https://github.com/ZakKemble/avr-gcc-build">avr-gcc-build</a> repository. This is particularly useful when you want to run debugging software on a 32-bit system.</p>
+<p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's <a href="https://github.com/ZakKemble/avr-gcc-build">avr-gcc-build</a> repository. This is particularly useful when you want to run debugging software on a 32-bit system.</p>
 <p>If you are not a fan of a command-line interface, then an integrated development environment (IDE) or a simple graphical user interface (GUI) for avr-gdb is called for.</p>
 <h2 id="arduino-ide-2">Arduino IDE 2</h2>
 <p><a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> is probably the most straightforward option. After installing it, you can extend the IDE's capabilities by <a href="https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE">adding third-party platforms</a>. This is done by adding <a href="https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE">additional Board Manager URLs</a> in the preferences dialog and selecting a board in the Board Manager. For example, adding the following three Board Manager URLs enables debugging of almost all debugWIRE MCUs.</p>
@@ -128,8 +128,8 @@
 https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 </code></pre>
-<p>After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to <a href="https://github.com/felias-fogg/pyavrocd/blob/main/docs/board-preparation.md">modify the board</a>, and you need to <a href="https://github.com/felias-fogg/pyavrocd/blob/main/docs/connect-to-target.md">connect the hardware debugger to the target board</a>.</p>
-<p>Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute pyavrocd once as root using the command-line option <code>--install-udev-rules</code>. Instead, you can create a udev-rules file along the lines described in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md">README file of pyedbglib</a>.</p>
+<p>After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/board-preparation.md">modify the board</a>, and you need to <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/connect-to-target.md">connect the hardware debugger to the target board</a>.</p>
+<p>Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute PyAvrOCD once as root using the command-line option <code>--install-udev-rules</code>. Instead, you can create a udev-rules file along the lines described in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md">README file of pyedbglib</a>.</p>
 <h2 id="platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</h2>
 <p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the <code>platformio.ini</code> file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the <code>platformio.ini</code> file could look as follows (see also the <code>example</code> folder)</p>
 <pre><code>[platformio]
@@ -166,12 +166,12 @@ debug_build_flags =
     -ggdb3
 </code></pre>
 <p>Note that the debug environment should be the default one. It should be the first if no default environment has been declared.</p>
-<p>I further noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the pyavrocd binary. The location where PlatformIO stores its copy of avr-gdb is <code>~/.platformio/packages/toolchain-atmelavr/</code>, where the tilde symbol signifies the home directory of the user.</p>
+<p>I further noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is <code>~/.platformio/packages/toolchain-atmelavr/</code>, where the tilde symbol signifies the home directory of the user.</p>
 <h2 id="gede">Gede</h2>
-<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, pyavrocd will start Gede in the background if you specify the option <code>--start gede</code> when starting pyavrocd.</p>
+<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option <code>--start gede</code> when starting PyAvrOCD.</p>
 <h2 id="other-options">Other options</h2>
-<p>There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate pyavrocd into <strong>Visual Studio Code</strong>, <strong>CLion</strong>, and <strong>Eclipse</strong>. How to integrate a GDB server into CLion is, for example, described <a href="https://bloom.oscillate.io/docs/clion-debugging-setup">here</a>.</p>
-<p>If you have a clear description of how to integrate pyavrocd in an IDE, I'd be happy to add it here.</p>
+<p>There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into <strong>Visual Studio Code</strong>, <strong>CLion</strong>, and <strong>Eclipse</strong>. How to integrate a GDB server into CLion is, for example, described <a href="https://bloom.oscillate.io/docs/clion-debugging-setup">here</a>.</p>
+<p>If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
@@ -192,7 +192,7 @@ debug_build_flags =
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../INSTALL/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../board-preparation/" style="color: #fcfcfc">Next »</a></span>

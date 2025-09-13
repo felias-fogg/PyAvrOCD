@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>GDB server - pyavrocd</title>
+<title>GDB server - PyAvrOCD</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -22,13 +22,13 @@
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
-<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
 <div class="wy-grid-for-nav">
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> pyavrocd
+<a class="icon icon-home" href=".."> PyAvrOCD
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -67,7 +67,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
 </li>
@@ -105,7 +105,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">pyavrocd</a>
+<a href="..">PyAvrOCD</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -114,19 +114,19 @@
 <li class="breadcrumb-item">Installation</li>
 <li class="breadcrumb-item active">GDB server</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/INSTALL.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/INSTALL.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="pyavrocd-installation">pyavrocd Installation</h1>
+<h1 id="pyavrocd-installation">PyAvrOCD Installation</h1>
 <h2 id="arduino-ide-2">Arduino IDE 2</h2>
-<p>If you want to use pyavrocd as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/pyavrocd/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
-<p>If you want to use pyavrocd stand-alone or as part of another IDE, you need to install the pyavrocd package explicitly.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
+<p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly.</p>
 <h2 id="downloading-binaries">Downloading binaries</h2>
-<p>Go to the <a href="https://github.com/felias-fogg/pyavrocd">GitHub page</a> (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable pyavrocd, a folder pyavrocd-util, and additionally avr-gdb, the GDB debugger for AVR chips. Store pyavrocd and pyavrocd-util somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a> (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code>, a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code>, the GDB debugger for AVR chips. Store <code>pyavrocd</code> and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.ƒ3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <h2 id="pypi">PyPI</h2>
 <p>I assume you already installed a recent Python version (&gt;=3.9).</p>
@@ -174,7 +174,7 @@ poetry run pyavrocd ...
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../debugging-software/" style="color: #fcfcfc">Next »</a></span>
 </span>

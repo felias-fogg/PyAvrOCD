@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>debugWIRE - pyavrocd</title>
+<title>debugWIRE - PyAvrOCD</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -22,13 +22,13 @@
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
-<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
 <div class="wy-grid-for-nav">
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> pyavrocd
+<a class="icon icon-home" href=".."> PyAvrOCD
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -51,7 +51,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
 </li>
@@ -91,7 +91,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">pyavrocd</a>
+<a href="..">PyAvrOCD</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -100,7 +100,7 @@
 <li class="breadcrumb-item">Caveats</li>
 <li class="breadcrumb-item active">debugWIRE</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/debugwire-risks.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/debugwire-risks.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -116,10 +116,10 @@
 <ol>
 <li>
 <p>The classical problem is a capacitor on the RESET line, either for noise suppression or as a means to implement auto-reset on an Arduino board such as the Uno. Similarly, a resistor that is too strong or a dedicated reset circuit could pose a problem. In these cases, one can change the DWEN fuse using SPI programming, but communication over the debugWIRE line (the RESET line) is impossible.
-The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via pyavrocd).</p>
+The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via PyAvrOCD).</p>
 </li>
 <li>
-<p>All <strong>ATmega48</strong> and <strong>ATmega88</strong> variants without a P or A suffix exhibit unusual behavior. Note that this applies to MCUs purchased from official distributors.  They have stuck-at-1 bits in the program counter, they refuse to let their DWEN fuse be set, or, if one is successful, it is impossible to leave debugWIRE mode again. By now, they are identified by pyavrocd before the DWEN bit is set, so that the only annoying thing about them is that they are not debuggable.</p>
+<p>All <strong>ATmega48</strong> and <strong>ATmega88</strong> variants without a P or A suffix exhibit unusual behavior. Note that this applies to MCUs purchased from official distributors.  They have stuck-at-1 bits in the program counter, they refuse to let their DWEN fuse be set, or, if one is successful, it is impossible to leave debugWIRE mode again. By now, they are identified by PyAvrOCD before the DWEN bit is set, so that the only annoying thing about them is that they are not debuggable.</p>
 </li>
 <li>
 <p>Another cause for trouble could be that the MCU is operated in an unstable electrical environment. This could mean that the supply voltage is fluctuating, an unstable external clock is used, blocking capacitors between (A)Vcc and (A)GND are missing, or, another classic, AVcc and/or AGND are not connected to the power rail. In these cases, unpredictable things can happen, and the MCU might not be responsive after having been switched into debugWIRE mode. In this case, repairing the fault, e.g., soldering a blocking capacitor between Vcc and GND, may or may not resolve the issue.</p>
@@ -128,7 +128,7 @@ The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut t
 <p>The MCU could be a non-genuine product. Since such products do not satisfy all the specifications of genuine MCUs, these MCUs might be able to enter debugWIRE, but then one is stuck. Or debugWIRE mode is not supported at all.</p>
 </li>
 <li>
-<p>It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed <code>SPIEN</code> (Serial program downloading) and/or programmed <code>RSTDSBL</code>, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let pyavrocd handle the fuses, this cannot happen.</p>
+<p>It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed <code>SPIEN</code> (Serial program downloading) and/or programmed <code>RSTDSBL</code>, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.</p>
 </li>
 <li>
 <p>There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).</p>
@@ -156,7 +156,7 @@ The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut t
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../disclaimer/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../flash-wear/" style="color: #fcfcfc">Next »</a></span>

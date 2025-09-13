@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Invoking the server - pyavrocd</title>
+<title>Invoking the server - PyAvrOCD</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -22,13 +22,13 @@
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
-<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
 <div class="wy-grid-for-nav">
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> pyavrocd
+<a class="icon icon-home" href=".."> PyAvrOCD
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -53,7 +53,7 @@
 <ul class="current">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../usage/">Debugging the target</a>
+<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
 </li>
@@ -91,7 +91,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">pyavrocd</a>
+<a href="..">PyAvrOCD</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -100,18 +100,18 @@
 <li class="breadcrumb-item">Usage</li>
 <li class="breadcrumb-item active">Invoking the server</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/command-line-options.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/command-line-options.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
 </div>
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
-<h1 id="invoking-pyavrocd">Invoking pyavrocd</h1>
-<p>You invoke pyavrocd as follows:</p>
+<h1 id="invoking-pyavrocd">Invoking PyAvrOCD</h1>
+<p>You invoke PyAvrOCD as follows:</p>
 <pre><code>&gt; pyavrocd [options]
 </code></pre>
-<p>Pyavrocd will then look for a hardware debugger, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the following command-line options.</p>
+<p>PyAvrOCD will then look for a hardware debugger, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the following command-line options.</p>
 <table>
 <thead>
 <tr>
@@ -142,7 +142,7 @@
 </tr>
 <tr>
 <td><code>--manage</code><br><code>-m</code></br></td>
-<td>Can be given multiple times and specifies which fuses should be managed by pyavrocd. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by pyavrocd need to be changed 'manually' before and/or after the GDB server is activated. Note that dw-link ignores this option!</td>
+<td>Can be given multiple times and specifies which fuses should be managed by PyAvrOCD. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by PyAvrOCD need to be changed 'manually' before and/or after the GDB server is activated. Note that dw-link ignores this option!</td>
 </tr>
 <tr>
 <td><code>--port</code> <br/><code>-p</code></td>
@@ -170,7 +170,7 @@
 </tr>
 <tr>
 <td><code>--version</code> <br/><code>-V</code></td>
-<td>Print pyavrocd version number and exit.</td>
+<td>Print PyAvrOCD version number and exit.</td>
 </tr>
 <tr>
 <td><code>--install-udev-rules</code></td>
@@ -185,7 +185,7 @@
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
 <a class="btn btn-neutral float-left" href="../connect-to-target/" title="Connecting to target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="../usage/" title="Debugging the target">Next <span class="icon icon-circle-arrow-right"></span></a>
+<a class="btn btn-neutral float-right" href="../debugging/" title="Debugging the target">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
 <div role="contentinfo">
@@ -201,10 +201,10 @@
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../connect-to-target/" style="color: #fcfcfc">« Previous</a></span>
-<span><a href="../usage/" style="color: #fcfcfc">Next »</a></span>
+<span><a href="../debugging/" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>
 <script src="../js/jquery-3.6.0.min.js"></script>

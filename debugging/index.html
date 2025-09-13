@@ -6,7 +6,7 @@
 <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Debugging the target - pyavrocd</title>
+<title>Debugging the target - PyAvrOCD</title>
 <link href="../css/theme.css" rel="stylesheet"/>
 <link href="../css/theme_extra.css" rel="stylesheet"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
@@ -14,7 +14,7 @@
 <script>
         // Current page data
         var mkdocs_page_name = "Debugging the target";
-        var mkdocs_page_input_path = "usage.md";
+        var mkdocs_page_input_path = "debugging.md";
         var mkdocs_page_url = null;
       </script>
 <!--[if lt IE 9]>
@@ -22,13 +22,13 @@
     <![endif]-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
-<link href="../../docs/pyavrocd.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
 <body class="wy-body-for-nav" role="document">
 <div class="wy-grid-for-nav">
 <nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> pyavrocd
+<a class="icon icon-home" href=".."> PyAvrOCD
         </a><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -107,7 +107,7 @@
 <section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
 <nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
 <i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">pyavrocd</a>
+<a href="..">PyAvrOCD</a>
 </nav>
 <div class="wy-nav-content">
 <div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
@@ -116,7 +116,7 @@
 <li class="breadcrumb-item">Usage</li>
 <li class="breadcrumb-item active">Debugging the target</li>
 <li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/pyavrocd/edit/master/docs/usage.md"> Edit on GitHub</a>
+<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/debugging.md"> Edit on GitHub</a>
 </li>
 </ul>
 <hr/>
@@ -160,24 +160,24 @@ Note: automatically using hardware breakpoints for read-only addresses.
 ...
 </code></pre>
 <p>If you have reached this point, I trust that you are familiar with GDB and know how to proceed.</p>
-<p>Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command <code>monitor debugwire disable</code>.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since pyavrocd needs to delete the bootloader as well, you also cannot upload anything over the serial line.</p>
+<p>Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command <code>monitor debugwire disable</code>.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.</p>
 <h2 id="debugging-using-the-arduino-ide-2">Debugging using the Arduino IDE 2</h2>
 <p>If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most straightforward option.</p>
 <h3 id="compiling-the-sketch">Compiling the sketch</h3>
 <p>You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the <code>MiniCore</code> in the <code>Tools</code> menu. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).</p>
-<p><img alt="ide2-1" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-1.png"/></p>
+<p><img alt="ide2-1" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png"/></p>
 <p>Before clicking the <code>Verify</code> button in the upper left corner, choose <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.</p>
 <h3 id="starting-the-debugger">Starting the debugger</h3>
 <p>After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.</p>
 <p>Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="../INSTALL/#on-linux">installation instructions</a>). Or maybe you forgot to connect a hardware debugger altogether.</p>
-<p><img alt="ide2-2" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-2.png"/></p>
+<p><img alt="ide2-2" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png"/></p>
 <p>If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.</p>
 <p>After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.</p>
 <p>After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch on the right. It will also switch from displaying the <code>gdb-server</code> console to the <code>Debug Console</code>, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol<code>&gt;</code> is shown, where you can enter any GDB command, in particular the <a href="../monitor-commands/"><code>monitor</code> commands</a> to control the GDB server. Here, the command <code>monitor debugwire disable</code> is crucial because it will disable the debugWIRE mode.</p>
-<p><img alt="ide2-3" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-3.png"/></p>
+<p><img alt="ide2-3" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3.png"/></p>
 <p>Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13.</p>
 <h3 id="debugging">Debugging</h3>
-<p><img alt="ide2-4" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-4.png"/></p>
+<p><img alt="ide2-4" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-4.png"/></p>
 <p>The debugging panes are organized as follows. Pane A contains the debug controls. From left to right:</p>
 <ul>
 <li><em>Reset</em>ting the device</li>
@@ -194,12 +194,12 @@ Note: automatically using hardware breakpoints for read-only addresses.
 <h2 id="debugging-using-platformiovsc">Debugging using PlatformIO/VSC</h2>
 <p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the <code>platformio.ini</code> configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. A <code>platform.ini</code>  that can be used to start the debugger is provided <a href="../debugging-software/#platformio-and-visual-studio-code">here</a>.</p>
 <h2 id="debugging-using-gede">Debugging using Gede</h2>
-<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option <code>--gede</code> or <code>-g</code> when starting pyavrocd.</p>
-<p><img alt="Gede" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede.png"/></p>
+<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option <code>--gede</code> or <code>-g</code> when starting PyAvrOCD.</p>
+<p><img alt="Gede" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png"/></p>
 <p><code>Project dir</code> and <code>Program</code> are specific to your debugging session. The rest should be copied as it is shown. Before you click <code>OK</code>, you should switch to the <code>Commands</code> section, where you need to enter the command <code>monitor debugwire enable</code> if you are working with a debugWIRE target (otherwise it does not hurt).</p>
-<p><img alt=" " src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-cmds.png"/></p>
+<p><img alt=" " src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-cmds.png"/></p>
 <p>Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory. After a while, you will see a window similar to what is shown below.</p>
-<p><img alt="Gede section" src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/gede-window.png"/></p>
+<p><img alt="Gede section" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-window.png"/></p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
@@ -220,7 +220,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 <div aria-label="Versions" class="rst-versions" role="note">
 <span class="rst-current-version" data-toggle="rst-current-version">
 <span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/pyavrocd" style="color: #fcfcfc"> GitHub</a>
+<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="../command-line-options/" style="color: #fcfcfc">« Previous</a></span>
 <span><a href="../monitor-commands/" style="color: #fcfcfc">Next »</a></span>
