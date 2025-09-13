@@ -3,11 +3,11 @@
 Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with pyavrocd.
 
 
-* **MPLAB PICkit 4 In-Circuit Debugger** (when in 'AVR mode')
-* **MPLAB Snap In-Circuit Debugger** (when in 'AVR mode')
-* **Atmel-ICE**
-* **Atmel Power Debugger**
-* **JTAGICE3 (firmware version 3.0 or newer)**
+* **[MPLAB PICkit 4 In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164140)** ([when in 'AVR mode'](#switching-to-avr-mode))
+* **[MPLAB Snap In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164100)** ([when in 'AVR mode'](#switching-to-avr-mode))
+* [**Atmel-ICE**](https://www.microchip.com/en-us/development-tool/atatmel-ice)
+* **[Atmel Power Debugger](https://www.microchip.com/en-us/development-tool/atpowerdebugger)**
+* **[JTAGICE3](https://www.microchip.com/en-us/development-tool/atjtagice3) (firmware version 3.0 or newer)**
 * **EDBG - on-board debuggers on Xplained Pro/Ultra**
 * **mEDBG - on-board debuggers on Xplained Mini/Nano**
 * nEDBG - on-board debuggers on Curiosity Nano

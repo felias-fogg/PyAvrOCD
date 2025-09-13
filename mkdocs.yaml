@@ -28,7 +28,7 @@ nav:
     - Invoking the server: 'command-line-options.md'
     - Debugging the target: 'usage.md'
     - Monitor commands: 'monitor-commands.md'
-    - Restore target: 'restore-original-state.md'
+    - Restoring the target: 'restore-original-state.md'
     - Configuration: 'configuration.md'
   - Supported devices:
     - MCUs: 'supported-mcus-and-boards.md'
