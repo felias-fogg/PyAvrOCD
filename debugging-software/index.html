@@ -118,7 +118,7 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="debugging-software">Debugging software</h1>
-<p>The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means you still need to install the debugger, which in our case means avr-gdb. However, perhaps you even want more than that.</p>
+<p>The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you even want more than that.</p>
 <h2 id="cli-debugging">CLI debugging</h2>
 <p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's <a href="https://github.com/ZakKemble/avr-gcc-build">avr-gcc-build</a> repository. This is particularly useful when you want to run debugging software on a 32-bit system.</p>
 <p>If you are not a fan of a command-line interface, then an integrated development environment (IDE) or a simple graphical user interface (GUI) for avr-gdb is called for.</p>

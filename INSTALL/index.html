@@ -130,7 +130,7 @@
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <h2 id="pypi">PyPI</h2>
 <p>I assume you already installed a recent Python version (&gt;=3.9).</p>
-<p>It will be necessary to install <a href="https://pipx.pypa.io/">pipx</a> first. If you haven't done so already, follow the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
+<p>Although it is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a>. Pipx installs packages in a way so that they are completely isolated from the rest of your Python installation, and you are able to install them in a way so that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
 <h3 id="linux">Linux</h3>
 <pre><code>pipx install pyavrocd
 pipx ensurepath
