@@ -4,7 +4,7 @@ When setting a breakpoint in a program, one usually does not think about the und
 
 There are pros and cons to each type of breakpoint. Hardware breakpoints are faster to set and to clear because they do not involve reprogramming flash memory. Further, they do not lead to *[flash wear](https://en.wikipedia.org/wiki/Flash_memory#Memory_wear)* as software breakpoints do. However, as mentioned, there are usually only very few hardware breakpoints.
 
-PyAvrOCD will make use of hardware breakpoints whenever possible and use software breakpoints only as a fallback. Further, the most recent breakpoint asserted by GDB will always be implemented as a hardware breakpoint because it is very likely that it is a temporary breakpoint.
+PyAvrOCD will make use of hardware breakpoints whenever possible and use software breakpoints only as a fallback. Further, the most recent breakpoint asserted by GDB will always be implemented as a hardware breakpoint because it is very likely that it is a temporary breakpoint. *(not yet implemented for JTAG)*
 
 ## The flash wear problem
 

@@ -31,7 +31,8 @@ nav:
     - Restoring the target: 'restore-original-state.md'
     - Configuration: 'configuration.md'
   - Supported devices:
-    - MCUs: 'supported-mcus-and-boards.md'
+    - MCUs: 'supported-mcus.md'
+    - Boards: 'supported-boards.md'
     - Hardware debuggers: 'supported-debuggers.md'
   - Caveats:
     - Disclaimer: 'disclaimer.md'
