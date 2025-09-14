@@ -16,7 +16,7 @@ All Arduino boards equipped with one of the chips mentioned as supported are sup
 - **Arduino Leonardo**: no core yet
 - Arduino Leonardo ETH: no core yet
 - Arduino Micro: no core yet
-- ~~Arduino Esplora~~: JTAG pins are not accessible
+- <s>Arduino Esplora</s>s: JTAG pins are not accessible
 - Arduino Mini: Supported by MiniCore; do not connect DTR pin of FTDI header
 - Arduino Ethernet (Rev1): MiniCore; do not connect DTR pin of FTDI header
 - Arduino Fio: MiniCore; do not connect DTR pin of FTDI header and do not connect XBee
@@ -26,7 +26,7 @@ All Arduino boards equipped with one of the chips mentioned as supported are sup
 - Arduino Pro: MiniCore; do not connect DTR pin of FTDI header
 - **Arduino Pro Mini**: MiniCore; do not connect DTR pin of FTDI header
 - Arduino NG (ATmega168): MiniCore; no modifications necessary
-- ~~Arduino NG (ATmega8)~~: no debugging interface
+- <s>Arduino NG (ATmega8)</s>: no debugging interface
 - Arduino Robot Control: no core yet
 - Arduino Robot Motor: no core yet
 - **Arduino Gemma**: ATTinyCore; RESET pad on backside

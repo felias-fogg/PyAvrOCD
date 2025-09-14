@@ -14,7 +14,7 @@ After [installing the package](INSTALL.md), the following steps are necessary fo
 2. [Preparing the target board for debugging](board-preparation.md)
 3. [Connecting the hardware debugger to the target](connect-to-target.md)
 4. [Invoking the GDB server](command-line-options.md)
-5. [Debugging a program on the target](usage.md)
+5. [Debugging a program on the target](debugging.md)
 6. [Restoring the target to its original state](restore-original-state.md)
 
 Once you have a debugger connected to the server, you can control the server's behavior using [`monitor` commands](monitor-commands.md).
