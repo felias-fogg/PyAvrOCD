@@ -40,11 +40,11 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal current" href="#">GDB server</a>
 <ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2-does-not-work-yet">Arduino IDE 2 (does not work yet)</a>
+<li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#downloading-binaries-does-not-work-yet">Downloading binaries (does not work yet)</a>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pypi-does-not-work-yet">PyPI (does not work yet)</a>
+<li class="toctree-l2"><a class="reference internal" href="#pypi-not-implemented-yet">PyPI (not implemented yet)</a>
 <ul>
 <li class="toctree-l3"><a class="reference internal" href="#linux">Linux</a>
 </li>
@@ -78,7 +78,9 @@
 </ul>
 <p class="caption"><span class="caption-text">Supported devices</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../supported-mcus-and-boards/">MCUs</a>
+<li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
 </li>
@@ -122,13 +124,13 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="pyavrocd-installation">PyAvrOCD Installation</h1>
-<h2 id="arduino-ide-2-does-not-work-yet">Arduino IDE 2 (does not work yet)</h2>
+<h2 id="arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</h2>
 <p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly.</p>
-<h2 id="downloading-binaries-does-not-work-yet">Downloading binaries (does not work yet)</h2>
+<h2 id="downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</h2>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a> (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code>, a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code>, the GDB debugger for AVR chips. Store <code>pyavrocd</code> and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.ƒ3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
-<h2 id="pypi-does-not-work-yet">PyPI (does not work yet)</h2>
+<h2 id="pypi-not-implemented-yet">PyPI (not implemented yet)</h2>
 <p>I assume you already installed a recent Python version (&gt;=3.9).</p>
 <p>Although it is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a>. Pipx installs packages in a way so that they are completely isolated from the rest of your Python installation, and you are able to install them in a way so that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
 <h3 id="linux">Linux</h3>
