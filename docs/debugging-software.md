@@ -1,6 +1,6 @@
 # Debugging software
 
-The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means you still need to install the debugger, which in our case means avr-gdb. However, perhaps you even want more than that.
+The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you even want more than that.
 
 ## CLI debugging
 

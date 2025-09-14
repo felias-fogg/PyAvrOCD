@@ -16,7 +16,7 @@ Since the binaries were generated on very recent versions of the respective oper
 
 I assume you already installed a recent Python version (>=3.9).
 
-It will be necessary to install [pipx](https://pipx.pypa.io/) first. If you haven't done so already, follow the instructions on the [pipx website](https://pipx.pypa.io/stable/installation/). Then proceed as follows.
+Although it is possible to install PyAvrOCD using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/), it is recommended to use [pipx](https://pipx.pypa.io/). Pipx installs packages in a way so that they are completely isolated from the rest of your Python installation, and you are able to install them in a way so that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the [pipx website](https://pipx.pypa.io/stable/installation/). Then proceed as follows.
 
 ### Linux
 

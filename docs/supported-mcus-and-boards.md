@@ -52,7 +52,7 @@ All Arduino boards equipped with one of the chips mentioned above can be debugge
 
 ## ATmegas with JTAG interface
 
-Note that the MCUs are supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.
+The MCUs in the lists below are all supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2.
 
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
