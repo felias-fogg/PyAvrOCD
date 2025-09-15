@@ -120,72 +120,72 @@
 </thead>
 <tbody>
 <tr>
-<td><code>monitor atexit</code> [<code>stayindebugwire</code> | <code>leavedebugwire</code>]</td>
+<td><code>monitor</code> <code>atexit</code> [<code>stayindebugwire</code> | <code>leavedebugwire</code>]</td>
 <td>When specifying <code>leavedubgwire</code>, then debugWIRE mode will be left when exiting the debugger. This is useful when dealing with embedded debuggers. The default is <code>stayindebugwire</code>, i.e., debugWIREmode will not be left when exiting the debugger. <strong>(+)</strong></td>
 </tr>
 <tr>
-<td><code>monitor breakpoints</code> [<code>all</code> | <code>software</code> | <code>hardware</code>]</td>
+<td><code>monitor</code> <code>breakpoints</code> [<code>all</code> | <code>software</code> | <code>hardware</code>]</td>
 <td>Restricts the kind of breakpoints the hardware debugger can use. Either <code>all</code> types are permitted, only <code>software</code> breakpoints are allowed, or only <code>hardware</code> breakpoints can be used. Using <code>all</code> kinds is the default.</td>
 </tr>
 <tr>
-<td><code>monitor caching</code> [<code>enable</code> | <code>disable</code>]</td>
+<td><code>monitor</code> <code>caching</code> [<code>enable</code> | <code>disable</code>]</td>
 <td>The loaded executable is cached in the gdbserver when <code>enabled</code>, which is the default setting. <strong>(+)</strong></td>
 </tr>
 <tr>
-<td><code>monitor debugwire</code> [<code>enable</code> | <code>disable</code>]</td>
+<td><code>monitor</code> <code>debugwire</code> [<code>enable</code> | <code>disable</code>]</td>
 <td>DebugWIRE mode will be <code>enable</code>d or <code>disable</code>d. When enabling it, the MCU will be reset, and you may be asked to power-cycle the target. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming.<br/></td>
 </tr>
 <tr>
-<td><code>monitor erasebeforeload</code> [<code>enable</code> | <code>disable</code>]</td>
+<td><code>monitor</code> <code>erasebeforeload</code> [<code>enable</code> | <code>disable</code>]</td>
 <td>This monitor option controls whether the flash is erased before an executable is loaded, which is the default for all targets, except for debugWIRE targets, which do not have a chip erase command in debug mode. <strong>(+)</strong></td>
 </tr>
 <tr>
-<td><code>monitor help</code></td>
+<td><code>monitor</code> <code>help</code></td>
 <td>Display help text.</td>
 </tr>
 <tr>
-<td><code>monitor info</code></td>
+<td><code>monitor</code> <code>info</code></td>
 <td>Display information about the target and the state of the debugger.</td>
 </tr>
 <tr>
-<td><code>monitor load</code> [<code>readbeforewrite</code> | <code>writeonly</code>]</td>
+<td><code>monitor</code> <code>load</code> [<code>readbeforewrite</code> | <code>writeonly</code>]</td>
 <td>When loading an executable, either each flash page is compared with the content to be loaded, and flashing is skipped if the content is already there, or each flash page is written without reading the current contents beforehand. The first option is the default option for debugWIRE targets. For JTAG targets, the overhead of checking whether the page content is identical is so high that the <code>writeonly</code> option is the default.</td>
 </tr>
 <tr>
-<td><code>monitor onlywhenloaded</code> [<code>enable</code> | <code>disable</code>]</td>
+<td><code>monitor</code> <code>onlywhenloaded</code> [<code>enable</code> | <code>disable</code>]</td>
 <td>Execution is only possible when a <code>load</code> command was previously executed, which is the default. If you want to start execution without loading an executable first, you need to <code>disable</code> this mode.</td>
 </tr>
 <tr>
-<td><code>monitor rangestepping</code>[<code>enable</code> | <code>disable</code>]</td>
+<td><code>monitor</code> <code>rangestepping</code>[<code>enable</code> | <code>disable</code>]</td>
 <td>The GDB range-stepping command is supported or disabled. The default is that it is <code>enable</code>d.  <strong>(+)</strong></td>
 </tr>
 <tr>
-<td><code>monitor reset</code></td>
+<td><code>monitor</code> <code>reset</code></td>
 <td>Resets the MCU.</td>
 </tr>
 <tr>
-<td><code>monitor singlestep</code> [<code>safe</code> | <code>interruptible</code>]</td>
-<td>Single-stepping can be performed in a <code>safe</code> way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The <code>safe</code> option is the default.</td>
+<td><code>monitor</code> <code>singlestep</code> [<code>safe</code> | <code>interruptible</code>]</td>
+<td>Single-stepping can be performed in a <code>safe</code> way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The <code>safe</code> option is the default. Note that the <code>safe</code> option reduces the number of available hardware breakpoints by one.</td>
 </tr>
 <tr>
-<td><code>monitor speed</code> [<code>low</code> | <code>high</code>]</td>
+<td><code>monitor</code> <code>speed</code> [<code>low</code> | <code>high</code>]</td>
 <td>Set the communication speed limit to the target to <code>low</code> (=150kbps) (default) or to <code>high</code> (=300kbps); without an argument, the current communication speed and speed limit are printed.<strong>(*)</strong></td>
 </tr>
 <tr>
-<td><code>monitor timer</code> [<code>run</code> | <code>freeze</code>]</td>
+<td><code>monitor</code> <code>timer</code> [<code>run</code> | <code>freeze</code>]</td>
 <td>Timers can either be <code>frozen</code> when execution is stopped, or they can <code>run</code> freely. The latter option is helpful when PWM output is crucial and is the default.</td>
 </tr>
 <tr>
-<td><code>monitor verify</code> [<code>enable</code>|<code>disable</code>]</td>
+<td><code>monitor</code> <code>verify</code> [<code>enable</code>|<code>disable</code>]</td>
 <td>Verify flash after loading each flash page. The default setting is for this option to be <code>enable</code>d.</td>
 </tr>
 <tr>
-<td><code>monitor version</code></td>
+<td><code>monitor</code> <code>version</code></td>
 <td>Show version of the gdbserver.</td>
 </tr>
 </tbody>
 </table>
-<p>All commands can, as usual, be abbreviated. For example, <code>mo d e</code> is equivalent to <code>monitor debugwire enable</code>. If you use a command without an argument, the current setting is printed.</p>
+<p>All commands can, as usual, be abbreviated. For example, <code>mo d e</code> is equivalent to <code>monitor debugwire enable</code>. If you use a command without an argument, the current setting is printed. All state-changing commands (except <code>debugwire</code>) can also be specified as command-line options when invoking PyAvrOCD, e.g., <code>--verify disable</code>.</p>
 <p>Commands marked with <strong>(+)</strong> are not implemented in dw-link; those marked with <strong>(*)</strong> are specific to dw-link.</p>
 </div>
 </div><footer>

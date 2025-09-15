@@ -144,7 +144,7 @@
 </tr>
 <tr>
 <td><code>--manage</code><br><code>-m</code></br></td>
-<td>Can be given multiple times and specifies which fuses should be managed by PyAvrOCD. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by PyAvrOCD need to be changed 'manually' before and/or after the GDB server is activated. Note that dw-link ignores this option!</td>
+<td>Can be given multiple times and specifies which fuses should be managed by PyAvrOCD. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by PyAvrOCD need to be changed 'manually' before and/or after the GDB server is activated. The default for this option is <code>none</code>, i.e., all fuses have to be dealt with by the user. Note that dw-link ignores this option.</td>
 </tr>
 <tr>
 <td><code>--port</code> <br/><code>-p</code></td>
@@ -168,7 +168,7 @@
 </tr>
 <tr>
 <td><code>--verbose</code> <br/><code>-v</code></td>
-<td>Specify verbosity level. Possible values are <code>all</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, or <code>critical</code>. The default is <code>info</code>. The option value <code>all</code> means that, in addition to the debug output, all communication with GDB is logged.</td>
+<td>Specify verbosity level. Possible values are <code>all</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code>, or <code>critical</code>. The option value <code>all</code> means that, in addition to the <code>debug</code> output, all communication with GDB is logged. The default is <code>info</code>.</td>
 </tr>
 <tr>
 <td><code>--version</code> <br/><code>-V</code></td>
