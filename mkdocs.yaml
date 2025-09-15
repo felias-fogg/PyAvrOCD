@@ -7,13 +7,6 @@ extra_css:
   - style.css
 
 plugins:
-  - with-pdf:
-      author: Bernhard Nebel
-      cover: true
-      cover_title: PyAvrOCD
-      cover_subtitle: A Platform-Agnostic GDB Server
-      copyright: Copyright 2025
-      output_path: ../docs/PyAvrOCD.pdf
   - search
 
 site_name: PyAvrOCD
