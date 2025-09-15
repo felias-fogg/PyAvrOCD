@@ -1,112 +1,119 @@
 <!DOCTYPE html>
-
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" >
 <head>
-<meta charset="utf-8"/>
-<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Load Speed - PyAvrOCD</title>
-<link href="../css/theme.css" rel="stylesheet"/>
-<link href="../css/theme_extra.css" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Load Speed - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
         // Current page data
         var mkdocs_page_name = "Load Speed";
         var mkdocs_page_input_path = "load-speed.md";
         var mkdocs_page_url = null;
       </script>
-<!--[if lt IE 9]>
+    
+    <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
-<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
 <body class="wy-body-for-nav" role="document">
-<div class="wy-grid-for-nav">
-<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
-<div class="wy-side-scroll">
-<div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> PyAvrOCD
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
         </a><div role="search">
-<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
-<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
-</form>
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
 </div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../LICENSE.txt">License</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Load Speed</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/load-speed.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
 </div>
-<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
-<p class="caption"><span class="caption-text">Installation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Supported devices</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Caveats</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">About</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../LICENSE.txt">License</a>
-</li>
-</ul>
-</div>
-</div>
-</nav>
-<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
-<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
-<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">PyAvrOCD</a>
-</nav>
-<div class="wy-nav-content">
-<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
-<ul class="wy-breadcrumbs">
-<li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
-<li class="breadcrumb-item active">Load Speed</li>
-<li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/load-speed.md"> Edit on GitHub</a>
-</li>
-</ul>
-<hr/>
-</div>
-<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
-<div class="section" itemprop="articleBody">
-<h1 id="load-speed">Load Speed</h1>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="load-speed">Load Speed</h1>
 <p>The time to upload a new version of the firmware is, of course, a critical factor in the development process. Interestingly, there is a wide variation. In the tables below, you find numbers for a number of different configurations. All measurements are in kB/sec as reported by GDB's load function. To provide a perspective, the Arduino Uno bootloader programs an Uno at 7 kB/sec and verifies it at 10 kB/sec. So, you can upload and verify new firmware in less than 10 seconds.</p>
 <p>The first number in each pair gives the speed when verification of uploaded code is switched off (<code>monitor verify disable</code>), the second number is for the case that this option is switched on (<code>monitor verify enable</code>). The first line in each cell is the speed of loading without a prior check of whether the code is already loaded (<code>monitor load writeonly</code>), while the second and third lines give the speed for read-before-write (<code>monitor load readbeforewrite</code>). The second line shows the worst case, i.e., no loaded page is identical with the file to be loaded, and the third line shows the best case, i.e., no page had to be loaded.</p>
 <p>The first table is about debugWIRE targets.  As one can see, having verification switched on does not slow down anything. Further, even in the worst case, read-before-write is never slower than blind writing.</p>
@@ -126,72 +133,72 @@
 <tbody>
 <tr>
 <td>mega328P (16MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.7/0.7<br/>0.7/0.7<br/>12/12</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>6/6</td>
-<td>1.0/1.0<br/>1.0/1.0<br/>14/14</td>
-<td>1.0/1.0<br/>1.0/1.0<br/>14/14</td>
-<td>0.7/0.7<br/>0.7/0.7<br/>13/13</td>
-<td>0.3/0.3<br/>0.3/0.3<br/>3/3</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.7/0.7<br>0.7/0.7<br>12/12</td>
+<td>0.6/0.6<br>0.6/0.6<br>6/6</td>
+<td>1.0/1.0<br>1.0/1.0<br>14/14</td>
+<td>1.0/1.0<br>1.0/1.0<br>14/14</td>
+<td>0.7/0.7<br>0.7/0.7<br>13/13</td>
+<td>0.3/0.3<br>0.3/0.3<br>3/3</td>
 </tr>
 <tr>
 <td>mega328P (8MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.7/0.7<br/>0.7/0.7<br/>12/12</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>6/6</td>
-<td>1.0/1.0<br/>1.0/1.0<br/>14/14</td>
-<td>1.0/1.0<br/>1.0/1.0<br/>14/14</td>
-<td>0.7/0.7<br/>0.7/0.7<br/>13/13</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.7/0.7<br>0.7/0.7<br>12/12</td>
+<td>0.6/0.6<br>0.6/0.6<br>6/6</td>
+<td>1.0/1.0<br>1.0/1.0<br>14/14</td>
+<td>1.0/1.0<br>1.0/1.0<br>14/14</td>
+<td>0.7/0.7<br>0.7/0.7<br>13/13</td>
 <td></td>
 </tr>
 <tr>
 <td>mega328P(1MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.5/0.5<br/>0.5/0.5<br/>7/7</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>4/4</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>8/8</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>8/8</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>7/7</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.5/0.5<br>0.5/0.5<br>7/7</td>
+<td>0.4/0.4<br>0.4/0.4<br>4/4</td>
+<td>0.6/0.6<br>0.6/0.6<br>8/8</td>
+<td>0.6/0.6<br>0.6/0.6<br>8/8</td>
+<td>0.4/0.4<br>0.4/0.4<br>7/7</td>
 <td></td>
 </tr>
 <tr>
 <td>tiny85 (8MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>9/9</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>3/3</td>
-<td>0.7/0.7<br/>0.7/0.7<br/>12/12</td>
-<td>0.7/0.7<br/>0.7/0.7<br/>12/12</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>10/10</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.4/0.4<br>0.4/0.4<br>9/9</td>
+<td>0.4/0.4<br>0.4/0.4<br>3/3</td>
+<td>0.7/0.7<br>0.7/0.7<br>12/12</td>
+<td>0.7/0.7<br>0.7/0.7<br>12/12</td>
+<td>0.4/0.4<br>0.4/0.4<br>10/10</td>
 <td></td>
 </tr>
 <tr>
 <td>tiny85 (1MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.3/0.3<br/>0.3/0.3<br/>6/6</td>
-<td>0.3/0.3<br/>0.3/0.3<br/>3/3</td>
-<td>0.5/0.5<br/>0.5/0.5<br/>7/7</td>
-<td>0.5/0.5<br/>0.5/0.5<br/>7/7</td>
-<td>0.3/0.3<br/>0.3/0.3<br/>6/6</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.3/0.3<br>0.3/0.3<br>6/6</td>
+<td>0.3/0.3<br>0.3/0.3<br>3/3</td>
+<td>0.5/0.5<br>0.5/0.5<br>7/7</td>
+<td>0.5/0.5<br>0.5/0.5<br>7/7</td>
+<td>0.3/0.3<br>0.3/0.3<br>6/6</td>
 <td></td>
 </tr>
 <tr>
 <td>tiny1634 (8MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.3/0.3<br/>0.3/0.3<br/>4/4</td>
-<td>0.2/0.2<br/>0.2/0.2<br/>2/2</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>8/8</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>8/8</td>
-<td>0.3/0.3<br/>0.3/0.3<br/> 7/7</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.3/0.3<br>0.3/0.3<br>4/4</td>
+<td>0.2/0.2<br>0.2/0.2<br>2/2</td>
+<td>0.6/0.6<br>0.6/0.6<br>8/8</td>
+<td>0.6/0.6<br>0.6/0.6<br>8/8</td>
+<td>0.3/0.3<br>0.3/0.3<br> 7/7</td>
 <td></td>
 </tr>
 <tr>
 <td>tiny1634 (1MHz)</td>
-<td>0.6/0.6<br/>0.6/0.6<br/>4/4</td>
-<td>0.2/0.2<br/>0.2/0.2<br/>4/4</td>
-<td>0.2/0.2<br/>0.2/0.2<br/>2/2</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>5/5</td>
-<td>0.4/0.4<br/>0.4/0.4<br/>4/4</td>
-<td>0.2/0.2<br/>0.2/0.2<br/>4/4</td>
+<td>0.6/0.6<br>0.6/0.6<br>4/4</td>
+<td>0.2/0.2<br>0.2/0.2<br>4/4</td>
+<td>0.2/0.2<br>0.2/0.2<br>2/2</td>
+<td>0.4/0.4<br>0.4/0.4<br>5/5</td>
+<td>0.4/0.4<br>0.4/0.4<br>4/4</td>
+<td>0.2/0.2<br>0.2/0.2<br>4/4</td>
 <td></td>
 </tr>
 </tbody>
@@ -212,55 +219,67 @@
 </thead>
 <tbody>
 <tr>
-<td>mega324PB<br/>mega128<br/>mega2560</td>
-<td>6/3<br>3/2<br>7/7</br></br></td>
-<td>5/2<br/>2/2<br/>5/5</td>
-<td>8/5<br/>5/3<br/>10/10</td>
-<td>8/5<br/>5/3<br/>10/10</td>
-<td>7/4<br/>4/3<br/>9/9</td>
-<td>8/5<br/>5/3<br/>10/10</td>
+<td>mega324PB<br>mega128<br>mega2560</td>
+<td>6/3<br/>3/2<br/>7/7</td>
+<td>5/2<br>2/2<br>5/5</td>
+<td>8/5<br>5/3<br>10/10</td>
+<td>8/5<br>5/3<br>10/10</td>
+<td>7/4<br>4/3<br>9/9</td>
+<td>8/5<br>5/3<br>10/10</td>
 </tr>
 <tr>
 <td>mega32u4</td>
-<td>5/3<br/>3/2<br/>7/7</td>
-<td>4/2<br/>2/1<br/>5/5</td>
-<td>6/4<br/>4/3<br/>10/10</td>
-<td>7/4<br/>4/3<br/>10/10</td>
-<td>6/4<br/>4/3<br/>9/9</td>
+<td>5/3<br>3/2<br>7/7</td>
+<td>4/2<br>2/1<br>5/5</td>
+<td>6/4<br>4/3<br>10/10</td>
+<td>7/4<br>4/3<br>10/10</td>
+<td>6/4<br>4/3<br>9/9</td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <p>First of all, one notices that there is no difference between the different MCU clocks. The reason is that the hardware debugger generates the programming clock signal. Second, one notes that in the JTAG case, reading has non-negligible costs. The verifying setting has roughly half the speed of the non-verifying setting, and read-before-write halves the speed as well. The identical numbers in the third row have a simple explanation. Since this is the best case for read-before-write, i.e., no page has to be programmed, one also does not need to verify the write operation.</p>
-</div>
-</div><footer>
-<hr/>
-<div role="contentinfo">
-<!-- Copyright etc -->
-</div>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
 </div>
-</div>
-</section>
-</div>
-<div aria-label="Versions" class="rst-versions" role="note">
-<span class="rst-current-version" data-toggle="rst-current-version">
-<span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
-</span>
-</span>
-</div>
-<script src="../js/jquery-3.6.0.min.js"></script>
-<script>var base_url = "..";</script>
-<script src="../js/theme_extra.js"></script>
-<script src="../js/theme.js"></script>
-<script src="../search/main.js"></script>
-<script>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
         jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
         });
     </script>
+
 </body>
 </html>

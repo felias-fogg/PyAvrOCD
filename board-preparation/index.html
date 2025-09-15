@@ -1,149 +1,156 @@
 <!DOCTYPE html>
-
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" >
 <head>
-<meta charset="utf-8"/>
-<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="../img/favicon.ico" rel="shortcut icon"/>
-<title>Preparing the target - PyAvrOCD</title>
-<link href="../css/theme.css" rel="stylesheet"/>
-<link href="../css/theme_extra.css" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
-<link href="../style.css" rel="stylesheet"/>
-<script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Preparing the target - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
         // Current page data
         var mkdocs_page_name = "Preparing the target";
         var mkdocs_page_input_path = "board-preparation.md";
         var mkdocs_page_url = null;
       </script>
-<!--[if lt IE 9]>
+    
+    <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
-<link href="../../docs/PyAvrOCD.pdf" rel="alternate" title="PDF" type="application/pdf"/></head>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
 <body class="wy-body-for-nav" role="document">
-<div class="wy-grid-for-nav">
-<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
-<div class="wy-side-scroll">
-<div class="wy-side-nav-search">
-<a class="icon icon-home" href=".."> PyAvrOCD
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
         </a><div role="search">
-<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
-<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
-</form>
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
 </div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Preparing the target</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-considerations">General considerations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-debugwire-target">Preparing a debugWIRE target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#physical-preparations">Physical preparations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings">Fuse settings</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-jtag-target">Preparing a JTAG target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#physical-preparation">Physical preparation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_1">Fuse settings</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-pdi-target">Preparing a PDI target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#physical-preparation_1">Physical preparation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_2">Fuse settings</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-updi-target">Preparing a UPDI target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#physical-preparations_1">Physical preparations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_3">Fuse settings</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../LICENSE.txt">License</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Preparing the target</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/board-preparation.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
 </div>
-<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
-<p class="caption"><span class="caption-text">Installation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Usage</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal current" href="#">Preparing the target</a>
-<ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="#general-considerations">General considerations</a>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#preparing-a-debugwire-target">Preparing a debugWIRE target</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#physical-preparations">Physical preparations</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#fuse-settings">Fuse settings</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#preparing-a-jtag-target">Preparing a JTAG target</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#physical-preparation">Physical preparation</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#fuse-settings_1">Fuse settings</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#preparing-a-pdi-target">Preparing a PDI target</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#physical-preparation_1">Physical preparation</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#fuse-settings_2">Fuse settings</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#preparing-a-updi-target">Preparing a UPDI target</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#physical-preparations_1">Physical preparations</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#fuse-settings_3">Fuse settings</a>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Supported devices</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Caveats</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">About</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../LICENSE.txt">License</a>
-</li>
-</ul>
-</div>
-</div>
-</nav>
-<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
-<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
-<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
-<a href="..">PyAvrOCD</a>
-</nav>
-<div class="wy-nav-content">
-<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
-<ul class="wy-breadcrumbs">
-<li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
-<li class="breadcrumb-item">Usage</li>
-<li class="breadcrumb-item active">Preparing the target</li>
-<li class="wy-breadcrumbs-aside">
-<a class="icon icon-github" href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/board-preparation.md"> Edit on GitHub</a>
-</li>
-</ul>
-<hr/>
-</div>
-<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
-<div class="section" itemprop="articleBody">
-<h1 id="preparing-a-target-board-for-debugging">Preparing a target board for debugging</h1>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="preparing-a-target-board-for-debugging">Preparing a target board for debugging</h1>
 <p>When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes necessary to enable the board for debugging:</p>
 <ul>
 <li>download the current fuse settings (using avrdude),</li>
@@ -168,22 +175,26 @@
 <p>Since the RESET line is used for communication between the MCU and the hardware debugger, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
 <p>On the <strong>Arduino Uno</strong> and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.</p>
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg" width="50%"/>
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg" width="50%">
 </p>
+
 <p>This is responsible for issuing a reset signal when a serial connection is established to the board, which starts the bootloader, which then expects a HEX file sent by the Arduino IDE. On the original Uno board, there is a solder bridge marked 'RESET EN' that needs to be cut to disconnect the capacitor.</p>
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg" width="80%"/>
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg" width="80%">
 </p>
+
 <p>On clone boards with a CH340 serial converter chip, you may have to remove the capacitor marked <code>C8</code>.</p>
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png" width="80%"/>
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png" width="80%">
 </p>
+
 <p>Things are a bit more complicated with <strong>Arduino Nano</strong> boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. This is impossible for the original boards because the resistor is part of a resistor array. You may try to cut the trace from Vcc to the resistor, but I doubt this can be done without damaging other parts of the board.</p>
 <p>For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor, <a href="https://mtech.dk/thomsen/electro/arduino.php">as described by denMike</a>.</p>
 <p>The <strong>Arduino Pro Mini</strong> is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.</p>
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png" width="80%"/>
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png" width="80%">
 </p>
+
 <p>For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.</p>
 <h3 id="fuse-settings">Fuse settings</h3>
 <p>In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the <code>RSTDSBL</code> fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when <code>SPIEN</code> (enabling SPI programming) is unprogrammed.</p>
@@ -207,41 +218,55 @@
 <p>On the <strong>Uno WIFI Rev2</strong>, again the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.</p>
 <h3 id="fuse-settings_3">Fuse settings</h3>
 <p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. To enable debugging and programming over this pin again, you will need to use a <a href="https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6">high-voltage UPDI programmer.</a> Here, you must ensure that the 12 V pulse does not damage any components on your board.</p>
-</div>
-</div><footer>
-<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
-<a class="btn btn-neutral float-left" href="../debugging-software/" title="Debugging software"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="../connect-to-target/" title="Connecting to target">Next <span class="icon icon-circle-arrow-right"></span></a>
-</div>
-<hr/>
-<div role="contentinfo">
-<!-- Copyright etc -->
-</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../debugging-software/" class="btn btn-neutral float-left" title="Debugging software"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../connect-to-target/" class="btn btn-neutral float-right" title="Connecting to target">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../debugging-software/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../connect-to-target/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
 </div>
-</div>
-</section>
-</div>
-<div aria-label="Versions" class="rst-versions" role="note">
-<span class="rst-current-version" data-toggle="rst-current-version">
-<span>
-<a class="fa fa-github" href="https://github.com/felias-fogg/PyAvrOCD" style="color: #fcfcfc"> GitHub</a>
-</span>
-<span><a href="../debugging-software/" style="color: #fcfcfc">« Previous</a></span>
-<span><a href="../connect-to-target/" style="color: #fcfcfc">Next »</a></span>
-</span>
-</div>
-<script src="../js/jquery-3.6.0.min.js"></script>
-<script>var base_url = "..";</script>
-<script src="../js/theme_extra.js"></script>
-<script src="../js/theme.js"></script>
-<script src="../search/main.js"></script>
-<script>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
         jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
         });
     </script>
+
 </body>
 </html>
