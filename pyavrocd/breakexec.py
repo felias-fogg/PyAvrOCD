@@ -266,7 +266,7 @@ class BreakAndExec():
         Perform a single step. If at the current location, there is a software breakpoint,
         we simulate a two-word instruction or ask the hardware debugger to do a single step
         if it is a one-word instruction. The simulation saves two flash reprogramming operations.
-        Otherwise, if mon._safe is true, it means that we will try to not end up in the
+        Otherwise, if mon._safe is true, we will make every effort to not end up in the
         interrupt vector table. For all straight-line instructions, we will use the hardware
         breakpoint to break after one step. If an interrupt occurs, we may break in the ISR,
         if there is a breakpoint, or we will not notice it at all. For all remaining instruction
@@ -299,8 +299,7 @@ class BreakAndExec():
             return SIGABRT
         # If there is a SWBP at the place where we want to step,
         # use the internal single-step (which will execute the instruction offline)
-        # or, if a two-word instruction, simulate the step. That is, if memory
-        # is not 256k!
+        # or, if a two-word instruction, simulate the step.
         if addr in self._bp and self._bp[addr]['inflash']:
             if self.two_word_instr(self._bp[addr]['opcode']):
             # if there is a two word instruction, simulate
@@ -310,10 +309,6 @@ class BreakAndExec():
                 self.logger.debug("New PC(byte addr)=0x%X, return SIGTRAP", addr)
                 self.dbg.program_counter_write(addr>>1)
                 return SIGTRAP
-            # one-word instructions are handled by offline execution in the OCD
-            self.logger.debug("One-word instruction at SWBP: offline execution in OCD")
-            self.dbg.step()
-            return SIGTRAP
         # if stepping is unsafe, just use the AVR stepper
         if not self.mon.is_safe():
             self.logger.debug("Unsafe Single-stepping: use AVR stepper, return SIGTRAP")

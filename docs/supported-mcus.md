@@ -30,9 +30,7 @@ This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. MCUs
 * __ATmega168__, __ATmega168A__, __ATmega168PA__, **ATmega168PB**,
 * **ATmega328**, __ATmega328P__, **ATmega328PB**
 
-The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. They also act strangely when trying to switch to debugWIRE mode or back (you can easily brick them this way).
-
-I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will refuse to handle them.
+The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. They also act strangely when trying to switch to debugWIRE mode or back (you can easily brick them this way). I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.
 
 ### Other ATmegas
 
@@ -46,14 +44,14 @@ I suspect that this applies to all chips labeled this way. Even chips recently p
 
 ## ATmegas with JTAG interface
 
-The MCUs in the lists below are all supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are under test.
+The MCUs in the lists below are all supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.
 
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
 * <s>**ATmega16**</s>, ATmega16A, **ATmega32**, ATmega32A
 * ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
 
-The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged.
+The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on a chip labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-1-bits.
 
 ### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 

@@ -373,7 +373,7 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     - interface string
     """
     if args.version:
-        print("pyavrocd version {}".format(importlib.metadata.version("pyavrocd")))
+        print("PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))
         return 0,None,None
 
     if args.cmd:
@@ -496,7 +496,7 @@ def main():
 
     # set up logging
     logger = setup_logging(args, log_rsp)
-    logger.info("This is pyavrocd version %s", importlib.metadata.version("pyavrocd"))
+    logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
 
     result, device, intf = process_arguments(args, logger)
     if result is not None:

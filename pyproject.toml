@@ -1,11 +1,22 @@
 [project]
 name = "pyavrocd"
-version = "0.13.4"
+version = "0.13.5"
 description = "A platform-agnostic GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
+    ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Topic :: Software Development :: Debuggers"
 ]
 license = {text = "MIT"}
+license-files = ["LICENSE*"]
 readme = "README.md"
 requires-python = "<3.14,>=3.9"
 dependencies = [
@@ -21,7 +32,9 @@ dependencies = [
 ]
 
 [project.urls]
-repository = "https://github.com/felias-fogg/pyavrocd"
+repository = "https://github.com/felias-fogg/PyAvrOCD"
+documentation = "https://felias-fogg.github.io/PyAvrOCD/"
+"Bug Tracker" = "https://github.com/felias-fogg/PyAvrOCD/issues"
 
 [project.scripts]
 pyavrocd = 'pyavrocd.main:main'
@@ -54,12 +67,6 @@ markers = [
 [tool.pylint.main]
 ignore-patterns = ["at(tiny|mega|90).*\\.py"]
 jobs = 1
-
-[tool.pylint.format]
-max-line-length = 100
-
-[tool.pylint.basic]
-good-names = ["i", "j", "k", "ex", "Run", "_", "e", "f", "x", "y", "z"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

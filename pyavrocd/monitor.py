@@ -385,7 +385,7 @@ monitor verify [enable|disable]    - verify that loading was successful (def.)
 If no parameter is specified, the current setting is returned""")
 
     def _mon_info(self, _):
-        return ('info',"""Pyavrocd version:         """ + importlib.metadata.version("pyavrocd") + """
+        return ('info',"""PyAvrOCD version:         """ + importlib.metadata.version("pyavrocd") + """
 Target:                   {}
 Debugging interface:      """ + self._iface + ((" (leave on exit)" if self._leaveonexit else " (stay on exit)") \
                                                    if self._iface == "debugwire" else "") + """
@@ -456,7 +456,7 @@ Timers:                   """ + ("frozen when stopped"
         return self._mon_unknown_arg(None)
 
     def _mon_version(self, _):
-        return("", "pyavrocd version {}".format(importlib.metadata.version("pyavrocd")))
+        return("", "PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))
 
     # The following commands are for internal purposes
     def _mon_noxml(self, _):

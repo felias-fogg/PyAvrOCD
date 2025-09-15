@@ -1,11 +1,14 @@
 # Changelog
 
-### New:
+### 0.13.5:
 
 - **Added:**
   - Installed mkdocs in order to provide a nice UI for the documentation.
   - `eesave` and `noeesave` are now values for the `--manage` option. If the EESAVE fuse is managed, EEPROM will be preserved when chip erase operations are necessary.
   - Setting EESAVE temporarily has been added to `_check_atmega48_and_88`  in xavrdebugger.py.
+- Changed:
+  - The official name and the GitHub repo name have changed to PyAvrOCD. This does not make it easier to pronounce, but it shows better what it is about.
+
 
 ### 0.13.4
 
