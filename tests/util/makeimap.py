@@ -30,6 +30,9 @@ def main():
         else:
             words = 1
         instr_type = 'nobranch'
+        if (elems[2][0:2] == 'st' or elems[2] == 'xch' or elems[2][0:2] == 'la' or \
+            elems[2] == 'sei' or elems[2] == 'cli' or elems[2] == 'out'):
+            instr_type = 'store'
         if (elems[2][0:3] == 'sbr' or elems[2] == 'sbic' or elems[2] == 'sbis' or \
             elems[2][0:2] == 'br' or elems[2] == 'cpse') and elems[2] != 'break':
             instr_type = 'cond'

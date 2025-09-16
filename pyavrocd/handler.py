@@ -278,6 +278,7 @@ class GdbHandler():
         """
         'M': GDB sends new data for MCU memory
         """
+        self.bp.clear_last_single_step_start()
         if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: Memory write, but not connected")
             self.send_packet("E01")
@@ -367,6 +368,7 @@ class GdbHandler():
         """
         'qRcmd': Monitor commands that directly get info or set values in the gdbserver
         """
+        self.bp.clear_last_single_step_start()
         payload = packet[1:]
         self.logger.debug("RSP packet: monitor command: %s"
                               ,binascii.unhexlify(payload).decode('ascii'))
@@ -555,6 +557,7 @@ class GdbHandler():
         'vFlashDone': everything is there, now we can start flashing!
         """
         self.logger.debug("RSP packet: vFlashDone")
+        self.bp.clear_last_single_step_start()
         self._vflashdone = True
         try:
             self.dbg.device.avr.switch_to_progmode()
@@ -673,6 +676,7 @@ class GdbHandler():
         """
         'X': Binary load
         """
+        self.bp.clear_last_single_step_start()
         addr = (packet.split(b',')[0]).decode('ascii')
         size = int(((packet.split(b',')[1]).split(b':')[0]).decode('ascii'),16)
         data = self.unescape((packet.split(b':',1)[1]))

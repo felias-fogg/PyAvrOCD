@@ -439,6 +439,13 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(set([0x342, 0x344]), self.bp._range_exit)
         self.assertEqual([ 0x33e, 0x340, 0x342, 0x344], self.bp._range_branch)
 
+    def test_store_instr(self):
+        for instr in range(0x10000):
+            self.assertEqual(self.bp.store_instr(instr),
+                                 instrmap.get(instr,(None, None, None))[2] in ['store'],
+                                 "Failed at 0x%04X" % instr)
+
+
     def test_branch_instr(self):
         for instr in range(0x10000):
             self.assertEqual(self.bp.branch_instr(instr),
