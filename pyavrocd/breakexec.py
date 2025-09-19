@@ -45,10 +45,6 @@ class BreakAndExec():
         self._range_word = []
         self._range_branch = []
         self._range_exit = set()
-        self._last_single_step_start = 0
-
-    def clear_last_single_step_start():
-        self._last_single_step_start = 0
 
     def maxbpnum(self):
         """
@@ -137,17 +133,7 @@ class BreakAndExec():
         self.remove_inactive_and_deallocate_forbidden_bps(protected_bp):
         # check if there are enough software and hardware breakpoints to allocate
         if len(self._bp) > self.maxbpnum(): # too many BPs requested
-            if self.mon.is_onlyhwbps() and len(self._bp) - 1 == self.maxbpnum() and \
-              self._last_single_step_start in self._bp and \
-              not self._bp[self._last_single_step_start]['allocated']:
-              # This is critical since we might just be asked to re-assert a HWBP after a single-step,
-              # but we do not have enough HWBPs. Issue warning and deallocate BP. This implies that
-              # we can complete the step-over cleanly (but might miss a breakpoint in a recursice call)
-              self.logger.error("Cannot allocate hardware breakpoint for start location.")
-              self.logger.error("Will continue to execute without it (missing recursive calls)")
-              self.remove_breakpoint(self._last_single_step_start)
-            else:
-              return False
+            return False
         # determine most recent HWBP, probably a temporary one!
         most_recent = max(self._bp, key=lambda key: self._bp[key]['timestamp'])
         # all remaining BPs are active or protected
@@ -167,7 +153,8 @@ class BreakAndExec():
                     self._bp[a]['allocated'] = HWBP
                 else:
                     self.logger.debug("BP at 0x%X will now be set as a SW BP", a)
-                    self.dbg.software_breakpoint_set(a)
+                    if not self.dbg.software_breakpoint_set(a):
+                        return False
                     self._bp[a]['allocated'] = SWBP
         return True
 
@@ -247,12 +234,9 @@ class BreakAndExec():
         we simulate a two-word instruction or ask the hardware debugger to do a single step
         if it is a one-word instruction. The simulation saves two flash reprogramming operations.
         Otherwise, if mon._safe is true, we will make every effort to not end up in the
-        interrupt vector table. For all straight-line instructions, we will use the hardware
-        breakpoint to break after one step. If an interrupt occurs, we may break in the ISR,
-        if there is a breakpoint, or we will not notice it at all. For all remaining instruction
-        (except those branching on the I-bit), we clear the I-bit before and set it
-        afterwards (if necessary). For those branching on the I-Bit, we will evaluate and
-        then set the hardware BP.
+        interrupt vector table. For all instruction (except those branching on the I-bit 
+        or addressing SREG), we clear the I-bit before and set it afterwards (if necessary). 
+        For the remaining one, we simulate.
         """
         if fresh:
             self._range_start = None
@@ -275,12 +259,10 @@ class BreakAndExec():
             self.logger.error("Stopping execution in 'single-step' because of BREAK instruction")
             return SIGILL
         if not self.update_breakpoints(addr):
-            self.logger.debug("Not enough free HW BPs: SIGABRT")
+            self.logger.error("Not enough free HW BPs: SIGABRT")
             return SIGABRT
-        self._last_single_step_start = addr
         # If there is a SWBP at the place where we want to step,
-        # if a two-word instruction, simulate the step;
-        # otherwise use a conventional single-step
+        # if a two-word instruction, simulate the step
         if addr in self._bp and self._bp[addr]['allocated']:
             if self.two_word_instr(self._bp[addr]['opcode']):
             # if there is a two word instruction, simulate
@@ -295,33 +277,12 @@ class BreakAndExec():
             self.logger.debug("Unsafe Single-stepping: use AVR stepper, return SIGTRAP")
             self.dbg.step()
             return SIGTRAP
-        # now we have to do the dance using the HWBP or masking the I-bit
-        opcode = self._read_filtered_flash_word(addr)
+        # now we have to check for unsafe instructions, which we simulate;
+        # the other instructions will be single-stepped with the I-Bit cleared.
         self.logger.debug("Interrupt-safe stepping begins here")
-        destination = None
-        # compute destination for straight-line instructions and branches on I-Bit
-        if self.store_instr(opcode):
-            destination = addr + 2 + 2*int(self.two_word_instr(opcode))
-            self.logger.debug("This is a store instructions. Destination=0x%X", destination)
-        if self.branch_on_ibit(opcode):
-            ibit = bool(self.dbg.status_register_read()[0] & 0x80)
-            destination = self.compute_destination_of_ibranch(opcode, ibit, addr)
-            self.logger.debug("Branching on I-Bit. Destination=0x%X", destination)
-        if destination is not None: # we need to single-step using HWBP 0
-            if not self._hwbp.is_temp_allocated(): # if we are range-stepping, we can use HWBP 0
-                reassign = self._hwbp.unallocate_hwbp0()
-                if reassign:
-                    if self.mon.is_onlyhwbps():
-                        # This should not happen
-                        self.logger.error("Additional HWBP needed in safe single-stepping")
-                        return SIGABRT
-                    self.logger.debug("Stealing HWBP 0 from BP at 0x%X", reassign)
-                    self._bp[reassign]['allocated'] = SWBP
-                    self.dbg.software_breakpoint_set(reassign)
-            self.logger.debug("Run to cursor... at 0x%X", destination)
-            self.dbg.run_to(destination)
-            return None
-        # for the remaining branch and load instructions,
+        if self.filter_unsafe_instr(addr, opcode):
+            return SIGTRAP
+        # for the remaining instructions,
         # clear I-bit before and set it afterwards (if it was on before)
         self.logger.debug("Remaining branch instructions")
         sreg = self.dbg.status_register_read()[0]
@@ -342,6 +303,137 @@ class BreakAndExec():
         self.logger.debug("Returning with SIGTRAP")
         return SIGTRAP
 
+    def filter_unsafe_instructions(self, addr, opcode):
+        """
+        Check all intructions for potential I-bit manipulation. If
+        the instruction addresses SREG, it will be simulated and True is returned.
+        """
+        ### LAT, LAS and LAC need to be handeled when we move to UPDI and PDI
+        # BRIE, BRID
+        if self.branch_on_ibit(opcode): 
+            ibit = bool(self.dbg.status_register_read()[0] & 0x80)
+            destination = self.compute_destination_of_ibranch(opcode, ibit, addr)
+            self.logger.debug("Branching on I-Bit. Destination=0x%X", destination)
+            self.dbg.program_counter_write(destination>>1)
+            return True
+        # the remaining branch ops are all safe
+        if self.branch_instr(opcode):
+            return False
+        # LDS and STS 
+        if opcode & 0xFD0F == 0x9000: 
+            secondword = self._read_filtered_flash_word(addr + 2)
+            if secondword != SREGADDR:
+                return False
+            self._load_or_store_reg(opcode, self.is_store_instr)
+            return self._sim_done(addr+2)
+        # LD r,X, ST X,r and LD r,Y, STS Y, r without displacement
+        if opcode & 0xFC00 == 0x9000 and opcode & 0x0003 != 3 and \
+            (opcode & 0x00C0 == 0x00C0 or opcode & 0x0003 != 0):
+            if self._is_x_reg(opcode):
+                base_reg = 26
+            elif self._is_y_reg(opcode):
+                base_reg = 28
+            else:
+                base_reg = 30
+            iaddr = int.from_byte(self.dbg.read_sram(base_reg, 2), byteorder='little')
+            if self._is_pre_decr(opcode):
+                iaddr -= 1
+            if iaddr != SREGADDR:
+                return False
+            self._load_or_store_reg(opcode, self.is_store_instr)
+            if self._is_post_incr(opcode):
+                iaddr += 1
+            if self._is_change_ix(opcode):
+                self.dbg.sram_write(iaddr.to_bytes(2, byteorder='little'))
+            return self._sim_done(addr)
+        # LD r, Y/Z and ST Y/Z, r with displacement
+        if opcode & 0xD000 == 0x8000:
+            disp = self._extract_displacement(opcode)
+            if self._is_y_reg():
+                base_reg  = 28
+            iaddr = int.from_byte(self.dbg.read_sram(base_reg, 2), byteorder='little') + disp
+            if iaddr != SREGADDR:
+                return False
+            self._load_or_store_reg(opcode, self.is_store_instr)
+            return self._sim_done(addr)
+        # IN and OUT
+        if opcode & 0xF000 == 0xD000:
+            if self._extract_io_addr(opcode) == SREGADDR - 0x20:
+                self._load_or_store(opcode, self._is_out_instr)
+                return self._sim_done(addr)
+            else:
+                return False
+        # SEI and CLI
+        if opcode & 0xFF0F == 0x9408:
+            if opcode == 0x9478 # SEI
+                sreg = self.dbg.status_register_read()[0]
+                sreg |= 0x80
+                self.dbg.status_register_write(bytearrays([sreg]))
+                return self._sim_done(addr)
+            if opcode == 0x94F8: # CLI
+                sreg = self.dbg.status_register_read()[0]
+                sreg |= 0x80
+                self.dbg.status_register_write(bytearrays([sreg]))
+                return self._sim_done(addr)
+            return False
+        # PUSH and POP
+        return False
+
+    def _store_reg_to_SREG(self, reg):
+        self.dbg.status_register_write(bytearrays(self.dbg.sram_read(reg,1)))
+
+    def _load_reg_from_SREG(self, reg):
+        self.dbg.sram_write(reg, self.dbg.status_register_read())
+
+    def _load_or_store_reg(self, opcode, do_store_check):
+        if do_store_check(opcode):
+            self._store_reg_to_SREG(self._extract_reg(opcode))
+        else
+            self._load_reg_from_SREG(self._extract_reg(opcode))
+
+    @staticmethod
+    def _extract_io_addr(opcode):
+        return ((opcode & 0x0600) >> 5) + (opcode & 0x000F)
+
+    @staticmethod
+    def _extract_displacement(opcode):
+        return ((opcode & 0x2000) >> 8) + ((opcode & 0x0C00) >> 7) + (opcode & 0x0007)
+
+    @staticmethod
+    def _is_out_instr(opcode):
+        return opcode & 0x0800 != 0
+
+    @staticmethod
+    def _is_post_incr(opcode):
+        return opcode & 3 == 1
+
+    @staticmethod
+    def _is_pre_decr(opcode):
+        return opcode & 3 == 2
+
+    @static_method
+    def _is_change_ix(opcode):
+        return opcode & 3 != 0
+        
+    @staticmethod
+    def _is_x_reg(opcode):
+        return opcode & 0x000C == 0x000C
+
+    @staticmethod
+    def _is_y_reg(opcode):
+        return opcode & 0x0008 == 0x0008 # correct if test for X first or for displacement ops
+    
+    @staticmethod
+    def _extract_reg(opcode):
+        return (opcode & 0x01F0) >> 4
+        
+    @staticmethod
+    def _is_store_instr(opcode):
+        return opcode & 0x0200 != 0
+    
+    def _sim_done(self, addr):
+        self.program_counter_write(addr + 2)
+        return True
 
     def range_step(self, start, end):
         """
@@ -387,8 +479,10 @@ class BreakAndExec():
             else:
                 reserve = [ -1 ]
             for r in self._hwbp.set_temp(reserve):
+                if not self.dbg.software_breakpoint_set(r):
+                    self.logger.error("Could not reassgin HWBPs to SWBPs in range-step")
+                    return SIGABRT
                 self._bp[r]['allocated'] = SWBP
-                self.dbg.software_breakpoint_set(r)
         if self._hwbp.temp_allocated() == len(self._range_exit): # all exits covered
             self._hwbp.execute()
             return None
@@ -613,7 +707,7 @@ class HardwareBP():
     def __init__(self, numhwbp, logger, dbg):
         self._numhwbp = numhwbp
         self._hwbplist = [None]*numhwbp
-        self._temp = None
+        self._tempalloc = None
         self.logger = getLogger('pyavrocd.hardwarebp')
 
 
@@ -633,7 +727,7 @@ class HardwareBP():
         Clear all hardware breakpoints
         """
         self._hwbplist = [None]*self._numhwbp
-        self.dbg.device.avr.breakpoint_clear()
+        self.dbg.breakpoint_clear()
         self.logger.debug("All hardware breakpoints cleared")
 
     def clear(self, addr):
@@ -653,6 +747,8 @@ class HardwareBP():
         if ix < self.numhwbp and ix >= 0 and self._hwbplist[ix] is not None:
             self.logger.debug("HWBP %d at addr 0x%X freed", ix, self._hwbplist[ix])
             self._hwbplist[ix] = None
+            if ix > 0:
+                self.gdb.hardware_breakpoint_clear(ix)
             return True
         self.logger.error("Tried to release unallocated hardware breakpoint %d", ix)
         return False
@@ -665,17 +761,19 @@ class HardwareBP():
 
     def set(self, addr):
         """
-        Allocates the next free hardware breakpoint (counting up) and returns True
-        -- provided there is a free hardware breakpoint. Otherwise, False is returned.
+        Allocates the next free hardware breakpoint (counting up) and returns the index
+        -- provided there is a free hardware breakpoint. Otherwise, None is returned.
         """
         self.logger.debug("Trying to allocate HWBP for addr 0x%X", addr)
         for ix in range(self._numhwbp):
             if self._hwbplist[ix] is None:
                 self._hwbplist[ix] = addr
+                if ix > 0:
+                    self.gdb.hardware_breakpoint_set(ix, addr)
                 self.logger.debug("Successfully allocated HWBP %d", ix)
-                return True
+                return ix
         self.logger.debug("Could not allocate a HWBP")
-        return False
+        return None
 
     def unallocate_hwbp0(self):
         """
@@ -707,35 +805,40 @@ class HardwareBP():
         """
         Try to set all HWBPs for all addresses in templist. Returns None if impossible or
         returns a list of addresses that needs to become software breakpoints. This function
-        is used to support range-stepping.
+        is used to support range-stepping. In self._tempalloc we remember, which HWBPs 
+        have been allocated temporarily
         """
         reassignlist = []
         if len(templist) > self._numhwbp:
             return None
         # make sure that HWBP 0 is one of our BPs!
         reassign = self.unallocate_hwp0()
+        self._hwbp[0] = pop(templist)
         if reassign:
             reassignlist.append(reassign)
-        self._temp = templist
+        self._tempalloc = [ 0 ]
         allocated = [addr for addr in self._hwbplist if addr is not None]
         for el in templist:
-            if not self.set(el):
+            next = self.set(el)
+            if next is not None:
+                self._tempalloc.append(next)
+            else:
                 trytoremove = pop(allocated)
                 reassignlist.append(trytoremove)
                 self.clear(trytoremove)
-                self.set(el)
+                self._tempalloc.append(self.set(el))
         return reassignlist
 
     def clear_temp(self):
         """
         Clears the temporary allocated hardware breakpoints.
         """
-        if self._temp is None:
+        if self._tempalloc is None:
             return
-        for el in self._temp:
+        for el in self._tempalloc:
             if el >= 0:
-                self.clear(el)
-        self._temp = None
+                self.free(el)
+        self._tempalloc = None
 
     def temp_allocated(self):
         if self.temp is None:

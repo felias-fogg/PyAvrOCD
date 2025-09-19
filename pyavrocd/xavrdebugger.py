@@ -598,6 +598,29 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("Signed off from tool")
         self.logger.info("... disabling debugWIRE mode done")
 
+    def software_breakpoint_set(self, address):
+        """
+        This is a version of setting a software breakpoint that
+        catches exceptions.
+        """
+        try:
+            super().software_breakpoint_set(address)
+        except Exception as e:
+            self.logger.error("Could not set software breakpoint: %s", str(e))
+            return False
+        return True
+
+    def hardware_breakpoint_set(self, ix, address):
+        """
+        Set a hardware breakpoint at address
+        """
+        return self.device.avr.hardware_breakpoint_set(ix, address)
+
+    def hardware_breakpoint_clear(self, ix):
+        """
+        Clear the ix-th hardware breakpoint
+        """
+        return self.device.avr.hardware_breakpoint_clear(ix)
 
     def stack_pointer_write(self, data):
         """
