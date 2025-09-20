@@ -33,6 +33,7 @@ nav:
     - Flash wear: 'flash-wear.md'
   - About:
     - Release notes: 'release-notes.md'
+    - Issues: https://github.com/felias-fogg/PyAvrOCD/issues
     - License: 'LICENSE.txt'
 not_in_nav:
   generate-new-version.md

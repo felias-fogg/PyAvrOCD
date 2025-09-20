@@ -575,7 +575,7 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         if num < 1 or num > 3:
             self.logger.error("Tried to clear hardware breakpoint %d on JTAG target",
-                                num, address)
+                                num)
             return 0
         resp = self.protocol.jtagice3_command_response(
             bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_CLEAR, Avr8Protocol.CMD_VERSION0, num]))

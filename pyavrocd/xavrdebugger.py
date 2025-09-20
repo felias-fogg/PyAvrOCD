@@ -503,7 +503,7 @@ class XAvrDebugger(AvrDebugger):
         # Restore EESAVE bit if necessary
         if eesave_fuse_byte:
             self.spidevice.isp.write_fuse_byte(eesave_base, eesave_fuse_byte)
-            self.logger_local.debug("EESAVE fuse restored")
+            self.logger.debug("EESAVE fuse restored")
         # and check results
         if result_lockbits[0] != 0xFF:
             raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
@@ -610,12 +610,16 @@ class XAvrDebugger(AvrDebugger):
             return False
         return True
 
+    #pylint: disable=arguments-differ
+    #we actually need two arguments when more than one HWBP is there
     def hardware_breakpoint_set(self, ix, address):
         """
         Set a hardware breakpoint at address
         """
         return self.device.avr.hardware_breakpoint_set(ix, address)
 
+    #pylint: disable=arguments-differ
+    #we actually need the extra argument when more than one HWBP is there
     def hardware_breakpoint_clear(self, ix):
         """
         Clear the ix-th hardware breakpoint

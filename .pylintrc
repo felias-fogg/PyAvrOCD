@@ -13,7 +13,8 @@ disable= broad-exception-caught,
         trailing-whitespace,
 	trailing-newlines,
 	duplicate-code,
-	consider-using-with
+	consider-using-with,
+	consider-using-dict-items
 
 [REPORTS]
 # Set the output format
