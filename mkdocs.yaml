@@ -1,7 +1,6 @@
 theme:
   name: readthedocs
   locale: en
-  include_sidebar: true
 
 extra_css:
   - style.css
