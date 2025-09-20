@@ -102,6 +102,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD/issues">Issues</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../LICENSE.txt">License</a>
                   </li>
               </ul>
@@ -132,7 +134,7 @@
               
                 <h1 id="pyavrocd-installation">PyAvrOCD Installation</h1>
 <h2 id="arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</h2>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="../debugging-software/">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly.</p>
 <h2 id="downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</h2>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a> (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code>, a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code>, the GDB debugger for AVR chips. Store <code>pyavrocd</code> and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.ƒ3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
