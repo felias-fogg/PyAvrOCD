@@ -26,7 +26,7 @@ Linux users may need to add a few udev rules. When you first start the Arduino I
 
 [PlatformIO](https://platformio.org) is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the `platformio.ini` file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the `platformio.ini` file could look as follows (see also the `example` folder)
 
-```
+```ini
 [platformio]
 default_envs = debug
 

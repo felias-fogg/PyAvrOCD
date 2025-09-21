@@ -63,7 +63,7 @@ Before clicking the `Verify` button in the upper left corner, choose `Optimize f
 
 After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
 
-Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](INSTALL.md#linux)). Or maybe you forgot to connect a hardware debugger altogether.
+Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](install-link.md#linux)). Or maybe you forgot to connect a hardware debugger altogether.
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png)
 

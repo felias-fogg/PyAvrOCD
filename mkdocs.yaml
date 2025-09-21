@@ -13,28 +13,30 @@ site_name: PyAvrOCD
 repo_url: https://github.com/felias-fogg/PyAvrOCD
 nav:
   - Installation:
-    - GDB server: 'INSTALL.md'
+    - GDB server: 'install-link.md'
     - Debugging software: 'debugging-software.md'
   - Usage:
+    - Configuration: 'configuration.md'
     - Preparing the target: 'board-preparation.md'
     - Connecting to target: 'connect-to-target.md'
     - Invoking the server: 'command-line-options.md'
     - Debugging the target: 'debugging.md'
     - Monitor commands: 'monitor-commands.md'
     - Restoring the target: 'restore-original-state.md'
-    - Configuration: 'configuration.md'
   - Supported devices:
     - MCUs: 'supported-mcus.md'
     - Boards: 'supported-boards.md'
     - Hardware debuggers: 'supported-debuggers.md'
   - Caveats:
     - Disclaimer: 'disclaimer.md'
+    - Limitations: 'limitations.md'
     - debugWIRE: 'debugwire-risks.md'
     - Flash wear: 'flash-wear.md'
   - About:
     - Release notes: 'release-notes.md'
-    - Issues: https://github.com/felias-fogg/PyAvrOCD/issues
-    - License: 'license-link.md' 
+    - Contributing: 'contributing.md'
+    - License: 'license-link.md'
+    - Code of conduct: 'code_of_conduct-link.md'
 not_in_nav:
   generate-new-version.md
   load-speed.md
