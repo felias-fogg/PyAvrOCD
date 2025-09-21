@@ -7,6 +7,7 @@ extra_css:
 
 plugins:
   - search
+  - external-markdown
 
 site_name: PyAvrOCD
 repo_url: https://github.com/felias-fogg/PyAvrOCD
@@ -33,7 +34,7 @@ nav:
   - About:
     - Release notes: 'release-notes.md'
     - Issues: https://github.com/felias-fogg/PyAvrOCD/issues
-    - License: 'LICENSE.txt'
+    - License: 'license-link.md'
 not_in_nav:
   generate-new-version.md
   load-speed.md
