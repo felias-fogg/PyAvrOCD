@@ -57,7 +57,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
@@ -81,25 +81,23 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#bootloader">Bootloader</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#low-cpu-frequency">Low CPU frequency</a>
+    <li class="toctree-l2"><a class="reference internal" href="#low-cpu-clock-frequency">Low CPU clock frequency</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#low-power-applications">Low power applications</a>
+    <li class="toctree-l2"><a class="reference internal" href="#low-power-properties">Low-power properties</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#code-reordering-and-optimizations">Code reordering and optimizations</a>
+    <li class="toctree-l2"><a class="reference internal" href="#compiler-optimizations">Compiler optimizations</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#link-time-optimization">Link-time optimization</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#single-stepping">Single-stepping</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#mcu-operations-interfering-with-hardware-debugger">MCU operations interfering with hardware debugger</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#instruction-execution-timing">Instruction execution timing</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#usb-communication">USB communication</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#single-stepping">Single-stepping</a>
     </li>
     </ul>
                   </li>
@@ -145,17 +143,34 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="limitations">Limitations</h1>
+<p>The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes it can happen that the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. This can, in particular, lead to what has been called <a href="https://en.wikipedia.org/wiki/Heisenbug">Heisenbugs</a>. These are bugs that seem to disappear when one tries to locate them using debugging methods.</p>
 <h2 id="bootloader">Bootloader</h2>
-<h2 id="low-cpu-frequency">Low CPU frequency</h2>
-<h2 id="low-power-applications">Low power applications</h2>
-<h2 id="code-reordering-and-optimizations">Code reordering and optimizations</h2>
+<p>Bootloaders will usually be erased when running the debugger. </p>
+<p>In a debugWIRE context, the entire chip needs to be erased if some lock bits are set. Further, the <code>BOOTRST</code> fuse is disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the <code>BOOTRST</code> fuse by using the command line option <code>--manage nobootrst</code>. </p>
+<p>When debugging with JTAG, the chip will be erased each time a new binary is loaded. Suppose you want to keep the bootloader in memory. In that case, you can request not to erase the chip before loading a binary, erasing each flash page only when some code needs to be loaded into this page: <code>--erasebeforeload disable</code>. However, this will severely slow down the process of loading a binary.  </p>
+<h2 id="low-cpu-clock-frequency">Low CPU clock frequency</h2>
+<p>Low CPU clock frequencies can make the debugging process sluggish or even impossible.</p>
+<p>When using debugWIRE, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the <code>CKDIV8</code> fuse is programmed, then this would be only 2000 bps, at which point some of the hardware programmers may time out.</p>
+<p>With JTAG, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.</p>
+<p>In general, one should not choose CPU clock frequencies below 1 MHz while debugging.</p>
+<h2 id="low-power-properties">Low-power properties</h2>
+<p>Almost all power-saving features of the MCU are disabled while debugging.</p>
+<p>The reason for this is that all clocks need to be running so that the communication between the hardware debugger and the OCD does not break down. So, the functional behavior of the MCU can be debugged, but low-power properties cannot be tested while debugging. </p>
+<h2 id="compiler-optimizations">Compiler optimizations</h2>
+<p>When trying to debug a program compiled with the 'usual' compiler options, one often ends up in unexpected places or receives warnings.  </p>
+<p>Usually, the compiler optimizes for space, trying to fit as much program code as possible into the limited amount of flash memory. This, however, might imply that code is reordered and inlined. This means that single-stepping can be confusing, that one cannot stop at some places, or that a <code>finish</code> command will lead to an error message.</p>
+<p>When using the <code>-Og</code> compiler optimization option, the compiler aims at preserving the structure of the program at the expense of perhaps using more flash memory. In the Arduino IDE 2, this is forced by enabling <code>Optimize for Debugging</code> in the <code>Sketch</code> menu.</p>
+<p>This supports the debugging as long as one is hunting bugs in the program logic. However, some bugs may silently disappear, or the effects of a bug may change. These bugs, which are called Heisenbugs, often appear in connection with access to data on the stack, <a href="https://arduino-craft-corner.de/index.php/2025/01/19/volatilitity-race-conditions-and-heisenbugs/">with <code>volatile</code> data, or with race conditions</a>. Thus, if a bug disappears when optimizing for debugging is enabled, one should watch out for such a Heisenbug and perhaps debug a binary that has been compiled without the optimization for debugging option.</p>
 <h2 id="link-time-optimization">Link-time optimization</h2>
-<h2 id="conditional-breakpoints">Conditional breakpoints</h2>
-<h2 id="single-stepping">Single-stepping</h2>
-<h2 id="mcu-operations-interfering-with-hardware-debugger">MCU operations interfering with hardware debugger</h2>
+<p>Link-time optimization can optimize away important structural debug information about C++ objects and global variables.</p>
+<p>Link-time optimization is a relatively new technique and was introduced into the Arudinio IDE only in 2020.  It optimizes across all compilation units and is able to prune away unused functions and data structures, as well as inlining functions across compilation units. </p>
+<p>The disadvantage is that <a href="https://arduino-craft-corner.de/index.php/2021/12/15/link-time-optimization-and-debugging-of-object-oriented-programs-on-avr-mcus/">link-time optimization prunes away essential information about C++ objects</a> so that class instances all of a sudden seem to be variables of a structure type. Furthermore, they prune away the info that variables are global, which means that in the <code>VARIABLES</code> debugging pane of the Arduino IDE 2, no variables are displayed. Finally, because of aggressive inlining, this technique can provoke stack overflows. </p>
+<p>All these problems disappear when link-time optimization is disabled. However, in this case, much more code space is needed.</p>
 <h2 id="instruction-execution-timing">Instruction execution timing</h2>
 <h2 id="usb-communication">USB communication</h2>
 <h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
+<h2 id="conditional-breakpoints">Conditional breakpoints</h2>
+<h2 id="single-stepping">Single-stepping</h2>
               
             </div>
           </div><footer>

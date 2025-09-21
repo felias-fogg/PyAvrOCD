@@ -59,7 +59,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
@@ -123,9 +123,10 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="configuration">Configuration</h1>
-<p>You do not need to set up any configuration file before using PyAvrOCD. However, sometimes it may be convenient to store some options in a file so that you do not have to type them every time you <a href="../command-line-options/">invoke PyAvrOCD</a>. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
+<p>You do not have to set up any configuration file before you can use PyAvrOCD. </p>
+<p>Sometimes, however, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
 <p>Let us assume, <code>file.ext</code> contains the following lines:</p>
-<pre><code class="language-bash">--manage
+<pre><code>--manage
 eesave
 --prog=3000
 --to
@@ -133,10 +134,10 @@ atmelice
 --veri=e
 </code></pre>
 <p>When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>, then this is expanded into</p>
-<pre><code class="language-bash">pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e
+<pre><code>pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e
 </code></pre>
 <p>With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to</p>
-<pre><code class="language-bash">pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
+<pre><code>pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
 </code></pre>
 <p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
               

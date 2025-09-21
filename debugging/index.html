@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Debugging the target - PyAvrOCD</title>
+    <title>Debugging on the target - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Debugging the target";
+        var mkdocs_page_name = "Debugging on the target";
         var mkdocs_page_input_path = "debugging.md";
         var mkdocs_page_url = null;
       </script>
@@ -57,7 +57,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Debugging the target</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Debugging on the target</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#debugging-with-a-command-line-interface">Debugging with a command-line interface</a>
     </li>
@@ -128,7 +128,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Usage</li>
-      <li class="breadcrumb-item active">Debugging the target</li>
+      <li class="breadcrumb-item active">Debugging on the target</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/debugging.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -138,7 +138,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="debugging-the-target">Debugging the target</h1>
+                <h1 id="debugging-on-the-target">Debugging on the target</h1>
 <h2 id="debugging-with-a-command-line-interface">Debugging with a command-line interface</h2>
 <p>After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: <code>-Og</code> and <code>-ggdb3</code>. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.</p>
 <p>When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../board-preparation/#general-considerations">Preparing a target board</a>):</p>
