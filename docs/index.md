@@ -8,7 +8,7 @@ Why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://gi
 
 In addition to being platform agnostic, PyAvrOCD offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
-After [installing the package](INSTALL.md), the following steps are necessary for successful debugging:
+After [installing the package](install-link.md), the following steps are necessary for successful debugging:
 
 1. [Installing and configuring the appropriate debugging software](debugging-software.md)
 2. [Preparing the target board for debugging](board-preparation.md)

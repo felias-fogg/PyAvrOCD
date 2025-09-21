@@ -6,7 +6,7 @@ After compiling your program, e.g., varblink0.ino, you can start the GDB server 
 
 When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Preparing a target board](board-preparation.md#general-considerations)):
 
-```
+```log
 > pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP
@@ -18,7 +18,7 @@ When starting the GDB server from the command line, you need to specify the MCU 
 
 In another terminal window, you can now start a GDB session:
 
-```
+```log
 > avr-gdb varblink0.ino.elf
 GNU gdb (GDB) 15.2
 Copyright (C) 2024 Free Software Foundation, Inc.
@@ -63,7 +63,7 @@ Before clicking the `Verify` button in the upper left corner, choose `Optimize f
 
 After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
 
-Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](INSTALL.md#linux)). Or maybe you forgot to connect a hardware debugger altogether.
+Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](install-link.md#linux)). Or maybe you forgot to connect a hardware debugger altogether.
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png)
 

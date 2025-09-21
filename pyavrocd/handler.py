@@ -19,7 +19,7 @@ from pyedbglib.protocols.edbgprotocol import EdbgProtocol
 from pymcuprog.pymcuprog_errors import PymcuprogNotSupportedError, PymcuprogError
 
 from pyavrocd.memory import Memory
-from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT
+from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT, SIGBUS
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.livetests import LiveTests
 from pyavrocd.errors import  EndOfSession, FatalError
@@ -39,7 +39,8 @@ class GdbHandler():
         self.dbg = avrdebugger
         self.mon = MonitorCommand(self.dbg.iface, args)
         self.mem = Memory(avrdebugger, self.mon)
-        self.bp = BreakAndExec(1, self.mon, avrdebugger, self.mem.flash_read_word)
+        self.bp = BreakAndExec(1, self.mon, avrdebugger, avrdebugger.architecture,
+                                   self.mem.flash_read_word)
         self._comsocket = comsocket
         self._devicename = devicename
         self.last_sigval = 0
@@ -167,6 +168,9 @@ class GdbHandler():
         if sig == SIGILL:
             self.send_debug_message("Cannot execute because of user supplied BREAK instruction")
             self.logger.warning("Cannot execute because of user supplied BREAK instruction")
+        if sig == SIGBUS:
+            self.send_debug_message("Cannot execute because stack pointer is too low")
+            self.logger.warning("Cannot execute because stack pointer is too low")
         if sig is not None:
             self.send_signal(sig)
 

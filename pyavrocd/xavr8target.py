@@ -69,6 +69,38 @@ class XTinyXAvrTarget(TinyXAvrTarget):
         """
         self.protocol.memory_write(Avr8Protocol.AVR8_MEMTYPE_OCD, 0x18, data)
 
+    def hardware_breakpoint_set(self, num, address):
+        """
+        Sets one hardware breakpoint <num>
+
+        :param num: number of breakpoint 1-3
+        :param address: Address to break at
+        :type address: int
+        """
+        if num < 1 or num > 1:
+            self.logger.error("Tried to set hardware breakpoint %d at 0x%X on JTAG target",
+                                num, address)
+            return 0
+        resp = self.protocol.jtagice3_command_response(
+            bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_SET, Avr8Protocol.CMD_VERSION0, 1, num]) +
+            binary.pack_le32(address) +
+            bytearray([3]))
+        return self.protocol.check_response(resp)
+
+
+    def hardware_breakpoint_clear(self, num):
+        """
+        Clears the hardware breakpoint <num>
+        """
+        if num < 1 or num > 1:
+            self.logger.error("Tried to clear hardware breakpoint %d on JTAG target",
+                                num)
+            return 0
+        resp = self.protocol.jtagice3_command_response(
+            bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_CLEAR, Avr8Protocol.CMD_VERSION0, num]))
+        return self.protocol.check_response(resp)
+
+
 
 class XTinyAvrTarget(TinyAvrTarget):
     """
@@ -268,6 +300,28 @@ class XTinyAvrTarget(TinyAvrTarget):
         :raises ValueError: if 2 bytes are not given
         """
         return self.protocol.memory_write(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x5D, data)
+
+    def hardware_breakpoint_set(self, num, address):
+        """
+        Sets one hardware breakpoint <num>
+
+        :param num: number of breakpoint 1-3
+        :param address: Address to break at
+        :type address: int
+        """
+        self.logger.error("Tried to set hardware breakpoint %d at 0x%X on debugWIRE target",
+                              num, address)
+        return 0
+
+
+    def hardware_breakpoint_clear(self, num):
+        """
+        Clears the hardware breakpoint <num>
+        """
+        self.logger.error("Tried to clear hardware breakpoint %d on debugWIRE target",
+                              num)
+        return 0
+
 
     def breakpoint_clear(self):
         """
@@ -504,6 +558,10 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         :param address: Address to break at
         :type address: int
         """
+        if num < 1 or num > 3:
+            self.logger.error("Tried to set hardware breakpoint %d at 0x%X on JTAG target",
+                                num, address)
+            return 0
         resp = self.protocol.jtagice3_command_response(
             bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_SET, Avr8Protocol.CMD_VERSION0, 1, num]) +
             binary.pack_le32(address) +
@@ -515,6 +573,10 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         Clears the hardware breakpoint <num>
         """
+        if num < 1 or num > 3:
+            self.logger.error("Tried to clear hardware breakpoint %d on JTAG target",
+                                num)
+            return 0
         resp = self.protocol.jtagice3_command_response(
             bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_CLEAR, Avr8Protocol.CMD_VERSION0, num]))
         return self.protocol.check_response(resp)
