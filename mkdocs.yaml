@@ -20,7 +20,7 @@ nav:
     - Preparing the target: 'board-preparation.md'
     - Connecting to target: 'connect-to-target.md'
     - Invoking the server: 'command-line-options.md'
-    - Debugging the target: 'debugging.md'
+    - Debugging on the target: 'debugging.md'
     - Monitor commands: 'monitor-commands.md'
     - Restoring the target: 'restore-original-state.md'
   - Supported devices:

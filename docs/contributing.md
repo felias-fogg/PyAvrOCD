@@ -3,17 +3,18 @@
 The PyAvrOCD project welcomes all kinds of contributions, such as:
 
 - general ideas and questions about PyAvrOCD,
-- bug reports and feature requests,
-- pull requests, and
-- documentation improvements.
+- bug reports,
+- documentation improvements,
+- feature requests, and
+- pull requests.
 
 ## Discussion
 
-If you have a question or some general ideas, please do not open an issue, but use the [discussion forum](https://github.com/felias-fogg/PyAvrOCD/discussions) instead.
+If you have a *question* or some *general ideas*, please do not open an issue, but use the [discussion forum](https://github.com/felias-fogg/PyAvrOCD/discussions) instead.
 
 ## Reporting an issue
 
-If you have found what looks like a bug or a documentation glitch, or if you have a feature request, please open an [issue](https://github.com/felias-fogg/PyAvrOCD/issues).
+If you have found what looks like a *bug* or a *documentation glitch*, or if you have a *feature request*, please open an [issue](https://github.com/felias-fogg/PyAvrOCD/issues).
 
 Please include as much detail as possible. If you get an error message, please include the full log of the server using the option `--verbose all`.  In case of a bug, it will be very helpful, if the issue report touches the following aspects:
 

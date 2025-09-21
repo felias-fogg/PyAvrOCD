@@ -2,15 +2,16 @@
 
 ### New:
 
-- **Fixed:** 
-  - Using the temporary HWBP for safe single-stepping had the problem that one might miss a BP in an interrupt routine. Accounting for that by reassigning the HWBP to a SWBP had the implication that one increases flash wear and make safe single-stepping impossible when running with HWBP only under dW. For this reason, filter_safe_instructions has been introduced (see below) and single-stepping using the HWBP has been removed (see below).
+- **Fixed:**
+  - Using the temporary HWBP for safe single-stepping had the problem that one might miss a BP in an interrupt routine. Accounting for that by reassigning the HWBP to a SWBP had the implication that one increases flash wear and make safe single-stepping impossible when running with HWBP-only under dW. For this reason, filter_safe_instructions has been introduced (see below) and single-stepping using the HWBP has been removed (see below).
 
 - **Added:**
   - filter_unsafe_instructions: Identifies instructions that modify or read SREG and simulate them. This does not include PUSH/POP and CALL/RET/RETI
   - Check for trouble in single-stepping: If the stackpointer is below SRAM_START, and a stack operation is attempted, then stop execution with a SIGBUS signal, which will be caught on the GdbHandler level.
   - If SRAM > 64k or architecture != avr8, a fatal error is raised in filter_unsafe_instructions.This is mainly a reminder to myself.
+  - Entries in the readthedocs documentation: Limitations, Contributing, Code of Conduct.
 - **Removed:**
-  - Safe stepping using the temporary HWBP. 
+  - Safe stepping using the temporary HWBP.
 
 ### 0.13.5:
 
@@ -18,7 +19,7 @@
   - Installed mkdocs in order to provide a nice UI for the documentation.
   - `eesave` and `noeesave` are now values for the `--manage` option. If the EESAVE fuse is managed, EEPROM will be preserved when chip erase operations are necessary.
   - Setting EESAVE temporarily has been added to `_check_atmega48_and_88`  in xavrdebugger.py.
-- Changed:
+- **Changed:**
   - The official name and the GitHub repo name have changed to PyAvrOCD. This does not make it easier to pronounce, but it shows better what it is about.
 
 
