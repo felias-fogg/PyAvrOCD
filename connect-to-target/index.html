@@ -42,13 +42,15 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">GDB server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Connecting to target</a>
@@ -83,8 +85,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
-                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
               <ul>
@@ -99,6 +99,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
@@ -108,9 +110,11 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD/issues">Issues</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
               </ul>
       </div>
@@ -360,7 +364,7 @@
 <h2 id="connecting-to-a-jtag-target">Connecting to a JTAG target</h2>
 <p>Note that in order to use the JTAG connection, you might first need to enable the JTAG pins by programming the JTAGEN fuse via SPI programming. On chips fresh from the factory, this fuse is programmed. On Arduino boards, JTAGEN is disabled.</p>
 <p>For AVR MCUs, there is a standard pinout as follows.</p>
-<p align="cener"> <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
+<p align="center"> <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
 </p>
 
 <p>Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), and TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND.</p>

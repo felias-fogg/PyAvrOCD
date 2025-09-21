@@ -42,13 +42,15 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="INSTALL/">GDB server</a>
+                  <li class="toctree-l1"><a class="reference internal" href="install-link/">GDB server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="debugging-software/">Debugging software</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="configuration/">Configuration</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="board-preparation/">Preparing the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="connect-to-target/">Connecting to target</a>
@@ -60,8 +62,6 @@
                   <li class="toctree-l1"><a class="reference internal" href="monitor-commands/">Monitor commands</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="restore-original-state/">Restoring the target</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="configuration/">Configuration</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
@@ -77,6 +77,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="disclaimer/">Disclaimer</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="limitations/">Limitations</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="debugwire-risks/">debugWIRE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="flash-wear/">Flash wear</a>
@@ -86,9 +88,11 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="release-notes/">Release notes</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD/issues">Issues</a>
+                  <li class="toctree-l1"><a class="reference internal" href="contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="license/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="code_of_conduct-link/">Code of conduct</a>
                   </li>
               </ul>
       </div>
@@ -116,11 +120,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="pyavrocd">PyAvrOCD</h1>
-<p>PyAvrOCD is a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Server.html">GDB server</a> for 8-bit AVR MCUs. It can communicate with Microchip debuggers such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a>, and provides a pass-through service for the Uno-based debugger <a href="https://github.com/felias-fogg/dw-link">dw-link</a>. For Microchip debuggers, PyAvrOCD uses the infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>.</p>
+<p>PyAvrOCD is a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Server.html">GDB server</a> for 8-bit AVR MCUs (currently only classic debugWIRE and JTAG ATtinys and ATmegas). It can communicate with Microchip debuggers such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a>, and provides a pass-through service for the Uno-based debugger <a href="https://github.com/felias-fogg/dw-link">dw-link</a>. For Microchip debuggers, PyAvrOCD uses the infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>.</p>
 <p>Why another open-source GDB server for AVR MCUs (others are <a href="https://github.com/avrdudes/avarice">AVaRICE</a> and <a href="https://bloom.oscillate.io">Bloom</a>)? The main intention is to provide a <em>platform-agnostic</em> AVR GDB server. In other words, it is the missing AVR debugging solution for <a href="https://platformio.org">PlatformIO</a> and the <a href="https://www.arduino.cc/en/software/">Arduino IDE 2</a>.</p>
 <p><img alt="ide2-6" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-6.png" /></p>
 <p>In addition to being platform agnostic, PyAvrOCD offers some enhancements over its "competitors", particularly in terms of <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/">flash wear</a> and <a href="https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/">single-stepping</a>.</p>
-<p>After <a href="INSTALL/">installing the package</a>, the following steps are necessary for successful debugging:</p>
+<p>After <a href="install-link/">installing the package</a>, the following steps are necessary for successful debugging:</p>
 <ol>
 <li><a href="debugging-software/">Installing and configuring the appropriate debugging software</a></li>
 <li><a href="board-preparation/">Preparing the target board for debugging</a></li>
@@ -178,5 +182,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-09-21 07:48:05.170917+00:00
+Build Date UTC : 2025-09-21 14:07:32.222230+00:00
 -->

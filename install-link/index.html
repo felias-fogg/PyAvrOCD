@@ -14,7 +14,7 @@
       <script>
         // Current page data
         var mkdocs_page_name = "GDB server";
-        var mkdocs_page_input_path = "INSTALL.md";
+        var mkdocs_page_input_path = "install-link.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -65,6 +65,8 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
@@ -76,8 +78,6 @@
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
@@ -93,6 +93,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
@@ -102,9 +104,11 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD/issues">Issues</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
               </ul>
       </div>
@@ -124,7 +128,7 @@
           <li class="breadcrumb-item">Installation</li>
       <li class="breadcrumb-item active">GDB server</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/INSTALL.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/install-link.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -134,36 +138,36 @@
               
                 <h1 id="pyavrocd-installation">PyAvrOCD Installation</h1>
 <h2 id="arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</h2>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then by installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly.</p>
 <h2 id="downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</h2>
-<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a> (if you are not already there), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code>, a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code>, the GDB debugger for AVR chips. Store <code>pyavrocd</code> and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.ƒ3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code>, a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code>, the GDB debugger for AVR chips. Store <code>pyavrocd</code> and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.ƒ3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <h2 id="pypi-not-implemented-yet">PyPI (not implemented yet)</h2>
 <p>I assume you already installed a recent Python version (&gt;=3.9).</p>
 <p>Although it is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a>. Pipx installs packages in a way so that they are completely isolated from the rest of your Python installation, and you are able to install them in a way so that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
 <h3 id="linux">Linux</h3>
-<pre><code>pipx install pyavrocd
-pipx ensurepath
-sudo ~/.local/bin/pyavrocd --install-udev-rules
+<pre><code class="language-bash">&gt; pipx install pyavrocd
+&gt; pipx ensurepath
+&gt; sudo ~/.local/bin/pyavrocd --install-udev-rules
 </code></pre>
 <p>The last command will install the necessary udev rules. This can also be done manually by following the instructions in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md">pyedbglib README</a>.</p>
 <p>After unplugging and replugging the debugger and restarting your shell, you can invoke the GDB server by simply typing <code>pyavrocd</code> into a shell. The binary is stored under <code>~/.local/bin/</code></p>
 <h3 id="windows-and-macos">Windows and macOS</h3>
-<pre><code>pipx install pyavrocd
-pipx ensurepath
+<pre><code class="language-bash">&gt; pipx install pyavrocd
+&gt; pipx ensurepath
 </code></pre>
 <p>After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code></p>
 <h2 id="github">GitHub</h2>
 <p>Alternatively, you can download or clone the GitHub repository. Additionally, you need to install the Python package manager <a href="https://python-poetry.org">poetry</a>:</p>
-<pre><code>pipx install poetry
+<pre><code class="language-bash">&gt; pipx install poetry
 </code></pre>
 <p>With that, you can start executing the script inside the downloaded folder as follows:</p>
-<pre><code>poetry install
-poetry run pyavrocd ...
+<pre><code class="language-bash">&gt; poetry install
+&gt; poetry run pyavrocd ...
 </code></pre>
 <p>Furthermore, you can create a binary standalone package as follows (after having installed the <a href="https://pyinstaller.org/en/stable/">pyinstaller package</a>):</p>
-<pre><code>poetry run pyinstaller pyavrocd.spec
+<pre><code class="language-bash">&gt; poetry run pyinstaller pyavrocd.spec
 </code></pre>
 <p>After that, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those to a place in your <code>PATH</code>. If you want to generate a binary on a Mac that can be shipped to other Macs, you should use <code>arm64-apple-pyavrocd.spec</code> or <code>intel-apple-pyavrocd.spec</code> in order to include the right <code>libusb</code> for the host architecture. Note that fat binaries cannot be generated.</p>
               

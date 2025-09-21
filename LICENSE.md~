@@ -1,3 +1,0 @@
-```markdown
-{{ external_markdown('https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/LICENSE', '## LICENSE') }}
-```

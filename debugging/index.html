@@ -42,13 +42,15 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../INSTALL/">GDB server</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">GDB server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
@@ -79,8 +81,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
-                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
               <ul>
@@ -95,6 +95,8 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
@@ -104,9 +106,11 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
-                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD/issues">Issues</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
               </ul>
       </div>
@@ -138,7 +142,7 @@
 <h2 id="debugging-with-a-command-line-interface">Debugging with a command-line interface</h2>
 <p>After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: <code>-Og</code> and <code>-ggdb3</code>. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.</p>
 <p>When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../board-preparation/#general-considerations">Preparing a target board</a>):</p>
-<pre><code>&gt; pyavrocd -d atmega328p -m all
+<pre><code class="language-log">&gt; pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP
 [INFO] Starting pyavrocd
@@ -147,7 +151,7 @@
 
 </code></pre>
 <p>In another terminal window, you can now start a GDB session:</p>
-<pre><code>&gt; avr-gdb varblink0.ino.elf
+<pre><code class="language-log">&gt; avr-gdb varblink0.ino.elf
 GNU gdb (GDB) 15.2
 Copyright (C) 2024 Free Software Foundation, Inc.
 ...
@@ -180,7 +184,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 <p>Before clicking the <code>Verify</code> button in the upper left corner, choose <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.</p>
 <h3 id="starting-the-debugger">Starting the debugger</h3>
 <p>After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.</p>
-<p>Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="../INSTALL/#linux">installation instructions</a>). Or maybe you forgot to connect a hardware debugger altogether.</p>
+<p>Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="../install-link/#linux">installation instructions</a>). Or maybe you forgot to connect a hardware debugger altogether.</p>
 <p><img alt="ide2-2" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png" /></p>
 <p>If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.</p>
 <p>After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.</p>

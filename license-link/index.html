@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Boards - PyAvrOCD</title>
+    <title>License - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Boards";
-        var mkdocs_page_input_path = "supported-boards.md";
+        var mkdocs_page_name = "License";
+        var mkdocs_page_input_path = "license-link.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -65,16 +65,10 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Boards</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#supported-microchip-boards">Supported Microchip boards</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#supported-arduino-boards">Supported Arduino boards</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
                   </li>
@@ -91,12 +85,12 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">License</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
@@ -115,10 +109,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Supported devices</li>
-      <li class="breadcrumb-item active">Boards</li>
+          <li class="breadcrumb-item">About</li>
+      <li class="breadcrumb-item active">License</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/supported-boards.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/license-link.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -126,61 +120,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="supported-boards">Supported boards</h1>
-<p>All boards equipped with one of the supported chips can be used in
-one way or another. As usual, tested boards are marked in boldface,
-and those known not to work are struck out. In addition, the board
-packages supporting the boards and possible board modifications are
-mentioned.</p>
-<h3 id="supported-microchip-boards">Supported Microchip boards</h3>
-<p>The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have boards physically or, e.g., to change fuses in SPI before switching to JTAG. When working with debugWIRE targets, the power-cycling is done automatically.</p>
-<ul>
-<li><strong>ATmega328P</strong>, <strong>ATmega168PB</strong>, and <strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: Supported by MiniCore; choose <code>16 MHz external</code>, <code>no bootloader</code>, the correct <code>variant</code>, and as the <code>Programmer</code> <code>Xplained Mini</code>. The <code>port</code> should be set to the USB port opened by the board. You can upload code to the board using the command <code>Upload Using Programmer</code>. Serial I/O can be used via the <code>Serial Monitor</code> of the IDE. Debugging can be activated by simply using the debugging button. Power-cycling (for enabling debugWIRE mode) is done automatically. Note that you can plug Arduino shields on top of the boards if you solder headers to the boards.</li>
-<li><strong>ATmega324PB Xplained Pro:</strong> No core yet. Serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code>. The LED is connected to digital pin 23.</li>
-<li>AT90USBKEY (AT90USB1287): no core yet</li>
-<li>ATmega256RFR2 Xplained Pro: no core yet</li>
-<li><strong><u>AVR Butterfly (ATmega169)</u></strong>: no core yet</li>
-</ul>
-<h3 id="supported-arduino-boards">Supported Arduino boards</h3>
-<ul>
-<li>Arduino Yún</li>
-<li><strong>Arduino UNO R3</strong>: Supported by MiniCore;  <a href="https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
-<li>Arduino UNO Mini: Supported by MiniCore; remove capacitor <code>C3</code></li>
-<li>Arduino Duemilanove: Supported by MiniCore; <code>RESET EN</code> needs to be cut</li>
-<li>Arduino Diecimila: Supported by MiniCore; <a href="https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/">remove 100nF capacitor</a></li>
-<li><strong>Arduino Nano:</strong> Supported by Minicore; <a href="https://mtech.dk/thomsen/electro/arduino.php">only clones can be modified</a></li>
-<li><strong>Arduino Mega</strong>: no core yet</li>
-<li><strong>Arduino Mega 2560:</strong> no core yet</li>
-<li>Arduino Mega ADK: no core yet</li>
-<li><strong>Arduino Leonardo</strong>: no core yet</li>
-<li>Arduino Leonardo ETH: no core yet</li>
-<li>Arduino Micro: no core yet</li>
-<li><s>Arduino Esplora</s>s: JTAG pins are not accessible</li>
-<li>Arduino Mini: Supported by MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino Ethernet (Rev1): MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino Fio: MiniCore; do not connect DTR pin of FTDI header and do not connect XBee</li>
-<li>Arduino BT: MiniCore; remove capacitor <code>C1</code></li>
-<li>LilyPad Arduino USB: no core yet</li>
-<li>LilyPad Arduino: MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino Pro: MiniCore; do not connect DTR pin of FTDI header</li>
-<li><strong>Arduino Pro Mini</strong>: MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino NG (ATmega168): MiniCore; no modifications necessary</li>
-<li><s>Arduino NG (ATmega8)</s>: no debugging interface</li>
-<li>Arduino Robot Control: no core yet</li>
-<li>Arduino Robot Motor: no core yet</li>
-<li><strong>Arduino Gemma</strong>: ATTinyCore; RESET pad on backside</li>
-<li><strong>Adafruit Circuit Playground 32u4</strong>: no core yet</li>
-<li>Arduino Yún Mini: no core yet</li>
-<li>Arduino Industrial 101: no core yet</li>
-<li>Arduino Linino One: no core yet</li>
-<li>Arduino UNO WiFi (Rev 1): MiniCore; cut <code>RESET EN</code> solder bridge</li>
-</ul>
+                <p>MIT License</p>
+<p>Copyright (c) 2025 Bernhard Nebel, (c) 2022 mraardvark, (c) 2020 Ole Sivert Aarhaug</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../supported-mcus/" class="btn btn-neutral float-left" title="MCUs"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../supported-debuggers/" class="btn btn-neutral float-right" title="Hardware debuggers">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../contributing/" class="btn btn-neutral float-left" title="Contributing"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../code_of_conduct-link/" class="btn btn-neutral float-right" title="Code of conduct">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -207,10 +169,10 @@ mentioned.</p>
         </span>
     
     
-      <span><a href="../supported-mcus/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../contributing/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../supported-debuggers/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../code_of_conduct-link/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
