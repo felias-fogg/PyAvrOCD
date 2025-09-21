@@ -6,7 +6,7 @@ After compiling your program, e.g., varblink0.ino, you can start the GDB server 
 
 When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Preparing a target board](board-preparation.md#general-considerations)):
 
-```
+```log
 > pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP
@@ -18,7 +18,7 @@ When starting the GDB server from the command line, you need to specify the MCU 
 
 In another terminal window, you can now start a GDB session:
 
-```
+```log
 > avr-gdb varblink0.ino.elf
 GNU gdb (GDB) 15.2
 Copyright (C) 2024 Free Software Foundation, Inc.

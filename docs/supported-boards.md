@@ -1,8 +1,26 @@
 # Supported boards
 
+All boards equipped with one of the supported chips can be used in
+one way or another. As usual, tested boards are marked in boldface,
+and those known not to work are struck out. In addition, the board
+packages supporting the boards and possible board modifications are
+mentioned.
+
+
+### Supported Microchip boards
+
+The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have boards physically or, e.g., to change fuses in SPI before switching to JTAG. When working with debugWIRE targets, the power-cycling is done automatically.
+
+- **ATmega328P**, **ATmega168PB**, and **ATmega328PB** **Xplained Mini**: Supported by MiniCore; choose `16 MHz external`, `no bootloader`, the correct `variant`, and as the `Programmer` `Xplained Mini`. The `port` should be set to the USB port opened by the board. You can upload code to the board using the command `Upload Using Programmer`. Serial I/O can be used via the `Serial Monitor` of the IDE. Debugging can be activated by simply using the debugging button. Power-cycling (for enabling debugWIRE mode) is done automatically. Note that you can plug Arduino shields on top of the boards if you solder headers to the boards.
+- **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23.
+- AT90USBKEY (AT90USB1287): no core yet
+- ATmega256RFR2 Xplained Pro: no core yet
+- **<u>AVR Butterfly (ATmega169)</u>**: no core yet
+
+
+
 ### Supported Arduino boards
 
-All Arduino boards equipped with one of the chips mentioned as supported are supported in one way or another. As usual, tested boards are marked in boldface, and those known not to work are struck out. In addition, the board packages supporting the boards and possible board modifications are mentioned:
 
 - Arduino Yún
 - **Arduino UNO R3**: Supported by MiniCore;  [the `RESET EN` solder bridge needs to be cut](https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target)
@@ -35,16 +53,4 @@ All Arduino boards equipped with one of the chips mentioned as supported are sup
 - Arduino Industrial 101: no core yet
 - Arduino Linino One: no core yet
 - Arduino UNO WiFi (Rev 1): MiniCore; cut `RESET EN` solder bridge
-
-
-
-### Supported Microchip boards
-
-The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have boards physically or, e.g., to change fuses in SPI before switching to JTAG. When working with debugWIRE targets, the power-cycling is done automatically.
-
-- **ATmega328P**, **ATmega168PB**, and **ATmega328PB** **Xplained Mini**: Supported by MiniCore; choose `16 MHz external`, `no bootloader`, the correct `variant`, and as the `Programmer` `Xplained Mini`. The `port` should be set to the USB port opened by the board. You can upload code to the board using the command `Upload Using Programmer`. Serial I/O can be used via the `Serial Monitor` of the IDE. Debugging can be activated by simply using the debugging button. Power-cycling (for enabling debugWIRE mode) is done automatically. Note that you can plug Arduino shields on top of the boards if you solder headers to the boards.
-- **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23.
-- AT90USBKEY (AT90USB1287): no core yet
-- ATmega256RFR2 Xplained Pro: no core yet
-- **<u>AVR Butterfly (ATmega169)</u>**: no core yet
 

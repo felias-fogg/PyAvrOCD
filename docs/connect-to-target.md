@@ -106,7 +106,7 @@ Note that in order to use the JTAG connection, you might first need to enable th
 
 For AVR MCUs, there is a standard pinout as follows.
 
-<p align="cener"> <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
+<p align="center"> <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/jtag-header-MC.png" width="25%"">
 </p>
 
 Sometimes, pin 8 is connected to nTREST, which we do not need, though. The crucial pins are TCK (JTAG clock), TDO and TDI (data lines), and TMS (control line). In addition, we have nSRST, the reset line, and VTref and GND.

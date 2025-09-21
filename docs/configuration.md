@@ -4,7 +4,7 @@ You do not have to set up any configuration file before you can use PyAvrOCD. Ho
 
 Let us assume, `file.ext` contains the following lines:
 
-```
+```bash
 --manage
 eesave
 --prog=3000
@@ -15,13 +15,13 @@ atmelice
 
 When you now invoke PyAvrOCD with `pyavrocd -d attiny13 -t dwlink @file.ext`, then this is expanded into
 
-```
+```bash
 pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e
 ```
 
 With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to
 
-```
+```text
 pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
 ```
 
