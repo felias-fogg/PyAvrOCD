@@ -42,7 +42,7 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">GDB server</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -123,7 +123,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="disclaimer">Disclaimer</h1>
-<p>Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="../debugwire-risks/">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU, to the target board, or to the attached devices. <a href="../flash-wear/">Flash wear</a>, for instance, is an issue when you use software breakpoints. Further, the hardware debuggers, the PyAvrOCD server, and the GDB debugger have a <a href="../limitations/">number of limitations</a>, which may lead to a behavior of the MCU that differs from when no debugger is present. Finally, when using a debugger on an MCU that controls a system in real-time, stopping the execution of the controlling program in the middle of something might lead to erroneous behavior of the controlled system. For example, when communicating with other systems, stopping the communication in the middle of an exchange might violate the communication protocol.</p>
+<p>Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="../debugwire-risks/">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU, to the target board, or to the attached devices. And using a debugger might drive you crazy since <a href="../limitations/#disappearing-bugs">bugs might disappear</a>, while other <a href="../limitations/#bugs-appearing-out-of-thin-air">bugs appear out of thin air</a>.</p>
+<p><a href="../flash-wear/">Flash wear</a>, for instance, is an issue when you use software breakpoints. Further, the hardware debuggers, the PyAvrOCD server, and the GDB debugger have a <a href="../limitations/">number of limitations</a>, which may lead to a behavior of the MCU that differs from when no debugger is present. Finally, when using a debugger on an MCU that controls a system in real-time, stopping the execution of the controlling program in the middle of something might lead to erroneous behavior of the controlled system. For example, when communicating with other systems, stopping the communication in the middle of an exchange might violate the communication protocol.</p>
 <p>All in all, bear always in mind that <a href="../license-link/">the software is provided "as is", without warranty of any kind</a>.</p>
               
             </div>

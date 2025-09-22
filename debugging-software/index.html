@@ -42,7 +42,7 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">GDB server</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Debugging software</a>
     <ul class="current">
@@ -133,7 +133,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="installing-debugging-software">Installing debugging software</h1>
-<p>The GDB server provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you even want more than that.</p>
+<p>The GDB server PyAvrOCD provides an interface to the hardware debuggers on one side and to the GDB debugger on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you even want more than that.</p>
 <h2 id="cli-debugging">CLI debugging</h2>
 <p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's <a href="https://github.com/ZakKemble/avr-gcc-build">avr-gcc-build</a> repository. This is particularly useful when you want to run debugging software on a 32-bit system.</p>
 <p>If you are not a fan of a command-line interface, then an integrated development environment (IDE) or a simple graphical user interface (GUI) for avr-gdb is called for.</p>
@@ -143,7 +143,7 @@
 https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 </code></pre>
-<p>After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/board-preparation.md">modify the board</a>, and you need to <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/connect-to-target.md">connect the hardware debugger to the target board</a>.</p>
+<p>After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to <a href="../board-preparation/">modify the board</a>, and you need to <a href="../connect-to-target/">connect the hardware debugger to the target board</a>.</p>
 <p>Linux users may need to add a few udev rules. When you first start the Arduino IDE debugger and the hardware debuggers are not recognized, a hint appears in the gdb-server window on how to set the udev rules. You simply need to execute PyAvrOCD once as root using the command-line option <code>--install-udev-rules</code>. Instead, you can create a udev-rules file along the lines described in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md">README file of pyedbglib</a>.</p>
 <h2 id="platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</h2>
 <p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the <code>platformio.ini</code> file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the <code>platformio.ini</code> file could look as follows (see also the <code>example</code> folder)</p>
@@ -191,7 +191,7 @@ debug_build_flags =
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../install-link/" class="btn btn-neutral float-left" title="GDB server"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../install-link/" class="btn btn-neutral float-left" title="PyAvrOCD"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../configuration/" class="btn btn-neutral float-right" title="Configuration">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 

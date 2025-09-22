@@ -42,7 +42,7 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">GDB server</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -86,18 +86,34 @@
     <li class="toctree-l2"><a class="reference internal" href="#low-power-properties">Low-power properties</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#compiler-optimizations">Compiler optimizations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#disappearing-bugs">Disappearing bugs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#bugs-appearing-out-of-thin-air">Bugs appearing out of thin air</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#link-time-optimization">Link-time optimization</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#instruction-execution-timing">Instruction execution timing</a>
+    <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#usb-communication">USB communication</a>
+    <li class="toctree-l2"><a class="reference internal" href="#unsafe-exits-from-debugging">Unsafe exits from debugging</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#single-stepping">Single-stepping</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-throws-off-timing">Single-stepping throws off timing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-break-instructions">Single-stepping BREAK instructions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-sleep-instructions">Single-stepping SLEEP instructions</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#io-register-access">I/O register access</a>
     </li>
     </ul>
                   </li>
@@ -143,34 +159,74 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="limitations">Limitations</h1>
-<p>The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes it can happen that the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. This can, in particular, lead to what has been called <a href="https://en.wikipedia.org/wiki/Heisenbug">Heisenbugs</a>. These are bugs that seem to disappear when one tries to locate them using debugging methods.</p>
+<p>The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. </p>
 <h2 id="bootloader">Bootloader</h2>
 <p>Bootloaders will usually be erased when running the debugger.</p>
-<p>In a debugWIRE context, the entire chip needs to be erased if some lock bits are set. Further, the <code>BOOTRST</code> fuse is disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the <code>BOOTRST</code> fuse by using the command line option <code>--manage nobootrst</code>.</p>
-<p>When debugging with JTAG, the chip will be erased each time a new binary is loaded. Suppose you want to keep the bootloader in memory. In that case, you can request not to erase the chip before loading a binary, erasing each flash page only when some code needs to be loaded into this page: <code>--erasebeforeload disable</code>. However, this will severely slow down the process of loading a binary.</p>
+<p>In a <strong>debugWIRE</strong> context, the entire chip needs to be erased if some lock bits are set. Further, the <code>BOOTRST</code> fuse is disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the <code>BOOTRST</code> fuse by using the command line option <code>--manage nobootrst</code>.</p>
+<p>When debugging with <strong>JTAG</strong>, the chip will be erased each time a new binary is loaded. Suppose you want to keep the bootloader in memory. In that case, you can request not to erase the chip before loading a binary, erasing each flash page only when some code needs to be loaded into this page: <code>--erasebeforeload disable</code>. However, this will severely slow down the process of loading a binary.</p>
 <h2 id="low-cpu-clock-frequency">Low CPU clock frequency</h2>
 <p>Low CPU clock frequencies can make the debugging process sluggish or even impossible.</p>
-<p>When using debugWIRE, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the <code>CKDIV8</code> fuse is programmed, then this would be only 2000 bps, at which point some of the hardware programmers may time out.</p>
-<p>With JTAG, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.</p>
+<p>When using <strong>debugWIRE</strong>, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the <code>CKDIV8</code> fuse is programmed, then this would be only 2000 bps, at which point some of the hardware programmers may time out.</p>
+<p>With <strong>JTAG</strong>, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.</p>
 <p>In general, one should not choose CPU clock frequencies below 1 MHz while debugging.</p>
 <h2 id="low-power-properties">Low-power properties</h2>
 <p>Almost all power-saving features of the MCU are disabled while debugging.</p>
 <p>The reason for this is that all clocks need to be running so that the communication between the hardware debugger and the OCD does not break down. So, the functional behavior of the MCU can be debugged, but low-power properties cannot be tested while debugging.</p>
 <h2 id="compiler-optimizations">Compiler optimizations</h2>
 <p>When trying to debug a program compiled with the 'usual' compiler options, one often ends up in unexpected places or receives warnings.</p>
-<p>Usually, the compiler optimizes for space, trying to fit as much program code as possible into the limited amount of flash memory. This, however, might imply that code is reordered and inlined. This means that single-stepping can be confusing, that one cannot stop at some places, or that a <code>finish</code> command will lead to an error message.</p>
+<p>Usually, the compiler optimizes for space, trying to fit as much program code as possible into the limited amount of flash memory. This, however, might imply that some code is reordered and inlined. This means that single-stepping can be confusing, that one cannot stop at some places, or that a <code>finish</code> command will lead to an error message.</p>
 <p>When using the <code>-Og</code> compiler optimization option, the compiler aims at preserving the structure of the program at the expense of perhaps using more flash memory. In the Arduino IDE 2, this is forced by enabling <code>Optimize for Debugging</code> in the <code>Sketch</code> menu.</p>
-<p>This supports the debugging as long as one is hunting bugs in the program logic. However, some bugs may silently disappear, or the effects of a bug may change. These bugs, which are called Heisenbugs, often appear in connection with access to data on the stack, <a href="https://arduino-craft-corner.de/index.php/2025/01/19/volatilitity-race-conditions-and-heisenbugs/">with <code>volatile</code> data, or with race conditions</a>. Thus, if a bug disappears when optimizing for debugging is enabled, one should watch out for such a Heisenbug and perhaps debug a binary that has been compiled without the optimization for debugging option.</p>
+<h3 id="disappearing-bugs">Disappearing bugs</h3>
+<p>The <code>-Og</code> compiler optimization option supports debugging as long as one is hunting bugs in the program logic. However, some bugs may silently disappear, or the effects of a bug may change. These bugs, which are called <a href="https://en.wikipedia.org/wiki/Heisenbug"><em>Heisenbugs</em></a>, often appear in connection with (illegal) access to data on the stack, stack overflows, <a href="https://arduino-craft-corner.de/index.php/2025/01/19/volatilitity-race-conditions-and-heisenbugs/">with <code>volatile</code> data, or with race conditions</a>. Thus, if a bug disappears when optimizing for debugging is enabled, one should watch out for such a Heisenbug and debug a binary that has been compiled without the optimization for debugging option.</p>
+<h3 id="bugs-appearing-out-of-thin-air">Bugs appearing out of thin air</h3>
+<p>Another effect of using the <code>-Og</code> compiler optimization could be that all of a sudden, new bugs show up. Since code generation is different, some time-critical parts of the code could change and lead to erroneous behavior. This happened, for instance, <a href="https://github.com/FastLED/FastLED/issues/2000">in the case of the FastLED library</a>. Here, a chain of assembly inline code statements was compiled differently with the <code>-Og</code> option. It is actually a sign that the author of the original library code did not do a good job, since inline assembly code should precisely shield you from different ways to generate code. However, in this case, a large number of assembly inline statements were chained and gave the compiler the freedom to do some 'crazy' things between these statements.</p>
 <h2 id="link-time-optimization">Link-time optimization</h2>
 <p>Link-time optimization can optimize away important structural debug information about C++ objects and global variables.</p>
 <p>Link-time optimization is a relatively new technique and was introduced into the Arudinio IDE only in 2020.  It optimizes across all compilation units and is able to prune away unused functions and data structures, as well as inlining functions across compilation units.</p>
 <p>The disadvantage is that <a href="https://arduino-craft-corner.de/index.php/2021/12/15/link-time-optimization-and-debugging-of-object-oriented-programs-on-avr-mcus/">link-time optimization prunes away essential information about C++ objects</a> so that class instances all of a sudden seem to be variables of a structure type. Furthermore, they prune away the info that variables are global, which means that in the <code>VARIABLES</code> debugging pane of the Arduino IDE 2, no variables are displayed. Finally, because of aggressive inlining, this technique can provoke stack overflows.</p>
 <p>All these problems disappear when link-time optimization is disabled. However, in this case, much more code space is needed.</p>
-<h2 id="instruction-execution-timing">Instruction execution timing</h2>
-<h2 id="usb-communication">USB communication</h2>
+<h2 id="undebuggable-mcus">Undebuggable MCUs</h2>
+<p>Some AVR MCUs are not debuggable or offer only limited debug support.</p>
+<p>MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:</p>
+<ul>
+<li><em>ATmega48</em>,</li>
+<li><em>ATmega88</em>,</li>
+<li><em>ATmega16</em>,</li>
+</ul>
+<p>all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match. </p>
+<p>Finally, we have the <em>ATmega128(A)</em>, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (<em>not yet implemented</em>).</p>
+<h2 id="unsafe-exits-from-debugging">Unsafe exits from debugging</h2>
+<p>MCU and hardware debugger can be in an undefined state after abrupt exits. </p>
+<p>When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:</p>
+<ul>
+<li>Some fuses, such as <code>OCDEN</code>, might still be in the programmed state.</li>
+<li>Software breakpoints (that are implemented as <code>BREAK</code> instructions) may not have been removed.</li>
+</ul>
+<p>It may be enough to start a new debugging session and reflash the program. However, the hardware debugger might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.</p>
 <h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
+<p>Breakpoints in interrupt routines can throw off the timing of time-critical code.</p>
+<p>It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone. </p>
 <h2 id="conditional-breakpoints">Conditional breakpoints</h2>
+<p>Using conditional breakpoints can slow down execution significantly.</p>
+<p>One can attach conditions to breakpoints using the GDB command <code>condition</code>, or right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command <code>ignore</code>, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop will take around 100 milliseconds, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.</p>
 <h2 id="single-stepping">Single-stepping</h2>
+<p>Single-stepping is not the same as executing the instruction in its usual context. </p>
+<h3 id="single-stepping-throws-off-timing">Single-stepping throws off timing</h3>
+<p>If you single-step over instructions (either explicitly or implicitly), then it will take much longer than if it were executed directly. This means that under some circumstances, some code is successful when single-stepped, but not when executed:</p>
+<pre><code class="language-assembly">OUT PORTB, 0x66
+IN R2, PINB
+</code></pre>
+<p>When running this code normally, the value 0x66 would not read back to the  R2 register. However, when single-stepping this code, there is enough time for the new value to settle and be readable. In order to make 0x66 readable under normal execution, a <code>NOP</code> is necessary between <code>OUT</code> and <code>IN</code>.</p>
+<p>On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed. </p>
+<h3 id="single-stepping-break-instructions">Single-stepping BREAK instructions</h3>
+<p><code>BREAK</code> instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a <code>BREAK</code> instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from [a previous debugging session that has been ended abruptly](limitations/#unsafe-exits-from-debugging (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user. </p>
+<h3 id="single-stepping-sleep-instructions">Single-stepping SLEEP instructions</h3>
+<h2 id="io-register-access">I/O register access</h2>
+<!--
+
+## USB communication
+
+-->
               
             </div>
           </div><footer>

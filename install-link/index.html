@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>GDB server - PyAvrOCD</title>
+    <title>PyAvrOCD - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "GDB server";
+        var mkdocs_page_name = "PyAvrOCD";
         var mkdocs_page_input_path = "install-link.md";
         var mkdocs_page_url = null;
       </script>
@@ -42,7 +42,7 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Installation</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">GDB server</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">PyAvrOCD</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</a>
     </li>
@@ -126,7 +126,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Installation</li>
-      <li class="breadcrumb-item active">GDB server</li>
+      <li class="breadcrumb-item active">PyAvrOCD</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/install-link.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -138,10 +138,10 @@
               
                 <h1 id="pyavrocd-installation">PyAvrOCD Installation</h1>
 <h2 id="arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</h2>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/debugging-software.md">to add an "additional boards manager URL" and install the respective core</a>. It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
-<p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" and install the respective core</a>. It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules.</p>
+<p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
 <h2 id="downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</h2>
-<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code>, a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code>, the GDB debugger for AVR chips. Store <code>pyavrocd</code> and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.ƒ3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> or (<code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <h2 id="pypi-not-implemented-yet">PyPI (not implemented yet)</h2>
 <p>I assume you already installed a recent Python version (&gt;=3.9).</p>
