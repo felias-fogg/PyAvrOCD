@@ -74,6 +74,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-arduino-boards">Supported Arduino boards</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-olimex-boards">Supported Olimex boards</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
@@ -132,7 +134,7 @@ one way or another. As usual, tested boards are marked in boldface,
 and those known not to work are struck out. In addition, the board
 packages supporting the boards and possible board modifications are
 mentioned.</p>
-<h3 id="supported-microchip-boards">Supported Microchip boards</h3>
+<h2 id="supported-microchip-boards">Supported Microchip boards</h2>
 <p>The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have boards physically or, e.g., to change fuses in SPI before switching to JTAG. When working with debugWIRE targets, the power-cycling is done automatically.</p>
 <ul>
 <li><strong>ATmega328P</strong>, <strong>ATmega168PB</strong>, and <strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: Supported by MiniCore; choose <code>16 MHz external</code>, <code>no bootloader</code>, the correct <code>variant</code>, and as the <code>Programmer</code> <code>Xplained Mini</code>. The <code>port</code> should be set to the USB port opened by the board. You can upload code to the board using the command <code>Upload Using Programmer</code>. Serial I/O can be used via the <code>Serial Monitor</code> of the IDE. Debugging can be activated by simply using the debugging button. Power-cycling (for enabling debugWIRE mode) is done automatically. Note that you can plug Arduino shields on top of the boards if you solder headers to the boards.</li>
@@ -141,7 +143,7 @@ mentioned.</p>
 <li>ATmega256RFR2 Xplained Pro: no core yet</li>
 <li><strong><u>AVR Butterfly (ATmega169)</u></strong>: no core yet</li>
 </ul>
-<h3 id="supported-arduino-boards">Supported Arduino boards</h3>
+<h2 id="supported-arduino-boards">Supported Arduino boards</h2>
 <ul>
 <li>Arduino Yún</li>
 <li><strong>Arduino UNO R3</strong>: Supported by MiniCore;  <a href="https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
@@ -160,7 +162,7 @@ mentioned.</p>
 <li>Arduino Ethernet (Rev1): MiniCore; do not connect DTR pin of FTDI header</li>
 <li>Arduino Fio: MiniCore; do not connect DTR pin of FTDI header and do not connect XBee</li>
 <li>Arduino BT: MiniCore; remove capacitor <code>C1</code></li>
-<li>LilyPad Arduino USB: no core yet</li>
+<li><s>LilyPad Arduino USB</s>: JTAG pins are not accessible</li>
 <li>LilyPad Arduino: MiniCore; do not connect DTR pin of FTDI header</li>
 <li>Arduino Pro: MiniCore; do not connect DTR pin of FTDI header</li>
 <li><strong>Arduino Pro Mini</strong>: MiniCore; do not connect DTR pin of FTDI header</li>
@@ -175,6 +177,7 @@ mentioned.</p>
 <li>Arduino Linino One: no core yet</li>
 <li>Arduino UNO WiFi (Rev 1): MiniCore; cut <code>RESET EN</code> solder bridge</li>
 </ul>
+<h2 id="supported-olimex-boards">Supported Olimex boards</h2>
               
             </div>
           </div><footer>

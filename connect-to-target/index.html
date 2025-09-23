@@ -170,7 +170,7 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/pickit4-connect.png" width="70%">
 </p>
 
-<p>In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the correct connections.</p>
+<p>In this case, it is essential to consult the user guide of the programmer and the <a href="https://pinouts.de">pinout of the MCU</a> in the datasheet or the documentation of the respective core to make the correct connections.</p>
 <h2 id="connecting-to-a-debugwire-target">Connecting to a debugWIRE target</h2>
 <p>In principle, only two wires are necessary to connect your hardware debugger to a target chip or board: the debugWIRE line, which is the target chip's RESET line, and GND. Since the debugger also needs to know which voltage the target board uses, the Vcc line is also necessary. Note that none of the commercial debuggers source the target. They only have voltage-sensing lines to drive the level-shifting hardware.</p>
 <p>Since one also wants to change into and out of debugWIRE mode, change fuses, or upload firmware, it is necessary to connect all 6 SPI programming lines to the target: VTG, GND, RESET, MOSI, MISO, and SCK. For this reason, using all SPI programming lines makes a lot of sense. Moreover, most of the time, an SPI connector is already on the target board.</p>

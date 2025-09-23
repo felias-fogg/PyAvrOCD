@@ -95,10 +95,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#link-time-optimization">Link-time optimization</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#unsafe-exits-from-debugging">Unsafe exits from debugging</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
@@ -114,6 +110,10 @@
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#io-register-access">I/O register access</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#unsafe-exits-from-debugging">Unsafe exits from debugging</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
     </li>
     </ul>
                   </li>
@@ -185,30 +185,12 @@
 <p>Link-time optimization is a relatively new technique and was introduced into the Arudinio IDE only in 2020.  It optimizes across all compilation units and is able to prune away unused functions and data structures, as well as inlining functions across compilation units.</p>
 <p>The disadvantage is that <a href="https://arduino-craft-corner.de/index.php/2021/12/15/link-time-optimization-and-debugging-of-object-oriented-programs-on-avr-mcus/">link-time optimization prunes away essential information about C++ objects</a> so that class instances all of a sudden seem to be variables of a structure type. Furthermore, they prune away the info that variables are global, which means that in the <code>VARIABLES</code> debugging pane of the Arduino IDE 2, no variables are displayed. Finally, because of aggressive inlining, this technique can provoke stack overflows.</p>
 <p>All these problems disappear when link-time optimization is disabled. However, in this case, much more code space is needed.</p>
-<h2 id="undebuggable-mcus">Undebuggable MCUs</h2>
-<p>Some AVR MCUs are not debuggable or offer only limited debug support.</p>
-<p>MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:</p>
-<ul>
-<li><em>ATmega48</em>,</li>
-<li><em>ATmega88</em>,</li>
-<li><em>ATmega16</em>,</li>
-</ul>
-<p>all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match. </p>
-<p>Finally, we have the <em>ATmega128(A)</em>, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (<em>not yet implemented</em>).</p>
-<h2 id="unsafe-exits-from-debugging">Unsafe exits from debugging</h2>
-<p>MCU and hardware debugger can be in an undefined state after abrupt exits. </p>
-<p>When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:</p>
-<ul>
-<li>Some fuses, such as <code>OCDEN</code>, might still be in the programmed state.</li>
-<li>Software breakpoints (that are implemented as <code>BREAK</code> instructions) may not have been removed.</li>
-</ul>
-<p>It may be enough to start a new debugging session and reflash the program. However, the hardware debugger might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.</p>
 <h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
 <p>Breakpoints in interrupt routines can throw off the timing of time-critical code.</p>
 <p>It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone. </p>
 <h2 id="conditional-breakpoints">Conditional breakpoints</h2>
 <p>Using conditional breakpoints can slow down execution significantly.</p>
-<p>One can attach conditions to breakpoints using the GDB command <code>condition</code>, or right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command <code>ignore</code>, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop will take around 100 milliseconds, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.</p>
+<p>One can attach conditions to breakpoints using the GDB command <code>condition</code> or by right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command <code>ignore</code>, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop can take 100 milliseconds or more, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.</p>
 <h2 id="single-stepping">Single-stepping</h2>
 <p>Single-stepping is not the same as executing the instruction in its usual context. </p>
 <h3 id="single-stepping-throws-off-timing">Single-stepping throws off timing</h3>
@@ -219,14 +201,37 @@ IN R2, PINB
 <p>When running this code normally, the value 0x66 would not read back to the  R2 register. However, when single-stepping this code, there is enough time for the new value to settle and be readable. In order to make 0x66 readable under normal execution, a <code>NOP</code> is necessary between <code>OUT</code> and <code>IN</code>.</p>
 <p>On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed. </p>
 <h3 id="single-stepping-break-instructions">Single-stepping BREAK instructions</h3>
-<p><code>BREAK</code> instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a <code>BREAK</code> instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from [a previous debugging session that has been ended abruptly](limitations/#unsafe-exits-from-debugging (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user. </p>
+<p><code>BREAK</code> instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a <code>BREAK</code> instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from <a href="limitations/#unsafe-exits-from-debugging">a previous debugging session that has been ended abruptly</a> (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user. </p>
 <h3 id="single-stepping-sleep-instructions">Single-stepping SLEEP instructions</h3>
+<p>Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a <code>SLEEP</code> instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a <code>SLEEP</code> instruction, it is treated as a <code>NOP</code> instruction. When you want to debug the sleep state, use a breakpoint.</p>
 <h2 id="io-register-access">I/O register access</h2>
+<p>Some I/O registers cannot be accessed from the debugging UI.</p>
+<p>Certain I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers <code>UDR</code> and <code>SPDR</code>). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2 or PlatformIO, then the <code>PERIPHERALS</code> debugger pane will show you a comment to this effect. </p>
+<p>Other I/O registers cannot be written to without side-effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). Again, if you use the Arduino IDE or PlatformIO, the <code>PERIPHERALS</code> pane will inform you about the fact that the register is read-only to the debugger.</p>
 <!--
 
 ## USB communication
 
 -->
+
+<h2 id="unsafe-exits-from-debugging">Unsafe exits from debugging</h2>
+<p>MCU and hardware debugger can be in an undefined state after abrupt exits. </p>
+<p>When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:</p>
+<ul>
+<li>Some fuses, such as <code>OCDEN</code>, might still be in the programmed state.</li>
+<li>Software breakpoints (that are implemented as <code>BREAK</code> instructions) may not have been removed.</li>
+</ul>
+<p>It may be enough to start a new debugging session and reflash the program. However, the hardware debugger might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.</p>
+<h2 id="undebuggable-mcus">Undebuggable MCUs</h2>
+<p>Some AVR MCUs are not debuggable or offer only limited debug support.</p>
+<p>MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:</p>
+<ul>
+<li><em>ATmega48</em>,</li>
+<li><em>ATmega88</em>,</li>
+<li><em>ATmega16</em>,</li>
+</ul>
+<p>all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match. </p>
+<p>Finally, we have the <em>ATmega128(A)</em>, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (<em>not yet implemented</em>).</p>
               
             </div>
           </div><footer>
