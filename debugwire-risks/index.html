@@ -53,7 +53,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
@@ -77,22 +77,24 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
-                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">debugWIRE</a>
     <ul class="current">
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
@@ -137,13 +139,13 @@ The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut t
 <li>It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed <code>SPIEN</code> (Serial program downloading) and/or programmed <code>RSTDSBL</code>, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.</li>
 <li>There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).</li>
 </ol>
-<p>If none of the above-mentioned recovery methods work, the last resort is <em>high-voltage programming</em>. This means that 12 volts are applied to the RESET line and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a <a href="https://github.com/felias-fogg/RescueAVR">breadboard high-voltage programmer</a> or a specially designed <a href="https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/">"HV fuse programmer"</a>. For MCUs with an SMD footprint, you would need to buy a breadboard adapter.</p>
+<p>If none of the above-mentioned recovery methods work, the last resort is <em>high-voltage programming</em>. This means that 12 volts are applied to the RESET line, and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a <a href="https://github.com/felias-fogg/RescueAVR">breadboard high-voltage programmer</a> or a specially designed <a href="https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/">"HV fuse programmer"</a>. For MCUs with an SMD footprint, you would need to buy a breadboard adapter.</p>
 <p>Having said all that, my experience is that if you take care of the potential problems mentioned in points 1-4, it is unlikely that your MCU will get bricked. But it doesn't mean that it is impossible either. JTAG and UPDI are definitely the more robust debugging interfaces.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../limitations/" class="btn btn-neutral float-left" title="Limitations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../disclaimer/" class="btn btn-neutral float-left" title="Disclaimer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../flash-wear/" class="btn btn-neutral float-right" title="Flash wear">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -171,7 +173,7 @@ The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut t
         </span>
     
     
-      <span><a href="../limitations/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../disclaimer/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../flash-wear/" style="color: #fcfcfc">Next &raquo;</a></span>

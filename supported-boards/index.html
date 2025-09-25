@@ -53,7 +53,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
@@ -74,7 +74,13 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-arduino-boards">Supported Arduino boards</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-sparkfun-boards">Supported Sparkfun boards</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-adafruit-boards">Supported Adafruit boards</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-olimex-boards">Supported Olimex boards</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-azduino-boards-by-spence-konde">Supported Azduino boards by Spence Konde</a>
     </li>
     </ul>
                   </li>
@@ -85,20 +91,22 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
@@ -129,55 +137,107 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-boards">Supported boards</h1>
-<p>All boards equipped with one of the supported chips can be used in
-one way or another. As usual, tested boards are marked in boldface,
-and those known not to work are struck out. In addition, the board
-packages supporting the boards and possible board modifications are
-mentioned.</p>
+<p>Almost all boards equipped with one of the supported chips can be used in
+one way or another. Tested boards are marked in boldface,
+and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested.</p>
+<p>In addition, the board packages supporting the boards, possible board modifications, and other information are mentioned.</p>
 <h2 id="supported-microchip-boards">Supported Microchip boards</h2>
-<p>The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have boards physically or, e.g., to change fuses in SPI before switching to JTAG. When working with debugWIRE targets, the power-cycling is done automatically.</p>
+<p>The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.</p>
 <ul>
-<li><strong>ATmega328P</strong>, <strong>ATmega168PB</strong>, and <strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: Supported by MiniCore; choose <code>16 MHz external</code>, <code>no bootloader</code>, the correct <code>variant</code>, and as the <code>Programmer</code> <code>Xplained Mini</code>. The <code>port</code> should be set to the USB port opened by the board. You can upload code to the board using the command <code>Upload Using Programmer</code>. Serial I/O can be used via the <code>Serial Monitor</code> of the IDE. Debugging can be activated by simply using the debugging button. Power-cycling (for enabling debugWIRE mode) is done automatically. Note that you can plug Arduino shields on top of the boards if you solder headers to the boards.</li>
-<li><strong>ATmega324PB Xplained Pro:</strong> No core yet. Serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code>. The LED is connected to digital pin 23.</li>
+<li>
+<p><strong>ATmega328P</strong>, <strong>ATmega168PB</strong>, and <strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; choose <code>16 MHz external</code>, <code>no bootloader</code>, the correct <code>variant</code>, and as the <code>Programmer</code> <code>Xplained Mini</code>. The <code>port</code> should be set to the USB port opened by the board. You can upload code to the board using the command <code>Upload Using Programmer</code>. Serial I/O can be used via the <code>Serial Monitor</code> of the IDE. Power-cycling (for enabling debugWIRE mode) is done automatically. For these boards, it makes sense to use <code>--atexit leavedebugwire</code> because then one can use the much faster upload via SPI programming.</p>
+</li>
+<li>
+<p><strong>ATmega324PB Xplained Pro:</strong> No core yet. Serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code>. The LED is connected to digital pin 23.</p>
+</li>
 <li>AT90USBKEY (AT90USB1287): no core yet</li>
 <li>ATmega256RFR2 Xplained Pro: no core yet</li>
 <li><strong><u>AVR Butterfly (ATmega169)</u></strong>: no core yet</li>
 </ul>
 <h2 id="supported-arduino-boards">Supported Arduino boards</h2>
 <ul>
-<li>Arduino Yún</li>
-<li><strong>Arduino UNO R3</strong>: Supported by MiniCore;  <a href="https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
-<li>Arduino UNO Mini: Supported by MiniCore; remove capacitor <code>C3</code></li>
-<li>Arduino Duemilanove: Supported by MiniCore; <code>RESET EN</code> needs to be cut</li>
-<li>Arduino Diecimila: Supported by MiniCore; <a href="https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/">remove 100nF capacitor</a></li>
-<li><strong>Arduino Nano:</strong> Supported by Minicore; <a href="https://mtech.dk/thomsen/electro/arduino.php">only clones can be modified</a></li>
+<li>Arduino Yún: no core yet</li>
+<li><strong>Arduino UNO R3</strong>: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>;  <a href="https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
+<li>Arduino UNO Mini: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; remove capacitor <code>C3</code></li>
+<li>Arduino Duemilanove: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; <code>RESET EN</code> needs to be cut</li>
+<li>Arduino Diecimila: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; <a href="https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/">remove 100nF capacitor</a></li>
+<li><strong>Arduino Nano:</strong> Supported by <a href="https://github.com/MCUdude/MiniCore">Minicore</a>; <a href="https://mtech.dk/thomsen/electro/arduino.php">only clones can be modified</a></li>
 <li><strong>Arduino Mega</strong>: no core yet</li>
 <li><strong>Arduino Mega 2560:</strong> no core yet</li>
 <li>Arduino Mega ADK: no core yet</li>
-<li><strong>Arduino Leonardo</strong>: no core yet</li>
+<li><strong><u>Arduino Leonardo</u></strong>: no core yet</li>
 <li>Arduino Leonardo ETH: no core yet</li>
-<li>Arduino Micro: no core yet</li>
-<li><s>Arduino Esplora</s>s: JTAG pins are not accessible</li>
-<li>Arduino Mini: Supported by MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino Ethernet (Rev1): MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino Fio: MiniCore; do not connect DTR pin of FTDI header and do not connect XBee</li>
-<li>Arduino BT: MiniCore; remove capacitor <code>C1</code></li>
+<li><strong><u>Arduino Micro</u></strong>: no core yet</li>
+<li><s>Arduino Esplora</s>: JTAG pins are not accessible</li>
+<li>Arduino Mini: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li>Arduino Ethernet (Rev1): <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><strong><u>Arduino Fio</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header and do not connect XBee</li>
+<li>Arduino BT: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; remove capacitor <code>C1</code></li>
 <li><s>LilyPad Arduino USB</s>: JTAG pins are not accessible</li>
-<li>LilyPad Arduino: MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino Pro: MiniCore; do not connect DTR pin of FTDI header</li>
-<li><strong>Arduino Pro Mini</strong>: MiniCore; do not connect DTR pin of FTDI header</li>
-<li>Arduino NG (ATmega168): MiniCore; no modifications necessary</li>
+<li><strong><u>LilyPad Arduino</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><strong><u>Arduino Pro</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><strong><u>Arduino Pro Mini</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li>Arduino NG (ATmega168): <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; no modifications necessary</li>
 <li><s>Arduino NG (ATmega8)</s>: no debugging interface</li>
 <li>Arduino Robot Control: no core yet</li>
 <li>Arduino Robot Motor: no core yet</li>
-<li><strong>Arduino Gemma</strong>: ATTinyCore; RESET pad on backside</li>
-<li><strong>Adafruit Circuit Playground 32u4</strong>: no core yet</li>
+<li><strong><u>Arduino Gemma</u></strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore for</a>k; RESET pad on backside</li>
+<li><strong><u>Adafruit Circuit Playground 32u4</u></strong>: no core yet</li>
 <li>Arduino Yún Mini: no core yet</li>
 <li>Arduino Industrial 101: no core yet</li>
 <li>Arduino Linino One: no core yet</li>
-<li>Arduino UNO WiFi (Rev 1): MiniCore; cut <code>RESET EN</code> solder bridge</li>
+<li>Arduino UNO WiFi (Rev 1): <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; cut <code>RESET EN</code> solder bridge</li>
+</ul>
+<h2 id="supported-sparkfun-boards">Supported Sparkfun boards</h2>
+<ul>
+<li>RedBoard (ATmega328P): MiniCore; remove <code>C8</code></li>
+<li><strong><u>Pro Micro 3.3V (ATmega32U4)</u></strong>: no core yet</li>
+<li><strong><u>Pro Micro 5V (ATmega32U4)</u></strong>: no core yet</li>
+<li>Qduino Mini (ATmega32U4): no core yet</li>
+<li>Mega Pro 3.3V/5V: no core yet</li>
+<li>RedBot (ATmega328P): MiniCore</li>
+<li>ATmega128RFA1 Development board: no core yet</li>
+<li>Serial-7-Segment-Display (ATmega328): MiniCore</li>
+<li>LilyPad USB Plus: no core yet</li>
+</ul>
+<h2 id="supported-adafruit-boards">Supported Adafruit boards</h2>
+<ul>
+<li><s>FLORA (ATmega32U4)</s>: JTAG pins are not accessible</li>
+<li>Metro Mini 328P V2: MiniCore; you have to figure out which cap to remove</li>
+<li>ItsyBitsy 32u4 (3V/5V): no core yet</li>
+<li>Metro (ATmega328P): MiniCore; cut <code>RESET EN</code> solder bridge</li>
+<li>Trinket - Mini Microcontroller 3.3V/5V Logic: ATTinyCore fork</li>
+<li>Pro Trinket - 5V 16MHz (ATmega328P): MiniCore</li>
+<li>Feather 32U4 Basic Proto: no core yet</li>
+<li>Feather 32u4 Bluefruit LE: no core yet</li>
+<li>Feather 32u4 FONA: no core yet</li>
+<li>Feather 328P: MiniCore</li>
+<li>Teensy 2.0 (ATmega32U4): no core yet</li>
+<li>ATmega32u4 Breakout Board: no core yet</li>
+<li>Teensy++ (AT90USB1286): no core yet</li>
 </ul>
 <h2 id="supported-olimex-boards">Supported Olimex boards</h2>
+<ul>
+<li><u><strong>AVR-CAN (AT90CAN128)</strong></u>: no core yet</li>
+<li>AVR-GSM (ATMega32): no core yet</li>
+<li><s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with stuck-at-one bit</li>
+<li><strong><u>AVR-MT128 (ATmega128)</u>:</strong> no core yet, only hardware breakpoints (!)</li>
+<li>AVR-USB-STK (AT90USB162): no core at all!</li>
+<li><strong><u>AVR-USB-162 (AT90USB162)</u></strong>: no core at all!</li>
+</ul>
+<h2 id="supported-azduino-boards-by-spence-konde">Supported Azduino boards by Spence Konde</h2>
+<ul>
+<li><strong>ATtiny841 dev. board</strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore fork</a></li>
+<li><strong>ATtiny1634 dev. board</strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore fork</a></li>
+<li><strong>ATtiny88 breakout board (assembled)</strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore fork</a></li>
+<li>
+<p><strong>ATtiny828 breakout board (assembled)</strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore fork</a></p>
+</li>
+<li>
+<p><strong>ATtiny167 dev. board</strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore fork</a></p>
+</li>
+<li><strong>ATtiny43 dev. board</strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore fork</a></li>
+</ul>
               
             </div>
           </div><footer>

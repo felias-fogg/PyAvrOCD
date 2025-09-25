@@ -53,7 +53,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
@@ -95,20 +95,22 @@
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
@@ -207,7 +209,8 @@ Note: automatically using hardware breakpoints for read-only addresses.
 <p>The panes below pane F are interesting if you are deep into the MCU hardware. The <code>CORTEX PERIPHERALS</code> pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The <code>CORTEX REGISTERS</code> pane displays the general registers. For more information on debugging, refer to the Arduino <a href="https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/">debugging tutorial</a>.</p>
 <p>When you have decided to change the source code, remember to terminate the debugger (red square), then recompile the sketch using the upper left <code>Verify</code> button, and finally start another debugging session.</p>
 <h2 id="debugging-using-platformiovsc">Debugging using PlatformIO/VSC</h2>
-<p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the <code>platformio.ini</code> configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. A <code>platform.ini</code>  that can be used to start the debugger is provided <a href="../debugging-software/#platformio-and-visual-studio-code">here</a>.</p>
+<p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the <code>platformio.ini</code> configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. </p>
+<p>In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  <code>platform.ini</code>  that can be used to integrate PyAvrOCD and to start the debugger is provided <a href="../debugging-software/#platformio-and-visual-studio-code">here</a> and in the <code>examples</code> folder of the GitHub repo.</p>
 <h2 id="debugging-using-gede">Debugging using Gede</h2>
 <p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option <code>--gede</code> or <code>-g</code> when starting PyAvrOCD.</p>
 <p><img alt="Gede" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png" /></p>
