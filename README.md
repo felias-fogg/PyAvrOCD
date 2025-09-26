@@ -6,6 +6,8 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/logo-small.png" width="15%">
 </p>
+
+
 *This is a **work in progress** that is not yet ready for general use yet. Use [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver) if you are interested in a working system (for debugWIRE targets)*.
 
 ------
