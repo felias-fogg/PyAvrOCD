@@ -27,6 +27,7 @@ from pyavrocd.xnvmupdi import XNvmAccessProviderCmsisDapUpdi
 from pyavrocd.errors import FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
+#pylint: disable=too-many-public-methods
 class XAvrDebugger(AvrDebugger):
     """
     AVR debugger wrapper
@@ -48,12 +49,14 @@ class XAvrDebugger(AvrDebugger):
         """
         self.logger = getLogger(__name__)
         self.transport = transport
-        self.devicename = devicename
-        self.iface = iface
+        self._devicename = devicename
+        self._iface = iface
         self.manage = manage
         self.clkprg = clkprg
         self.clkdeb = clkdeb
         self.housekeeper = None
+        self._hwbpnum = None
+        self._architecture = None
         self.use_events_for_run_stop_state = True # we use the polling feature!
         # Gather device info
         # moved here so that we have mem + device info before the debug process starts
@@ -61,10 +64,10 @@ class XAvrDebugger(AvrDebugger):
             self.device_info = deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices." + devicename)
         except ImportError:
             raise PymcuprogNotSupportedError("No device info for device: {}".format(devicename)) #pylint: disable=raise-missing-from
+        self._architecture = self.device_info['architecture'].lower()
         if iface not in self.device_info['interface'].lower():
             raise PymcuprogToolConfigurationError("Incompatible debugging interface")
 
-        self.architecture = self.device_info['architecture'].lower()
 
         # Memory info for the device
         self.memory_info = deviceinfo.DeviceMemoryInfo(self.device_info)
@@ -80,14 +83,36 @@ class XAvrDebugger(AvrDebugger):
 
         # Now attach the right NVM device
         self.device = None
-        if self.iface == "updi":
+        if iface == "updi":
             self.device = XNvmAccessProviderCmsisDapUpdi(self.transport, self.device_info)
-        elif self.iface == "debugwire":
+            self._hwbpnum = 2
+        elif iface == "debugwire":
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info)
-        elif self.iface == "jtag" and self.architecture =="avr8":
+            self._hwbpnum = 1
+        elif iface == "jtag" and self._architecture =="avr8":
             self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info, manage=manage)
-        self.logger.debug("Nvm instance created")
+            self._hwbpnum = 4
 
+        self.logger.debug("Nvm instance created, iface: %s, HWBPs: %d, arch: %s",
+                              self._iface, self._hwbpnum, self._architecture)
+
+    def get_iface(self):
+        """
+        info about debugging interface
+        """
+        return self._iface
+
+    def get_architecture(self):
+        """
+        info about architecture
+        """
+        return self._architecture
+
+    def get_hwbpnum(self):
+        """
+        info about number of hardware breakpoints
+        """
+        return self._hwbpnum
 
     def start_debugging(self, flash_data=None, warmstart=False):
         """
@@ -106,7 +131,7 @@ class XAvrDebugger(AvrDebugger):
             self.device.avr.setup_config(self.device_info)
             self.logger.info("Device configuration communicated to tool")
             dev_id = self._activate_interface()
-            if self.iface == 'jtag' and dev_id & 0xFF != 0x3F:
+            if self._iface == 'jtag' and dev_id & 0xFF != 0x3F:
                 raise FatalError("Not a Microchip JTAG target")
         except Exception as e:
             if warmstart:
@@ -193,7 +218,7 @@ class XAvrDebugger(AvrDebugger):
         (for JTAG targets only): Clear lockbits, unprogram BOOTRST, and program OCDEN.
         We assume that we are in progmode.
         """
-        if self.iface != 'jtag':
+        if self._iface != 'jtag':
             return
         # clear lockbits if necessary
         self._handle_lockbits(self.read_lock_one_byte,
@@ -226,7 +251,7 @@ class XAvrDebugger(AvrDebugger):
         that the signature is readable in the mode, in which this method is called (progmode or debmode)
         """
         idbytes = self.read_sig(0,3)
-        if self.iface == 'debugwire':
+        if self._iface == 'debugwire':
             sig = (0x1E<<16)+dev_id # The id returned from activate_physical
         else:
             sig = (idbytes[2]) + (idbytes[1]<<8) + (idbytes[0]<<16)
@@ -261,7 +286,7 @@ class XAvrDebugger(AvrDebugger):
         pc = self.program_counter_read()
         self.logger.debug("PC(word)=%X",pc)
         if pc << 1 >= self.memory_info.memory_info_by_name('flash')['size']:
-            if self.iface == 'debugwire':
+            if self._iface == 'debugwire':
                 self.device.avr.protocol.debugwire_disable()
             raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
         # special purpose check for ATmega16 (and we try it also for fun an ATmega32)
@@ -349,7 +374,7 @@ class XAvrDebugger(AvrDebugger):
                     newfuse = bfuse[0] | bfuse_mask
                     self.logger.debug("Writing new fuse byte: 0x%x", newfuse)
                     write(bfuse_addr, bytearray([newfuse]))
-                    if self.iface == 'debugwire': #necessary because otherwise the read may fail
+                    if self._iface == 'debugwire': #necessary because otherwise the read may fail
                         self.spidevice.isp.leave_progmode()
                         self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
                         self.logger.debug("Reconnected to SPI programming module")
@@ -394,7 +419,7 @@ class XAvrDebugger(AvrDebugger):
         If callback is Null or returns False, we wait for a manual power cycle.
         Otherwise, we assume that the callback function does the job.
         """
-        if self.iface != 'debugwire':
+        if self._iface != 'debugwire':
             return
         self.logger.info("Prepare for debugWIRE debugging...")
         try:

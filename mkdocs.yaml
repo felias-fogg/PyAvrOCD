@@ -1,24 +1,31 @@
+site_name: PyAvrOCD
+repo_url: https://github.com/felias-fogg/PyAvrOCD
+repo_name: PyAvrOCD
+
 theme:
   name: readthedocs
   locale: en
+  logo: pics/logo-tiny.png
+  include_homepage_in_sidebar: True
 
 extra_css:
   - style.css
 
 plugins:
   - search
-  - external-markdown
 
-site_name: PyAvrOCD
-repo_url: https://github.com/felias-fogg/PyAvrOCD
+markdown_extensions:
+  - markdown_include.include:
+        base_path: docs
+        inheritHeadingDepth: True
+
 nav:
-  - Installation:
-    - GDB server: 'install-link.md'
+  - Installation & Configuration:
+    - PyAvrOCD: 'install-link.md'
     - Debugging software: 'debugging-software.md'
   - Usage:
-    - Configuration: 'configuration.md'
     - Preparing the target: 'board-preparation.md'
-    - Connecting to target: 'connect-to-target.md'
+    - Connecting to the target: 'connect-to-target.md'
     - Invoking the server: 'command-line-options.md'
     - Debugging on the target: 'debugging.md'
     - Monitor commands: 'monitor-commands.md'
@@ -30,15 +37,13 @@ nav:
   - Caveats:
     - Disclaimer: 'disclaimer.md'
     - Limitations: 'limitations.md'
-    - debugWIRE: 'debugwire-risks.md'
-    - Flash wear: 'flash-wear.md'
   - About:
+    - License: 'license-link.md'
     - Release notes: 'release-notes.md'
     - Contributing: 'contributing.md'
-    - License: 'license-link.md'
+    - Credits: 'credits-link.md'
     - Code of conduct: 'code_of_conduct-link.md'
 not_in_nav:
   generate-new-version.md
   load-speed.md
   snap-connector.md
-  index.md

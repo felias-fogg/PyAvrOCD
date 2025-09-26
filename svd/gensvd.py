@@ -11,16 +11,28 @@ import subprocess
 import re
 
 def massage_register_captions(s):
-    return re.sub('<register(.*?)caption="(.*?)"(.*?)ocd-rw=""(.*?)>',
-                      '<register\\1caption="\\2 (not readable by debugger)"\\3ocd-rw=""\\4>', s)
+    """
+    Modify register captions so that they reflect the R/W permissions for the debugger.
+    This is done on the entire text of an ATDF file loaded from disk.
+    """
+    return re.sub('<register(.*?)caption="(.*?)"(.*?)ocd-rw="R"(.*?)>',
+                      '<register\\1caption="\\2 (read-only for debugger)"\\3ocd-rw=""\\4>',
+                      re.sub('<register(.*?)caption="(.*?)"(.*?)ocd-rw=""(.*?)>',
+                        '<register\\1caption="\\2 (write-only for debugger)"\\3ocd-rw=""\\4>', s))
 
 def extend_with_comments(fname):
-    with open(fname, "r") as f:
+    """
+    Read an ATDF file and write to disk with an additional file name extension of ".comments"
+    """
+    with open(fname, "r", encoding="utf-8") as f:
         atdf = f.read()
-    with open(os.path.basename(fname) + ".comments", "w") as f:
+    with open(os.path.basename(fname) + ".comments", "w", encoding="utf-8") as f:
         f.write(massage_register_captions(atdf))
 
 def massage_base_addresses(svd):
+    """
+    Change the base address to an address in SRAM space (for GCC).
+    """
     return re.sub("<baseAddress>0x000(\\w+)</baseAddress>",
                       "<baseAddress>0x008\\1</baseAddress>", svd)
 
@@ -67,7 +79,7 @@ def main():
                                        stdout=subprocess.PIPE,
                                        check=True,
                                        text=True)
-            with open(svdfile, 'w') as f:
+            with open(svdfile, 'w', encoding="utf-8") as f:
                 f.write(massage_base_addresses(result.stdout))
             os.remove(file + ".comments")
 

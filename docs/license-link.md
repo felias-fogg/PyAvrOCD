@@ -1,1 +1,3 @@
-../LICENSE
+```text
+{!../LICENSE!}
+```

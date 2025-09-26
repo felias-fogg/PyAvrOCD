@@ -30,3 +30,5 @@ In addition to options, one can specify file names prefixed with a '@'-sign. Suc
 
 The argument `@pyavrocd.options` is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.
 
+
+

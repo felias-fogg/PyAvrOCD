@@ -22,7 +22,7 @@ class TestMemory(TestCase):
         mock_dbg.transport = MagicMock()
         mock_dbg.device = Mock()
         mock_dbg.device.avr = Mock()
-        mock_dbg.iface = "debugwire"
+        mock_dbg.get_iface.return_value = "debugwire"
 
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test

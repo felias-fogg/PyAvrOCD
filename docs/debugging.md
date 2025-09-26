@@ -18,7 +18,7 @@ When starting the GDB server from the command line, you need to specify the MCU 
 
 In another terminal window, you can now start a GDB session:
 
-```log
+```gdb
 > avr-gdb varblink0.ino.elf
 GNU gdb (GDB) 15.2
 Copyright (C) 2024 Free Software Foundation, Inc.
@@ -63,7 +63,7 @@ Before clicking the `Verify` button in the upper left corner, choose `Optimize f
 
 After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
 
-Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](install-link.md#linux)). Or maybe you forgot to connect a hardware debugger altogether.
+Instead of the message shown in the following screenshot, a warning "No hardware debugger discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the `Serial Monitor`. Simply close the `Serial Monitor` console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see [installation instructions](install-link.md#installation)). Or maybe you forgot to connect a hardware debugger altogether.0
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png)
 
@@ -75,13 +75,13 @@ After stopping, the IDE rearranges the layout, showing the debugging panes on th
 
 ![ide2-3](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3.png)
 
-Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13.
-
-### Debugging
+Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13 in the picture below.
 
 ![ide2-4](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-4.png)
 
-The debugging panes are organized as follows. Pane A contains the debug controls. From left to right:
+### Debugging
+
+The debugging panes are organized as follows (see picture above). Pane A contains the debug controls. From left to right:
 
 - *Reset*ting the device
 - *Continue* execution or *pause*
@@ -95,11 +95,21 @@ Pane B shows the active threads, but there is just one in our case. Pane C displ
 
 The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
 
-When you have decided to change the source code, remember to terminate the debugger (red square), then recompile the sketch using the upper left `Verify` button, and finally start another debugging session.
+### Correcting the bug and starting over
+
+Let us assume you found the bug and made a correction in the source code. Note that it is not enough to `restart` or `reset` the device in order to try out the correction! This will only restart, but it will not compile and reload the program.  Instead, do the following:
+
+1. Terminate debugging by clicking on the red square.
+2. Click again on the `Verify` button to start a new compilation.
+3. Restart the debugger by clicking on the `Debugging` button in the top line in order to try out your correction.
+
+If everything now works out, you may consider calling it a day and stopping work on the program. Before leaving the debugger, consider typing the command `monitor debugwire disable` into the last line of the `Debug Console`. If you were debugging on a debugWIRE target, this is necessary to bring the target chip back into normal mode, where it accepts SPI programming.
 
 ## Debugging using PlatformIO/VSC
 
-Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners. In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. A `platform.ini`  that can be used to start the debugger is provided [here](debugging-software.md#platformio-and-visual-studio-code).
+Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners.
+
+In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  `platform.ini`  that can be used to integrate PyAvrOCD and to start the debugger is provided [here](debugging-software.md#platformio-and-visual-studio-code) and in the `examples` folder of the GitHub repo.
 
 ## Debugging using Gede
 
@@ -107,7 +117,7 @@ Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same t
 
 ![Gede](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png)
 
-`Project dir` and `Program` are specific to your debugging session. The rest should be copied as it is shown. Before you click `OK`, you should switch to the `Commands` section, where you need to enter the command `monitor debugwire enable` if you are working with a debugWIRE target (otherwise it does not hurt).
+`Project dir` and `Program` are specific to your debugging session. The rest should be copied as it is shown. Before you click `OK`, you should switch to the `Commands` section, where you need to enter the command `monitor debugwire enable` if you are working with a debugWIRE target (otherwise, it does not hurt).
 
 ![ ](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-cmds.png)
 

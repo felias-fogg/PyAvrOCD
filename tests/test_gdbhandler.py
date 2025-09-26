@@ -32,7 +32,7 @@ class TestGdbHandler(TestCase):
         mock_dbg.edbg_protocol = MagicMock()
         mock_dbg.device = Mock()
         mock_dbg.device.avr = Mock()
-        mock_dbg.iface = 'debugwire'
+        mock_dbg.get_iface.return_value = 'debugwire'
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
         self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p", options(['-f', 'foo']))
@@ -444,11 +444,11 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.poll_event.assert_called_once()
         self.gh._comsocket.sendall.assert_called_with(rsp("T0520:88;21:3412;22:02020000;thread:1;"))
 
-    @patch('pyavrocd.main.select.select', Mock(return_value=[None, None, None]))
+    @patch('pyavrocd.server.select.select', Mock(return_value=[None, None, None]))
     def test_poll_gdb_input_false(self):
         self.assertFalse(self.gh.poll_gdb_input())
 
-    @patch('pyavrocd.main.select.select', Mock(return_value=[[1], None, None]))
+    @patch('pyavrocd.server.select.select', Mock(return_value=[[1], None, None]))
     def test_poll_gdb_input_true(self):
         self.assertTrue(self.gh.poll_gdb_input())
 

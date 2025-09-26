@@ -510,6 +510,7 @@ def harvest_from_file(filename):
 
     memories = {}
     masked = []
+    ronly = []
     for event, elem in xml_iter:
         if event == 'end':
             if elem.tag == 'device':
@@ -558,11 +559,15 @@ def harvest_from_file(filename):
                                         ("-Wonly" if (elem.attrib.get('ocd-rw',"RW") == "W") else ""))
                     if int(elem.attrib['offset'],16) not in masked:
                         masked.append(int(elem.attrib['offset'],16))
-                elif elem.attrib['name'] in [ 'DWDR', 'MONDR', 'OCDR', 'EUDR', 'UDR', 'UDR0',
+                else:
+                    if elem.attrib.get('ocd-rw',"RW") == "R":
+                        if int(elem.attrib['offset'],16) not in ronly:
+                            ronly.append(int(elem.attrib['offset'],16))
+                    if elem.attrib['name'] in [ 'DWDR', 'MONDR', 'OCDR', 'EUDR', 'UDR', 'UDR0',
                                                         'UDR1', 'UDR2', 'UDR3', 'UDR4', 'SPDR',
                                                         'SPDR0', 'SPDR1', 'SPDR2', 'LINDAT',
                                                         'UEDATX', 'UPDATX', 'DAC', 'DACL', 'DACH']:
-                    crit_fields.append(elem.attrib['name'] + "-R/W")
+                        crit_fields.append(elem.attrib['name'] + "-R/W")
             if elem.tag == 'bitfield':
                 if elem.attrib['name'].lower() == 'dwen':
                     dwen_mask = elem.attrib['mask']
@@ -638,6 +643,8 @@ def harvest_from_file(filename):
         extra_fields += "    'buffers_per_flash_page' : " + "%s" % buf_per_page + ",\n"
     if masked:
         extra_fields += "    'masked_registers' : [{}],\n".format(', '.join(hex(x) for x in sorted(masked)))
+    if ronly:
+        extra_fields += "    'ronly_registers' : [{}],\n".format(', '.join(hex(x) for x in sorted(ronly)))
 
 
     #pylint: disable=used-before-assignment

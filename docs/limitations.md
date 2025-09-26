@@ -1,22 +1,22 @@
 # Limitations
 
-The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes it can happen that the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. This can, in particular, lead to what has been called [Heisenbugs](https://en.wikipedia.org/wiki/Heisenbug). These are bugs that seem to disappear when one tries to locate them using debugging methods.
+The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. Finally, debugging your AVR chips can also be a risk to the health of your MCU.
 
 ## Bootloader
 
 Bootloaders will usually be erased when running the debugger.
 
-In a debugWIRE context, the entire chip needs to be erased if some lock bits are set. Further, the `BOOTRST` fuse is disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the `BOOTRST` fuse by using the command line option `--manage nobootrst`.
+In a **debugWIRE** context, the entire chip needs to be erased if some lock bits are set. Further, the `BOOTRST` fuse is disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the `BOOTRST` fuse by using the command line option `--manage nobootrst`.
 
-When debugging with JTAG, the chip will be erased each time a new binary is loaded. Suppose you want to keep the bootloader in memory. In that case, you can request not to erase the chip before loading a binary, erasing each flash page only when some code needs to be loaded into this page: `--erasebeforeload disable`. However, this will severely slow down the process of loading a binary.
+When debugging with **JTAG**, the chip will be erased each time a new binary is loaded. Suppose you want to keep the bootloader in memory. In that case, you can request not to erase the chip before loading a binary, erasing each flash page only when some code needs to be loaded into this page: `--erasebeforeload disable`. However, this will severely slow down the process of loading a binary.
 
 ## Low CPU clock frequency
 
 Low CPU clock frequencies can make the debugging process sluggish or even impossible.
 
-When using debugWIRE, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the `CKDIV8` fuse is programmed, then this would be only 2000 bps, at which point some of the hardware programmers may time out.
+When using **debugWIRE**, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the `CKDIV8` fuse is programmed, then this would be only 2000 bps, at which point some of the hardware programmers may time out.
 
-With JTAG, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.
+With **JTAG**, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.
 
 In general, one should not choose CPU clock frequencies below 1 MHz while debugging.
 
@@ -30,30 +30,160 @@ The reason for this is that all clocks need to be running so that the communicat
 
 When trying to debug a program compiled with the 'usual' compiler options, one often ends up in unexpected places or receives warnings.
 
-Usually, the compiler optimizes for space, trying to fit as much program code as possible into the limited amount of flash memory. This, however, might imply that code is reordered and inlined. This means that single-stepping can be confusing, that one cannot stop at some places, or that a `finish` command will lead to an error message.
+Usually, the compiler optimizes for space, trying to fit as much program code as possible into the limited amount of flash memory. This, however, might imply that some code is reordered and inlined. This means that single-stepping can be confusing, that one cannot stop at some places, or that a `finish` command will lead to an error message.
 
 When using the `-Og` compiler optimization option, the compiler aims at preserving the structure of the program at the expense of perhaps using more flash memory. In the Arduino IDE 2, this is forced by enabling `Optimize for Debugging` in the `Sketch` menu.
 
-This supports the debugging as long as one is hunting bugs in the program logic. However, some bugs may silently disappear, or the effects of a bug may change. These bugs, which are called Heisenbugs, often appear in connection with access to data on the stack, [with `volatile` data, or with race conditions](https://arduino-craft-corner.de/index.php/2025/01/19/volatilitity-race-conditions-and-heisenbugs/). Thus, if a bug disappears when optimizing for debugging is enabled, one should watch out for such a Heisenbug and perhaps debug a binary that has been compiled without the optimization for debugging option.
+### Disappearing bugs
+
+The `-Og` compiler optimization option supports debugging as long as one is hunting bugs in the program logic. However, some bugs may silently disappear, or the effects of a bug may change. These bugs, which are called [*Heisenbugs*](https://en.wikipedia.org/wiki/Heisenbug), often appear in connection with uninitialized local variables, (illegal) access to data on the stack, stack overflows, [with `volatile` data, or with race conditions](https://arduino-craft-corner.de/index.php/2025/01/19/volatilitity-race-conditions-and-heisenbugs/). Thus, if a bug disappears when optimizing for debugging is enabled, one should watch out for such a Heisenbug and debug a binary that has been compiled without the optimization for debugging option.
+
+### Bugs appearing out of thin air
+
+Another effect of using the `-Og` compiler optimization could be that all of a sudden, new bugs show up. Since code generation is different, some time-critical parts of the code could change and lead to erroneous behavior. This happened, for instance, [in the case of the FastLED library](https://github.com/FastLED/FastLED/issues/2000). Here, a chain of assembly inline code statements was compiled differently with the `-Og` option. It is actually a sign that the author of the original library code did not do a good job, since inline assembly code should precisely shield you from different ways to generate code. However, in this case, a large number of assembly inline statements were chained and gave the compiler the freedom to do some 'crazy' things between these statements.
 
 ## Link-time optimization
 
 Link-time optimization can optimize away important structural debug information about C++ objects and global variables.
 
-Link-time optimization is a relatively new technique and was introduced into the Arudinio IDE only in 2020.  It optimizes across all compilation units and is able to prune away unused functions and data structures, as well as inlining functions across compilation units.
+Link-time optimization is a relatively new technique and was introduced into the Arduino IDE only in 2020.  It optimizes across all compilation units and is able to prune away unused functions and data structures, as well as inlining functions across compilation units.
 
 The disadvantage is that [link-time optimization prunes away essential information about C++ objects](https://arduino-craft-corner.de/index.php/2021/12/15/link-time-optimization-and-debugging-of-object-oriented-programs-on-avr-mcus/) so that class instances all of a sudden seem to be variables of a structure type. Furthermore, they prune away the info that variables are global, which means that in the `VARIABLES` debugging pane of the Arduino IDE 2, no variables are displayed. Finally, because of aggressive inlining, this technique can provoke stack overflows.
 
-All these problems disappear when link-time optimization is disabled. However, in this case, much more code space is needed.
-
-## Instruction execution timing
+All these problems disappear when link-time optimization is disabled. However, in this case, much more code space may be needed.
 
 
-
-## USB communication
 
 ## Breakpoints in interrupt routines
 
+Breakpoints in interrupt routines can throw off the timing of time-critical code.
+
+It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone.
+
 ## Conditional breakpoints
 
+Using conditional breakpoints can slow down execution significantly.
+
+One can attach conditions to breakpoints using the GDB command `condition` or by right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command `ignore`, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop can take 100 milliseconds or more, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.
+
 ## Single-stepping
+
+Single-stepping is not the same as executing the instruction in its usual context.
+
+### Single-stepping throws off timing
+
+If you single-step over instructions (either explicitly or implicitly), then it will take much longer than if it were executed directly. This means that under some circumstances, some code is successful when single-stepped, but not when executed:
+
+```assembly
+OUT PORTB, 0x66
+IN R2, PINB
+```
+
+When running this code normally, the value 0x66 would not read back to the  R2 register. However, when single-stepping this code, there is enough time for the new value to settle and be readable. In order to make 0x66 readable under normal execution, a `NOP` is necessary between `OUT` and `IN`.
+
+On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed.
+
+### Single-stepping BREAK instructions
+
+`BREAK` instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a `BREAK` instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from [a previous debugging session that has been ended abruptly](#unsafe-exits-from-debugging) (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user.
+
+### Single-stepping SLEEP instructions
+
+Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint.
+
+## I/O register access
+
+Some I/O registers cannot be accessed from the debugging UI.
+
+Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers `UDR` and `SPDR`). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2 or PlatformIO, then the `PERIPHERALS` debugger pane will show you a comment to this effect.
+
+Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). Again, if you use the Arduino IDE or PlatformIO, the `PERIPHERALS` pane will inform you about the fact that the register is read-only to the debugger.
+
+<!--
+
+## USB communication
+
+-->
+
+## Unsafe exits from debugging
+
+MCU and hardware debugger can be in an undefined state after abrupt exits.
+
+When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:
+
+- Some fuses, such as `OCDEN`, might still be in the programmed state.
+- Software breakpoints (that are implemented as `BREAK` instructions) may not have been removed.
+
+It may be enough to start a new debugging session and reflash the program. However, the hardware debugger might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.
+
+## Undebuggable MCUs
+
+Some AVR MCUs are not debuggable or offer only limited debug support.
+
+MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:
+
+- *ATmega48*,
+- *ATmega88*,
+- *ATmega16*,
+
+all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match.
+
+Finally, we have the *ATmega128(A)*, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the `BREAK` instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to `software_breakpoint_set` throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (*not yet implemented*).
+
+## DebugWIRE can brick MCUs
+
+DebugWIRE can be dangerous to the health of your MCU.
+
+While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, for example, the `monitor debugwire enable` command), the RESET line can no longer be used to reset the chip, and it is impossible to use SPI programming to change fuses, particularly the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chip?
+
+There are essentially five different scenarios:
+
+1. The classical problem is a capacitor on the RESET line, either for noise suppression or as a means to implement auto-reset on an Arduino board such as the Uno. Similarly, a resistor that is too strong or a dedicated reset circuit could pose a problem. In these cases, one can change the DWEN fuse using SPI programming, but communication over the debugWIRE line (the RESET line) is impossible.
+   The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via PyAvrOCD).
+2. Another cause for trouble could be that the MCU is operated in an unstable electrical environment. This could mean that the supply voltage is fluctuating, an unstable external clock is used, blocking capacitors between (A)Vcc and (A)GND are missing, or, another classic, AVcc and/or AGND are not connected to the power rail. In these cases, unpredictable things can happen, and the MCU might not be responsive after having been switched into debugWIRE mode. In this case, repairing the fault, e.g., soldering a blocking capacitor between Vcc and GND, may or may not resolve the issue.
+3. The MCU could be a non-genuine product. Since such products do not satisfy all the specifications of genuine MCUs, these MCUs might be able to enter debugWIRE, but then one is stuck. Or debugWIRE mode is not supported at all.
+4. It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed `SPIEN` (Serial program downloading) and/or programmed `RSTDSBL`, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.
+5. There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).
+
+If none of the above-mentioned recovery methods work, the last resort is *high-voltage programming*. This means that 12 volts are applied to the RESET line, and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a [breadboard high-voltage programmer](https://github.com/felias-fogg/RescueAVR) or a specially designed ["HV fuse programmer"](https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/). For MCUs with an SMD footprint, you would need to buy a breadboard adapter.
+
+Having said all that, my experience is that if you take care of the potential problems mentioned in points 1-4, it is unlikely that your MCU will get bricked. But it doesn't mean that it is impossible either. JTAG and UPDI are definitely the more robust debugging interfaces.
+
+## Flash Wear
+
+Setting and clearing (software) breakpoints can wear down flash memory.
+
+When setting a breakpoint in a program, one usually does not think about the underlying mechanism that stops the program at the particular point where the breakpoint has been set. Technically, this can be done by *hardware breakpoints* or *software breakpoints*. A hardware breakpoint is implemented as a register that is compared to the actual program counter. If the PC is equal to the register value, execution is stopped. Usually, only a few such hardware breakpoints are available. On a debugWIRE device, there is just one. On AVR JTAG ATmegas, we have four; on UPDI MCUs, there are two. Software breakpoints are implemented by placing a particular trap instruction into the machine code. On AVRs, this is the `BREAK` instruction.
+
+There are pros and cons to each type of breakpoint. Hardware breakpoints are faster to set and to clear because they do not involve reprogramming flash memory. Further, they do not lead to *[flash wear](https://en.wikipedia.org/wiki/Flash_memory#Memory_wear)* as software breakpoints do. However, as mentioned, there are only very few hardware breakpoints.
+
+PyAvrOCD will make use of hardware breakpoints whenever possible and use software breakpoints only as a fallback. Further, the most recent breakpoint asserted by GDB will always be implemented as a hardware breakpoint because it is very likely that it is a temporary breakpoint.
+
+### The flash wear problem
+
+So, how severe is the flash wear problem? The data sheets state that for classic AVR MCUs, the guaranteed flash endurance is 10,000 write/erase cycles. For the more recent MCUs with the UPDI interface, it is only 1000 cycles! These are probably quite conservative numbers guaranteeing endurance even when the chips are operated close to the limits of their specification (e.g., at 50° C). So, one hopes that the endurance in practice is much higher.
+
+Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. This means ten flash-page-reprogramming operations. That will probably result on average in 3 additional reprogramming operations on an individual page, leading together with reprogramming flash memory to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This, however, holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so.
+
+A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, [all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) (because the hardware debuggers implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.
+
+All in all, as Microchip states, you should not ship MCUs that have been used heavily in debugging to customers.
+
+### Using only hardware breakpoints
+
+Can it be a solution to use only hardware breakpoints? It will definitely reduce flash wear to zero (well, except for reprogramming the target). And all GDB servers support that by trying to use hardware breakpoints as much as possible. Only when too many breakpoints are requested, software breakpoints are utilized.
+
+You can enforce the use of *only* hardware breakpoints by employing the following `monitor` command.
+
+```text
+monitor breakpoint hardware
+```
+
+After this command, you always get an error when more than the number of available hardware breakpoints is requested. One must be aware, though, that there might be slight problems when single-stepping and when continuing from a breakpoint.
+
+A GDB step-over operation uses a temporary breakpoint, which can lead to the situation where, after starting a step-over operation with a single step on the GDB server level, it is discovered that too many breakpoints are necessary to complete the step-over operation. In this case, the initial single step is done, but then execution is stopped (in the middle of the step-over operation).
+
+A similar situation can happen when you continue from a breakpoint. In this case, GDB initially does not assert the breakpoint it starts from, then it executes a single step, and, after that, asserts the original breakpoint. If one has requested just one breakpoint more than the maximum number, this will only be recognized after the initial single step, where the continue operation is stopped in this case.
+
+Unfortunately, there is no way to detect these problems early enough at the level of the GDB server. And there does not seem to be an easy way to solve the issue on the GDB level. So, when using only hardware breakpoints, you should take care not to set too many breakpoints. Do never assign more than the maximum number, and do not use the maximum number of breakpoints, or refrain from the stepping-over operation (called `next` in GDB). Otherwise, the execution of the program might be stopped at places you have not expected.
+

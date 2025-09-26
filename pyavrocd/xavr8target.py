@@ -26,7 +26,7 @@ class XTinyXAvrTarget(TinyXAvrTarget):
     # The next two methods are needed because different targets access the registers
     # in different ways: TinyX and XMega have a regfile mem type, the others have to access
     # the registers as part of their SRAM address space.
-    def register_file_read(self):
+    def regfile_read(self):
         """
         Reads out the AVR register file (R0::R31)
 
@@ -35,7 +35,7 @@ class XTinyXAvrTarget(TinyXAvrTarget):
         self.logger_loc.debug("Reading register file")
         return self.protocol.regfile_read()
 
-    def register_file_write(self, regs):
+    def regfile_write(self, regs):
         """
         Writes the AVR register file (R0::R31)
 
@@ -611,7 +611,7 @@ class XXmegaAvrTarget(XmegaAvrTarget):
     # The next two methods are needed because different targets access the registers
     # in different ways: TinyX and XMega have a regfile mem type, the others have to access
     # the registers as part of their SRAM address space.
-    def register_file_read(self):
+    def regfile_read(self):
         """
         Reads out the AVR register file (R0::R31)
 
@@ -620,7 +620,7 @@ class XXmegaAvrTarget(XmegaAvrTarget):
         self.logger_loc.debug("Reading register file")
         return self.protocol.regfile_read()
 
-    def register_file_write(self, regs):
+    def regfile_write(self, regs):
         """
         Writes the AVR register file (R0::R31)
 

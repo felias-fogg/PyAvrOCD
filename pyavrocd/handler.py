@@ -37,10 +37,9 @@ class GdbHandler():
         self.logger = getLogger('pyavrocd.handler')
         self.rsp_logger = getLogger('pyavrocd.rsp')
         self.dbg = avrdebugger
-        self.mon = MonitorCommand(self.dbg.iface, args)
+        self.mon = MonitorCommand(self.dbg.get_iface(), args)
         self.mem = Memory(avrdebugger, self.mon)
-        self.bp = BreakAndExec(1, self.mon, avrdebugger, avrdebugger.architecture,
-                                   self.mem.flash_read_word)
+        self.bp = BreakAndExec(self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
         self._devicename = devicename
         self.last_sigval = 0
@@ -142,9 +141,9 @@ class GdbHandler():
             return False
         if not self.mon.is_debugger_active():
             self.logger.warning("Cannot start execution because not connected to OCD")
-            if "debugwire" == self.dbg.iface:
+            if "debugwire" == self.dbg.get_iface():
                 self.send_debug_message("Enable debugWIRE first: 'monitor debugwire enable'")
-            elif "jtag" in self.dbg.iface:
+            elif "jtag" in self.dbg.get_iface():
                 self.send_debug_message("JTAG pins are not enabled.")
             else:
                 self.send_debug_message("No connection to OCD. Enable debugging first")
@@ -468,7 +467,7 @@ class GdbHandler():
         # If a fatal error is raised, we will remember that and print it again
         # when a request for enabling debugWIRE is made
         try:
-            if self.dbg.start_debugging(warmstart=self.dbg.iface=='debugwire'):
+            if self.dbg.start_debugging(warmstart=self.dbg.get_iface()=='debugwire'):
                 self.mon.set_debug_mode_active()
         except FatalError as e:
             self.logger.critical("Error while connecting to target OCD: %s", e)

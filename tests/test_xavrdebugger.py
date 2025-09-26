@@ -52,7 +52,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.device.avr.deactivate_physical.assert_called_once()
 
     def test__post_process_after_start_jtag(self):
-        self.xa.iface = 'jtag'
+        self.xa._iface = 'jtag'
         self.xa.manage = ['bootrst', 'lockbits', 'ocden']
         self.xa.device_info['bootrst_base'] = 0x01
         self.xa.device_info['bootrst_mask'] = 0x08

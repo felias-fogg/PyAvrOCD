@@ -1,2 +1,10 @@
-# PyAvrOCD Installation
-{{ external_markdown('https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/INSTALL.md', '') }}
+# PyAvrOCD installation & configuration
+
+Both, installation and configuration of PyAvrOCD are straightforward.
+
+## Installation
+{!../INSTALL.md!lines=2-999}
+
+## Configuration
+
+{!configuration.md!lines=2-999}

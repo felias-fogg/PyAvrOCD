@@ -78,7 +78,7 @@ class LiveTests():
         self.success = 0
         self.failure = 0
         self.tests_total = 26
-        if self.dbg.iface == 'jtag' and self.dbg.architecture == 'avr8':
+        if self.dbg.get_iface() == 'jtag' and self.dbg.get_architecture() == 'avr8':
             self.flash_transparent = True # breakpoints are filtered out
         self.mon._cache = False
         try:

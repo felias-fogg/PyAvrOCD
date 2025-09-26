@@ -2,7 +2,7 @@
 
 
 
-This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked bold. MCUs known not to work with PyAvrOCD are struck out.
+This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.
 
 ## MCUs with debugWIRE interface
 
@@ -34,13 +34,13 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 ### Other ATmegas
 
-* ATmega8U2, ATmega16U2, ATmega32U2
-* ATmega32C1, ATmega64C1, ATmega16M1, ATmega32M1, ATmega64M1
-* AT90USB82, AT90USB162
-* AT90PWM1, AT90PWM2B, AT90PWM3B
-* AT90PWM81, AT90PWM161
-* AT90PWM216, AT90PWM316
-* ATmega8HVA, ATmega16HVA, ATmega16HVB, ATmega32HVB, ATmega32HVBrevB, ATmega64HVE2
+* <u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u>
+* ATmega32C1, ATmega64C1, ATmega16M1, <u>ATmega32M1</u>, <u>ATmega64M1</u>
+* AT90USB82, <u>AT90USB162</u>
+* AT90PWM1, <u>AT90PWM2B</u>, AT90PWM3B
+* <u>AT90PWM81</u>, AT90PWM161
+* <u>AT90PWM216</u>, AT90PWM316
+* <u>ATmega8HVA</u>, ATmega16HVA, <u>ATmega16HVB</u>, ATmega32HVB, ATmega32HVBrevB, ATmega64HVE2
 
 ## ATmegas with JTAG interface
 
@@ -48,8 +48,8 @@ The MCUs in the lists below are all supported by PyAvrOCD. However, the cores ha
 
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-* <s>**ATmega16**</s>, ATmega16A, **ATmega32**, ATmega32A
-* ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, ATmega1284, **ATmega1284P**
+* <s>**ATmega16**</s>, <u>ATmega16A</u>, **ATmega32**, ATmega32A
+* ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, <u>ATmega1284</u>, **ATmega1284P**
 
 The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on a chip labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-1-bits.
 
@@ -57,18 +57,18 @@ The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program cou
 
 * ATmega64, ATmega64A, <s>**ATmega128**</s>, <s>**ATmega128A**</s>
 * ATmega640, **ATmega1280**, **ATmega2560**
-* ATmega1281, ATmega2561
-* ATmega165, ATmega165A, ATmega165P, ATmega165PA, ATmega325, ATmega325A, ATmega325P, ATmega325PA, ATmega645, ATmega645A, ATmega645P, ATmega645PA
-* ATmega169, ATmega169A, <u>**ATmega169P**</u>, ATmega169PA, ATmega329, ATmega329A, ATmega329P, ATmega329PA, ATmega649, ATmega649A, ATmega649P, ATmega649PA
-* ATmega3250, ATmega3250A, ATmega3250P, ATmega3250PA, ATmega6450, ATmega6450A, ATmega6450P, ATmega6450PA
-* ATmega3290, ATmega3290A, ATmega3290P, ATmega3290PA, ATmega6490, ATmega6490A, ATmega6490P, ATmega6490PA
-* AT90CAN32, AT90CAN64, AT90CAN128
+* ATmega1281, <u>ATmega2561</u>
+* ATmega165, <u>ATmega165A</u>, ATmega165P, ATmega165PA, ATmega325, <u>ATmega325A</u>, ATmega325P, ATmega325PA, ATmega645, ATmega645A, <u>ATmega645P</u>, ATmega645PA
+* ATmega169, ATmega169A, <u>ATmega169P</u>, ATmega169PA, ATmega329, ATmega329A, ATmega329P, ATmega329PA, ATmega649, <u>ATmega649A</u>, ATmega649P, ATmega649PA
+* ATmega3250, ATmega3250A, <u>ATmega3250P</u>, ATmega3250PA, ATmega6450, <u>ATmega6450A</u>, ATmega6450P, ATmega6450PA
+* ATmega3290, ATmega3290A, ATmega3290P, ATmega3290PA, ATmega6490, <u>ATmega6490A</u>, ATmega6490P, ATmega6490PA
+* AT90CAN32, AT90CAN64, <u>AT90CAN128</u>
 
-The ATmega128 MCUs do not allow software breakpoints and throw an exception if one tries to set a software breakpoint. For this reason, debugging is currently impossible. This will change in the near future.
+The ATmega128(A) MCUs do not allow software breakpoints and throw an exception if one tries to set a software breakpoint. For this reason, debugging is currently impossible. This will change in the near future.
 
 ### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
-* <u>**ATmega162**</u>
+* <u>ATmega162</u>
 
 ### Other ATmegas
 
@@ -76,6 +76,6 @@ The ATmega128 MCUs do not allow software breakpoints and throw an exception if o
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
 * ATmega128rfa1
-* ATmega16U4, **<u>ATmega32U4</u>**
+* ATmega16U4, <u>ATmega32U4</u>
 * ATmega406
 

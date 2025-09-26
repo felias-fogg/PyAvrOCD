@@ -34,6 +34,7 @@ class Memory():
         self._flash_size = self.dbg.memory_info.memory_info_by_name('flash')['size']
         self._multi_buffer = self.dbg.device_info.get('buffers_per_flash_page',1)
         self._masked_registers = self.dbg.device_info.get('masked_registers',[])
+        self._ronly_registers = self.dbg.device_info.get('ronly_registers',[])
         self._multi_page_size = self._multi_buffer*self._flash_page_size
         self._sram_start = self.dbg.memory_info.memory_info_by_name('internal_sram')['address']
         self._sram_size = self.dbg.memory_info.memory_info_by_name('internal_sram')['size']
@@ -105,28 +106,29 @@ class Memory():
             return(iaddr, self.flash_read, lambda *x: 'E13')
         if addr_section == "80": # ram
             if not self.programming_mode:
-                return(iaddr, self.sram_masked_read, self.dbg.sram_write)
+                return(iaddr, self.sram_masked_read, self.sram_masked_write)
         if addr_section == "81": # eeprom
             return(iaddr, self.dbg.eeprom_read, self.dbg.eeprom_write)
         if addr_section == "82": # fuse
             self.logger.error("Fuses cannot be accessed: request ignored")
             return (0, lambda *x: bytes(), lambda *x: None)
-            #if self.programming_mode and self.dbg.iface in ['jtag', 'updi']:
+            #if self.programming_mode and self.dbg.get_iface() in ['jtag', 'updi']:
             #    return(iaddr, self.fuse_read, self.fuse_write)
         if addr_section == "83": #  lock
             self.logger.error("Lock bits cannot be accessed: request ignored")
             return (0, lambda *x: bytes(), lambda *x: None)
-            #if (self.programming_mode and self.dbg.iface == 'jtag') or self.dbg.iface == 'updi':
+            #if (self.programming_mode and self.dbg.get_iface() == 'jtag') or self.dbg.get_iface() == 'updi':
             #    return(iaddr, self.lock_read, self.lock_write)
         if addr_section == "84": # signature
+            self.logger.error("Signatures cannot be accessed: request ignored")
             return (0, lambda *x: bytes(), self.compare_signatures)
-            #if (self.programming_mode and self.dbg.iface in ['jtag', 'updi']) \
-            #  or self.dbg.iface == 'debugwire':
+            #if (self.programming_mode and self.dbg.get_iface() in ['jtag', 'updi']) \
+            #  or self.dbg.get_iface() == 'debugwire':
             #    return(iaddr, self.sig_read, lambda *x: 'E13')
         if addr_section == "85":  # user signature
             self.logger.error("User signature cannot be accessed: request ignored")
             return (0, lambda *x: bytes(), lambda *x: None)
-            #if self.dbg.iface in ['jtag', 'updi']:
+            #if self.dbg.get_iface() in ['jtag', 'updi']:
             #    return(iaddr, self.usig_read, self.usig_write)
         self.logger.error("Illegal memtype in memory access operation at %s: %s",
                               addr, addr_section)
@@ -154,6 +156,26 @@ class Memory():
             data.extend(self.dbg.sram_read(addr, end - addr))
         return data
 
+    def sram_masked_write(self, addr, data):
+        """
+        Write a chunk to SRAM but leaving  out any read-only registers. If there is an
+        attempt to write to a read-only register, spew out a warning message.
+        """
+        start = addr
+        end = addr + len(data)
+        for rr in sorted(self._ronly_registers):
+            if rr >= end or addr >= end:
+                break
+            if rr < addr:
+                continue
+            if addr < rr:
+                # write to SRAM from addr up to rr-1
+                self.dbg.sram_write(addr, data[addr-start:rr-start])
+            self.logger.warning("Not writing to 0x%X because it is write-protected", rr)
+            addr = rr + 1
+        if addr < end:
+            # write remaining data
+            self.dbg.sram_write(addr, data[addr-start:end-start])
 
     def flash_read(self, addr, size):
         """

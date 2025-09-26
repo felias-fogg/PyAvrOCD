@@ -13,8 +13,13 @@ Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
 </p>
+The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the the following picture.
 
-The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header on the Arduino Uno. If a dw-link shield is used, one can use the standard 6-pin SPI header.
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link-spi.jpeg" width="70%">
+</p>
+
+If a dw-link shield is used, one can use the standard 6-pin SPI header.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link.jpeg" width="70%">
@@ -30,7 +35,7 @@ If you do not have the standard headers on board or you are using a breadboard, 
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/pickit4-connect.png" width="70%">
 </p>
 
-In this case, it is essential to consult the user guide of the programmer and the pinout of the MCU in the datasheet to make the correct connections.
+In this case, it is essential to consult the user guide of the programmer and the [pinout of the MCU](https://pinouts.de) in the datasheet or the documentation of the respective core to make the correct connections.
 
 ## Connecting to a debugWIRE target
 

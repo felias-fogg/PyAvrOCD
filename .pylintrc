@@ -14,7 +14,8 @@ disable= broad-exception-caught,
 	trailing-newlines,
 	duplicate-code,
 	consider-using-with,
-	consider-using-dict-items
+	consider-using-dict-items,
+	consider-using-generator
 
 [REPORTS]
 # Set the output format
