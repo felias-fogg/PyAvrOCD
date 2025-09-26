@@ -81,6 +81,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-olimex-boards">Supported Olimex boards</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#supported-seeed-studio-boards">Supported Seeed Studio boards</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#supported-azduino-boards-by-spence-konde">Supported Azduino boards by Spence Konde</a>
     </li>
     </ul>
@@ -149,7 +151,7 @@ and those known not to work are struck out. The ones that are underlined are sit
 </li>
 <li>AT90USBKEY (AT90USB1287): no core yet</li>
 <li>ATmega256RFR2 Xplained Pro: no core yet</li>
-<li><strong><u>AVR Butterfly (ATmega169)</u></strong>: no core yet</li>
+<li><u>AVR Butterfly (ATmega169)</u>: no core yet</li>
 </ul>
 <h2 id="supported-arduino-boards">Supported Arduino boards</h2>
 <ul>
@@ -162,24 +164,24 @@ and those known not to work are struck out. The ones that are underlined are sit
 <li><strong>Arduino Mega</strong>: no core yet</li>
 <li><strong>Arduino Mega 2560:</strong> no core yet</li>
 <li>Arduino Mega ADK: no core yet</li>
-<li><strong><u>Arduino Leonardo</u></strong>: no core yet</li>
+<li><u>Arduino Leonardo</u>: no core yet</li>
 <li>Arduino Leonardo ETH: no core yet</li>
-<li><strong><u>Arduino Micro</u></strong>: no core yet</li>
+<li><u>Arduino Micro</u>: no core yet</li>
 <li><s>Arduino Esplora</s>: JTAG pins are not accessible</li>
 <li>Arduino Mini: Supported by <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
 <li>Arduino Ethernet (Rev1): <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
-<li><strong><u>Arduino Fio</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header and do not connect XBee</li>
+<li><u>Arduino Fio</u>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header and do not connect XBee</li>
 <li>Arduino BT: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; remove capacitor <code>C1</code></li>
 <li><s>LilyPad Arduino USB</s>: JTAG pins are not accessible</li>
-<li><strong><u>LilyPad Arduino</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
-<li><strong><u>Arduino Pro</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
-<li><strong><u>Arduino Pro Mini</u></strong>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>LilyPad Arduino</u>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>Arduino Pro</u>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>Arduino Pro Mini</u>: <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
 <li>Arduino NG (ATmega168): <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>; no modifications necessary</li>
 <li><s>Arduino NG (ATmega8)</s>: no debugging interface</li>
 <li>Arduino Robot Control: no core yet</li>
 <li>Arduino Robot Motor: no core yet</li>
-<li><strong><u>Arduino Gemma</u></strong>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore for</a>k; RESET pad on backside</li>
-<li><strong><u>Adafruit Circuit Playground 32u4</u></strong>: no core yet</li>
+<li><u>Arduino Gemma</u>: <a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore for</a>k; RESET pad on backside</li>
+<li><u>Adafruit Circuit Playground 32u4</u>: no core yet</li>
 <li>Arduino Yún Mini: no core yet</li>
 <li>Arduino Industrial 101: no core yet</li>
 <li>Arduino Linino One: no core yet</li>
@@ -188,8 +190,8 @@ and those known not to work are struck out. The ones that are underlined are sit
 <h2 id="supported-sparkfun-boards">Supported Sparkfun boards</h2>
 <ul>
 <li>RedBoard (ATmega328P): MiniCore; remove <code>C8</code></li>
-<li><strong><u>Pro Micro 3.3V (ATmega32U4)</u></strong>: no core yet</li>
-<li><strong><u>Pro Micro 5V (ATmega32U4)</u></strong>: no core yet</li>
+<li><u>Pro Micro 3.3V (ATmega32U4)</u>: no core yet</li>
+<li><u>Pro Micro 5V (ATmega32U4)</u>: no core yet</li>
 <li>Qduino Mini (ATmega32U4): no core yet</li>
 <li>Mega Pro 3.3V/5V: no core yet</li>
 <li>RedBot (ATmega328P): MiniCore</li>
@@ -215,12 +217,19 @@ and those known not to work are struck out. The ones that are underlined are sit
 </ul>
 <h2 id="supported-olimex-boards">Supported Olimex boards</h2>
 <ul>
-<li><u><strong>AVR-CAN (AT90CAN128)</strong></u>: no core yet</li>
+<li><u>AVR-CAN (AT90CAN128)</u>: no core yet</li>
 <li>AVR-GSM (ATMega32): no core yet</li>
 <li><s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with stuck-at-one bit</li>
-<li><strong><u>AVR-MT128 (ATmega128)</u>:</strong> no core yet, only hardware breakpoints (!)</li>
+<li><u>AVR-MT128 (ATmega128)</u>: no core yet, only hardware breakpoints (!)</li>
 <li>AVR-USB-STK (AT90USB162): no core at all!</li>
-<li><strong><u>AVR-USB-162 (AT90USB162)</u></strong>: no core at all!</li>
+<li><u>AVR-USB-162 (AT90USB162)</u>: no core at all!</li>
+</ul>
+<h2 id="supported-seeed-studio-boards">Supported Seeed Studio boards</h2>
+<ul>
+<li><u>Seeeduino v4.2</u>: MiniCore; remove <code>C14</code> and RESET LED (next to RESET button)</li>
+<li><u>Stalker</u>: MiniCore; do not connect DTR</li>
+<li>Seeeduino Lotus: MiniCore</li>
+<li>Seeeduino Nano: MiniCore</li>
 </ul>
 <h2 id="supported-azduino-boards-by-spence-konde">Supported Azduino boards by Spence Konde</h2>
 <ul>
