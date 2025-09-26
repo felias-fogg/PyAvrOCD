@@ -80,10 +80,6 @@
     <ul class="current">
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
                   </li>
               </ul>
@@ -126,7 +122,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="disclaimer">Disclaimer</h1>
-<p>Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="../debugwire-risks/">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU or its environment. <a href="../flash-wear/">Flash wear</a>, for instance, is an issue when you use software breakpoints.  Moreover, the user of a debugger may also be in danger because debugging can drive you crazy. Sometimes <a href="../limitations/#disappearing-bugs">bugs might disappear</a> while other <a href="../limitations/#bugs-appearing-out-of-thin-air">bugs appear out of thin air</a> while debugging.</p>
+<p>Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="../limitations/#debugwire-can-brick-mcus">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU or its environment. <a href="../limitations/#flash-wear">Flash wear</a>, for instance, is an issue when you use software breakpoints.  Moreover, the user of a debugger may also be in danger because debugging can drive you crazy. Sometimes <a href="../limitations/#disappearing-bugs">bugs might disappear</a> while other <a href="../limitations/#bugs-appearing-out-of-thin-air">bugs appear out of thin air</a> while debugging.</p>
 <p>Further, the hardware debuggers, the PyAvrOCD server, and the GDB debugger have a <a href="../limitations/">number of limitations</a>, which may lead to a behavior of the MCU that differs from when no debugger is present. Finally, when using a debugger on an MCU that controls a system in real-time, stopping the execution of the controlling program in the middle of something might lead to erroneous behavior of the controlled system. For example, when communicating with other systems, stopping the communication in the middle of an exchange might violate the communication protocol, which might be tolerable. If you are controlling a chemical plant with your MCU, there might be more dire consequences. </p>
 <p>All in all, bear in mind that <a href="../license-link/">the software is provided "as is", without warranty of any kind</a>.</p>
               
@@ -134,7 +130,7 @@
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../supported-debuggers/" class="btn btn-neutral float-left" title="Hardware debuggers"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../debugwire-risks/" class="btn btn-neutral float-right" title="debugWIRE">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../limitations/" class="btn btn-neutral float-right" title="Limitations">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -164,7 +160,7 @@
       <span><a href="../supported-debuggers/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../debugwire-risks/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../limitations/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

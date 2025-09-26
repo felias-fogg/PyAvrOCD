@@ -78,10 +78,6 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugwire-risks/">debugWIRE</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../flash-wear/">Flash wear</a>
-                  </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Limitations</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#bootloader">Bootloader</a>
@@ -119,6 +115,16 @@
     <li class="toctree-l2"><a class="reference internal" href="#unsafe-exits-from-debugging">Unsafe exits from debugging</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debugwire-can-brick-mcus">DebugWIRE can brick MCUs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#flash-wear">Flash Wear</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-flash-wear-problem">The flash wear problem</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-only-hardware-breakpoints">Using only hardware breakpoints</a>
+    </li>
+        </ul>
     </li>
     </ul>
                   </li>
@@ -162,7 +168,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="limitations">Limitations</h1>
-<p>The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. </p>
+<p>The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. Finally, debugging your AVR chips can also be a risk to the health of your MCU.</p>
 <h2 id="bootloader">Bootloader</h2>
 <p>Bootloaders will usually be erased when running the debugger.</p>
 <p>In a <strong>debugWIRE</strong> context, the entire chip needs to be erased if some lock bits are set. Further, the <code>BOOTRST</code> fuse is disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the <code>BOOTRST</code> fuse by using the command line option <code>--manage nobootrst</code>.</p>
@@ -235,11 +241,42 @@ IN R2, PINB
 </ul>
 <p>all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match. </p>
 <p>Finally, we have the <em>ATmega128(A)</em>, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (<em>not yet implemented</em>).</p>
+<h2 id="debugwire-can-brick-mcus">DebugWIRE can brick MCUs</h2>
+<p>While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, for example, the <code>monitor debugwire enable</code> command), the RESET line can no longer be used to reset the chip, and it is impossible to use SPI programming to change fuses, particularly the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chip?</p>
+<p>There are essentially five different scenarios:</p>
+<ol>
+<li>The classical problem is a capacitor on the RESET line, either for noise suppression or as a means to implement auto-reset on an Arduino board such as the Uno. Similarly, a resistor that is too strong or a dedicated reset circuit could pose a problem. In these cases, one can change the DWEN fuse using SPI programming, but communication over the debugWIRE line (the RESET line) is impossible.
+   The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via PyAvrOCD).</li>
+<li>Another cause for trouble could be that the MCU is operated in an unstable electrical environment. This could mean that the supply voltage is fluctuating, an unstable external clock is used, blocking capacitors between (A)Vcc and (A)GND are missing, or, another classic, AVcc and/or AGND are not connected to the power rail. In these cases, unpredictable things can happen, and the MCU might not be responsive after having been switched into debugWIRE mode. In this case, repairing the fault, e.g., soldering a blocking capacitor between Vcc and GND, may or may not resolve the issue.</li>
+<li>The MCU could be a non-genuine product. Since such products do not satisfy all the specifications of genuine MCUs, these MCUs might be able to enter debugWIRE, but then one is stuck. Or debugWIRE mode is not supported at all.</li>
+<li>It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed <code>SPIEN</code> (Serial program downloading) and/or programmed <code>RSTDSBL</code>, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.</li>
+<li>There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).</li>
+</ol>
+<p>If none of the above-mentioned recovery methods work, the last resort is <em>high-voltage programming</em>. This means that 12 volts are applied to the RESET line, and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a <a href="https://github.com/felias-fogg/RescueAVR">breadboard high-voltage programmer</a> or a specially designed <a href="https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/">"HV fuse programmer"</a>. For MCUs with an SMD footprint, you would need to buy a breadboard adapter.</p>
+<p>Having said all that, my experience is that if you take care of the potential problems mentioned in points 1-4, it is unlikely that your MCU will get bricked. But it doesn't mean that it is impossible either. JTAG and UPDI are definitely the more robust debugging interfaces.</p>
+<h2 id="flash-wear">Flash Wear</h2>
+<p>When setting a breakpoint in a program, one usually does not think about the underlying mechanism that stops the program at the particular point where the breakpoint has been set. Technically, this can be done by <em>hardware breakpoints</em> or <em>software breakpoints</em>. A hardware breakpoint is implemented as a register that is compared to the actual program counter. If the PC is equal to the register value, execution is stopped. Usually, only a few such hardware breakpoints are available. On a debugWIRE device, there is just one. On AVR JTAG ATmegas, we have four; on UPDI MCUs, there are two. Software breakpoints are implemented by placing a particular trap instruction into the machine code. On AVRs, this is the <code>BREAK</code> instruction.</p>
+<p>There are pros and cons to each type of breakpoint. Hardware breakpoints are faster to set and to clear because they do not involve reprogramming flash memory. Further, they do not lead to <em><a href="https://en.wikipedia.org/wiki/Flash_memory#Memory_wear">flash wear</a></em> as software breakpoints do. However, as mentioned, there are only very few hardware breakpoints.</p>
+<p>PyAvrOCD will make use of hardware breakpoints whenever possible and use software breakpoints only as a fallback. Further, the most recent breakpoint asserted by GDB will always be implemented as a hardware breakpoint because it is very likely that it is a temporary breakpoint. </p>
+<h3 id="the-flash-wear-problem">The flash wear problem</h3>
+<p>So, how severe is the flash wear problem? The data sheets state that for classic AVR MCUs, the guaranteed flash endurance is 10,000 write/erase cycles. For the more recent MCUs with the UPDI interface, it is only 1000 cycles! These are probably quite conservative numbers guaranteeing endurance even when the chips are operated close to the limits of their specification (e.g., at 50° C). So, one hopes that the endurance in practice is much higher.</p>
+<p>Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. This means ten flash-page-reprogramming operations. That will probably result on average in 3 additional reprogramming operations on an individual page, leading together with reprogramming flash memory to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This, however, holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so. </p>
+<p>A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/">all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions</a> (because the hardware debuggers implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.</p>
+<p>All in all, as Microchip states, you should not ship MCUs that have been used heavily in debugging to customers.</p>
+<h3 id="using-only-hardware-breakpoints">Using only hardware breakpoints</h3>
+<p>Can it be a solution to use only hardware breakpoints? It will definitely reduce flash wear to zero (well, except for reprogramming the target). And all GDB servers support that by trying to use hardware breakpoints as much as possible. Only when too many breakpoints are requested, software breakpoints are utilized. </p>
+<p>You can enforce the use of <em>only</em> hardware breakpoints by employing the following <code>monitor</code> command.</p>
+<pre><code class="language-text">monitor breakpoint hardware
+</code></pre>
+<p>After this command, you always get an error when more than the number of available hardware breakpoints is requested. One must be aware, though, that there might be slight problems when single-stepping and when continuing from a breakpoint.</p>
+<p>A GDB step-over operation uses a temporary breakpoint, which can lead to the situation where, after starting a step-over operation with a single step on the GDB server level, it is discovered that too many breakpoints are necessary to complete the step-over operation. In this case, the initial single step is done, but then execution is stopped (in the middle of the step-over operation). </p>
+<p>A similar situation can happen when you continue from a breakpoint. In this case, GDB initially does not assert the breakpoint it starts from, then it executes a single step, and, after that, asserts the original breakpoint. If one has requested just one breakpoint more than the maximum number, this will only be recognized after the initial single step, where the continue operation is stopped in this case.</p>
+<p>Unfortunately, there is no way to detect these problems early enough at the level of the GDB server. And there does not seem to be an easy way to solve the issue on the GDB level. So, when using only hardware breakpoints, you should take care not to set too many breakpoints. Do never assign more than the maximum number, and do not use the maximum number of breakpoints, or refrain from the stepping-over operation (called <code>next</code> in GDB). Otherwise, the execution of the program might be stopped at places you have not expected.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../flash-wear/" class="btn btn-neutral float-left" title="Flash wear"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../disclaimer/" class="btn btn-neutral float-left" title="Disclaimer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../license-link/" class="btn btn-neutral float-right" title="License">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -267,7 +304,7 @@ IN R2, PINB
         </span>
     
     
-      <span><a href="../flash-wear/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../disclaimer/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../license-link/" style="color: #fcfcfc">Next &raquo;</a></span>
