@@ -1,4 +1,4 @@
-name: check
+name: Unit tests
 
 on: workflow_dispatch
 
@@ -35,6 +35,15 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install library
         run: poetry install --no-interaction
-      - run: |
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-cov
+      - name: Unit tests
+        run: |
           source $VENV
-          pytest
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=src tests/ | tee pytest-coverage.txt
+      - name: Pytest coverage comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: ./pytest-coverage.txt
+          junitxml-path: ./pytest.xml
