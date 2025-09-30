@@ -19,7 +19,7 @@ from pyedbglib.protocols.edbgprotocol import EdbgProtocol
 from pymcuprog.pymcuprog_errors import PymcuprogNotSupportedError, PymcuprogError
 
 from pyavrocd.memory import Memory
-from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT, SIGBUS
+from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGSEGV, SIGSYS
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.livetests import LiveTests
 from pyavrocd.errors import  EndOfSession, FatalError
@@ -152,7 +152,7 @@ class GdbHandler():
         if self.mem.is_flash_empty() and not self.mon.is_noload():
             self.logger.warning("Cannot start execution without prior loading of executable")
             self.send_debug_message("No program loaded; cannot start execution")
-            self.send_signal(SIGILL)
+            self.send_signal(SIGSEGV)
             return False
         return True
 
@@ -161,12 +161,12 @@ class GdbHandler():
         Internal method for continue and step:
         Print message and send signal according the result of the execution.
         """
-        if sig == SIGABRT:
+        if sig == SIGSYS:
             self.send_debug_message("Too many breakpoints set")
             self.logger.warning("Too many breakpoints.")
         if sig == SIGILL:
-            self.send_debug_message("Cannot execute because of user supplied BREAK instruction")
-            self.logger.warning("Cannot execute because of user supplied BREAK instruction")
+            self.send_debug_message("Cannot execute because of  BREAK instruction")
+            self.logger.warning("Cannot execute because of BREAK instruction")
         if sig == SIGBUS:
             self.send_debug_message("Cannot execute because stack pointer is too low")
             self.logger.warning("Cannot execute because stack pointer is too low")
@@ -801,7 +801,7 @@ class GdbHandler():
         """
         self.last_sigval = signal
         if signal: # do nothing if None or 0
-            if signal in [SIGHUP, SIGILL, SIGABRT]:
+            if signal in [SIGHUP, SIGILL, SIGABRT, SIGSYS, SIGSEGV]:
                 self.send_packet("S{:02X}".format(signal))
                 return
             sreg = self.dbg.status_register_read()[0]

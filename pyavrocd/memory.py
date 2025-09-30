@@ -75,7 +75,7 @@ class Memory():
     def writemem(self, addr, data):
         """
         Write a chunk of memory and return a reply string.
-        The parameter addr and size should be hex strings.
+        The parameter addr should be a hex string.
         """
         iaddr, _, method = self.mem_area(addr)
         if not data:
@@ -120,7 +120,8 @@ class Memory():
             #if (self.programming_mode and self.dbg.get_iface() == 'jtag') or self.dbg.get_iface() == 'updi':
             #    return(iaddr, self.lock_read, self.lock_write)
         if addr_section == "84": # signature
-            self.logger.error("Signatures cannot be accessed: request ignored")
+            if not self.programming_mode:
+                self.logger.error("Signatures cannot be accessed: request ignored")
             return (0, lambda *x: bytes(), self.compare_signatures)
             #if (self.programming_mode and self.dbg.get_iface() in ['jtag', 'updi']) \
             #  or self.dbg.get_iface() == 'debugwire':

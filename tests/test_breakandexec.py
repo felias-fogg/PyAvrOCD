@@ -7,7 +7,7 @@ from unittest.mock import Mock, call, create_autospec
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.monitor import MonitorCommand
-from pyavrocd.breakexec import BreakAndExec, SIGTRAP, SIGABRT, SIGILL, SIGBUS, BREAKCODE, \
+from pyavrocd.breakexec import BreakAndExec, SIGTRAP, SIGILL, SIGBUS, SIGSYS, BREAKCODE, \
      SLEEPCODE, SWBP, HWBP
 
 logging.basicConfig(level=logging.CRITICAL)
@@ -277,7 +277,6 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.step.assert_not_called()
         self.bp.dbg.run_to.assert_not_called()
 
-
     def test_single_step_unsafe_with_start(self):
         self.bp.mon.is_safe.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
@@ -364,6 +363,37 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.step.assert_not_called()
         self.bp.dbg.run_to.assert_not_called()
 
+    def test_single_step_safe_push_illegal(self):
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
+        self.bp.mon.is_onlyswbps.return_value = False
+        self.bp.dbg.program_counter_read.return_value = 22
+        self.bp._read_flash_word.return_value = 0x920F # PUSH r0
+        self.assertEqual(self.bp.single_step(None, fresh= True), SIGBUS)
+
+    def test_stack_pointer_legal_pop(self):
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5E, 0x00 ])
+        self.assertFalse(self.bp._stack_pointer_legal(0x900F)) # POP R0
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
+        self.assertTrue(self.bp._stack_pointer_legal(0x900F))
+
+    def test_stack_pointer_legal_ret(self):
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5E, 0x00 ])
+        self.assertFalse(self.bp._stack_pointer_legal(0x9508)) # RET
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
+        self.assertTrue(self.bp._stack_pointer_legal(0x9518)) # RETI
+
+    def test_stack_pointer_legal_push(self):
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
+        self.assertFalse(self.bp._stack_pointer_legal(0x920F)) # PUSH R0
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x60, 0x00 ])
+        self.assertTrue(self.bp._stack_pointer_legal(0x920F)) # PUSH R0
+
+    def test_stack_pointer_legal_call(self):
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x60, 0x00 ])
+        self.assertFalse(self.bp._stack_pointer_legal(0xD000)) # RCALL
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x61, 0x00 ])
+        self.assertTrue(self.bp._stack_pointer_legal(0x9509)) # ICALL
+
     def test_range_step_impossible_mon(self):
         self.bp.mon.is_old_exec.return_value = True
         self.bp.mon.is_range.return_value = False
@@ -408,7 +438,7 @@ class TestBreakAndExec(TestCase):
         self.bp.insert_breakpoint(200)
         self.bp._read_flash_word.return_value =  0x0000
         self.bp.dbg.program_counter_read.return_value = 5
-        self.assertEqual(self.bp.range_step(10,14), SIGABRT)
+        self.assertEqual(self.bp.range_step(10,14), SIGSYS)
         self.bp.dbg.step.assert_not_called()
         self.bp.dbg.run.assert_not_called()
         self.bp.dbg.run_to.assert_not_called()

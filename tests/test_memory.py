@@ -35,7 +35,7 @@ class TestMemory(TestCase):
         self.mem._sram_start = 10
         self.mem._sram_size = 15
         self.mem._eeprom_start = 0
-        self.mem._eeprom_size = 5
+        self.mem._eeprom_size = 10
         self.mem._flashmemtype = 123
         self.mem.programming_mode = False
 
@@ -96,6 +96,22 @@ class TestMemory(TestCase):
     def test_flash_read_word(self):
         self.mem._flash = bytearray([0x10, 0x11, 0x12, 0x13])
         self.assertEqual(self.mem.flash_read_word(2), 0x1312)
+
+    def test_writemem_sram_ronly_register_one_byte(self):
+        self.mem._ronly_registers = [15, 1, 6]
+        self.assertEqual(self.mem.writemem("800001", bytearray([0x55])), "OK")
+        self.mem.dbg.sram_write.assert_not_called()
+
+    def test_weitemem_sram_ronly_register_bytearray(self):
+        self.mem._ronly_registers = [15, 1, 6]
+        self.assertEqual(self.mem.writemem("800001", bytearray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])), "OK")
+        self.mem.dbg.sram_write.assert_has_calls([call(2,bytearray([0x02, 0x03, 0x04, 0x05])), call(7,bytearray([0x07]))])
+        self.assertEqual(self.mem.dbg.sram_write.call_count, 2)
+
+    def test_writemem_eeprom(self):
+        self.mem.dbg.eeprom_write.return_value = None
+        self.assertEqual(self.mem.writemem("810002", bytearray([1,2,3])), "OK")
+        self.mem.dbg.eeprom_write.assert_called_with(0x02, bytearray([1,2,3]))
 
     def test_store_to_cache_error(self):
         self.mem._flash = bytearray(10)

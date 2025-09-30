@@ -1,5 +1,7 @@
 # PyAvrOCD Installation
 
+## A note for Linux users
+
 Note that Linux users may need to add a few `udev` rules after having installed PyAvrOCD. This can be accomplished by invoking PyAvrOCD once as root with the option `--install-udev-rules` (assuming that `pyavrocd` has been stored somewhere on the `PATH`):
 
 ```

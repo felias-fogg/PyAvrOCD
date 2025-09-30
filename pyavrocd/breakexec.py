@@ -19,10 +19,12 @@ SLEEPCODE = 0x9588
 NOSIG   = 0     # no signal
 SIGHUP  = 1     # no connection
 SIGINT  = 2     # Interrupt  - user interrupted the program (UART ISR)
-SIGILL  = 4     # Illegal instruction
+SIGILL  = 4     # Illegal instruction (BREAK or undefined)
 SIGTRAP = 5     # Trace trap  - stopped on a breakpoint
 SIGABRT = 6     # Abort because of a fatal error or no breakpoint available
-SIGBUS = 10     # Segmentation violation means in our case stack overflow
+SIGBUS = 10     # Access to undefined portion of memory means in our case stack overflow
+SIGSEGV = 11    # Invalid memory reference means executable not loaded
+SIGSYS = 12     # Bad system call means in our case "Too many breakpoints"
 
 SWBP = 1
 HWBP = -1
@@ -247,7 +249,7 @@ class BreakAndExec():
         else:
             addr = self.dbg.program_counter_read() << 1
         if not self._update_breakpoints(None): # if we resume, a BP is not protected at that point!
-            return SIGABRT
+            return SIGSYS
         opcode = self._read_filtered_flash_word(addr)
         if opcode == BREAKCODE: # this should not happen at all
             self.logger.debug("Stopping execution in 'continue' because of BREAK instruction")
@@ -293,8 +295,8 @@ class BreakAndExec():
             self.logger.error("Stopping execution in 'single-step' because of BREAK instruction")
             return SIGILL
         if not self._update_breakpoints(addr):
-            self.logger.error("Not enough free HW BPs: SIGABRT")
-            return SIGABRT
+            self.logger.error("Not enough free HW BPs: SIGSYS")
+            return SIGSYS
         if not self._stack_pointer_legal(opcode):
             return SIGBUS
         # If there is a SWBP at the place where we want to step,
@@ -316,7 +318,7 @@ class BreakAndExec():
         # now we have to check for unsafe instructions, which we simulate;
         # the other instructions will be single-stepped with the I-Bit cleared.
         self.logger.debug("Interrupt-safe stepping begins here")
-        if self._filter_unsafe_instructions(addr, opcode):
+        if self._filter_unsafe_instruction(addr, opcode):
             return SIGTRAP
         # for the remaining instructions,
         # clear I-bit before and set it afterwards (if it was on before)
@@ -357,7 +359,7 @@ class BreakAndExec():
 
     #pylint: disable=too-many-return-statements,too-many-branches
     #It simply is a large case analysis, would not make sense to break it up
-    def _filter_unsafe_instructions(self, addr, opcode):
+    def _filter_unsafe_instruction(self, addr, opcode):
         """
         Check all instructions for potential I-bit manipulation. If
         the instruction addresses SREG, it will be simulated and True is returned.
@@ -370,13 +372,6 @@ class BreakAndExec():
             # One needs to account for RAMPZ / RAMPX / RAMPY / RAMPD registers
             # when computing target or source address in SRAM
             raise FatalError("SRAM too large. Disable safe stepping or extend stepping method")
-        # BRIE, BRID
-        if self._branch_on_ibit_instr(opcode):
-            ibit = bool(self.dbg.status_register_read()[0] & 0x80)
-            destination = self._compute_destination_of_ibranch(opcode, ibit, addr)
-            self.logger.debug("Branching on I-Bit. Destination=0x%X", destination)
-            self.dbg.program_counter_write(destination>>1)
-            return True
         # LDS and STS
         if self._long_load_or_store_instr(opcode):
             secondword = self._read_filtered_flash_word(addr + 2)
@@ -401,13 +396,15 @@ class BreakAndExec():
             if self._is_post_incr(opcode):
                 iaddr += 1
             if self._is_change_ix(opcode):
-                self.dbg.sram_write(iaddr.to_bytes(2, byteorder='little'))
+                self.dbg.sram_write(base_reg, iaddr.to_bytes(2, byteorder='little'))
             return self._sim_done(addr)
         # LD r, Y/Z and ST Y/Z, r with displacement
         if self._indirect_load_or_store_with_displacement_instr(opcode):
             disp = self._extract_displacement(opcode)
             if self._is_y_reg(opcode):
-                base_reg  = 28
+                base_reg = 28
+            else:
+                base_reg = 30
             iaddr = int.from_bytes(self.dbg.sram_read(base_reg, 2), byteorder='little') + disp
             if iaddr != SREGADDR:
                 return False
@@ -423,7 +420,7 @@ class BreakAndExec():
         if self._bit_clear_or_set_in_sreg_instr(opcode):
             if opcode == 0x94F8: # CLI
                 sreg = self.dbg.status_register_read()[0]
-                sreg |= 0x80
+                sreg &= ~0x80
                 self.dbg.status_register_write(bytearray([sreg]))
                 return self._sim_done(addr)
             if opcode == 0x9478: # SEI
@@ -432,23 +429,31 @@ class BreakAndExec():
                 self.dbg.status_register_write(bytearray([sreg]))
                 return self._sim_done(addr)
             return False
+        # BRIE, BRID
+        if self._branch_on_ibit_instr(opcode):
+            ibit = bool(self.dbg.status_register_read()[0] & 0x80)
+            destination = self._compute_destination_of_ibranch(opcode, ibit, addr)
+            self.logger.debug("Branching on I-Bit. Destination=0x%X", destination)
+            self.dbg.program_counter_write(destination>>1)
+            return True
         # XCH and LAx
         if self._exchange_instr(opcode) or self._lax_instr(opcode):
+            # the avr8 architecture does not support these instructions
+            if self.dbg.get_architecture() != "avr8e":
+                return False
             if int.from_bytes(self.dbg.sram_read(30, 2), byteorder='little') != SREGADDR:
                 return False
-            if self.dbg.get_architecture() == "avr8" and not self._exchange_instr(opcode):
-                return False
-            tempval = self.dbg.sram_read(SREGADDR, 1)
+            tempval = self.dbg.status_register_read()
             regnum = self._extract_register(opcode)
             regval = self.dbg.sram_read(regnum, 1)
             if self._exchange_instr(opcode):
-                self.dbg.sram_write(SREGADDR, regval)
+                self.dbg.status_register_write(regval)
             elif self._lac_instr(opcode):
-                self.dbg.sram_write(SREGADDR, bytearray([(0xFF-regval[0])&tempval[0]]))
+                self.dbg.status_register_write(bytearray([(0xFF-regval[0])&tempval[0]]))
             elif self._las_instr(opcode):
-                self.dbg.sram_write(SREGADDR, bytearray([regval[0]|tempval[0]]))
+                self.dbg.status_register_write(bytearray([regval[0]|tempval[0]]))
             elif self._lat_instr(opcode):
-                self.dbg.sram_write(SREGADDR, bytearray([regval[0]^tempval[0]]))
+                self.dbg.status_register_write(bytearray([regval[0]^tempval[0]]))
             else:
                 raise FatalError("Instruction decoding error in filter_unsafe_instructions")
             self.dbg.sram_write(regnum, tempval)
@@ -471,7 +476,7 @@ class BreakAndExec():
         """
         Increments PC by 2 and then returns True
         """
-        self.dbg.program_counter_write(addr + 2)
+        self.dbg.program_counter_write((addr + 2) >> 1)
         return True
 
     def range_step(self, start, end):
@@ -499,7 +504,7 @@ class BreakAndExec():
         addr = self.dbg.program_counter_read() << 1
         new_range = self._build_range(start, end)
         if not self._update_breakpoints(addr, release_temp=new_range):
-            return SIGABRT
+            return SIGSYS
         if self.maxbpnum() == self._bpactive:
             return self.single_step(None)
         if addr < start or addr >= end: # starting outside of range, should not happen!
@@ -524,7 +529,7 @@ class BreakAndExec():
             for reassign in self._hwbp.set_temp(reserve):
                 if not self.dbg.software_breakpoint_set(reassign):
                     self.logger.error("Could not reassgin HWBPs to SWBPs in range-step")
-                    return SIGABRT
+                    return SIGSYS
                 self._bp[reassign]['allocated'] = SWBP
         if self._hwbp.temp_allocated() == len(self._range_exit): # all exits covered
             self._hwbp.execute()

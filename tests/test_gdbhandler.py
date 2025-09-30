@@ -7,11 +7,11 @@ from unittest.mock import Mock, MagicMock, patch, call, create_autospec
 from unittest import TestCase
 import socket
 from pyavrocd.xavrdebugger import XAvrDebugger
-from pyavrocd.handler import GdbHandler, SIGINT, SIGHUP
+from pyavrocd.handler import GdbHandler
 from pyavrocd.errors import EndOfSession
 from pyavrocd.memory import Memory
 from pyavrocd.monitor import MonitorCommand
-from pyavrocd.breakexec import BreakAndExec
+from pyavrocd.breakexec import BreakAndExec, SIGINT, SIGHUP
 from pyavrocd.main import options
 
 logging.basicConfig(level=logging.CRITICAL)
@@ -76,7 +76,7 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("S01"))
         self.gh.mon.is_debugger_active.return_value = True
         self.gh.dispatch('c',b'')
-        self.gh._comsocket.sendall.assert_called_with(rsp("S04"))
+        self.gh._comsocket.sendall.assert_called_with(rsp("S0B"))
 
     def test_continue_handler_with_start(self):
         self.gh.mon.is_debugger_active.return_value = True
@@ -286,7 +286,7 @@ class TestGdbHandler(TestCase):
         self.gh._comsocket.sendall.assert_called_with(rsp("S01"))
         self.gh.mon.is_debugger_active.return_value=True
         self.gh.dispatch('s', b'')
-        self.gh._comsocket.sendall.assert_called_with(rsp("S04"))
+        self.gh._comsocket.sendall.assert_called_with(rsp("S0B"))
 
     def test_step_handler_with_start(self):
         self.gh.mon.is_debugger_active.return_value=True
