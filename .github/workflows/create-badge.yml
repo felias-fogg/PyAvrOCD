@@ -4,13 +4,14 @@ on: workflow_dispatch
 
 jobs:
   CreatingBadge:
-  steps:
-    - name: Create Awesome Badge
-      uses: schneegans/dynamic-badges-action@v1.7.0
-      with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: gist:c0d539e3ad0d10252d2aab8ad325246a
-        filename: test.json # Use test.svg if you want to use the SVG mode.
-        label: Hello
-        message: World
-        color: orange
+    runs-on: ubuntu-latest
+    steps:
+     - name: Create Awesome Badge
+       uses: schneegans/dynamic-badges-action@v1.7.0
+       with:
+         auth: ${{ secrets.GIST_SECRET }}
+         gistID: gist:c0d539e3ad0d10252d2aab8ad325246a
+         filename: test.json # Use test.svg if you want to use the SVG mode.
+         label: Hello
+         message: World
+         color: orange
