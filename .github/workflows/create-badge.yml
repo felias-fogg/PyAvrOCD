@@ -10,7 +10,7 @@ jobs:
        uses: schneegans/dynamic-badges-action@v1.7.0
        with:
          auth: ${{ secrets.GIST_SECRET }}
-         gistID: gist:c0d539e3ad0d10252d2aab8ad325246a
+         gistID: c0d539e3ad0d10252d2aab8ad325246a
          filename: test.json # Use test.svg if you want to use the SVG mode.
          label: Hello
          message: World
