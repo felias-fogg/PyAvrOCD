@@ -2,7 +2,7 @@
 
 #  PyAvrOCD
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)![PyPI](https://img.shields.io/pypi/pyversions/dwgdbserver) ![pylint]() [![Commits since latest](https://img.shields.io/github/commits-since/felias-fogg/PyAvrOCD/latest?include_prereleases)](https://github.com/felias-fogg/PyAvrOCD/commits/master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)![PyPI](https://img.shields.io/pypi/pyversions/dwgdbserver) ![pylint](https://img.shields.io/badge/PyLint-10.00-brightgreen?logo=python&logoColor=whitehttps://img.shields.io/badge/PyLint-10.00-brightgreen?logo=python&logoColor=white)](https://github.com/felias-fogg/PyAvrOCD/commits/master)
 ![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=felias-fogg_PyAvrOCD)
 
 <p align="center">
