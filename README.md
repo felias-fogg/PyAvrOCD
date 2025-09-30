@@ -2,12 +2,13 @@
 
 #  PyAvrOCD
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Commits since latest](https://img.shields.io/github/commits-since/felias-fogg/PyAvrOCD/latest?include_prereleases)](https://github.com/felias-fogg/PyAvrOCD/commits/master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)![PyPI](https://img.shields.io/pypi/pyversions/dwgdbserver) ![pylint]() [![Commits since latest](https://img.shields.io/github/commits-since/felias-fogg/PyAvrOCD/latest?include_prereleases)](https://github.com/felias-fogg/PyAvrOCD/commits/master)
 ![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=felias-fogg_PyAvrOCD)
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/logo-small.png" width="15%">
 </p>
+
 
 
 PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)). It can communicate with Microchip debuggers such as MPLAB Snap and with the DIY debugger dw-link (see [list of supported hardware debuggers](https://felias-fogg.github.io/PyAvrOCD/supported-debuggers/)).

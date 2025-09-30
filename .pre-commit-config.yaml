@@ -1,46 +1,54 @@
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
-  hooks:
-  - id: check-ast
-  - id: check-illegal-windows-names
-  - id: check-toml
-  - id:	trailing-whitespace
-- repo: https://github.com/codespell-project/codespell
-  rev: v2.3.0
-  hooks:
-  - id: codespell
-    name: codespell
-    args: [ "--exclude-file=tests/util/all.lst,poetry.lock",
-    	  "--skip=*.atdf,*.svd",
-    	  "-L ser, RCALL, datas, rcall, ACI, EXTINT, THT, SEH, socio-economic" ]
-- repo: local
-  hooks:
-  - id: pylint
-    name: pylint
-    entry: poetry run pylint
-    language: python
-    types: [python]
-    require_serial: true
-    args:
-      [
-        "-rn", # Only display messages
-        "-sn", # Don't display the score
-	"--ignore-pattern=(at(tiny|mega|90).*\\.py)",
-	"--ignore=harvest.py,alldevices.py,collect.py",
-	"--disable=similarities,import-error"
-      ]
-    additional_dependencies:
-      - pyedbglib
-      - pymcuprog
-  - id: unittest
-    name: unittest
-    entry: poetry run python -m unittest discover
-    language: python
-    types: [python]
-    args: []
-    pass_filenames: false
-    additional_dependencies:
-      - pyedbglib
-      - pymcuprog
-      - pyusb
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+    -   id: check-ast
+    -   id: check-illegal-windows-names
+    -   id: check-toml
+    -   id: trailing-whitespace
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+    -   id: codespell
+        name: codespell
+        args: ["--exclude-file=tests/util/all.lst,poetry.lock,requirements.txt", "--skip=*.atdf,*.svd",
+          "-L ser, RCALL, datas, rcall, ACI, EXTINT, THT, SEH, socio-economic"]
+-   repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: poetry run pylint
+        language: python
+        types: [python]
+        require_serial: true
+        args: ["-rn", "-sn", "--ignore-pattern=(at(tiny|mega|90).*\\.py)", "--ignore=harvest.py,alldevices.py,collect.py",
+          "--disable=similarities,import-error"]
+        additional_dependencies:
+        -   pyedbglib
+        -   pymcuprog
+    -   id: unittest
+        name: unittest
+        entry: poetry run python -m unittest discover
+        language: python
+        types: [python]
+        args: []
+        pass_filenames: false
+        additional_dependencies:
+        -   pyedbglib
+        -   pymcuprog
+        -   pyusb
+-   repo: https://gitlab.com/vojko.pribudic.foss/pre-commit-update
+    rev: v0.8.0
+    hooks:
+    -   id: pre-commit-update
+-   repo: https://github.com/python-poetry/poetry
+    rev: '2.2.1' # add version here
+    hooks:
+    -   id: poetry-check
+    -   id: poetry-lock
+    -   id: poetry-install
+-   repo: https://github.com/python-poetry/poetry-plugin-export
+    rev: '1.9.0'
+    hooks:
+    -   id: poetry-export
+        verbose: true
