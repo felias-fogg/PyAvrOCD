@@ -3,7 +3,7 @@ name: Pylint
 on: workflow_dispatch
 
 jobs:
-  check-all:
+  Linting:
     defaults:
       run:
         shell: bash

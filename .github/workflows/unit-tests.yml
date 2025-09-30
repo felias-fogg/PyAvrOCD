@@ -1,4 +1,4 @@
-name: Pylint
+name: Unit-test and coverage
 
 on: workflow_dispatch
 
@@ -34,4 +34,4 @@ jobs:
       - name: Unit tests
         run: |
           source $VENV
-          pytest
+          pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov=pyavrocd tests/ | tee pytest-coverage.txt
