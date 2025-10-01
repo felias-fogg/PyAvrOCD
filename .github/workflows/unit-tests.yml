@@ -38,7 +38,7 @@ jobs:
           pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov-report=json:cov.json --cov=pyavrocd tests/ | tee pytest-coverage.txt
           echo "PYTESTPERCENT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); failed=int(el.attrib['errors'])+int(el.attrib['failures']); print('%.1f' % (100 - (failed/tests)*100))"`  >> $GITHUB_ENV
           echo "PYTESTCNT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); print(tests)"`  >> $GITHUB_ENV
-          echo "PYCOV="`python -c "import json; with open('cov.json') as js: print('%.1f' % js['totals']['percent_covered'])"` >> $GITHUB_ENV
+          echo "PYCOV="`python -c "import json; js=open('cov.json'); print('%.1f' % json.load(js)['totals']['percent_covered'])"` >> $GITHUB_ENV
       - name: Pytest coverage comment
         uses: MishaKav/pytest-coverage-comment@main
         with:
