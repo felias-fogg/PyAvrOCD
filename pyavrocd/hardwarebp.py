@@ -114,11 +114,12 @@ class HardwareBP():
         """
         if self._tempalloc is None:
             return
+        toclear = len(self._tempalloc)
         for el in self._tempalloc:
             if el >= 0:
                 self._free(el)
         self._tempalloc = None
-        self.logger.debug("HWBP temp allocation cleared: %d HWBPs cleared", len(self._tempalloc))
+        self.logger.debug("HWBP temp allocation cleared: %d HWBPs cleared", toclear)
 
     def temp_allocated(self):
         """

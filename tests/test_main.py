@@ -45,7 +45,28 @@ class TestMain(TestCase):
     @patch('pyavrocd.main.sys.exit', MagicMock())
     def test_options_none(self):
         args = options([])
-        self.assertEqual(args, argparse.Namespace(cmd=None, dev=None, clkdeb=200, interface=None, manage=[], port=2000, clkprg=1000, prg=None, tool=None, serialnumber=None, verbose='info', version=False, f=None, atexit='stayindebugwire', breakpoints='all', caching='enable', erasebeforeload='enable', load=None, onlywhenloaded='enable', rangestepping='enable', singlestep='safe', timers='run', verify='enable'))
+        self.assertEqual(args.cmd, None)
+        self.assertEqual(args.dev, None)
+        self.assertEqual(args.clkdeb, 200)
+        self.assertEqual(args.interface, None)
+        self.assertEqual(args.manage, [])
+        self.assertEqual(args.port, 2000)
+        self.assertEqual(args.clkprg, 1000)
+        self.assertEqual(args.tool, None)
+        self.assertEqual(args.serialnumber, None)
+        self.assertEqual(args.verbose, 'info')
+        self.assertEqual(args.version, False)
+        self.assertEqual(args.f, None)
+        self.assertEqual(args.atexit, 'stayindebugwire')
+        self.assertEqual(args.breakpoints, 'all')
+        self.assertEqual(args.caching, 'enable')
+        self.assertEqual(args.erasebeforeload, 'enable')
+        self.assertEqual(args.onlywhenloaded, 'enable')
+        self.assertEqual(args.rangestepping, 'enable')
+        self.assertEqual(args.singlestep, 'safe')
+        self.assertEqual(args.timers, 'run')
+        self.assertEqual(args.verify, 'enable')
+        self.assertEqual(args.load, None)
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
     @patch('pyavrocd.main.sys.exit', MagicMock())
@@ -125,12 +146,27 @@ class TestMain(TestCase):
         startup_helper_prog(args, MagicMock())
         mocked_popen.assert_not_called()
 
+    @patch('pyavrocd.main.sys.exit')
+    @patch('pyavrocd.main.shutil.which')
     @patch('pyavrocd.main.subprocess.Popen')
-    def test_startup_helper_prog_call(self, mocked_popen):
+    def test_startup_helper_prog_call(self, mocked_popen, mocked_which, mocked_exit):
         args = SimpleNamespace()
-        args.prg = 'bash -c'
+        args.prg = 'prog -c'
+        mocked_which.return_value = '/bin/prog'
         startup_helper_prog(args, MagicMock())
-        mocked_popen.assert_called_with(['/bin/bash', '-c'])
+        mocked_popen.assert_called_with(['/bin/prog', '-c'])
+        mocked_exit.assert_not_called()
+
+    @patch('pyavrocd.main.sys.exit')
+    @patch('pyavrocd.main.shutil.which')
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_startup_helper_prog_none(self, mocked_popen, mocked_which, mocked_exit):
+        args = SimpleNamespace()
+        args.prg = 'prog -c'
+        mocked_which.return_value = None
+        startup_helper_prog(args, MagicMock())
+        mocked_popen.assert_not_called()
+        mocked_exit.assert_called_once()
 
     def test_run_server_success(self):
         mock_server = MagicMock()

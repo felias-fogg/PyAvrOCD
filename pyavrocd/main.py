@@ -357,8 +357,14 @@ def startup_helper_prog(args, logger):
         args.prg = args.prg.strip()
         logger.info("Starting %s", args.prg)
         cmd = shlex.split(args.prg)
+        prg = cmd[0]
         cmd[0] = shutil.which(cmd[0])
-        subprocess.Popen(cmd)
+        if cmd[0]:
+            logger.info("Starting %s", args.prg)
+            subprocess.Popen(cmd)
+        else:
+            logger.critical("Could not find program '%s'", prg)
+            sys.exit(1)
 
 def run_server(server, logger):
     """

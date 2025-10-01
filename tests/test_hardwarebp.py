@@ -96,7 +96,7 @@ class TestHardwareBP(TestCase):
         self.assertEqual(self.hbp._hwbplist, [ 100, 2, 1 ])
         self.assertEqual(self.hbp._tempalloc, [2, 1])
 
-    def tes_clear_temp(self):
+    def test_clear_temp(self):
         self.hbp._hwbplist = [ 100, 200, 300 ]
         self.hbp.set_temp([10,20])
         self.hbp.clear_temp()
