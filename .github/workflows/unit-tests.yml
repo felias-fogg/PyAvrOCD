@@ -1,6 +1,14 @@
-name: Unit-test and coverage
+name: Linting, unit tests and coverage
 
-on: workflow_dispatch
+on:
+  workflow_dispatch: # to run it manually
+  push:
+    paths:
+      - '**.py'
+      - '**.yml'
+      - '**.toml'
+      - '**.lock'
+  pull_requests:
 
 jobs:
   check:
@@ -81,5 +89,5 @@ jobs:
           logoColor: white
           message: "${{ env.PYCOV }}%"
           valColorRange: ${{ env.PYCOV }}
-          maxColorRange: 100.0
+          maxColorRange: 90.0
           minColorRange: 30.0
