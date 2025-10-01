@@ -8,7 +8,7 @@ on:
       - '**.yml'
       - '**.toml'
       - '**.lock'
-  pull_requests:
+  pull_request:
 
 jobs:
   check:
