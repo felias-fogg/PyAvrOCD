@@ -14,7 +14,6 @@ on:
 
 jobs:
   check:
-    continue-on-error: true
     defaults:
       run:
         shell: bash
@@ -47,15 +46,17 @@ jobs:
           source $VENV
           echo "PYLINT="`pylint -f json2 pyavrocd | python -c "import sys, json; print(json.load(sys.stdin)['statistics']['score'])"` >> $GITHUB_ENV
           pytest --junitxml=pytest.xml --cov-report=term-missing:skip-covered --cov-report=json:cov.json --cov=pyavrocd tests/ | tee pytest-coverage.txt
-          echo "PYTESTPERCENT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); failed=int(el.attrib['errors'])+int(el.attrib['failures']); print('%.1f' % (100 - (failed/tests)*100))"`  >> $GITHUB_ENV
-          echo "PYTESTCNT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); print(tests)"`  >> $GITHUB_ENV
-          echo "PYCOV="`python -c "import json; js=open('cov.json'); print('%.1f' % json.load(js)['totals']['percent_covered'])"` >> $GITHUB_ENV
       - name: Pytest coverage comment
         if: always()
         uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: ./pytest-coverage.txt
           junitxml-path: ./pytest.xml
+      - name: Result evaluation
+        run: |
+          echo "PYTESTPERCENT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); failed=int(el.attrib['errors'])+int(el.attrib['failures']); print('%.1f' % (100 - (failed/tests)*100))"`  >> $GITHUB_ENV
+          echo "PYTESTCNT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); print(tests)"`  >> $GITHUB_ENV
+          echo "PYCOV="`python -c "import json; js=open('cov.json'); print('%.1f' % json.load(js)['totals']['percent_covered'])"` >> $GITHUB_ENV
       - name: Generate Pylint label
         if: always()
         uses: schneegans/dynamic-badges-action@v1.7.0
