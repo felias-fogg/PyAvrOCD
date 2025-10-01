@@ -48,9 +48,9 @@ jobs:
           gistID: c0d539e3ad0d10252d2aab8ad325246a
           filename: pylint.json
           label: PyLint
-	  namedLogo: Python
-	  logoColor: white
-          message: is ${{ env.PYLINT }}
+          namedLogo: Python
+          logoColor: white
+          message: ${{ env.PYLINT }}
           valColorRange: ${{ env.PYLINT }}
           maxColorRange: 10.0
           minColorRange: 0
