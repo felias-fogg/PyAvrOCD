@@ -40,33 +40,26 @@ def _setup_tool_connection(args, logger):
     """
     toolconnection = None
 
-    # Parse the requested tool from the CLI
-    if args.tool == "uart":
-        baudrate = _clk_as_int(args)
-        # Embedded GPIO/UART tool (eg: raspberry pi) => no USB connection
-        toolconnection = ToolSerialConnection(serialport=args.uart,
-                                                  baudrate=baudrate, timeout=args.uart_timeout)
+    usb_serial = args.serialnumber
+    product = args.tool
+    if usb_serial and product:
+        logger.info("Connecting to {0:s} ({1:s})".format(product, usb_serial))
     else:
-        usb_serial = args.serialnumber
-        product = args.tool
-        if usb_serial and product:
-            logger.info("Connecting to {0:s} ({1:s})'".format(product, usb_serial))
+        if usb_serial:
+            logger.info("Connecting to any tool with USB serial number '{0:s}'".\
+                         format(usb_serial))
+        elif product:
+            logger.info("Connecting to any {0:s}".format(product))
         else:
-            if usb_serial:
-                logger.info("Connecting to any tool with USB serial number '{0:s}'".\
-                                format(usb_serial))
-            elif product:
-                logger.info("Connecting to any {0:s}".format(product))
-            else:
-                logger.info("Connecting to anything possible")
-        toolconnection = ToolUsbHidConnection(serialnumber=usb_serial, tool_name=product)
+            logger.info("Connecting to anything possible")
+    toolconnection = ToolUsbHidConnection(serialnumber=usb_serial, tool_name=product)
 
     return toolconnection
 
 
 def options(cmd):
     """
-    Option processing. Returns a pair of processed options and unknown options.
+    Option processing. Returns processed options.
     """
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
             fromfile_prefix_chars='@',
@@ -104,7 +97,7 @@ You can also use monitor command options, e.g., --timer=freeze.
                             help="Debugging interface to use, use '?' for list")
 
     manage_choices = ['all', 'none', 'bootrst', 'nobootrst', 'dwen', 'nodwen',
-                          'ocden', 'noocden', 'lockbits', 'nolockbits']
+                          'ocden', 'noocden', 'lockbits', 'nolockbits', 'eesave', 'noeesave']
     parser.add_argument("-m", "--manage",
                             metavar="FUSE",
                             action='append',
@@ -173,8 +166,22 @@ You can also use monitor command options, e.g., --timer=freeze.
     cmd = [x for x in cmd if not x.startswith('@') or os.path.exists(x[1:]) ]
 
     args = parser.parse_args(cmd)
-
     questionmark = False
+    if args.dev == "?":
+        questionmark = True
+        if args.interface and args.interface != '?':
+            print("Supported device with debugging interface '%s':" % args.interface)
+            alldev = [x for x in sorted(dev_id) if args.interface in dev_iface[dev_id[x]].lower().split("+")]
+        else:
+            print("Supported devices:")
+            alldev = sorted(dev_id)
+        for d in alldev[:-1]:
+            print(d,sep="",end=", ")
+        if alldev:
+            print(alldev[-1])
+        else:
+            print("None")
+
     if args.interface == '?':
         questionmark = True
         args.interface = None
@@ -197,7 +204,7 @@ You can also use monitor command options, e.g., --timer=freeze.
         print("Possible verbosity levels (-v) are: ", end="")
         print(', '.join(map(str, level_choices)))
 
-    if questionmark and args.dev != '?':
+    if questionmark:
         sys.exit(0)
 
     return args
@@ -294,7 +301,7 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     manage = []
     for f in args.manage:
         if f == 'all':
-            manage = ['bootrst', 'dwen', 'ocden', 'lockbits']
+            manage = ['bootrst', 'dwen', 'ocden', 'lockbits', 'eesave']
         elif f == 'none':
             manage = []
         elif f.startswith('no'):
@@ -307,21 +314,6 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     if args.clkprg < 0 or args.clkdeb < 0:
         print("Negative frequency values are discouraged")
         return 1, None, None
-
-    if args.dev and args.dev == "?":
-        if args.interface:
-            print("Supported device with debugging interface '%s':" % args.interface)
-            alldev = [x for x in sorted(dev_id) if args.interface in dev_iface[dev_id[x]].lower().split("+")]
-        else:
-            print("Supported devices:")
-            alldev = sorted(dev_id)
-        for d in alldev[:-1]:
-            print(d,sep="",end=", ")
-        if alldev:
-            print(alldev[-1])
-        else:
-            print("None")
-        return 0, None, None
 
     if hasattr(args, 'install_udev_rules') and args.install_udev_rules:
         return install_udev_rules(logger), None, None

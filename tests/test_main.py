@@ -1,0 +1,141 @@
+"""
+The test suit for main module
+"""
+#pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
+import logging
+from logging import getLogger
+from unittest.mock import MagicMock, call, patch, create_autospec
+from unittest import TestCase
+from types import SimpleNamespace
+import argparse
+import sys
+
+from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, process_arguments, \
+     startup_helper_prog, run_server, main
+logging.basicConfig(level=logging.CRITICAL)
+
+class TestMain(TestCase):
+
+    def setUp(self):
+        pass
+
+    @patch('pyavrocd.main.logging.getLogger', MagicMock())
+    def test_setup_tool_connection_full_spec(self):
+        args = SimpleNamespace()
+        args.serialnumber = "123456"
+        args.tool = "PRODUCT"
+        logger =  logging.getLogger()
+        conn = _setup_tool_connection(args, logger)
+        self.assertEqual(conn.serialnumber, args.serialnumber)
+        self.assertEqual(conn.tool_name, args.tool)
+        logger.info.assert_called_with("Connecting to " + args.tool + " (" + args.serialnumber + ")")
+
+    @patch('pyavrocd.main.logging.getLogger', MagicMock())
+    def test_setup_tool_connection_no_spec(self):
+        args = SimpleNamespace()
+        args.serialnumber = None
+        args.tool = None
+        logger =  logging.getLogger()
+        conn = _setup_tool_connection(args, logger)
+        self.assertEqual(conn.serialnumber, args.serialnumber)
+        self.assertEqual(conn.tool_name, args.tool)
+        logger.info.assert_called_with("Connecting to anything possible")
+
+    @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    def test_options_none(self):
+        args = options([])
+        self.assertEqual(args, argparse.Namespace(cmd=None, dev=None, clkdeb=200, interface=None, manage=[], port=2000, clkprg=1000, prg=None, tool=None, serialnumber=None, verbose='info', version=False, f=None, atexit='stayindebugwire', breakpoints='all', caching='enable', erasebeforeload='enable', load=None, onlywhenloaded='enable', rangestepping='enable', singlestep='safe', timers='run', verify='enable'))
+
+    @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    def test_options_questionmark(self):
+        args = options(["-d", "mcu", "-t", "?"])
+        self.assertEqual(args.dev, "mcu")
+        self.assertEqual(args.tool, "?")
+        sys.exit.assert_called_once()
+
+    @patch('builtins.print')
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    def test_options_device_questionmark(self, mocked_print):
+        options(["-d", "?", "-i", "pdi"])
+        sys.exit.assert_called_once()
+        mocked_print.assert_has_calls([call("Supported device with debugging interface 'pdi':"), call('None')])
+
+    @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    def test_options_list(self):
+        args = options(["-m", "all", "-m", "nobootrst", "-m=nodwen"])
+        self.assertEqual(args.manage, [ "all", "nobootrst", "nodwen"])
+        sys.exit.assert_not_called()
+
+    @patch('pyavrocd.main.open', MagicMock())
+    def test_udev(self):
+        logger = MagicMock()
+        self.assertEqual(install_udev_rules(logger), 0)
+
+
+    @patch('pyavrocd.main.logging.basicConfig', MagicMock())
+    @patch('pyavrocd.main.sys.stdout', MagicMock)
+    def test_setup_logging_debug(self):
+        args = SimpleNamespace()
+        args.verbose = "debug"
+        logger = setup_logging(args, False)
+        logging.basicConfig.assert_called_with(stream=sys.stdout, level='DEBUG', format='[%(levelname)s] %(name)s: %(message)s')
+
+    @patch('pyavrocd.main.logging.basicConfig', MagicMock())
+    @patch('pyavrocd.main.sys.stdout', MagicMock)
+    def test_setup_logging_info(self):
+        args = SimpleNamespace()
+        args.verbose = "info"
+        logger = setup_logging(args, True)
+        logging.basicConfig.assert_called_with(stream=sys.stdout, level='INFO', format='[%(levelname)s] %(message)s')
+
+    def test_process_arguments_manage_override(self):
+        args = SimpleNamespace()
+        args.dev = 'atmega328p'
+        args.interface = 'debugwire'
+        args.version = None
+        args.cmd = None
+        args.tool = None
+        args.manage = ['all', 'nobootrst', 'nodwen']
+        args.clkprg = 1000
+        args.clkdeb = 200
+        self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
+        self.assertEqual(args.manage, ['ocden', 'lockbits', 'eesave'])
+
+    @patch('builtins.print')
+    def test_process_arguments_wrong_iface(self, mocked_print):
+        args = SimpleNamespace()
+        args.dev = 'atmega328p'
+        args.interface = 'jtag'
+        args.version = None
+        args.cmd = None
+        args.tool = None
+        args.manage = ['all', 'nobootrst', 'nodwen']
+        args.clkprg = 1000
+        args.clkdeb = 200
+        self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
+        mocked_print.assert_has_calls([call("Device 'atmega328p' does not have the interface 'jtag'")])
+
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_startup_helper_prog_noop(self, mocked_popen):
+        args = SimpleNamespace()
+        args.prg = 'noop'
+        startup_helper_prog(args, MagicMock())
+        mocked_popen.assert_not_called()
+
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_startup_helper_prog_call(self, mocked_popen):
+        args = SimpleNamespace()
+        args.prg = 'bash -c'
+        startup_helper_prog(args, MagicMock())
+        mocked_popen.assert_called_with(['/bin/bash', '-c'])
+
+    def test_run_server_success(self):
+        mock_server = MagicMock()
+        mock_server.serve.return_value = 0
+        mock_logger = MagicMock()
+        self.assertEqual(run_server(mock_server, mock_logger), 0)
+
+

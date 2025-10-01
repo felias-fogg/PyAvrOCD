@@ -148,7 +148,7 @@ def main(args, intf):
         sys.exit(2)
 
     try:
-        ser_to_net = SerialToNet(args.verbose == 'debug')
+        ser_to_net = SerialToNet(args.verbose in [ 'debug', 'all' ])
         serial_worker = serial.threaded.ReaderThread(ser, ser_to_net)
         serial_worker.start()
 

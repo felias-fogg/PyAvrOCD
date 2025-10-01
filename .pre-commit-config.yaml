@@ -11,7 +11,7 @@ repos:
     hooks:
     -   id: codespell
         name: codespell
-        args: ["--exclude-file=tests/util/all.lst,poetry.lock,requirements.txt", "--skip=*.atdf,*.svd",
+        args: ["--exclude-file=tests/util/all.lst,poetry.lock", "--skip=*.atdf,*.svd",
           "-L ser, RCALL, datas, rcall, ACI, EXTINT, THT, SEH, socio-economic"]
 -   repo: local
     hooks:
