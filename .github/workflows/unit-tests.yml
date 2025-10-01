@@ -50,11 +50,13 @@ jobs:
           echo "PYTESTCNT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); print(tests)"`  >> $GITHUB_ENV
           echo "PYCOV="`python -c "import json; js=open('cov.json'); print('%.1f' % json.load(js)['totals']['percent_covered'])"` >> $GITHUB_ENV
       - name: Pytest coverage comment
+        if: always()
         uses: MishaKav/pytest-coverage-comment@main
         with:
           pytest-coverage-path: ./pytest-coverage.txt
           junitxml-path: ./pytest.xml
       - name: Generate Pylint label
+        if: always()
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -68,6 +70,7 @@ jobs:
           maxColorRange: 10.0
           minColorRange: 0
       - name: Generate Pytest label
+        if: always()
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -81,6 +84,7 @@ jobs:
           maxColorRange: 100.0
           minColorRange: 30.0
       - name: Generate coverage label
+        if: always()
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
