@@ -53,6 +53,7 @@ jobs:
           pytest-coverage-path: ./pytest-coverage.txt
           junitxml-path: ./pytest.xml
       - name: Result evaluation
+        if: always()
         run: |
           echo "PYTESTPERCENT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); failed=int(el.attrib['errors'])+int(el.attrib['failures']); print('%.1f' % (100 - (failed/tests)*100))"`  >> $GITHUB_ENV
           echo "PYTESTCNT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); print(tests)"`  >> $GITHUB_ENV
