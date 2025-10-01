@@ -65,7 +65,7 @@ jobs:
           label: pytest
           namedLogo: Pytest
           logoColor: white
-          message: ${{ env.PYTESTCNT }}: ${{ env.PYTESTPERCENT }}%
+          message: "${{ env.PYTESTCNT }}: ${{ env.PYTESTPERCENT }}%"
           valColorRange: ${{ env.PYTESTPERCENT }}
           maxColorRange: 100.0
           minColorRange: 0.0
