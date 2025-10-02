@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Hardware debuggers - PyAvrOCD</title>
+    <title>Test - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Hardware debuggers";
-        var mkdocs_page_input_path = "supported-debuggers.md";
+        var mkdocs_page_name = "Test";
+        var mkdocs_page_input_path = "test.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -64,16 +64,12 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Hardware debuggers</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#switching-to-avr-mode">Switching to AVR mode</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
@@ -110,10 +106,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Supported devices</li>
-      <li class="breadcrumb-item active">Hardware debuggers</li>
+      <li class="breadcrumb-item active">Test</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/supported-debuggers.md">Edit on PyAvrOCD</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/test.md">Edit on PyAvrOCD</a>
     </li>
   </ul>
   <hr/>
@@ -121,35 +116,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="supported-hardware-debuggers">Supported hardware debuggers</h1>
-<p>Except for <a href="https://github.com/felias-fogg/dw-link">dw-link</a>, this list is copied from the README file of <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>. Boldface means that I have tested the debuggers and they work with PyAvrOCD.</p>
-<ul>
-<li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164140">MPLAB PICkit 4 In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>)</li>
-<li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>)</li>
-<li><a href="https://www.microchip.com/en-us/development-tool/atatmel-ice"><strong>Atmel-ICE</strong></a></li>
-<li><strong><a href="https://www.microchip.com/en-us/development-tool/atpowerdebugger">Atmel Power Debugger</a></strong></li>
-<li><strong><a href="https://www.microchip.com/en-us/development-tool/atjtagice3">JTAGICE3</a> (firmware version 3.0 or newer)</strong></li>
-<li><strong><a href="http://content.alexandria.atmel.com/webhelp/GUID-43D69EB5-28C5-4F23-97B7-43CD3961DC33-en-US-3/index.html?GUID-180AB3C3-775A-482F-961D-D9862473CD85">EDBG</a> - on-board debuggers on Xplained Pro/Ultra</strong></li>
-<li><strong><a href="https://onlinedocs.microchip.com/oxy/GUID-FC2A0384-AC9D-45B4-951E-5C0DEFE8B2E9-en-US-5/GUID-4063E88C-69CE-4393-ABBF-46E406D92BD3.html">mEDBG</a> - on-board debuggers on Xplained Mini/Nano</strong></li>
-<li>nEDBG - on-board debuggers on Curiosity Nano</li>
-<li><strong><a href="https://github.com/felias-fogg/dw-link">dw-link</a></strong> - <strong>DIY debugger running on an Arduino UNO R3</strong> (only debugWIRE)</li>
-</ul>
-<p>My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.</p>
-<h2 id="switching-to-avr-mode">Switching to AVR mode</h2>
-<p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
-<pre><code>avrdude -c snap_isp -Pusb -xmode=avr
+                <pre><code>
 </code></pre>
-<p>With PICkit4, it is similar:</p>
-<pre><code>avrdude -c pickit4_isp -Pusb -xmode=avr
-</code></pre>
-<p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
+<h1 id="title">Title</h1>
+<p><img alt="badge" src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/felias-fogg/c0d539e3ad0d10252d2aab8ad325246a/raw/test.json" /></p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../supported-boards/" class="btn btn-neutral float-left" title="Boards"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../disclaimer/" class="btn btn-neutral float-right" title="Disclaimer">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -175,10 +148,6 @@
         </span>
     
     
-      <span><a href="../supported-boards/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../disclaimer/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
