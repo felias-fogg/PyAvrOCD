@@ -25,8 +25,7 @@ import usb
 import pymcuprog
 from pyedbglib.hidtransport.hidtransportfactory import hid_transport
 from pymcuprog.backend import Backend
-from pymcuprog.pymcuprog_main import  _clk_as_int # _setup_tool_connection
-from pymcuprog.toolconnection import ToolUsbHidConnection, ToolSerialConnection
+from pymcuprog.toolconnection import ToolUsbHidConnection
 
 from pyavrocd import dwlink
 from pyavrocd.xavrdebugger import XAvrDebugger

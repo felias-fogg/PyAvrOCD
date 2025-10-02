@@ -1,14 +1,24 @@
 # Changelog
 
+### 0.14.2:
+
+- **Added:**
+  - New tests:
+    - test_dwlink.py
+    - test_main.py
+  - CI on Github: plyint and pytest with automatic deployment of CI badges.
+- **Changed:**
+  - All console output goes now to `stdout`. Before, there was a mix of `stdout` and `stderr`. With that, all console output of pyavrocd is going to `stdout`.
+
 ### 0.14.1 (30-Aug-2025)
 
-- Added:
+- **Added:**
   - Tests for HardwareBP
   - Additional tests for BreakAndExec, because of the new single-stepping method:
     - test\_breakandexec\_classify.py
     - test\_breakandexec\_filter.py
 
-- Changed:
+- **Changed:**
   - Signal changed for not enough breakpoints: SIGABRT -> SIGSYS. This means SIGABRT is now only used for Fatal Error.
   - Signal changed for "executable not loaded": SIGILL -> SIGSEGV. This means that SIGILL is now used exclusively for instructions, from which we cannot continue.
 

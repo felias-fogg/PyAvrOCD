@@ -45,13 +45,13 @@ class SerialToNet(serial.threaded.Protocol):
                     else:
                         message = ""
                     if self.logging:
-                        sys.stderr.write("[DEBUG] recv: {}\n".format(self.last))
+                        sys.stdout.write("[DEBUG] recv: {}\n".format(self.last))
                         if message:
-                            sys.stderr.write("[DEBUG] dw-link: {}".format(message))
+                            sys.stdout.write("[DEBUG] dw-link: {}".format(message))
                         sys.stdout.flush()
                     if len(message) > 2 and message[:3] == '***':
-                        sys.stderr.write("[WARNING] {}".format(message))
-                        sys.stderr.flush()
+                        sys.stdout.write("[WARNING] {}".format(message))
+                        sys.stdout.flush()
                     self.last = b""
 
     def convert_gdb_message(self):
@@ -69,11 +69,11 @@ class SerialToNet(serial.threaded.Protocol):
         otherwise tell the serial connection is closed.
         """
         if exc:
-            sys.stderr.write('[ERROR] ' +  repr(exc) + '\n\r')
-            sys.stderr.write('[INFO] Serial connection lost, will exit\n\r')
+            sys.stdout.write('[ERROR] ' +  repr(exc) + '\n\r')
+            sys.stdout.write('[INFO] Serial connection lost, will exit\n\r')
             time.sleep(0.2)
         else:
-            sys.stderr.write('[INFO] Serial connection closed\n\r')
+            sys.stdout.write('[INFO] Serial connection closed\n\r')
             os._exit(0)
 
 def discover(args):
@@ -88,7 +88,7 @@ def discover(args):
             if s.device in ["/dev/cu.Bluetooth-Incoming-Port", "/dev/cu.debug-console"]:
                 continue
             if args.verbose == "debug":
-                sys.stdout.write("[DEBUG] Check:{}\n".format(s.device))
+                sys.stdout.write("[DEBUG] Check: {}\n".format(s.device))
                 sys.stdout.flush()
             try:
                 for sp in (115200, ):
@@ -111,7 +111,7 @@ def discover(args):
             except SerialException:
                 pass
             except Exception as e:
-                sys.stderr.write('[ERROR] ' + repr(e) + '\n\r')
+                sys.stdout.write('[ERROR] ' + repr(e) + '\n\r')
     return (None, None)
 
 def main(args, intf):
@@ -128,7 +128,7 @@ def main(args, intf):
 
     # check whether interface is OK
     if intf != "debugwire":
-        sys.stderr.write('[CRITICAL] dw-link can only debug debugWIRE targets\n')
+        sys.stdout.write('[CRITICAL] dw-link can only debug debugWIRE targets\n')
         sys.exit(1)
 
     # connect to serial port
@@ -144,7 +144,7 @@ def main(args, intf):
     try:
         ser.open()
     except serial.SerialException as e:
-        sys.stderr.write('[CRITICAL] Could not open serial port {}: {}\n'.format(device, e))
+        sys.stdout.write('[CRITICAL] Could not open serial port {}: {}\n'.format(device, e))
         sys.exit(2)
 
     try:
@@ -161,7 +161,7 @@ def main(args, intf):
             srv.bind(('', args.port))
             srv.listen(1)
         except OSError as error:
-            sys.stderr.write("OSError: " + error.strerror +"\n\r")
+            sys.stdout.write("OSError: " + error.strerror +"\n\r")
             sys.exit(3)
 
         subprc = None
@@ -170,12 +170,12 @@ def main(args, intf):
             cmd[0] = shutil.which(cmd[0])
             subprc = subprocess.Popen(cmd)
 
-        sys.stderr.write("[INFO] Connected to dw-link debugger\r\n")
-        sys.stderr.write("[INFO] Listening on port {} for gdb connection\n\r".format(args.port))
-        sys.stderr.flush()
+        sys.stdout.write("[INFO] Connected to dw-link debugger\r\n")
+        sys.stdout.write("[INFO] Listening on port {} for gdb connection\n\r".format(args.port))
+        sys.stdout.flush()
 
         client_socket, addr = srv.accept()
-        sys.stderr.write('[INFO] Connected by {}\n'.format(addr))
+        sys.stdout.write('[INFO] Connected by {}\n'.format(addr))
         # More quickly detect bad clients who quit without closing the
         # connection: After 1 second of idle, start sending TCP keep-alive
         # packets every 1 second. If 3 consecutive keep-alive packets
@@ -200,17 +200,17 @@ def main(args, intf):
                     if b'$D#44' in data:
                         raise DetachException
                     if args.verbose == "debug":
-                        sys.stderr.write("[DEBUG] sent: {}\n".format(data))
-                        sys.stderr.flush()
+                        sys.stdout.write("[DEBUG] sent: {}\n".format(data))
+                        sys.stdout.flush()
                 except socket.error as msg:
-                    sys.stderr.write('[ERROR] {}\n\r'.format(msg))
+                    sys.stdout.write('[ERROR] {}\n\r'.format(msg))
                     # probably got disconnected
                     break
         except Exception as msg:
-            sys.stderr.write('[ERROR] {}\n\r'.format(msg))
+            sys.stdout.write('[ERROR] {}\n\r'.format(msg))
         finally:
             ser_to_net.socket = None
-            sys.stderr.write('[INFO] Disconnected\n\r')
+            sys.stdout.write('[INFO] Disconnected\n\r')
             ser.write(b'$D#44') # send detach command to dw-link debugger
             client_socket.close()
     except KeyboardInterrupt:
