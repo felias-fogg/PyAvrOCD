@@ -9,6 +9,7 @@
   - CI on Github: plyint and pytest with automatic deployment of CI badges.
 - **Changed:**
   - All console output goes now to `stdout`. Before, there was a mix of `stdout` and `stderr`. With that, all console output of pyavrocd is going to `stdout`.
+  - Moved a few files and the `atdf` folder into extras and integrated `pytest.ini` and `.pylintrc` into `pyproject.toml`.
 
 ### 0.14.1 (30-Aug-2025)
 

@@ -1,6 +1,6 @@
 [project]
 name = "pyavrocd"
-version = "0.14.0"
+version = "0.14.2"
 description = "A platform-agnostic GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
@@ -56,11 +56,6 @@ python_functions = ["test_*"]
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--verbose",
-    "--cov=pyavrocd",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml"
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -68,9 +63,43 @@ markers = [
     "unit: marks tests as unit tests"
 ]
 
-[tool.pylint.main]
-ignore-patterns = ["at(tiny|mega|90).*\\.py"]
+[tool.pylint.MASTER]
+ignore-patterns = ["at(tiny|mega|90).*\\.py" ]
+ignore-paths = [".poetry",".*alldevices.py"]
 jobs = 1
+
+[tool.pylint.'MESSAGE CONTROL']
+disable= ['broad-exception-caught',
+         'consider-using-f-string',
+         'trailing-whitespace',
+	 'trailing-newlines',
+	 'duplicate-code',
+	 'consider-using-with',
+	 'consider-using-dict-items',
+	 'consider-using-generator']
+
+[tool.pylint.REPORTS]
+output-format = 'text'
+reports = 'no'
+
+[tool.pylint.FORMAT]
+indent-string='    '
+
+[tool.pylint.BASIC]
+function-rgx="[a-z_][a-z0-9_]{2,50}$"
+
+[tool.pylint.DESIGN]
+max-args=15
+max-locals=30
+max-returns=15
+max-branches=20
+max-statements=90
+max-attributes=20
+min-public-methods=1
+max-public-methods=25
+max-bool-expr=10
+max-nested-blocks=7
+max-line-length=120
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
