@@ -1,6 +1,13 @@
 # Changelog
 
-### NEW:
+### 0.14.3:
+
+- **Added:**
+  - New tests:
+    - test_xnvmmegaavrjtag.py
+    - new tests in test_xavrdebugger.py
+- **Removed**:
+  - `start`/`stop` have been removed from the xmvm* modules because this is handled by xavrdebugger in `start_debugging` and `stop_debugging,` and was not used anyway.
 
 ### 0.14.2:
 
@@ -8,9 +15,9 @@
   - New tests:
     - test_dwlink.py
     - test_main.py
-  - CI on Github: plyint and pytest with automatic deployment of CI badges.
+  - CI on GitHub: PyLint and PyTest with automatic deployment of CI badges.
 - **Changed:**
-  - All console output goes now to `stdout`. Before, there was a mix of `stdout` and `stderr`. With that, all console output of pyavrocd is going to `stdout`.
+  - All console output of dwlink now goes to `stdout`. Before, there was a mix of `stdout` and `stderr`. With that, all console output of pyavrocd is now going to `stdout`.
   - Moved a few files and the `atdf` folder into extras and integrated `pytest.ini` and `.pylintrc` into `pyproject.toml`.
 
 ### 0.14.1 (30-Aug-2025)
@@ -28,7 +35,7 @@
 ### 0.14.0 (28-09-2025)
 
 - **Fixed:**
-  - Using the temporary HWBP for safe single-stepping had the problem that one might miss a BP in an interrupt routine. Accounting for that by reassigning the HWBP to a SWBP had the implication that one increases flash wear and make safe single-stepping impossible when running with HWBP-only under dW. For this reason, filter_safe_instructions has been introduced (see below) and single-stepping using the HWBP has been removed (see below).
+  - Using the temporary HWBP for safe single-stepping had the problem that one might miss a BP in an interrupt routine. Accounting for that by reassigning the HWBP to a SWBP had the implication that one increases flash wear and makes safe single-stepping impossible when running with HWBP-only under dW. For this reason, filter_safe_instructions has been introduced (see below), and single-stepping using the HWBP has been removed (see below).
 
 - **Added:**
   - `ronly_registers` have been added in the device files.

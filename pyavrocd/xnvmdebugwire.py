@@ -4,7 +4,6 @@ DebugWIRE NVM implementation - extended
 
 from logging import getLogger
 
-from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 
 from pymcuprog.nvmdebugwire import NvmAccessProviderCmsisDapDebugwire
@@ -32,36 +31,6 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
 
     def __del__(self):
         pass
-
-    def start(self, user_interaction_callback=None):
-        """
-        Start (activate) session for debugWIRE targets
-
-        """
-        self.logger_local.info("debugWIRE-specific initialiser")
-
-        _dummy = user_interaction_callback
-        try:
-            self.avr.activate_physical()
-            self.logger_local.info("Physical interface activated")
-        except Jtagice3ResponseError as error:
-            # The debugger could be out of sync with the target, retry
-            if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE:
-                self.logger_local.info("Physical state out of sync.  Retrying.")
-                self.avr.deactivate_physical()
-                self.logger_local.info("Physical interface deactivated")
-                self.avr.activate_physical()
-                self.logger_local.info("Physical interface activated")
-            else:
-                raise
-
-    def stop(self):
-        """
-        Stop (deactivate) session for debugWIRE targets
-        """
-        self.logger_local.info("debugWIRE-specific de-initialiser")
-        self.avr.deactivate_physical()
-        self.logger_local.info("Physical interface deactivated")
 
     # pylint: disable=arguments-differ
     # reason for the difference: read and write are declared as staticmethod in the base class,

@@ -9,6 +9,7 @@ from unittest import TestCase
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.xavr8target import XTinyAvrTarget
+from pyavrocd.errors import FatalError
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -23,14 +24,33 @@ class TestXAvrDebugger(TestCase):
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock()
         self.xa.device.avr.protocol = MagicMock(spec=Avr8Protocol)
+        self.xaj = XAvrDebugger(mock_transport, "atmega644", "jtag", ['bootrst', 'lockbits', 'ocden'], 4000, 500)
+        self.xaj.logger = MagicMock()
+        self.xaj.transport = mock_transport
+        self.xaj.memory_info = MagicMock()
+        self.xaj.device = MagicMock()
+        self.xaj.device.avr = MagicMock()
+        self.xaj.device.avr.protocol = MagicMock(spec=Avr8Protocol)
+
+    def test_get_iface(self):
+        self.assertEqual(self.xa.get_iface(), 'debugwire')
+        self.assertEqual(self.xaj.get_iface(), 'jtag')
+
+    def test_get_architecture(self):
+        self.assertEqual(self.xa.get_architecture(), 'avr8')
+        self.assertEqual(self.xaj.get_architecture(), 'avr8')
+
+    def test_get_hwbpnum(self):
+        self.assertEqual(self.xa.get_hwbpnum(), 1)
+        self.assertEqual(self.xaj.get_hwbpnum(), 4)
+
 
     @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
-    def test_start_debugging(self):
+    def test_start_debugging_dw(self):
         self.xa.device.avr.activate_physical.return_value = bytearray([0x0B, 0x93, 0, 0])
-        self.xa.device.avr.memory_read.return_value = bytearray([0x1E, 0, 0])
         self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
         self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
-        self.xa.start_debugging()
+        self.assertTrue(self.xa.start_debugging())
         self.xa.device.avr.memory_read.assert_called_once()
         self.xa.housekeeper.start_session.assert_called_once()
         self.xa.device.avr.setup_debug_session.assert_called_once()
@@ -41,7 +61,47 @@ class TestXAvrDebugger(TestCase):
         self.xa.device.avr.protocol.reset.assert_called_once()
         self.xa.device.avr.protocol.program_counter_read.assert_called_once()
 
-    def test_stop_debugging(self):
+    @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
+    def test_start_debugging_dw_warmstart_fail(self):
+        self.xa.device.avr.activate_physical.return_value = Exception()
+        self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
+        self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
+        self.assertFalse(self.xa.start_debugging(warmstart=True))
+
+    @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
+    def test_start_debugging_dw_coldstart_fail(self):
+        self.xa.device.avr.activate_physical.return_value = Exception()
+        self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
+        self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
+        self.assertRaises(FatalError,self.xa.start_debugging,warmstart=False)
+
+    @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
+    def test_start_debugging_jtag(self):
+        self.xaj.device.avr.activate_physical.return_value = bytearray([0x3F, 0x93, 0, 0])
+        self.xaj.device.avr.memory_read.side_effect = [ bytearray([0x1E, 0x96, 0x09]), # signature
+                                                            bytearray([0xFF]),  # lockbits
+                                                            bytearray([0xFF]),  # bootrst
+                                                            bytearray([0xFF]),  # ocden
+                                                            bytearray([0x7F ]) ]  # ocden after programming
+        self.xaj.device.avr.protocol.program_counter_read.return_value = 0x0
+        self.xaj.memory_info.memory_info_by_name.return_value={'size': 0x1000}
+        self.assertTrue(self.xaj.start_debugging())
+        self.assertEqual(self.xaj.device.avr.memory_read.call_count, 5)
+        self.xaj.housekeeper.start_session.assert_called_once()
+        self.xaj.device.avr.setup_debug_session.assert_called_once()
+        self.xaj.device.avr.setup_config.assert_called_once()
+        self.xaj.device.avr.activate_physical.assert_called_once()
+        self.xaj.device.avr.switch_to_progmode.assert_called_once()
+        self.xaj.device.avr.switch_to_debmode.assert_called_once()
+        self.xaj.device.avr.protocol.reset.assert_called_once()
+        self.xaj.device.avr.protocol.program_counter_read.assert_called_once()
+
+    @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
+    def test_start_jtag_fail(self):
+        self.xaj.device.avr.activate_physical.return_value = bytearray([0x3E, 0x93, 0, 0])
+        self.assertRaises(FatalError, self.xaj.start_debugging)
+
+    def test_stop_debugging_dw(self):
         self.xa.stop_debugging(graceful=False)
         self.xa.device.avr.switch_to_debmode.assert_called_once()
         self.xa.device.avr.protocol.stop.assert_called_once()

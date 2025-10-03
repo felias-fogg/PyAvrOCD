@@ -3,15 +3,13 @@ The test suit for server module
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 import logging
-from logging import getLogger
-from unittest.mock import MagicMock, Mock, call, patch, create_autospec
+from unittest.mock import  Mock, call, patch, create_autospec
 from unittest import TestCase
-import sys
 from types import SimpleNamespace
 
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.server import RspServer
-from pyavrocd.handler import GdbHandler, RECEIVE_BUFFER
+from pyavrocd.handler import GdbHandler
 from pyavrocd.errors import  EndOfSession
 
 class TestRspServer(TestCase):
@@ -47,3 +45,38 @@ class TestRspServer(TestCase):
                                               call('Leaving GDB server')])
         self.assertEqual(self.rs.logger.info.call_count,4)
 
+
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
+    def test_serve_EOS(self, mock_handler, mock_select, mock_socket):
+        mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
+        mock_socket.return_value.accept.return_value[0].recv.side_effect = EndOfSession("")
+        mock_handler.return_value = create_autospec(GdbHandler)
+        mock_select.side_effect = [(1,0,0), (1,0,0), (1,0,0)]
+        self.assertEqual(self.rs.serve(), 0)
+        self.rs.logger.info.assert_has_calls([call('Listening on port %s for gdb connection', 2000),
+                                              call('Connection from %s', '111.222.333.444'),
+                                              call('End of session'),
+                                              call('Leaving GDB server')])
+        self.assertEqual(self.rs.logger.info.call_count,4)
+
+
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.time.sleep',Mock())
+    @patch('builtins.print')
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
+    def test_serve_KI(self, mock_handler, mock_select, mock_socket, mock_print):
+        mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
+        mock_socket.return_value.accept.return_value[0].recv.side_effect = KeyboardInterrupt("")
+        mock_handler.return_value = create_autospec(GdbHandler)
+        mock_select.side_effect = [(1,0,0), (1,0,0), (1,0,0)]
+        self.rs.logger.getEffectiveLevel.return_value = logging.CRITICAL
+        mock_stop = self.rs.avrdebugger.stop_debugging
+        self.assertEqual(self.rs.serve(), 1)
+        mock_print.assert_has_calls([call('Listening on port 2000 for gdb connection')])
+        self.assertEqual(self.rs.avrdebugger, None)
+        mock_stop.assert_called_once()

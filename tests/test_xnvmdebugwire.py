@@ -8,7 +8,6 @@ from unittest import TestCase
 
 from pymcuprog.deviceinfo import deviceinfo
 
-from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
@@ -25,20 +24,6 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr = create_autospec(XTinyAvrTarget)
         self.device_info = deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices." + "attiny85")
         self.memory_info = deviceinfo.DeviceMemoryInfo(self.device_info)
-
-    def test_start(self):
-        self.nvm.start()
-        self.nvm.avr.activate_physical.assert_called_once()
-
-    def test_start_recover(self):
-        self.nvm.avr.activate_physical.side_effect = [ Jtagice3ResponseError('fail', Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE), True ]
-        self.nvm.start()
-        self.nvm.avr.activate_physical.assert_has_calls([call(),call()],any_order=True)
-        self.nvm.avr.deactivate_physical.assert_called_once()
-
-    def test_stop(self):
-        self.nvm.stop()
-        self.nvm.avr.deactivate_physical.assert_called_once()
 
     def test_read_flash_page(self):
         rpage = bytearray(list(range(0x40)))
@@ -101,3 +86,9 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.write(self.memory_info.memory_info_by_name('internal_sram'), 0x100-0x60, wpage)
         self.nvm.avr.write_memory_section.assert_has_calls([call(Avr8Protocol.AVR8_MEMTYPE_SRAM,
                                                                  0x100, wpage, len(wpage), allow_blank_skip=False)],any_order=True)
+
+    def test_erase_page(self):
+        self.assertFalse(self.nvm.erase_page(0,False))
+
+    def test_erase_chip(self):
+        self.assertFalse(self.nvm.erase_chip(False))

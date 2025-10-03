@@ -4,7 +4,6 @@ megaAVR JTAG NVM implementation - extended
 
 from logging import getLogger
 
-from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyedbglib.util import binary
 
@@ -18,7 +17,6 @@ from pymcuprog.deviceinfo.memorynames import MemoryNames
 from pymcuprog import utils
 
 from pyavrocd.xavr8target import XMegaAvrJtagTarget
-from pyavrocd.errors import FatalError
 
 # pylint: disable=consider-using-f-string
 class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag):
@@ -37,40 +35,6 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
     def __del__(self):
         pass
 
-    def start(self, user_interaction_callback=None):
-        """
-        Start (activate) session for JTAG targets
-
-        """
-        # pylint: disable=unused-argument
-        self.logger_local.info("megaAVR-JTAG-specific initialiser")
-
-        try:
-            resp = self.avr.activate_physical()
-            self.logger_local.info("Physical interface activated")
-        except Jtagice3ResponseError as error:
-            # The debugger could be out of sync with the target, retry
-            if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE:
-                self.logger_local.info("Physical state out of sync.  Retrying.")
-                self.avr.deactivate_physical()
-                self.logger_local.info("Physical interface deactivated")
-                resp = self.avr.activate_physical()
-                self.logger_local.info("Physical interface activated")
-            else:
-                raise
-
-        self.logger_local.info("JTAG ID read: %02X%02X%02X%02X", resp[3], resp[2], resp[1], resp[0])
-        if resp[0] != 0x3F:
-            raise FatalError("Non-Atmel/Microchip JTAG device detected!")
-
-    def stop(self):
-        """
-        Stop (deactivate) session for JTAG targets
-        """
-        self.logger_local.info("JTAG-specific de-initialiser")
-        self.avr.deactivate_physical()
-        self.logger_local.info("Physical interface deactivated")
-
     # pylint: disable=arguments-differ
     # reason for the difference in arguments:
     # read and write are declared as staticmethod in the base class,
@@ -82,13 +46,15 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         :param memory_info: dictionary for the memory as provided by the DeviceMemoryInfo class
         :param offset: relative offset in the memory type
         :param numbytes: number of bytes to read
+        :param prog_mode: True iff in programming mode
         :return: array of bytes read
         """
 
         memtype_string = memory_info[DeviceMemoryInfoKeys.NAME]
         memtype = self.avr.memtype_read_from_string(memtype_string)
-        if memtype_string == MemoryNames.EEPROM and not prog_mode:
-            memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM
+        if memtype_string == MemoryNames.EEPROM:
+            if prog_mode:
+                memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
         self.logger_local.debug("Reading with memtype=0x%x", memtype)
         if memtype == 0:
             msg = "Unsupported memory type: {}".format(memtype_string)
@@ -102,10 +68,8 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
             except TypeError:
                 pass
         else:
-            # if we read chunks that are not page sized or not page aligned, then use SPM as memtype
-            if offset%memory_info[DeviceMemoryInfoKeys.PAGE_SIZE] != 0 or \
-              numbytes != memory_info[DeviceMemoryInfoKeys.PAGE_SIZE] or \
-              not prog_mode:
+            # if we are not in prog_mode, then use SPM as memtype, otherwise FLASH_PAGE
+            if not prog_mode:
                 memtype = Avr8Protocol.AVR8_MEMTYPE_SPM
 
         self.logger_local.debug("Reading from %s (memtype=0x%x) at %X %d bytes",
@@ -126,17 +90,17 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
             return
         memtype_string = memory_info[DeviceMemoryInfoKeys.NAME]
         memtype = self.avr.memtype_read_from_string(memtype_string)
-        if memtype_string == MemoryNames.EEPROM and not prog_mode:
-            memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM
+        if memtype_string == MemoryNames.EEPROM:
+            if prog_mode:
+                memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
         self.logger_local.debug("Writing to memtype=0x%x from %s", memtype, memtype_string)
         if memtype == 0:
             msg = "Unsupported memory type: {}".format(memtype_string)
             self.logger_local.error(msg)
             raise PymcuprogError(msg)
 
-        if memtype_string != MemoryNames.EEPROM:
-            # For debugWIRE parts single byte access is enabled for
-            # EEPROM so no need to align to page boundaries
+        if prog_mode:
+            # For prog_mode, page alignment is necessary
             data_to_write, address = utils.pagealign(data,
                                                      offset,
                                                      memory_info[DeviceMemoryInfoKeys.PAGE_SIZE],
@@ -151,14 +115,13 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
 
         allow_blank_skip = False
         if memtype_string in MemoryNames.FLASH:
+            memtype = Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE
             allow_blank_skip = True
 
-        if memtype_string in (MemoryNames.FLASH, MemoryNames.EEPROM):
-            # For Flash we have to write exactly one page but for EEPROM we
-            # could write less than one page, but not more.
+        if memtype in (Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE, Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE):
+            # For Flash and EEPROM pages we have to write exactly one page
             write_chunk_size = memory_info[DeviceMemoryInfoKeys.PAGE_SIZE]
-            if memtype_string != MemoryNames.EEPROM:
-                data_to_write = utils.pad_to_size(data_to_write, write_chunk_size, 0xFF)
+            data_to_write = utils.pad_to_size(data_to_write, write_chunk_size, 0xFF)
             first_chunk_size = write_chunk_size - address%write_chunk_size
         else:
             write_chunk_size = len(data_to_write)
@@ -183,27 +146,27 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
                                           write_chunk_size,
                                           allow_blank_skip=allow_blank_skip)
 
-    def erase_page(self, pageaddr, progmode):
+    def erase_page(self, pageaddr, prog_mode):
         """
         Erase one page (in debug mode only)
         """
-        if progmode:
+        if prog_mode:
             self.avr.switch_to_debmode()
         self.avr.protocol.jtagice3_command_response(
             bytearray([Avr8Protocol.CMD_AVR8_PAGE_ERASE, Avr8Protocol.CMD_VERSION0]) + binary.pack_le32(pageaddr))
-        if progmode:
+        if prog_mode:
             self.avr.switch_to_progmode()
         #self.avr.protocol.check_response(resp)
         return True
 
-    def erase_chip(self, progmode):
+    def erase_chip(self, prog_mode):
         """
         Erasing entire chip. Save EEPROM by, potentially, reprogramming EESAVE fuse
         """
         eesave_fuse_byte = None
         eesave_mask = self.device_info.get('eesave_mask')
         eesave_base = self.device_info.get('eesave_base')
-        if not progmode:
+        if not prog_mode:
             self.avr.switch_to_progmode()
         if eesave_base and eesave_mask and 'eesave' in self.manage:
             eesave_fuse_byte = self.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_FUSES,
@@ -221,6 +184,6 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         if eesave_fuse_byte: # needs to be restored
             self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base, eesave_fuse_byte)
             self.logger_local.debug("EESAVE fuse restored")
-        if not progmode:
+        if not prog_mode:
             self.avr.switch_to_debmode()
         return True
