@@ -116,15 +116,13 @@ class TestSerialToNet(TestCase):
             self.assertEqual(result, (None, None))
 
     @patch('pyavrocd.dwlink.discover')
-    @patch('pyavrocd.dwlink.sys.exit')
     @patch('pyavrocd.dwlink.sys.stdout.write')
-    def test_main_no_dwlink(self, mock_write, mock_exit, mock_discover):
+    def test_main_no_dwlink(self, mock_write, mock_discover):
         args = SimpleNamespace()
         args.verbose = 'info'
         args.dev = 'atmega328p'
         mock_discover.return_value = (None, None)
         self.assertEqual(main(args, 'debugwire'), None)
-        mock_exit.assert_not_called()
         mock_write.assert_not_called()
 
     @patch('pyavrocd.dwlink.discover')

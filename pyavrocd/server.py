@@ -37,7 +37,7 @@ class RspServer():
         self.args = args
         self._terminate = False
 
-    def __signal_server(self,_signo,_frame):
+    def _signal_server(self,_signo,_frame):
         self.logger.info("System requested termination using SIGTERM signal")
         self._terminate = True
 
@@ -45,7 +45,7 @@ class RspServer():
         """
         Serve away ...
         """
-        signal.signal(signal.SIGTERM, self.__signal_server)
+        signal.signal(signal.SIGTERM, self._signal_server)
         self.gdb_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.logger.info("Listening on port %s for gdb connection", self.port)
         # make sure that this message can be seen

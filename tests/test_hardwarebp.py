@@ -4,7 +4,7 @@ Test suite for the HardwareBP class
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 
 import logging
-from unittest.mock import call, create_autospec
+from unittest.mock import call, create_autospec, patch, Mock
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.hardwarebp import HardwareBP
@@ -97,12 +97,30 @@ class TestHardwareBP(TestCase):
         self.assertEqual(self.hbp._tempalloc, [2, 1])
 
     def test_clear_temp(self):
+        self.hbp.logger = Mock()
         self.hbp._hwbplist = [ 100, 200, 300 ]
         self.hbp.set_temp([10,20])
         self.hbp.clear_temp()
         self.assertEqual(self.hbp._hwbplist, [ 100, None, None ])
         self.assertEqual(self.hbp._tempalloc, None)
-
+        self.hbp.clear_temp()
+        self.assertEqual(self.hbp._tempalloc, None)
+        self.assertEqual(self.hbp._hwbplist, [ 100, None, None ])
+        self.hbp.logger.debug.assert_has_calls([call('Trying to allocate %d temp HWBPs', 2),
+                call('Trying to allocate HWBP for addr 0x%X', 10),
+                call('Could not allocate a HWBP'),
+                call('HWBP %d at addr 0x%X freed', 2, 300),
+                call('Trying to allocate HWBP for addr 0x%X', 10),
+                call('Successfully allocated HWBP %d', 2),
+                call('Trying to allocate HWBP for addr 0x%X', 20),
+                call('Could not allocate a HWBP'),
+                call('HWBP %d at addr 0x%X freed', 1, 200),
+                call('Trying to allocate HWBP for addr 0x%X', 20),
+                call('Successfully allocated HWBP %d', 1),
+                call('Allocated %d temp HWBPs', 2),
+                call('HWBP %d at addr 0x%X freed', 2, 10),
+                call('HWBP %d at addr 0x%X freed', 1, 20),
+                call('HWBP temp allocation cleared: %d HWBPs cleared', 2)])
 
 
 

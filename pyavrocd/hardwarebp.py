@@ -2,7 +2,7 @@
 This module deals with the management of hardware breakpoints
 """
 # args, logging
-from logging import getLogger
+import logging
 
 class HardwareBP():
     """
@@ -15,7 +15,7 @@ class HardwareBP():
         self._numhwbp = dbg.get_hwbpnum()
         self._hwbplist = [None]*self._numhwbp
         self._tempalloc = None
-        self.logger = getLogger('pyavrocd.hardwarebp')
+        self.logger = logging.getLogger('pyavrocd.hardwarebp')
 
 
     def execute(self):
