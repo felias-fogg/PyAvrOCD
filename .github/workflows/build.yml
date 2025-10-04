@@ -32,21 +32,21 @@ jobs:
         run: |
           pyinstaller -y pyavrocd.spec
 
-      - name: Move to binaries and register for commit (Linux Intel = ubuntu-22.04)
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          rm -rf extras/binaries/x86_64-linux-gnu/pyavrocd*
-          mv dist/pyavrocd/* extras/binaries/x86_64-linux-gnu/
-          git add extras/binaries/x86_64-linux-gnu/pyavrocd
-          git add extras/binaries/x86_64-linux-gnu/pyavrocd/
-
       - name: Move to binaries and register for commit (macOS Intel = macos-13)
         if: matrix.os == 'macos-13'
         run: |
           rm -rf extras/binaries/x86_64-apple-darwin/pyavrocd*
           mv dist/pyavrocd/* extras/binaries/x86_64-apple-darwin/
           git add extras/binaries/x86_64-apple-darwin/pyavrocd
-          git add extras/binaries/x86_64-apple-darwin/pyavrocd/
+          git add extras/binaries/x86_64-apple-darwin/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (Linux Intel = ubuntu-22.04)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          rm -rf extras/binaries/x86_64-linux-gnu/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-linux-gnu/
+          git add extras/binaries/x86_64-linux-gnu/pyavrocd
+          git add extras/binaries/x86_64-linux-gnu/pyavrocd-util/
 
       - name: Commit changes
         run: |
