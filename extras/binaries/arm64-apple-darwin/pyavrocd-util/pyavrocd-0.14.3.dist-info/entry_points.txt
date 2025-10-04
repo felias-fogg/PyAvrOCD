@@ -1,0 +1,3 @@
+[console_scripts]
+pyavrocd=pyavrocd.main:main
+
