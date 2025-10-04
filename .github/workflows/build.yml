@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-       os: [ "ubuntu-22.04", "macos-13"] #, "windows-2022",  "ubuntu-22.04-arm", "window-11-arm", "macos-14" ]
+       os: [ "macos-13"] #, "windows-2022",  "ubuntu-22.04-arm", "window-11-arm", "macos-14" ]
       max-parallel: 1
     defaults:
       run:
@@ -15,9 +15,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          persists-credentials: false
-          fetch-depths: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
