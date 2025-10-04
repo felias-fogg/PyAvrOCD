@@ -54,7 +54,7 @@ jobs:
         run: |
           rm -rf extras/binaries/x86_64-mingw32/pyavrocd*
           mv dist/pyavrocd/* extras/binaries/x86_64-mingw32/
-          git add extras/binaries/x86_64-mingw32/pyavrocd
+          git add extras/binaries/x86_64-mingw32/pyavrocd.exe
           git add extras/binaries/x86_64-mingw32/pyavrocd-util/
 
       - name: Move to binaries and register for commit (macOS Intel = macos-13)
