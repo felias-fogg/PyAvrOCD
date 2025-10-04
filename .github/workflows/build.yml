@@ -23,7 +23,6 @@ jobs:
       - name: Install libusb
         if: runner.os == 'macOS'
         run: |
-          brew update
           brew install libusb
 
       - name: Install dependencies
