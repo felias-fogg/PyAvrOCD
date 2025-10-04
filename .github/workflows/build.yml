@@ -6,8 +6,8 @@ jobs:
   build:
     strategy:
       matrix:
-       os: [ "ubuntu-22.04", "macos-13"] #, "windows-2022",  "ubuntu-22.04-arm", "window-11-arm", "macos-14" ]
-      max-parallel: 1
+       os: [ "ubuntu-22.04", "macos-13", "windows-2022",  "ubuntu-22.04-arm",  "macos-14" ]
+      max-parallel: 1 # work on the jobs sequentially because otherwise the push will fail
     defaults:
       run:
         shell: bash
@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Include changes
+      - name: Include changes # necessary, because otherwise the later push will fail
         run: git pull
 
       - name: Install dependencies
@@ -32,6 +32,30 @@ jobs:
       - name: Package PyAvrOCD with PyInstaller
         run: |
           pyinstaller -y pyavrocd.spec
+
+      - name: Move to binaries and register for commit (macOS ARM = macos-14)
+        if: matrix.os == 'macos-14'
+        run: |
+          rm -rf extras/binaries/arm64-apple-darwin/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/arm64-apple-darwin/
+          git add extras/binaries/arm64-apple-darwin/pyavrocd
+          git add extras/binaries/arm64-apple-darwin/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (Linux Arm = ubuntu-22.04-arm)
+        if: matrix.os == 'ubuntu-22.04-arm'
+        run: |
+          rm -rf extras/binaries/aarch64-linux-gnu/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/aarch64-linux-gnu/
+          git add extras/binaries/aarch64-linux-gnu/pyavrocd
+          git add extras/binaries/aarch64-linux-gnu/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (Windows Intel = windows-2022)
+        if: matrix.os == 'windows-2022'
+        run: |
+          rm -rf extras/binaries/x86_64-mingw32/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-mingw32/
+          git add extras/binaries/x86_64-mingw32/pyavrocd
+          git add extras/binaries/x86_64-mingw32/pyavrocd-util/
 
       - name: Move to binaries and register for commit (macOS Intel = macos-13)
         if: matrix.os == 'macos-13'
