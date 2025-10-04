@@ -1,10 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_submodules
-import os
+import platform
 
 binlist = []
-if os.uname().sysname == "Darwin":
-    if os.uname().machine == "x86_64":
+if platform.uname().system == "Darwin":
+    if platform.uname().machine == "x86_64":
         binlist = [('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.0.dylib','.'),
                    ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.a', '.'),
                    ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.dylib', '.')]
