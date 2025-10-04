@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "Sorry, no built-in debugging support for 32-bit systems."
+echo "Download a avr-gdb version for your system from somewhere"
+echo "and install PyAvrOCD with 'pipx install pyavrocd'."
+echo
+echo "If you see this error message on a 64-bit system, then"
+echo "something went wrong when downloading the tool files."
+echo "Reinstall the board file and then try again."

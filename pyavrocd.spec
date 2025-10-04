@@ -1,5 +1,18 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_submodules
+import os
+
+binlist = []
+if os.uname().sysname == "Darwin":
+    if os.uname().machine == "x86_64":
+        binlist = [('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.0.dylib','.'),
+                   ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.a', '.'),
+                   ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.dylib', '.')]
+    else: # arm64
+        binlist = [('/opt/homebrew/Cellar/libusb/1.0.*/lib/libusb-1.0.0.dylib','.'),
+                   ('/opt/homebrew/Cellar/libusb/1.0.*/lib/libusb-1.0.a', '.'),
+                   ('/opt/homebrew/Cellar/libusb/1.0.*/lib/libusb-1.0.dylib', '.')]
+
 
 hiddenimports = []
 hiddenimports += collect_submodules('pyavrocd.deviceinfo')
@@ -9,10 +22,7 @@ hiddenimports += collect_submodules('pyavrocd.deviceinfo.devices')
 a = Analysis(
     ['pyavrocd/main.py'],
     pathex=['pyavrocd/deviceinfo/devices/', 'pyavrocd/deviceinfo'],
-    binaries=[
-        ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.0.dylib','.'),
-        ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.a', '.'),
-        ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.dylib', '.')],
+    binaries= binlist
     datas=[],
     hiddenimports=hiddenimports,
     hookspath=[],

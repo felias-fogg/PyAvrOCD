@@ -11,11 +11,16 @@ jobs:
       run:
         shell: bash
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persists-credentials: false
+          fetch-depths: 0
 
-      - name: Set up Python
+       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
@@ -27,10 +32,32 @@ jobs:
 
       - name: Package PyAvrOCD with PyInstaller
         run: |
-          pyinstaller -y ${{ matrix.os }}-pyavrocd.spec
+          pyinstaller -y pyavrocd.spec
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Move to binaries and register for commit (Linux Intel = ubuntu-22.04)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          rm -rf extras/binaries/x86_64-linux-gnu/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-linux-gnu/
+          git add extras/binaries/x86_64-linux-gnu/pyavrocd
+          git add extras/binaries/x86_64-linux-gnu/pyavrocd/
+
+      - name: Move to binaries and register for commit (macOS Intel = macos-13)
+        if: matrix.os == 'macos-13'
+        run: |
+          rm -rf extras/binaries/x86_64-apple-darwin/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-apple-darwin/
+          git add extras/binaries/x86_64-apple-darwin/pyavrocd
+          git add extras/binaries/x86_64-apple-darwin/pyavrocd/
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Add build changes"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          name: ${{ matrix.os }}-pyavrocd
-          path: dist/pyavrocd/
+          branch: 'main'
+
