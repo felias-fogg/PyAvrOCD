@@ -1,0 +1,42 @@
+name: Package PyAvrOCD with PyInstaller
+on:
+  workflow_dispatch: # run it manually
+
+jobs:
+  build:
+    strategy:
+      matrix:
+       os: [ "ubuntu-22.04", "macos-13"] #, "windows-2022",  "ubuntu-22.04-arm", "window-11-arm", "macos-14" ]
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install libusb
+        if: runner.os == 'macOS'
+        run: >
+	  brew update
+	  brew install libusb
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .  # Install dependencies
+
+      - name: Package PyAvrOCD with PyInstaller
+        run: |
+          pyinstaller -y extras/${{ matrix.os }}-pyavrocd.spec
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-pyavrocd
+          path: dist/pyavrocd/
