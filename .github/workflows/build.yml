@@ -33,7 +33,7 @@ jobs:
 
       - name: Package PyAvrOCD with PyInstaller
         run: |
-          pyinstaller -y extras/${{ matrix.os }}-pyavrocd.spec
+          pyinstaller -y ${{ matrix.os }}-pyavrocd.spec
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
