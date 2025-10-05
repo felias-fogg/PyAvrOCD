@@ -165,6 +165,10 @@ You can also use monitor command options, e.g., --timer=freeze.
     cmd = [x for x in cmd if not x.startswith('@') or os.path.exists(x[1:]) ]
 
     args = parser.parse_args(cmd)
+    if args.version:
+        print("PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))
+        sys.exit(0)
+
     questionmark = False
     if args.dev == "?":
         questionmark = True
@@ -281,10 +285,6 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     - device name
     - interface string
     """
-    if args.version:
-        print("PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))
-        return 0,None,None
-
     if args.cmd:
         portcmd = [c for c in args.cmd if 'gdb_port' in c]
         if portcmd:
