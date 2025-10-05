@@ -7,6 +7,8 @@ on:
       - '**.py'
       - '**.toml'
       - '**.lock'
+    branches:
+      - 'main'
   pull_request:
 
 
