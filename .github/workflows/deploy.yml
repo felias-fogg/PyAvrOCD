@@ -41,10 +41,10 @@ jobs:
           VERSTRING=v${VER#*version }
           echo "System version string: $VERSTRING"
           echo "Github tag: $GITHUB_REF_NAME"
-	  if [ "x$GITHUB_REF_NAME" == "xmain" ]; then
-	     GITHUB_REF_NAME=$VERSTRING
-	     echo "Adapted GitHub tag name to system version string"
-	  fi
+          if [ "x$GITHUB_REF_NAME" == "xmain" ]; then
+             GITHUB_REF_NAME=$VERSTRING
+             echo "Adapted GitHub tag name to system version string"
+          fi
           if [ "x$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
              echo "Release version does not match system version"
              exit 1
