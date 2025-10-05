@@ -3,15 +3,13 @@ The test suit for main module
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 import logging
-from logging import getLogger
-from unittest.mock import MagicMock, call, patch, create_autospec
+from unittest.mock import MagicMock, call, patch
 from unittest import TestCase
 from types import SimpleNamespace
-import argparse
 import sys
 
 from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, process_arguments, \
-     startup_helper_prog, run_server, main
+     startup_helper_prog, run_server
 logging.basicConfig(level=logging.CRITICAL)
 
 class TestMain(TestCase):
@@ -101,16 +99,16 @@ class TestMain(TestCase):
     def test_setup_logging_debug(self):
         args = SimpleNamespace()
         args.verbose = "debug"
-        logger = setup_logging(args, False)
-        logging.basicConfig.assert_called_with(stream=sys.stdout, level='DEBUG', format='[%(levelname)s] %(name)s: %(message)s')
+        _logger = setup_logging(args, False)
+        logging.basicConfig.assert_called_with(stream=sys.stdout, level='DEBUG', format='[%(levelname)s] %(name)s: %(message)s') #pylint: disable=no-member
 
     @patch('pyavrocd.main.logging.basicConfig', MagicMock())
     @patch('pyavrocd.main.sys.stdout', MagicMock)
     def test_setup_logging_info(self):
         args = SimpleNamespace()
         args.verbose = "info"
-        logger = setup_logging(args, True)
-        logging.basicConfig.assert_called_with(stream=sys.stdout, level='INFO', format='[%(levelname)s] %(message)s')
+        _logger = setup_logging(args, True)
+        logging.basicConfig.assert_called_with(stream=sys.stdout, level='INFO', format='[%(levelname)s] %(message)s')  #pylint: disable=no-member
 
     def test_process_arguments_manage_override(self):
         args = SimpleNamespace()
@@ -173,7 +171,3 @@ class TestMain(TestCase):
         mock_server.serve.return_value = 0
         mock_logger = MagicMock()
         self.assertEqual(run_server(mock_server, mock_logger), 0)
-
-
-    def test_fail(self):
-        self.assertTrue(False)
