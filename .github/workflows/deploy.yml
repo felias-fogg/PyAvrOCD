@@ -1,4 +1,4 @@
-name: Check Tag
+name: Deploy workflow
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # to run it manually
 
 jobs:
-  checkTag:
+  checkTagAndUnitTests:
     defaults:
       run:
         shell: bash
@@ -38,11 +38,15 @@ jobs:
       - name: Test tag against system version
         run: |
           VER=$(poetry run pyavrocd -V)
-          VERSTRING=${VER#*version }
-          echo $VERSTRING
-          echo $GITHUB_REF_NAME
-          if [ "xv$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
-             echo "Release version foes not match system version"
+          VERSTRING=v${VER#*version }
+          echo "System version string: $VERSTRING"
+          echo "Github tag: $GITHUB_REF_NAME"
+	  if [ "x$GITHUB_REF_NAME" == "xmain" ]; then
+	     GITHUB_REF_NAME=$VERSTRING
+	     echo "Adapted GitHub tag name to system version string"
+	  fi
+          if [ "x$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
+             echo "Release version does not match system version"
              exit 1
           fi
           echo "Release and system version are identical, now we continue"
