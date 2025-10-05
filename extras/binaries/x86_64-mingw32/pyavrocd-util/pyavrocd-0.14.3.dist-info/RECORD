@@ -1,4 +1,4 @@
-../../Scripts/pyavrocd.exe,sha256=bKYKk_H9US2ROqjxkDPLTIxm_ka71FCsiUSletJzPvI,108376
+../../Scripts/pyavrocd.exe,sha256=oFaW1exsb6wzTKPRgyq63bI66m8w0oZHehf34qWLeY0,108376
 pyavrocd-0.14.3.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
 pyavrocd-0.14.3.dist-info/METADATA,sha256=4lPzabO5JzM4FUj8b2-mrankDQ-aRwVgl7c78MjNi1o,4737
 pyavrocd-0.14.3.dist-info/RECORD,,
@@ -459,7 +459,7 @@ pyavrocd/errors.py,sha256=9b5K7IeoSlSb9ZnXmmU8HO1XsqPDaMnAL1GJj7u2CcA,321
 pyavrocd/handler.py,sha256=z-lEyn2FdKMUEi9pu7vs7nLzrAArkJ-M3mY_gykHHg0,38342
 pyavrocd/hardwarebp.py,sha256=kVmwob4Ube62RG5mvy4WpkhPFwm7vrHoyiX8-F7akv0,4791
 pyavrocd/livetests.py,sha256=PuQMyXecF541E_j7SDOIejAZ1tatdiv6NL2SWcgjZiU,29758
-pyavrocd/main.py,sha256=GUkvsXz4lhYqI0iIb6Bap4LncVHhWfJft6viGi_3naQ,18415
+pyavrocd/main.py,sha256=Kn28QafNwjYh9Mg_9JrShMPs-BBy_wgp8B4ZyImh2zA,18408
 pyavrocd/memory.py,sha256=3eB4x-MsW6vrPuH45K29w7aB-C7DEfEWs66UjxR1LJ8,21481
 pyavrocd/monitor.py,sha256=rB0ixxpPHTkk1hhMR3m4o0xL1B76SmJAt6GU_NWPqQA,21551
 pyavrocd/server.py,sha256=N6Wd1Fq7r5JH2_w4q1ZNfNWpavDTLp_YndtBvzdaaHU,4321
