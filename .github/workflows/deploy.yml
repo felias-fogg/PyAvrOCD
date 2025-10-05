@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # to run it manually
 
 jobs:
-  checkTagAndUnitTests:
+  check:
     defaults:
       run:
         shell: bash
@@ -54,3 +54,85 @@ jobs:
         run: |
           source $VENV
           pytest
+  build:
+    needs: check
+    strategy:
+      matrix:
+       os: [ "ubuntu-22.04", "macos-13", "windows-2022",  "ubuntu-22.04-arm",  "macos-14" ]
+      max-parallel: 1 # work on the jobs sequentially because otherwise the push will fail
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Include changes # necessary, because otherwise the later push will fail
+        run: git pull
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .  # Install dependencies
+
+      - name: Package PyAvrOCD with PyInstaller
+        run: |
+          pyinstaller -y pyavrocd.spec
+
+      - name: Move to binaries and register for commit (macOS ARM = macos-14)
+        if: matrix.os == 'macos-14'
+        run: |
+          rm -rf extras/binaries/arm64-apple-darwin/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/arm64-apple-darwin/
+          git add extras/binaries/arm64-apple-darwin/pyavrocd
+          git add extras/binaries/arm64-apple-darwin/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (Linux Arm = ubuntu-22.04-arm)
+        if: matrix.os == 'ubuntu-22.04-arm'
+        run: |
+          rm -rf extras/binaries/aarch64-linux-gnu/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/aarch64-linux-gnu/
+          git add extras/binaries/aarch64-linux-gnu/pyavrocd
+          git add extras/binaries/aarch64-linux-gnu/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (Windows Intel = windows-2022)
+        if: matrix.os == 'windows-2022'
+        run: |
+          rm -rf extras/binaries/x86_64-mingw32/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-mingw32/
+          git add extras/binaries/x86_64-mingw32/pyavrocd.exe
+          git add extras/binaries/x86_64-mingw32/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (macOS Intel = macos-13)
+        if: matrix.os == 'macos-13'
+        run: |
+          rm -rf extras/binaries/x86_64-apple-darwin/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-apple-darwin/
+          git add extras/binaries/x86_64-apple-darwin/pyavrocd
+          git add extras/binaries/x86_64-apple-darwin/pyavrocd-util/
+
+      - name: Move to binaries and register for commit (Linux Intel = ubuntu-22.04)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          rm -rf extras/binaries/x86_64-linux-gnu/pyavrocd*
+          mv dist/pyavrocd/* extras/binaries/x86_64-linux-gnu/
+          git add extras/binaries/x86_64-linux-gnu/pyavrocd
+          git add extras/binaries/x86_64-linux-gnu/pyavrocd-util/
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Add build changes"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: 'main'
+
