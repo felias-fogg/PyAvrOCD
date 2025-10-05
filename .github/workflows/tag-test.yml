@@ -35,9 +35,9 @@ jobs:
         run: poetry install --no-interaction
       - name: Test tag against system version
         run: |
-	  VER=$(poetry run pyavrocd -V)
-	  VERSTRING=${VER#*version }
-	  if [ "xv$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
-	     exit(1)
-	  fi
-	  echo "Success"
+          VER=$(poetry run pyavrocd -V)
+          VERSTRING=${VER#*version }
+          if [ "xv$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
+             exit(1)
+          fi
+          echo "Success"
