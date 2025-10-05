@@ -175,3 +175,5 @@ class TestMain(TestCase):
         self.assertEqual(run_server(mock_server, mock_logger), 0)
 
 
+    def test_fail(self):
+        self.assertTrue(False)
