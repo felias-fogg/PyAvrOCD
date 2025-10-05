@@ -41,6 +41,6 @@ jobs:
           echo $VERSTRING
           echo $GITHUB_REF_NAME
           if [ "xv$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
-             exit(1)
+             exit 1
           fi
           echo "Success"
