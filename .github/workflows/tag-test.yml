@@ -38,8 +38,8 @@ jobs:
         run: |
           VER=$(poetry run pyavrocd -V)
           VERSTRING=${VER#*version }
-	  echo $VERSTRING
-	  echo $GITHUB_REF_NAME
+          echo $VERSTRING
+          echo $GITHUB_REF_NAME
           if [ "xv$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
              exit(1)
           fi
