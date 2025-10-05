@@ -41,6 +41,11 @@ jobs:
           echo $VERSTRING
           echo $GITHUB_REF_NAME
           if [ "xv$VERSTRING" != "x$GITHUB_REF_NAME" ]; then
+             echo "Release version foes not match system version"
              exit 1
           fi
-          echo "Success"
+          echo "Release and system version are identical, now we continue"
+      - name: Run unit-tests
+        run: |
+	  source $VENV
+          pytest
