@@ -46,7 +46,7 @@ for dir in binaries/*; do
 		    rm -rf tools
 		    mkdir tools
 		    cp -r $dir/* tools/
-		    tar -jcv --exclude="*DS_Store" --exclude="*/._*" -f avrocd-tools/avrocd-tools-${VERNUM}-${type}.tar.bz2 tools/
+		    tar -jcv --exclude="*DS_Store" --exclude="*/._*" -f ./avrocd-tools/avrocd-tools-${VERNUM}-${type}.tar.bz2 tools/
 		    cd tools
 		    if [ ! -f readme.md ]; then
 			tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ../assets/pyavrocd-binary-${type}.tar.gz .
