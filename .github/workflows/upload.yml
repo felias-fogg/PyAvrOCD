@@ -18,7 +18,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: assets/pyavrocd-binary-aarch64-linux-gnu.tar.gz
+          asset_path: extras/assets/pyavrocd-binary-aarch64-linux-gnu.tar.gz
           asset_name: pyavrocd-binary-aarch64-linux-gnu.tar.gz
           asset_content_type: application/gzip
 
@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: assets/pyavrocd-binary-x86_64-linux-gnu.tar.gz
+          asset_path: extras/assets/pyavrocd-binary-x86_64-linux-gnu.tar.gz
           asset_name: pyavrocd-binary-x86_64-linux-gnu.tar.gz
           asset_content_type: application/gzip
 
@@ -38,6 +38,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: assets/pyavrocd-binary-x86_64-mingw32.tar.gz
+          asset_path: extras/assets/pyavrocd-binary-x86_64-mingw32.tar.gz
           asset_name: pyavrocd-binary-x86_64-mingw32.tar.gz
           asset_content_type: application/x-gzip
