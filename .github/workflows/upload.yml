@@ -7,41 +7,20 @@ on:
 
 jobs:
   upload:
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Where
+      - name: asset upload
         run: |
-          pwd
-
-      - name: Upload asset for Linux/ARM
-        uses: actions/upload-release-asset@v2
+          tag_name=${{ github.event.release.tag_name }}
+          set -x
+          assets=()
+          for asset in extras/assets/*; do
+            assets+=("-a" "$asset")
+          done
+          tag_name="${GITHUB_REF##*/}"
+          hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: extras/assets/pyavrocd-binary-aarch64-linux-gnu.tar.gz
-          asset_name: pyavrocd-binary-aarch64-linux-gnu.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload asset for Linux/Intel
-        uses: actions/upload-release-asset@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: extras/assets/pyavrocd-binary-x86_64-linux-gnu.tar.gz
-          asset_name: pyavrocd-binary-x86_64-linux-gnu.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload asset for Windows/Intel
-        uses: actions/upload-release-asset@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: extras/assets/pyavrocd-binary-x86_64-mingw32.tar.gz
-          asset_name: pyavrocd-binary-x86_64-mingw32.tar.gz
-          asset_content_type: application/x-gzip
