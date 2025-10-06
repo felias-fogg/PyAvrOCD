@@ -15,7 +15,6 @@ jobs:
       - name: Where
         run: |
           pwd
-          ls -la
 
       - name: Upload asset for Linux/ARM
         uses: actions/upload-release-asset@v2
