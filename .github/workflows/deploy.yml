@@ -28,7 +28,7 @@ jobs:
 
       - name: Test tag against system version
         run: |
-          VER=$(poetry run pyavrocd -V)
+          VER=$(python pyavrocd/main.py -V)
           VERSTRING=v${VER#*version }
           TAG_NAME=${{ github.event.release.tag_name }}
           echo "System version string: $VERSTRING"
