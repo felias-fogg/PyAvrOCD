@@ -3,6 +3,11 @@
 #the packaged archives are found afterwards in the folders assets and avrocd-tools
 #usage: call the script in this directory; version will be deduced from pyavrocd -V
 
+chmod +x extras/binaries/arm64-apple-darwin/pyavrocd
+chmod +x extras/binaries/aarch64-linux-gnu/pyavrocd
+chmod +x extras/binaries/x86_64-apple-darwin/pyavrocd
+chmod +x extras/binaries/x86_64-linux-gnu/pyavrocd
+
 #assume that we are running on an Intel (compatible) runner
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     typestr="x86_64-linux-gnu"
@@ -19,7 +24,7 @@ cd extras
 if [ -f binaries/$typestr/pyavrocd ]; then
     VERSION=`binaries/$typestr/pyavrocd -V`
     VERNUM=`echo $VERSION | cut -d' ' -f 3`
-    echo "Creating tool packages for version $VERSTR"
+    echo "Creating tool packages for version $VERNUM"
 else
     echo "No PyAvrOCD binary found"
     cd ..
