@@ -16,13 +16,13 @@ If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install
 
 If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.
 
-## Downloading binaries (not implemented yet)
+## Downloading binaries
 
 Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`, and additionally `avr-gdb` or (`avr-gdb.exe`), the GDB debugger for AVR chips. Store `pyavrocd` (or `pyavrocd.exe`) and `pyavrocd-util` somewhere in the same folder and include this folder in your `PATH` variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
 
 Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
 
-## PyPI (not implemented yet)
+## PyPI
 
 I assume you already installed a recent Python version (>=3.9).
 
