@@ -85,6 +85,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0150">Release v0.15.0</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
@@ -120,7 +122,29 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
-<p>No release yet.</p>
+<h2 id="release-v0150">Release v0.15.0</h2>
+<p>This is considered a pre-release in order to give people a chance to play around with PyAvrOCD. The following things have changed since the last release of dw-gdbserver:</p>
+<ul>
+<li>Support for JTAG debugging has been added, and one option has been removed:</li>
+<li>A number of command-line options have been added:</li>
+<li><code>--debug-clock</code> for setting the JTAG clock frequency for debugging</li>
+<li><code>--prog-clock</code> for setting the JTAG clock frequency for programming</li>
+<li><code>--manage</code> in order to specify which fuses and lock bits should be managed by the GDB server</li>
+<li>and all <code>monitor</code> settings can now be done at the command-line, e.g., <code>--timers freeze</code>.</li>
+<li>In addition, you can set options in the file <code>pyavrocd.options</code> that will override the options on the command line.</li>
+<li>Using the notation <code>@file.ext</code>, any arguments in the file <code>file.ext</code> will be spliced into the command line.</li>
+<li>The option <code>-g</code>/<code>--gede</code> has been removed since the effect of this option can be achieved with the <code>-s</code> option.</li>
+<li>A few monitor commands have been added or modified:</li>
+<li><code>atexit</code>: With this option, one can control whether the debugWIRE mode will be left when the debugging session is terminated.</li>
+<li><code>erasebeforeload</code>: With this option, one can control whether flash memory is completely erased before a file is loaded.</li>
+<li>Some defaults have been adapted, e.g., <code>readbeforewrite</code> is only enabled for debugWIRE targets, because for other targets it is counter-productive.</li>
+<li>The breakpoint management has been redesigned and can now deal with multiple hardware breakpoints (as offered by the JTAG targets).</li>
+<li>Single-stepping has been reworked so that no hardware breakpoint is needed any longer.</li>
+<li>The problematic ATmega48 and 88 are now recognized before an attempt is made to switch them into debugWIRE mode. This helps to avoid "bricking" chips.</li>
+<li>The CI/CD has been enhanced so that we can now see a number of indicators in real-time.</li>
+<li>Executables are now generated on the GitHub hosts, which makes my life much easier.</li>
+<li>The documentation now uses mkdocs and the readthedocs theme, which looks much better and is more readable, I believe.</li>
+</ul>
               
             </div>
           </div><footer>

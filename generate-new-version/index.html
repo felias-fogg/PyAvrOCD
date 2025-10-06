@@ -118,33 +118,18 @@
               
                 <h1 id="how-to-generate-a-new-version">How to Generate a New Version</h1>
 <ol>
-<li>Inside <code>pyavrocd</code>:</li>
+<li>Inside <code>PyAvrOCD</code>:</li>
 <li>Bump version number in <code>pyproject.toml</code></li>
-<li>poetry install</li>
-<li>git commit -a -m ... (this calls pre-commit!)</li>
+<li>git commit -a -m "<version number>"</li>
 <li>git push</li>
-<li>poetry build (for PyPi)</li>
-<li>poetry publish (also for PyPi)</li>
-<li>For each macOS, Linux-Arm, Windows, macOS-Parallels, Linux-on-PC,</li>
-<li>run local: <code>newversion.sh</code></li>
-<li>This will populate the directories in <code>felias-fogg.github.io</code>:<ul>
-<li><code>felias-fogg.github.io/binaries/</code></li>
+<li>Goto web page and make new release. This will<ul>
+<li>check for correct version number</li>
+<li>build the binaries</li>
+<li>upload assets to new release</li>
+<li>deploy the new binaries to the download site</li>
+<li>install everything on PyPI</li>
 </ul>
 </li>
-<li>Create packages and assets:</li>
-<li>Change into <code>felias-fogg.github.io/avrocd-tools</code></li>
-<li>Run ./packer.sh, which will populate the folders:<ul>
-<li>The <code>avrocd-tools</code> folder itself with tools packages</li>
-<li>The <code>assets</code> folder with binary tars of dw-gdbserver</li>
-</ul>
-</li>
-<li>git add \&lt;new tool packages&gt; in <code>avrocd-tools</code></li>
-<li>git commit ...</li>
-<li>git push</li>
-<li>Create new dw-gdbserver release:</li>
-<li>Goto GitHub repo <code>pyavrocd</code></li>
-<li>Create new release</li>
-<li>Include as assets the new binaries from <code>felias-fogg.github.io/assets</code></li>
 <li>Change into xCore</li>
 <li>Change version number for <code>AVROCDTOOLS_VERSION</code> in Add_avrocd-tools-release.sh</li>
 <li>Change <code>AVROCDTOOLSVERSION</code> number in <code>Boads_manager_release.sh</code></li>

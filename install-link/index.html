@@ -51,9 +51,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#downloading-binaries">Downloading binaries</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pypi-not-implemented-yet">PyPI (not implemented yet)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#pypi">PyPI</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#github">GitHub</a>
     </li>
@@ -146,10 +146,10 @@
 <h4 id="arduino-ide-2-not-implemented-yet">Arduino IDE 2 (not implemented yet)</h4>
 <p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" and install the respective core</a>. It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules as described above.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
-<h4 id="downloading-binaries-not-implemented-yet">Downloading binaries (not implemented yet)</h4>
+<h4 id="downloading-binaries">Downloading binaries</h4>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> or (<code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
-<h4 id="pypi-not-implemented-yet">PyPI (not implemented yet)</h4>
+<h4 id="pypi">PyPI</h4>
 <p>I assume you already installed a recent Python version (&gt;=3.9).</p>
 <p>Although it is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a>. Pipx installs packages in a way that they are entirely isolated from the rest of your Python installation, and you are able to install them in a way that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
 <pre><code class="language-bash">&gt; pipx install pyavrocd
@@ -167,7 +167,7 @@
 <p>Furthermore, you can create a binary standalone package as follows (after having installed the <a href="https://pyinstaller.org/en/stable/">PyInstaller package</a>):</p>
 <pre><code class="language-bash">&gt; poetry run pyinstaller pyavrocd.spec
 </code></pre>
-<p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those to a place in your <code>PATH</code>. If you want to generate a binary on a Mac that can be shipped to other Macs, you should use <code>arm64-apple-pyavrocd.spec</code> or <code>intel-apple-pyavrocd.spec</code> in order to include the right <code>libusb</code> for the host architecture. Note that fat binaries cannot be generated.</p>
+<p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those to a place in your <code>PATH</code>.</p>
 <h2 id="configuration">Configuration</h2>
 <p>It is not necessary to set up any configuration file before you can use PyAvrOCD.</p>
 <p>However, sometimes, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
