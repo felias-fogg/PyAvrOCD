@@ -18,7 +18,7 @@ jobs:
           ls -la
 
       - name: Upload asset for Linux/ARM
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -28,7 +28,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Upload asset for Linux/Intel
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -38,7 +38,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Upload asset for Windows/Intel
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
