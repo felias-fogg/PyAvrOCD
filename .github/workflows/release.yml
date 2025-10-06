@@ -85,50 +85,50 @@ jobs:
 
       - name: Upload as artifact (macOS ARM = macos-14)
         if: matrix.os == 'macos-14'
-        uses: action/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: arm64-apple-darwin
-          path: dist/pyavrocd*
+          path: dist/pyavrocd/*
           overwrite: true
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Upload as artifact (Linux Arm = ubuntu-22.04-arm)
         if: matrix.os == 'ubuntu-22.04-arm'
-        uses: action/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: aarch64-linux-gnu
-          path: dist/pyavrocd*
+          path: dist/pyavrocd/*
           overwrite: true
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Upload artifact (Windows Intel = windows-2022)
         if: matrix.os == 'windows-2022'
-        uses: action/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: x86_64-mingw32
-          path: dist/pyavrocd*
+          path: dist/pyavrocd/*
           overwrite: true
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Upload artifact (macOS Intel = macos-13)
         if: matrix.os == 'macos-13'
-        uses: action/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: x86_64-apple-darwin
-          path: dist/pyavrocd*
+          path: dist/pyavrocd/*
           overwrite: true
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Upload artifact (Linux Intel = ubuntu-22.04)
         if: matrix.os == 'ubuntu-22.04'
-        uses: action/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: x86_64-linux-gnu
-          path: dist/pyavrocd*
+          path: dist/pyavrocd/*
           overwrite: true
           include-hidden-files: true
 
