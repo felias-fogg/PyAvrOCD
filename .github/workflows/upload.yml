@@ -10,18 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: asset upload
-        run: |
-          sudo apt install hub
-          tag_name=${{ github.event.release.tag_name }}
-          set -x
-          assets=()
-          for asset in extras/assets/*; do
-            assets+=("-a" "$asset")
-          done
-          tag_name="${GITHUB_REF##*/}"
-          hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Asset upload
+        uses: softprops/action-gh-releases@v2
+        with:
+          files: extras/assets/*.tar.gz
