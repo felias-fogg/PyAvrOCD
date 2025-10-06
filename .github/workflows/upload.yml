@@ -12,6 +12,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Where
+        run: |
+          pwd
+          ls -la
+
       - name: Upload asset for Linux/ARM
         uses: actions/upload-release-asset@v1
         env:

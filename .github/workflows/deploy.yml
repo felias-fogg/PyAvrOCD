@@ -68,7 +68,9 @@ jobs:
           python-version: '3.13'
 
       - name: Include changes # necessary, because otherwise the later push will fail
-        run: git pull
+        run: |
+          git switch main
+          git pull
 
       - name: Install dependencies
         run: |
