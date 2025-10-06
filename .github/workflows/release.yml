@@ -62,6 +62,9 @@ jobs:
         shell: bash
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Wait before checkout
+        run: sleep 4
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -69,11 +72,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-
-      - name: Include changes # necessary, because otherwise the later push will fail
-        run: |
-          git switch main
-          git pull
 
       - name: Install dependencies
         run: |
