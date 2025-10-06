@@ -8,6 +8,10 @@ on:
     types: [published]
   workflow_dispatch: # to run it manually
 
+permissions:                    # Global permissions configuration starts here
+  contents: write               # 'write' access to repository contents
+  pull-requests: write          # 'write' access to pull requests
+
 jobs:
   check:
     defaults:
@@ -172,7 +176,8 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: 'main'
-
+          force: true
+          atomic: false
 
   build-pypi-distribution:
     name: Build distribution
