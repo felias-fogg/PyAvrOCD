@@ -16,3 +16,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: extras/assets/*.tar.gz
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: extras/avrocd-tools
+          target-folder: avrocd-tools
