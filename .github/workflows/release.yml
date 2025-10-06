@@ -142,10 +142,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Where are we
-        run: |
-          pwd
-          ls -la  extras/avrocd-tools
+      - name: Packing
+        run: bash packer.sh
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
@@ -158,9 +156,29 @@ jobs:
         with:
           files: extras/assets/*.tar.gz
 
-  build-distribution:
+      - name: Clean build directories
+        run: |
+          git rm -r --force extras/binaries/aarch64-linux-gnu/pyavrocd*
+          git rm -r --force extras/binaries/arm64-apple-darwin/pyavrocd*
+          git rm -r --force extras/binaries/x86_64-apple-darwin/pyavrocd*
+          git rm -r --force extras/binaries/x86_64-linux-gnu/pyavrocd*
+          git rm -r --force extras/binaries/x86_64-mingw32/pyavrocd*
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "Clean build folders"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: 'main'
+
+
+  build-pypi-distribution:
     name: Build distribution
-    needs: check
+    needs: upload
     runs-on: ubuntu-latest
 
     steps:
@@ -191,7 +209,7 @@ jobs:
     name: >-
       Publish Python distribution to PyPI
     needs:
-    - build-distribution
+    - build-pypi-distribution
     runs-on: ubuntu-latest
     environment:
       name: testpypi

@@ -9,7 +9,12 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 elif
    [[ "$OSTYPE" == "darwin"* ]]; then
     typestr="x86_64-apple-darwin"
+else
+    echo "Incompatible runner"
+    exit 1
 fi
+
+cd extras
 
 if [ -f binaries/$typestr/pyavrocd ]; then
     VERSION=`binaries/$typestr/pyavrocd -V`
@@ -17,6 +22,7 @@ if [ -f binaries/$typestr/pyavrocd ]; then
     echo "Creating tool packages for version $VERSTR"
 else
     echo "No PyAvrOCD binary found"
+    cd ..
     exit 1
 fi
 
@@ -47,6 +53,6 @@ for dir in binaries/*; do
 	fi
     fi
 done
-
+cd ..
 
 
