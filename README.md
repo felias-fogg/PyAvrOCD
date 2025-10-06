@@ -2,13 +2,12 @@
 
 #  PyAvrOCD
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) ![PyPI version](https://img.shields.io/pypi/v/pyavrocd?logo=pypi&logoColor=white)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT) ![PyPI version](https://img.shields.io/pypi/v/pyavrocd?logo=pypi&logoColor=white)
 ![PyPI Python Version](https://img.shields.io/pypi/pyversions/pyavrocd?logo=python&logoColor=white) ![Pylint badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/felias-fogg/c0d539e3ad0d10252d2aab8ad325246a/raw/pylint.json) ![Pytest badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/felias-fogg/c0d539e3ad0d10252d2aab8ad325246a/raw/pytest.json) ![Coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/felias-fogg/c0d539e3ad0d10252d2aab8ad325246a/raw/pycov.json&maxAge=30) [![Commits since latest](https://img.shields.io/github/commits-since/felias-fogg/PyAvrOCD/latest?include_prereleases&logo=github)](https://github.com/felias-fogg/PyAvrOCD/commits/master) ![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=felias-fogg_PyAvrOCD)
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/logo-small.png" width="10%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/logo-small.png" width="15%">
 </p>
-
 
 
 
@@ -28,4 +27,4 @@ You can [install PyAvrOCD as part of an Arduino core](https://felias-fogg.github
 
 ## What has been done so far, and what to expect in the future
 
-Recently, support for JTAG mega chips has been added. However, PyAvrOCD support has not been incorporated into the respective cores yet, but will be soon. UPDI MCUs will follow next. I am unsure about Xmegas.
+The GDB server has been integrated into MiniCore, MicroCore, and my fork of ATTinyCore. Recently, support for JTAG mega chips has been added. However, PyAvrOCD support has not been incorporated into the respective cores yet, but will be soon. UPDI MCUs will follow next. I am unsure about Xmegas.

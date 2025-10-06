@@ -45,7 +45,6 @@ jobs:
 
       - name: Run unit-tests
         run: |
-          source $VENV
           pytest
 
   build:
