@@ -16,24 +16,24 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: Check out repository
-        if: ${{ github.event.release.tag_name != "" }}
+        if: ${{ github.event.release.tag_name != '' }}
         uses: actions/checkout@v4
 
       - name: Set up python
-        if: ${{ github.event.release.tag_name != "" }}
+        if: ${{ github.event.release.tag_name != '' }}
         id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
       - name: Install dependencies
-        if: ${{ github.event.release.tag_name != "" }}
+        if: ${{ github.event.release.tag_name != '' }}
         run: |
           python -m pip install --upgrade pip
           pip install .  # Install dependencies
 
       - name: Test tag against system version
-        if: ${{ github.event.release.tag_name != "" }}
+        if: ${{ github.event.release.tag_name != '' }}
         run: |
           VER=$(python pyavrocd/main.py -V)
           VERSTRING=v${VER#*version }
@@ -51,7 +51,7 @@ jobs:
           echo "Release and system version are identical, now we continue"
 
       - name: Run unit-tests
-        if: ${{ github.event.release.tag_name != "" }}
+        if: ${{ github.event.release.tag_name != '' }}
         run: |
           pytest
 
