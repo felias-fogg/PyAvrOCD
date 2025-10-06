@@ -6,9 +6,13 @@ authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
     ]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
-    "Development Status :: 4 - Beta",
+    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
@@ -27,8 +31,6 @@ dependencies = [
     "pyinstaller (>=6.12.0,<7.0.0)",
     "pexpect (>=4.9.0,<5.0.0)",
     "pytest (>=8.0.0,<9.0.0)",
-    "mkdocs (>=1.6.1,<2.0.0)",
-    "markdown-include (>=0.8.1,<1.0.0)",
     "pytest-cov (>=7.0.0)"
 ]
 
