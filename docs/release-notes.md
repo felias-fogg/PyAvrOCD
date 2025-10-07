@@ -6,8 +6,8 @@
 
 This is considered a pre-release in order to give people a chance to play around with PyAvrOCD. The following things have changed since the last release of dw-gdbserver:
 
-- Support for JTAG debugging has been added, and one option has been removed:
-- A number of command-line options have been added:
+- Support for JTAG debugging has been added.
+- A number of command-line options have been added, and one option has been removed:
     -   `--debug-clock` for setting the JTAG clock frequency for debugging
     -   `--prog-clock` for setting the JTAG clock frequency for programming
     -   `--manage` in order to specify which fuses and lock bits should be managed by the GDB server
