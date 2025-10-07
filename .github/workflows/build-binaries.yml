@@ -1,5 +1,5 @@
 # This workflow will generate five executables that one access as artifacts of the workflow run
-name: build-binaries
+name: Build binaries
 
 on:
   workflow_dispatch: # to run it manually

@@ -172,11 +172,11 @@ jobs:
       - name: Packing
         run: bash extras/packer.sh
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: extras/avrocd-tools
-          target-folder: avrocd-tools
+#      - name: Deploy
+#        uses: JamesIves/github-pages-deploy-action@v4
+#        with:
+#          folder: extras/avrocd-tools
+#          target-folder: avrocd-tools
 
       - name: Asset upload
         uses: softprops/action-gh-release@v2

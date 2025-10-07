@@ -47,7 +47,7 @@ If you have reached this point, I trust that you are familiar with GDB and know 
 
 Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.
 
-## Debugging using the Arduino IDE 2
+## Debugging using the Arduino IDE 2 (not yet implemented)
 
 If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most straightforward option.
 

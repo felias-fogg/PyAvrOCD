@@ -1,7 +1,9 @@
 #!/bin/bash
-#script for packing the avrocd-link tools: avr-gdb + pyavrocd + pyavrocd-util
-#the packaged archives are found afterwards in the folders assets and avrocd-tools
-#usage: call the script in this directory; version will be deduced from pyavrocd -V
+#This is a script for packing the avrocd-link tools: avr-gdb + pyavrocd + pyavrocd-util.
+#The archives will be uploaded as assests in each release and can be downloaded from there
+#as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/pyavrocd-<machine-type>.tar.gz
+#
+#usage: call the script from the root folder; version will be deduced from pyavrocd -V
 
 chmod +x extras/binaries/arm64-apple-darwin/pyavrocd
 chmod +x extras/binaries/aarch64-linux-gnu/pyavrocd
@@ -46,12 +48,7 @@ for dir in binaries/*; do
 		    rm -rf tools
 		    mkdir tools
 		    cp -r $dir/* tools/
-		    tar -jcv --exclude="*DS_Store" --exclude="*/._*" -f ./avrocd-tools/avrocd-tools-${VERNUM}-${type}.tar.bz2 tools/
-		    cd tools
-		    if [ ! -f readme.md ]; then
-			tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ../assets/pyavrocd-binary-${type}.tar.gz .
-		    fi
-		    cd ..
+		    tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${type}.tar.gz tools/
 		    rm -rf tools
 		fi
 	    fi

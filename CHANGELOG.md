@@ -1,5 +1,14 @@
 # Changelog
 
+### 0.16.0:
+
+- **Changed:**
+  - It turned out that the binary files are too big for the gh-pages. At least, they disappeared after a while. For this reason, the binary executables are now all distributed using GitHub's release mechanism, which permits arbitrarily large files. This means that the archives in the releases have to respect the structure of being in the `tools` directory. And it also implies that the 'stub' archives for the 32-bit architectures should be included. The workflow has been adapted.
+
+### 0.15.0:
+
+- This is the first 'official' pre-release with a somewhat working CI/CD workflow.
+
 ### 0.14.3:
 
 - **Added:**

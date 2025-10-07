@@ -25,8 +25,8 @@ When you want to install PyAvrOCD, <!-- you can [install it as part of an Arduin
 
 ## What has been done so far, and what to expect in the future
 
-When moving from dw-gdbserver to PyAvrOCD, support for JTAG Mega chips has been added. This was more work than anticipated. And the current release is not yet fit for serious work. A number of JTAG MCUs still need to be tested, and more unit and integration tests are called for. If you would like to give it a try, you are welcome. Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
+When moving from dw-gdbserver to PyAvrOCD, support for JTAG Mega chips has been added. This was more work than anticipated. And the current release is not yet fit for serious work. A number of JTAG MCUs still need to be tested, and more unit and integration tests are called for.  If you would nevertheless like to give it a try, you are welcome. Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
 
-The next thing after the v1.0.0 release of PyAvrOCD will be to incorporate it into the respective Arduino cores, so that easy debugging in the Arduino IDE 2 will become possible. Until then, you need to live with the debugWIRE-only GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), which is part of MiniCore and my fork of ATTinyCore.
+The next step after the v1.0.0 release of PyAvrOCD will be to incorporate it into the respective Arduino cores, so that easy debugging in the Arduino IDE 2 will become possible. Until then, you need to live with the debugWIRE-only GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), which is part of MiniCore and my fork of ATTinyCore, if you would like to debug inside the Arduino IDE 2.
 
- After the integration into the Arduino IDE2, UPDI MCUs will follow next. I am unsure about Xmegas.
+After the integration into the Arduino IDE2, UPDI MCUs will follow next. I am unsure about Xmegas.
