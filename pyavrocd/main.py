@@ -212,6 +212,7 @@ You can also use monitor command options, e.g., --timer=freeze.
 
     return args
 
+
 def install_udev_rules(logger):
     """
     Install the udev rules for all the debuggers. Necessary only under Linux

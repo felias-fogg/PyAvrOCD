@@ -50,6 +50,7 @@ class MonitorCommand():
         self._noload = None # when true, one may start execution even without a previous load
         self._onlyhwbps = None # only hardware breakpoints permitted
         self._onlyswbps = None # only software breakpoints permitted
+        self._bpfixed = False # It is possible to change
         self._read_before_write = None # read before write
         self._leaveonexit = None # leave debugWIRE on exit
         self._cache = None # cache executable and use the cache instead of the MCU's flash
@@ -120,6 +121,11 @@ class MonitorCommand():
         self._noxml = False
         self._power = True
         self._old_exec = False
+        # The ATmega128 special case:
+        if self._args.dev.lower() in [ 'atmega128', 'atmega128a' ]:
+            self._onlyhwbps = True
+            self._onlyswbps = False
+            self._bpfixed = True
 
     def is_leaveonexit(self):
         """
@@ -291,6 +297,8 @@ class MonitorCommand():
             if self._onlyhwbps:
                 return("", "Only hardware breakpoints")
             return("", "All breakpoints are allowed")
+        if 1 <= optix <= 3 and self._bpfixed:
+            return("", "Breakpoint mode cannot be changed on this MCU")
         if optix == 1:
             self._onlyhwbps = False
             self._onlyswbps = False

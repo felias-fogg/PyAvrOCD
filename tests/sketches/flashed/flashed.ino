@@ -24,6 +24,7 @@
 #define SEQ12K SEQ8K, SEQ4K
 #define SEQ14K SEQ8K, SEQ6K
 #define SEQ16K SEQ8K, SEQ8K
+#define SEQ23K SEQ16K, SEQ5K, SEQ2K
 #define SEQ28K SEQ14K, SEQ14K
 #define SEQ30K SEQ16K, SEQ14K
 #define SEQ31K SEQ30K, SEQ1K
@@ -68,7 +69,7 @@
     #ifndef TABNUM
         #define TABNUM 1
     #endif
-    const byte PROGMEM tab0[] = {37, SEQ28K, 69};
+    const byte PROGMEM tab0[] = {37, SEQ23K, 69};
 #endif
 
 bool OK = true;

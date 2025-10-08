@@ -1,5 +1,27 @@
 # Changelog
 
+### 0.16.2
+
+- **Fixed:**
+  - In livetests.py:
+    - Some internal data structures were referenced, which had changed (hardware breakpoint structures). Now tests work again.
+  - In integration_tests.py:
+    - Because JTAG MCUs have four instead of one hardware breakpoints, the breakpoint integration test did not work. Now we have an extra test for JTAG MCUs.
+    - Because we use the original Arduino platform for compiling the ATmega32U4 sketch, we needed to lower the amount of flash used by PROGMEM.
+    - On the ATmega32U4, the location specification 'setup' (for setting the initial temporary breakpoint) is ambiguous. For this reason, we have to specify 'blink.ino:setup'. This should be done in general in the all board.txt file for the Arduino!
+    - Along the same line, in the oop_script, `list setup` led to a long output and waited for interaction. Here oop.ino:setup helped as well.
+    - In the isr_script, for the ATmega32U4, we stop one step earlier already in the interrupt dispatch table. However, fortunately, the string `__vectors` appears also after the additional `next` command. So, I only had to delete the word `in`  in order to make it a test for JTAG and debugWIRE targets alike.
+  - In xnvmmegajtag.py
+    - In `read` and `write`, the wrong EEPROM memory mode was selected when in debugging mode.
+- **Added:**
+  - For ATmega128(a), the breakpoint mode is now hardware-only and cannot be changed.
+
+
+### 0.16.1:
+
+- **Fixed:**
+  - The folders pyavrocd-util were empty and therefore not included in commits. For this reason, the packer script ignored them and the dummy 32-bit archives were not produced. Now these folders contain a copy of the read.me file and are uploaded as well.
+
 ### 0.16.0:
 
 - **Changed:**

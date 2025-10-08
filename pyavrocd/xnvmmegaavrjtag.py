@@ -55,7 +55,9 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         if memtype_string == MemoryNames.EEPROM:
             if prog_mode:
                 memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
-        self.logger_local.debug("Reading with memtype=0x%x", memtype)
+            else:
+                memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM
+        self.logger_local.debug("Reading with memtype=0x%x / %s", memtype, memtype_string)
         if memtype == 0:
             msg = "Unsupported memory type: {}".format(memtype_string)
             self.logger_local.error(msg)
@@ -93,7 +95,9 @@ class XNvmAccessProviderCmsisDapMegaAvrJtag(NvmAccessProviderCmsisDapMegaAvrJtag
         if memtype_string == MemoryNames.EEPROM:
             if prog_mode:
                 memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
-        self.logger_local.debug("Writing to memtype=0x%x from %s", memtype, memtype_string)
+            else:
+                memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM
+        self.logger_local.debug("Writing to memtype=0x%x / %s", memtype, memtype_string)
         if memtype == 0:
             msg = "Unsupported memory type: {}".format(memtype_string)
             self.logger_local.error(msg)

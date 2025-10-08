@@ -72,6 +72,8 @@
 #elif defined(__AVR_ATmega162__) || defined(__AVR_ATmega162A__) || \
   defined(__AVR_ATmega162P__) || defined(__AVR_ATmega162PA__)
 #define IRQPIN 10
+#elif defined(__AVR_ATmega16U4__) || defined(__AVR_ATmega32U4__)
+#define IRQPIN 3
 #else
 #error "MCU not supported"
 #endif

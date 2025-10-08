@@ -260,7 +260,9 @@ class LiveTests():
         self.logger.info("Running 'get memory eeprom' test ...")
         data = bytearray([0x08,0x77,0x51])
         self.dbg.eeprom_write(2, data)
+        self.logger.debug("Written 3 bytes to EEPROM address 2")
         self.handler.dispatch('m', b'81%04X,03' % 2)
+        self.logger.debug("Fetched 3 bytes from EEPROM at address 2")
         self.check_result(self.send_string == binascii.hexlify(data).decode('ascii'))
 
     def _live_test_get_memory_flash(self):
@@ -575,16 +577,16 @@ class LiveTests():
         self.handler.dispatch("vCont", b";c")
         time.sleep(0.1)
         self.handler.poll_events()
-        self.logger.debug("HWBP after stopping: %s", self.bp._hw[1])
+        self.logger.debug("HWBP after stopping: %s", self.bp._hwbp._hwbplist[0])
         self.logger.debug("Breakpoint at 0x1b2 after stopping: %s", self.bp._bp.get(0x1b2,None))
-        hw1 = self.bp._hw[1]
+        hw1 = self.bp._hwbp._hwbplist[0]
         self.handler.dispatch("z", b"1,1b2,2")
         self.handler.dispatch("vCont", b";s")
         time.sleep(0.1)
         self.handler.poll_events()
-        self.logger.debug("HWBP after single-step: %s", self.bp._hw[1])
+        self.logger.debug("HWBP after single-step: %s", self.bp._hwbp._hwbplist[0])
         self.logger.debug("Breakpoint at 0x1b2 after step: %s", self.bp._bp.get(0x1b2,None))
-        hw2 = self.bp._hw[1]
+        hw2 = self.bp._hwbp._hwbplist[0]
         self.check_result(hw1 == 0x1b2 and hw2 is None)
 
     def _live_test_v_flash_erase_clean_bps(self):

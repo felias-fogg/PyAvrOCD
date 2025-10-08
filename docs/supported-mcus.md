@@ -48,10 +48,10 @@ The MCUs in the lists below are all supported by PyAvrOCD. However, the cores ha
 
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
-* <s>**ATmega16**</s>, <u>ATmega16A</u>, **ATmega32**, ATmega32A
+* <s>**ATmega16**</s>, <s>**ATmega16A**</s>, **ATmega32**, ATmega32A
 * ATmega164A, ATmega164P, **ATmega164PA**, ATmega324, ATmega324A, ATmega324PA, **ATmega324PB**, **ATmega644**, ATmega644A, ATmega644PA, <u>ATmega1284</u>, **ATmega1284P**
 
-The ATmega16 MCUs (without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on a chip labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-1-bits.
+The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-1-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-1-bits.
 
 ### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
@@ -76,6 +76,6 @@ The ATmega128(A) MCUs do not allow software breakpoints and throw an exception i
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
 * ATmega128rfa1
-* ATmega16U4, <u>ATmega32U4</u>
+* ATmega16U4, **ATmega32U4**
 * ATmega406
 
