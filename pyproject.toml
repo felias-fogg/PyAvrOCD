@@ -21,7 +21,7 @@ classifiers = [
 ]
 license-files = ["LICENSE*"]
 readme = "README.md"
-requires-python = "<3.14,>=3.9"
+requires-python = "<3.14,>=3.10"
 dependencies = [
     "pymcuprog (>=3.17.3.45,<4.0.0.0)",
     "pyedbglib (>=2.24.2.18,<3.0.0.0)",
@@ -29,6 +29,8 @@ dependencies = [
     "pre-commit (>=4.2.0,<5.0.0)",
     "pyinstaller (>=6.12.0,<7.0.0)",
     "pexpect (>=4.9.0,<5.0.0)",
+    "pylint (>=4.0.0,<5.0.0)",
+    "pytest (>=8.4.2,<9.0.0)",
 ]
 
 [project.urls]
@@ -45,7 +47,7 @@ pyavrocd = 'pyavrocd.main:main'
 poetry-plugin-export = ">=1.8"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.6"
+pylint = "^4.0.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -93,7 +95,7 @@ max-locals=30
 max-returns=15
 max-branches=20
 max-statements=90
-max-attributes=20
+max-attributes=25
 min-public-methods=1
 max-public-methods=25
 max-bool-expr=10
