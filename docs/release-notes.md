@@ -1,5 +1,11 @@
 # Release Notes
 
+## Release v0.16.2
+
+- The assets files names now also contain the PyAvrOCD version number.
+- For the ATmega128, the breakpoint mode is now harware-only and that cannot be changed.
+
+
 ## Release v0.16.0
 
 - The tool files are now only distributed as assets in the GitHub release. This means for the Arduino board packages that the tools files needs to be sourced from a new place.
