@@ -90,7 +90,7 @@ jobs:
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: c0d539e3ad0d10252d2aab8ad325246a
-          filename: pycov.json
+          filename: pycoverage.json
           label: coverage
           namedLogo: Pytest
           logoColor: white
