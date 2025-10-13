@@ -86,8 +86,8 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         wpage = bytearray(list(range(0x07)))
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
         self.nvm.write(self.memory_info.memory_info_by_name('eeprom'), 0x100, wpage)
-        self.nvm.avr.write_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE,
-                                                                 0x100, wpage + b'\xFF', 0x08, allow_blank_skip=False)
+        self.nvm.avr.write_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_EEPROM,
+                                                                 0x100, wpage, 0x07, allow_blank_skip=False)
 
     def test_write_sram(self):
         wpage = bytearray(list(range(0x05)))

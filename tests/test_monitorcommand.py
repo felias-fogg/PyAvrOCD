@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.DEBUG)
 class TestMonitorCommand(TestCase):
 
     def setUp(self):
-        self.mo = MonitorCommand('debugwire', options(['-f', 'foo']))
+        self.mo = MonitorCommand('debugwire', options(['-f', 'foo', '-d', 'atmega328p']))
 
     def test_dispatch_ambigious(self):
         self.assertEqual(self.mo.dispatch(["ver"]), ("", "Ambiguous 'monitor' command string"))
