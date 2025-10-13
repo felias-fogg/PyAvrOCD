@@ -2,7 +2,7 @@
 
 ## Release v0.16.0
 
-- The tool files are now only distributed as assets in the GitHub release. This is mainly interesting for the Arduino board packages that now have to get their tools from somewhere else.
+- The tool files are now only distributed as assets in the GitHub release. This means for the Arduino board packages that the tools files needs to be sourced from a new place.
 
 ## Release v0.15.0
 

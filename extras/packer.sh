@@ -48,7 +48,7 @@ for dir in binaries/*; do
 		    rm -rf tools
 		    mkdir tools
 		    cp -r $dir/* tools/
-		    tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${type}.tar.gz tools/
+		    tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		    rm -rf tools
 		fi
 	    fi
