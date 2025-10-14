@@ -140,7 +140,7 @@ You can also use monitor command options, e.g., --timer=freeze.
                             help="Verbosity level for logger, use '?' to list levels")
 
     parser.add_argument("-V", "--version",
-                            help="Print pyavrocd version number and exit",
+                            help="Print PyAvrOCD version number and exit",
                             action="store_true")
 
     parser.add_argument("-f", type=str, help=argparse.SUPPRESS)
@@ -326,7 +326,7 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     device = device.lower()
 
     if device not in dev_id:
-        print("Device '%s' is not supported by pyavrocd" % device)
+        print("Device '%s' is not supported by PyAvrOCD" % device)
         return 1, None, None
 
     if args.interface:

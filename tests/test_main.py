@@ -8,8 +8,8 @@ from unittest import TestCase
 from types import SimpleNamespace
 import sys
 
-from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, process_arguments, \
-     startup_helper_prog, run_server
+from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, \
+     process_arguments, startup_helper_prog, run_server
 logging.basicConfig(level=logging.CRITICAL)
 
 class TestMain(TestCase):
@@ -171,3 +171,4 @@ class TestMain(TestCase):
         mock_server.serve.return_value = 0
         mock_logger = MagicMock()
         self.assertEqual(run_server(mock_server, mock_logger), 0)
+

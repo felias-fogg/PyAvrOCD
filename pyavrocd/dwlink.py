@@ -124,7 +124,7 @@ def main(args, intf):
     # discover adapter
     speed, device = discover(args)
     if speed is None or device is None:
-        return # return to pyavrocd main, which will handle this problem
+        return # return to PyAvrOCD main, which will handle this problem
 
     # check whether interface is OK
     if intf != "debugwire":

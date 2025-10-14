@@ -81,7 +81,9 @@ Recently, PyAvrOCD has been extended to [deal with *System View Description* fil
 debug_svd_path = atmega328p.svd
 ```
 
- I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
+Instead of copying the SVD file into your project folder, you can also access it in the `pyavrocd-util` folder. The SVD files are all stored in the directory `pyavrocd-util/svd`.
+
+I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
 
 ## Gede
 
@@ -89,7 +91,7 @@ debug_svd_path = atmega328p.svd
 
 ## Other options
 
-There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the the Arduino IDE 2.
+There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
 
 If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.
 

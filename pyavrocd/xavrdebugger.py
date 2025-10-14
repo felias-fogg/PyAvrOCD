@@ -221,8 +221,8 @@ class XAvrDebugger(AvrDebugger):
         if self._iface != 'jtag':
             return
         # clear lockbits if necessary
-        self._handle_lockbits(self.read_lock_one_byte,
-                self.device.erase)
+        self._handle_lockbits(self.read_lock_one_byte, self.device.erase,
+                                  self.read_fuse_one_byte, self.write_fuse)
         # unprogram BOOTRST fuse if necessary
         self._handle_bootrst(self.read_fuse_one_byte,
                 self.write_fuse)
@@ -233,11 +233,11 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("OCDEN read: 0x%X", ofuse[0] & ofuse_mask)
         if ofuse[0] & ofuse_mask == ofuse_mask: # only if OCDEN is not yet programmed
             if 'ocden' not in self.manage:
-                self.logger.warning("The fuse OCDEN is not managed by pyavrocd and will therefore not be programmed.")
+                self.logger.warning("The fuse OCDEN is not managed by PyAvrOCD and will therefore not be programmed.")
                 self.logger.warning("In order to allow debugging, you need to program this fuse manually.")
                 self.logger.warning("Or let payavrocd manage this fuse: '-m ocden'.")
                 raise FatalError("Debugging is impossible because OCDEN cannot be programmed")
-            newfuse = ofuse[0] & ~ofuse_mask &0xFF
+            newfuse = ofuse[0] & ~ofuse_mask & 0xFF
             self.write_fuse(ofuse_addr, bytearray([newfuse]))
             assert newfuse == self.read_fuse_one_byte(ofuse_addr)[0], "OCDEN could not be programmed"
             self.logger.info("OCDEN fuse has been programmed.")
@@ -250,13 +250,13 @@ class XAvrDebugger(AvrDebugger):
         one given as an argument when calling the server. The prerequisite for this method is
         that the signature is readable in the mode, in which this method is called (progmode or debmode)
         """
-        idbytes = self.read_sig(0,3)
         if self._iface == 'debugwire':
             sig = (0x1E<<16)+dev_id # The id returned from activate_physical
         else:
+            idbytes = self.read_sig(0,3)
             sig = (idbytes[2]) + (idbytes[1]<<8) + (idbytes[0]<<16)
-        self.logger.info("Device signature expected: %X", self.device_info['device_id'])
-        self.logger.info("Device signature of connected chip: %X", sig)
+        self.logger.debug("Device signature expected: %X", self.device_info['device_id'])
+        self.logger.debug("Device signature of connected chip: %X", sig)
         if sig != self.device_info['device_id']:
             # Some funny special cases of chips pretending to be someone else
             # when in debugWIRE mode
@@ -272,6 +272,7 @@ class XAvrDebugger(AvrDebugger):
                 raise FatalError("Wrong MCU: '%s', expected: '%s'" %
                         (dev_name.get(sig,"Unknown"),
                         dev_name[self.device_info['device_id']]))
+        self.logger.info("Device signature checked")
 
     def _check_stuck_at_one_pc(self):
         """
@@ -302,6 +303,7 @@ class XAvrDebugger(AvrDebugger):
         and then examine the stack.
         """
         self.logger.debug("Check ATmega16 for dirty PC")
+        self.reset()
         sp = self.memory_info.memory_info_by_name('internal_sram')['size'] + \
           self.memory_info.memory_info_by_name('internal_sram')['address'] - 1
         self.logger.debug("New stack pointer: 0x%X", sp)
@@ -367,7 +369,7 @@ class XAvrDebugger(AvrDebugger):
             self.logger.debug("BOOTRST fuse byte: 0x%X", bfuse[0])
             if bfuse[0] & bfuse_mask == 0: # if BOOTRST is programmed
                 if 'bootrst' not in self.manage:
-                    self.logger.warning("BOOTRST is not managed by pyavrocd and will therefore not be cleared.")
+                    self.logger.warning("BOOTRST is not managed by PyAvrOCD and will therefore not be cleared.")
                     self.logger.warning("If you do not want to start in the boot loader, clear this fuse manually.")
                     self.logger.warning("Or let payavrocd manage this fuse: '-m bootrst'.")
                 else:
@@ -385,7 +387,7 @@ class XAvrDebugger(AvrDebugger):
             else:
                 self.logger.info("BOOTRST was already unprogrammed")
 
-    def _handle_lockbits(self, read, erase):
+    def _handle_lockbits(self, read, erase, read_fuse_byte, write_fuse_byte):
         """
         Clear lockbits (if permitted) for different settings (JTAG and ISP)
         """
@@ -394,15 +396,17 @@ class XAvrDebugger(AvrDebugger):
         if lockbits[0] != 0xFF:
             if 'lockbits' in self.manage:
                 self.logger.info("MCU is locked.")
+                eesave_to_restore = self._eesave_set_and_save(read_fuse_byte, write_fuse_byte)
                 erase()
+                self._eesave_restore(eesave_to_restore, write_fuse_byte)
                 lockbits = read()
                 self.logger.debug("Lockbits after write: 0x%X", lockbits[0])
                 assert lockbits[0] == 0xFF, "Lockbits could not be cleared"
                 self.logger.info("MCU has been erased and lockbits have been cleared.")
             else:
-                self.logger.warning("pyavrocd is not allowed to clear lockbits.")
+                self.logger.warning("PyAvrOCD is not allowed to clear lockbits.")
                 self.logger.warning("This must be done manually by erasing the chip.")
-                self.logger.warning("Alternatively, let pyavrocd manage it: '-m lockbits'")
+                self.logger.warning("Alternatively, let PyAvrOCD manage it: '-m lockbits'")
                 raise FatalError("Debugging is impossible when lockbits are set.")
         else:
             self.logger.info("MCU is not locked.")
@@ -439,7 +443,8 @@ class XAvrDebugger(AvrDebugger):
             self.spidevice.isp.leave_progmode()
             self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
             self.logger.debug("Reconnected to SPI programming module")
-            self._handle_lockbits(self.spidevice.isp.read_lockbits, self.spidevice.erase)
+            self._handle_lockbits(self.spidevice.isp.read_lockbits, self.spidevice.erase,
+                                      self.spidevice.isp.read_fuse_byte, self.spidevice.isp.write_fuse_byte)
             self._handle_bootrst(self.spidevice.isp.read_fuse_byte, self.spidevice.isp.write_fuse_byte)
             # program the DWEN bit
             dwen_addr = self.device_info['dwen_base']
@@ -449,7 +454,7 @@ class XAvrDebugger(AvrDebugger):
             self.logger.debug("DWEN fuse byte: 0x%X", dwen_byte[0])
             if dwen_byte[0] & dwen_mask != 0: # DWEN is not programmed!
                 if 'dwen' not in self.manage:
-                    self.logger.warning("The DWEN fuse is not managed by pyavrocd.")
+                    self.logger.warning("The DWEN fuse is not managed by PyAvrOCD.")
                     self.logger.warning("Therefore, the fuse will not be programmed.")
                     self.logger.warning("In order to allow debugging, you need to program this fuse manually.")
                     self.logger.warning("Or let payavrocd manage this fuse: '-m dwen'.")
@@ -487,17 +492,8 @@ class XAvrDebugger(AvrDebugger):
         """
         self.logger.info("Test for dirty PC on ATmega48/88")
         # erase flash (and maybe EEPROM)
-        eesave_fuse_byte = None
-        eesave_mask = self.device_info.get('eesave_mask')
-        eesave_base = self.device_info.get('eesave_base')
-        if eesave_base and eesave_mask and 'eesave' in self.manage:
-            eesave_fuse_byte = self.spidevice.isp.read_fuse_byte(eesave_base)
-            if eesave_fuse_byte[0] & eesave_mask:
-                self.spidevice.isp.write_fuse_byte(eesave_base,
-                                            bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
-                self.logger.debug("EESAVE temporarily set")
-            else:
-                eesave_fuse_byte = None
+        eesave_to_restore = self._eesave_set_and_save(self.spidevice.isp.read_fuse_byte,
+                                                          self.spidevice.isp.write_fuse_byte)
         self.spidevice.isp.erase()
         # program flash with test program, depending on MCU type
         if device_id == 0x1E9205: # ATmega48(A)
@@ -523,15 +519,36 @@ class XAvrDebugger(AvrDebugger):
         result_lockbits = self.spidevice.read(self.memory_info.memory_info_by_name('lockbits'), 0, 1)
         # check result
         self.logger.debug("Result from lockbits: 0x%X",   result_lockbits[0])
-        # Now erase chip again
+        # Now erase chip again to clear lock bits
         self.spidevice.isp.erase()
         # Restore EESAVE bit if necessary
-        if eesave_fuse_byte:
-            self.spidevice.isp.write_fuse_byte(eesave_base, eesave_fuse_byte)
-            self.logger.debug("EESAVE fuse restored")
+        self._eesave_restore(eesave_to_restore, self.spidevice.isp.write_fuse_byte)
         # and check results
         if result_lockbits[0] != 0xFF:
             raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
+
+    def _eesave_set_and_save(self, read_fuse_byte, write_fuse_byte):
+        """
+        Check EESAVE fuse and return fuse address and byte if permitted and needed after
+        setting fuse. If None is returned, no restoration of the EESAVE bit is necessary.
+        """
+        eesave_mask = self.device_info.get('eesave_mask')
+        eesave_base = self.device_info.get('eesave_base')
+        if eesave_base and eesave_mask and 'eesave' in self.manage:
+            eesave_fuse_byte = read_fuse_byte(eesave_base)
+            if eesave_fuse_byte[0] & eesave_mask:
+                write_fuse_byte(eesave_base, bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
+                self.logger.debug("EESAVE temporarily set")
+                return(eesave_base, eesave_fuse_byte[0])
+        return None
+
+    def _eesave_restore(self, restore, write_fuse_byte):
+        """
+        Restore fuse byte containing EESAVE fuse, if needed
+        """
+        if restore:
+            write_fuse_byte(restore[0], bytearray([restore[1]]))
+            self.logger.debug("EESAVE unset again")
 
     def _power_cycle(self, callback=None, recognition=None):
         """
@@ -594,7 +611,7 @@ class XAvrDebugger(AvrDebugger):
         self.housekeeper.end_session()
         self.logger.info("Signed off from tool")
         if 'dwen' not in self.manage:
-            self.logger.warning("Cannot unprogram DWEN since this fuse is not managed by pyavrocd")
+            self.logger.warning("Cannot unprogram DWEN since this fuse is not managed by PyAvrOCD")
             self.logger.warning("Unprogram this fuse before switching the power of the MCU off!")
             self.logger.warning("In order to let payavrocd manage this fuse use: '-m dwen'.")
         else:
