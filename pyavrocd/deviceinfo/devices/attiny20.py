@@ -48,6 +48,7 @@ DEVICE_INFO = {
     # Defaulting to 1 for devices without UPDI fuse
     'hv_implementation': 1,
     'osccal_base' : 0x19,
+    'ronly_registers' : [0x12, 0x28, 0x2a],
     'device_id': 0x1E910F,
     'interface': 'TPI'
 }

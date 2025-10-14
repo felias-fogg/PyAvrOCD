@@ -13,16 +13,33 @@ from pyavrocd.deviceinfo.devices.attiny85 import DEVICE_INFO
 
 logging.basicConfig(level=logging.ERROR)
 
-class TestXAvr8Target(TestCase):
+class TestXAvr8TargetDw(TestCase):
 
     def setUp(self):
         self.xa = XTinyAvrTarget(MagicMock())
         self.xa.protocol = create_autospec(Avr8Protocol)
 
+    def test_setup_debug_session(self):
+        self.xa.setup_debug_session()
+        self.xa.protocol.set_variant.assert_called_with(Avr8Protocol.AVR8_VARIANT_TINYOCD)
+        self.xa.protocol.set_function.assert_called_with(Avr8Protocol.AVR8_FUNC_DEBUGGING)
+        self.xa.protocol.set_interface.assert_called_with(Avr8Protocol.AVR8_PHY_INTF_DW)
+
+    def test_memtype_read_from_string(self):
+        self.assertEqual(self.xa.memtype_read_from_string('flash'), Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE)
+        self.assertEqual(self.xa.memtype_read_from_string('eeprom'), Avr8Protocol.AVR8_MEMTYPE_EEPROM)
+        self.assertEqual(self.xa.memtype_read_from_string('internal_sram'), Avr8Protocol.AVR8_MEMTYPE_SRAM)
+        self.assertEqual(self.xa.memtype_read_from_string('signatures'), Avr8Protocol.AVR8_MEMTYPE_SIGNATURE)
+
     def test_memtype_write_from_string(self):
         self.assertEqual(self.xa.memtype_write_from_string('flash'), Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE)
         self.assertEqual(self.xa.memtype_write_from_string('eeprom'), Avr8Protocol.AVR8_MEMTYPE_EEPROM)
         self.assertEqual(self.xa.memtype_write_from_string('internal_sram'), Avr8Protocol.AVR8_MEMTYPE_SRAM)
+        self.assertEqual(self.xa.memtype_write_from_string('signatures'), Avr8Protocol.AVR8_MEMTYPE_SIGNATURE)
+
+    def test_attach(self):
+        self.xa.attach()
+        self.xa.protocol.attach.assert_called_once()
 
     def test_setup_config(self):
         self.xa.setup_config(DEVICE_INFO)
@@ -73,5 +90,11 @@ class TestXAvr8Target(TestCase):
         self.xa.stack_pointer_write('b\x23\x01')
         self.xa.protocol.memory_write.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x5D, 'b\x23\x01')
 
+    def test_hardware_breakpoint_set_fail(self):
+        self.assertEqual(self.xa.hardware_breakpoint_set(1,1), 0)
+
+    def test_hardware_breakpoint_clear_fail(self):
+        self.assertEqual(self.xa.hardware_breakpoint_clear(1), 0)
+
     def test_breakpoint_clear(self):
-        self.assertEqual(self.xa.breakpoint_clear(),0)
+        self.assertEqual(self.xa.breakpoint_clear(), 0)

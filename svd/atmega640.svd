@@ -42,7 +42,7 @@
       <registers>
         <register>
           <name>ACSR</name>
-          <description>Analog Comparator Control And Status Register</description>
+          <description>Analog Comparator Control And Status Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -179,7 +179,7 @@
         </register>
         <register>
           <name>ADCSRA</name>
-          <description>The ADC Control and Status register A</description>
+          <description>The ADC Control and Status register A (read-only for debugger)</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -1279,7 +1279,7 @@
         </register>
         <register>
           <name>MCUSR</name>
-          <description>MCU Status Register</description>
+          <description>MCU Status Register (read-only for debugger)</description>
           <addressOffset>0x16</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2036,7 +2036,7 @@
         </register>
         <register>
           <name>EIFR</name>
-          <description>External Interrupt Flag Register</description>
+          <description>External Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2099,7 +2099,7 @@
         </register>
         <register>
           <name>PCIFR</name>
-          <description>Pin Change Interrupt Flag Register</description>
+          <description>Pin Change Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2160,6 +2160,441 @@
       </registers>
     </peripheral>
     <peripheral>
+      <name>FUSE</name>
+      <description>Fuses</description>
+      <baseAddress>0x00800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>EXTENDED</name>
+          <description>No Description.</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BODLEVEL</name>
+              <description>Brown-out Detector trigger level</description>
+              <bitRange>[2:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>4V3</name>
+                  <description>Brown-out detection at VCC=4.3 V</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2V7</name>
+                  <description>Brown-out detection at VCC=2.7 V</description>
+                  <value>5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1V8</name>
+                  <description>Brown-out detection at VCC=1.8 V</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DISABLED</name>
+                  <description>Brown-out detection disabled</description>
+                  <value>7</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>HIGH</name>
+          <description>No Description.</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BOOTRST</name>
+              <description>Boot Reset vector Enabled (default address=$0000)</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BOOTSZ</name>
+              <description>Select Boot Size</description>
+              <bitRange>[2:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>4096W_7000</name>
+                  <description>Boot Flash size=4096 words Boot address=$7000</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2048W_7800</name>
+                  <description>Boot Flash size=2048 words Boot address=$7800</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1024W_7C00</name>
+                  <description>Boot Flash size=1024 words Boot address=$7C00</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>512W_7E00</name>
+                  <description>Boot Flash size=512 words Boot address=$7E00</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>EESAVE</name>
+              <description>Preserve EEPROM through the Chip Erase cycle</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDTON</name>
+              <description>Watchdog timer always on</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPIEN</name>
+              <description>Serial program downloading (SPI) enabled</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>JTAGEN</name>
+              <description>JTAG Interface Enabled</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCDEN</name>
+              <description>On-Chip Debug Enabled</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>LOW</name>
+          <description>No Description.</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SUT_CKSEL</name>
+              <description>Select Clock Source</description>
+              <bitRange>[5:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>EXTCLK_6CK_0MS</name>
+                  <description>Ext. Clock; Start-up time: 6 CK + 0 ms</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_6CK_0MS</name>
+                  <description>Int. RC Osc.; Start-up time: 6 CK + 0 ms</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_128KHZ_6CK_0MS</name>
+                  <description>Int. 128kHz RC Osc.; Start-up time: 6 CK + 0 ms</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTLOFXTAL_1KCK_0MS</name>
+                  <description>Ext. Low-Freq. Crystal; Start-up time: 1K CK + 0 ms</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTLOFXTAL_32KCK_0MS</name>
+                  <description>Ext. Low-Freq. Crystal; Start-up time: 32K CK + 0 ms</description>
+                  <value>5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_258CK_4MS1_CRES_FASTPWR</name>
+                  <description>Full Swing Oscillator; Start-up time: 258 CK + 4.1 ms; Ceramic res.; fast rising power</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_1KCK_65MS_CRES_SLOWPWR</name>
+                  <description>Full Swing Oscillator; Start-up time: 1K CK + 65 ms; Ceramic res.; slowly rising power</description>
+                  <value>7</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_258CK_4MS1</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 258 CK + 4.1 ms</description>
+                  <value>8</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_1KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 1K CK + 65 ms</description>
+                  <value>9</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_258CK_4MS1</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 258 CK + 4.1 ms</description>
+                  <value>10</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_1KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 1K CK + 65 ms</description>
+                  <value>11</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_258CK_4MS1</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 258 CK + 4.1 ms</description>
+                  <value>12</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_1KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 1K CK + 65 ms</description>
+                  <value>13</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_258CK_4MS1</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 258 CK + 4.1 ms</description>
+                  <value>14</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_1KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 1K CK + 65 ms</description>
+                  <value>15</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTCLK_6CK_4MS1</name>
+                  <description>Ext. Clock; Start-up time: 6 CK + 4.1 ms</description>
+                  <value>16</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_6CK_4MS1</name>
+                  <description>Int. RC Osc.; Start-up time: 6 CK + 4.1 ms</description>
+                  <value>18</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_128KHZ_6CK_4MS</name>
+                  <description>Int. 128kHz RC Osc.; Start-up time: 6 CK + 4 ms</description>
+                  <value>19</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTLOFXTAL_1KCK_4MS1</name>
+                  <description>Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4.1 ms</description>
+                  <value>20</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTLOFXTAL_32KCK_4MS1</name>
+                  <description>Ext. Low-Freq. Crystal; Start-up time: 32K CK + 4.1 ms</description>
+                  <value>21</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_258CK_65MS_CRES_SLOWPWR</name>
+                  <description>Full Swing Oscillator; Start-up time: 258 CK + 65 ms; Ceramic res.; slowly rising power</description>
+                  <value>22</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_16KCK_0MS_XOSC_BODEN</name>
+                  <description>Full Swing Oscillator; Start-up time: 16K CK + 0 ms; Crystal Osc.; BOD enabled</description>
+                  <value>23</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_258CK_65MS</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 258 CK + 65 ms</description>
+                  <value>24</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_16KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 16K CK + 0 ms</description>
+                  <value>25</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_258CK_65MS</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 258 CK + 65 ms</description>
+                  <value>26</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_16KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 16K CK + 0 ms</description>
+                  <value>27</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_258CK_65MS</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 258 CK + 65 ms</description>
+                  <value>28</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_16KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 16K CK + 0 ms</description>
+                  <value>29</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_258CK_65MS</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 258 CK + 65 ms</description>
+                  <value>30</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_16KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 16K CK + 0 ms</description>
+                  <value>31</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTCLK_6CK_65MS</name>
+                  <description>Ext. Clock; Start-up time: 6 CK + 65 ms</description>
+                  <value>32</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_6CK_65MS</name>
+                  <description>Int. RC Osc.; Start-up time: 6 CK + 65 ms</description>
+                  <value>34</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_128KHZ_6CK_64MS</name>
+                  <description>Int. 128kHz RC Osc.; Start-up time: 6 CK + 64 ms</description>
+                  <value>35</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTLOFXTAL_1KCK_65MS</name>
+                  <description>Ext. Low-Freq. Crystal; Start-up time: 1K CK + 65 ms</description>
+                  <value>36</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTLOFXTAL_32KCK_65MS</name>
+                  <description>Ext. Low-Freq. Crystal; Start-up time: 32K CK + 65 ms</description>
+                  <value>37</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_1KCK_0MS_CRES_BODEN</name>
+                  <description>Full Swing Oscillator; Start-up time: 1K CK + 0 ms; Ceramic res.; BOD enable</description>
+                  <value>38</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_16KCK_4MS1_XOSC_FASTPWR</name>
+                  <description>Full Swing Oscillator; Start-up time: 16K CK + 4.1 ms; Crystal Osc.; fast rising power</description>
+                  <value>39</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_1KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 1K CK + 0 ms</description>
+                  <value>40</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_16KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 16K CK + 4.1 ms</description>
+                  <value>41</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_1KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 1K CK + 0 ms</description>
+                  <value>42</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_16KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 16K CK + 4.1 ms</description>
+                  <value>43</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_1KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 1K CK + 0 ms</description>
+                  <value>44</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_16KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 16K CK + 4.1 ms</description>
+                  <value>45</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_1KCK_0MS</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 1K CK + 0 ms</description>
+                  <value>46</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_16KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 16K CK + 4.1 ms</description>
+                  <value>47</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_1KCK_4MS1_CRES_FASTPWR</name>
+                  <description>Full Swing Oscillator; Start-up time: 1K CK + 4.1 ms; Ceramic res.; fast rising power</description>
+                  <value>54</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FSOSC_16KCK_65MS_XOSC_SLOWPWR</name>
+                  <description>Full Swing Oscillator; Start-up time: 16K CK + 65 ms; Crystal Osc.; slowly rising power</description>
+                  <value>55</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_1KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 1K CK + 4.1 ms</description>
+                  <value>56</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ4_0MHZ9_16KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 0.4-0.9 MHz; Start-up time: 16K CK + 65 ms</description>
+                  <value>57</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_1KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 1K CK + 4.1 ms</description>
+                  <value>58</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_0MHZ9_3MHZ_16KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 0.9-3.0 MHz; Start-up time: 16K CK + 65 ms</description>
+                  <value>59</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_1KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 1K CK + 4.1 ms</description>
+                  <value>60</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_3MHZ_8MHZ_16KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 3.0-8.0 MHz; Start-up time: 16K CK + 65 ms</description>
+                  <value>61</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_1KCK_4MS1</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 1K CK + 4.1 ms</description>
+                  <value>62</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTXOSC_8MHZ_XX_16KCK_65MS</name>
+                  <description>Ext. Crystal Osc. 8.0-    MHz; Start-up time: 16K CK + 65 ms</description>
+                  <value>63</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>CKOUT</name>
+              <description>Clock output on PORTE7</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CKDIV8</name>
+              <description>Divide clock by 8 internally</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
       <name>JTAG</name>
       <description>JTAG Interface</description>
       <baseAddress>0x00800051</baseAddress>
@@ -2191,7 +2626,7 @@
         </register>
         <register>
           <name>MCUSR</name>
-          <description>MCU Status Register</description>
+          <description>MCU Status Register (read-only for debugger)</description>
           <addressOffset>0x3</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2206,7 +2641,7 @@
         </register>
         <register>
           <name>OCDR</name>
-          <description>On-Chip Debug Related Register in I/O Memory (not readable by debugger)</description>
+          <description>On-Chip Debug Related Register in I/O Memory (write-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2216,6 +2651,115 @@
               <maximum>255</maximum>
             </range>
           </writeConstraint>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>LOCKBIT</name>
+      <description>Lockbits</description>
+      <baseAddress>0x00800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>LOCKBIT</name>
+          <description>No Description.</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>LB</name>
+              <description>Memory Lock</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>PROG_VER_DISABLED</name>
+                  <description>Further programming and verification disabled</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PROG_DISABLED</name>
+                  <description>Further programming disabled</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No memory lock features enabled</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BLB0</name>
+              <description>Boot Loader Protection Mode</description>
+              <bitRange>[3:2]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LPM_SPM_DISABLE</name>
+                  <description>LPM and SPM prohibited in Application Section</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LPM_DISABLE</name>
+                  <description>LPM prohibited in Application Section</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SPM_DISABLE</name>
+                  <description>SPM prohibited in Application Section</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No lock on SPM and LPM in Application Section</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BLB1</name>
+              <description>Boot Loader Protection Mode</description>
+              <bitRange>[5:4]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LPM_SPM_DISABLE</name>
+                  <description>LPM and SPM prohibited in Boot Section</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LPM_DISABLE</name>
+                  <description>LPM prohibited in Boot Section</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SPM_DISABLE</name>
+                  <description>SPM prohibited in Boot Section</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No lock on SPM and LPM in Boot Section</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
         </register>
       </registers>
     </peripheral>
@@ -2288,7 +2832,7 @@
         </register>
         <register>
           <name>PINA</name>
-          <description>Port A Input Pins</description>
+          <description>Port A Input Pins (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2471,7 +3015,7 @@
         </register>
         <register>
           <name>PINB</name>
-          <description>Port B Input Pins</description>
+          <description>Port B Input Pins (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2654,7 +3198,7 @@
         </register>
         <register>
           <name>PINC</name>
-          <description>Port C Input Pins</description>
+          <description>Port C Input Pins (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2837,7 +3381,7 @@
         </register>
         <register>
           <name>PIND</name>
-          <description>Port D Input Pins</description>
+          <description>Port D Input Pins (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -3020,7 +3564,7 @@
         </register>
         <register>
           <name>PINE</name>
-          <description>Input Pins, Port E</description>
+          <description>Input Pins, Port E (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -3203,7 +3747,7 @@
         </register>
         <register>
           <name>PINF</name>
-          <description>Input Pins, Port F</description>
+          <description>Input Pins, Port F (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4315,7 +4859,7 @@
         </register>
         <register>
           <name>SPDR</name>
-          <description>SPI Data Register (not readable by debugger)</description>
+          <description>SPI Data Register (write-only for debugger)</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4328,7 +4872,7 @@
         </register>
         <register>
           <name>SPSR</name>
-          <description>SPI Status Register</description>
+          <description>SPI Status Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4560,7 +5104,7 @@
         </register>
         <register>
           <name>TIFR0</name>
-          <description>Timer/Counter0 Interrupt Flag register</description>
+          <description>Timer/Counter0 Interrupt Flag register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4874,7 +5418,7 @@
         </register>
         <register>
           <name>TIFR1</name>
-          <description>Timer/Counter1 Interrupt Flag register</description>
+          <description>Timer/Counter1 Interrupt Flag register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -5218,7 +5762,7 @@
         </register>
         <register>
           <name>TIFR2</name>
-          <description>Timer/Counter Interrupt Flag Register</description>
+          <description>Timer/Counter Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -5532,7 +6076,7 @@
         </register>
         <register>
           <name>TIFR3</name>
-          <description>Timer/Counter3 Interrupt Flag register</description>
+          <description>Timer/Counter3 Interrupt Flag register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -5870,7 +6414,7 @@
         </register>
         <register>
           <name>TIFR4</name>
-          <description>Timer/Counter4 Interrupt Flag register (not readable by debugger)</description>
+          <description>Timer/Counter4 Interrupt Flag register (write-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6208,7 +6752,7 @@
         </register>
         <register>
           <name>TIFR5</name>
-          <description>Timer/Counter5 Interrupt Flag register (not readable by debugger)</description>
+          <description>Timer/Counter5 Interrupt Flag register (write-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6359,7 +6903,7 @@
         </register>
         <register>
           <name>TWCR</name>
-          <description>TWI Control Register</description>
+          <description>TWI Control Register (read-only for debugger)</description>
           <addressOffset>0x4</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6505,7 +7049,7 @@
         </register>
         <register>
           <name>UCSR0A</name>
-          <description>USART Control and Status Register A</description>
+          <description>USART Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6724,7 +7268,7 @@
         </register>
         <register>
           <name>UDR0</name>
-          <description>USART I/O Data Register (not readable by debugger)</description>
+          <description>USART I/O Data Register (write-only for debugger)</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6767,7 +7311,7 @@
         </register>
         <register>
           <name>UCSR1A</name>
-          <description>USART Control and Status Register A</description>
+          <description>USART Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6986,7 +7530,7 @@
         </register>
         <register>
           <name>UDR1</name>
-          <description>USART I/O Data Register (not readable by debugger)</description>
+          <description>USART I/O Data Register (write-only for debugger)</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7029,7 +7573,7 @@
         </register>
         <register>
           <name>UCSR2A</name>
-          <description>USART Control and Status Register A</description>
+          <description>USART Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7248,7 +7792,7 @@
         </register>
         <register>
           <name>UDR2</name>
-          <description>USART I/O Data Register (not readable by debugger)</description>
+          <description>USART I/O Data Register (write-only for debugger)</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7291,7 +7835,7 @@
         </register>
         <register>
           <name>UCSR3A</name>
-          <description>USART Control and Status Register A</description>
+          <description>USART Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7510,7 +8054,7 @@
         </register>
         <register>
           <name>UDR3</name>
-          <description>USART I/O Data Register (not readable by debugger)</description>
+          <description>USART I/O Data Register (write-only for debugger)</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7535,7 +8079,7 @@
       <registers>
         <register>
           <name>WDTCSR</name>
-          <description>Watchdog Timer Control Register</description>
+          <description>Watchdog Timer Control Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>

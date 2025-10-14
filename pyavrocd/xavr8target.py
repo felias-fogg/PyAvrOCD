@@ -346,8 +346,6 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         memory in the NVM mode for reading.
         """
         memtype = AvrDevice.memtype_read_from_string(memtype_string)
-        if memtype == Avr8Protocol.AVR8_MEMTYPE_EEPROM:
-            memtype = Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
         if memtype == Avr8Protocol.AVR8_MEMTYPE_CALIBRATION_SIGNATURE:
             memtype = Avr8Protocol.AVR8_MEMTYPE_SIGNATURE
         return memtype
@@ -587,7 +585,6 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         for hwbp in range(1,4):
             self.hardware_breakpoint_clear(hwbp)
-        return 0
 
 
 class XXmegaAvrTarget(XmegaAvrTarget):

@@ -89,9 +89,13 @@ class Memory():
     def mem_area(self, addr):
         """
         This function returns a triple consisting of the real address as an int, the read,
-        and the write method. If illegal address section, report and return
-        (0, lambda *x: bytes(), lambda *x: 'E13')
-        For fuses, lockbits, signatures, and user signatures, access is denied.
+        and the write method. If illegal address section, give error message and return
+        (0, lambda aadr, num: bytes([0xFF]*num), lambda *x: 'E13').
+        For fuses, lockbits, signatures, and user signatures, access requests are ignored and
+        dummy values are returned. The only exception is if one wants to write the signature
+        bytes. In this case, it is compared with the signature of the MCU and a fatal error
+        is raised when the signatures differ. This can be used to check for the right MCU
+        by including the directive '#include <avr/signature.h>' in the source file.
         """
         addr_section = "00"
         if len(addr) == 6:
@@ -108,32 +112,32 @@ class Memory():
             if not self.programming_mode:
                 return(iaddr, self.sram_masked_read, self.sram_masked_write)
         if addr_section == "81": # eeprom
-            return(iaddr, self.dbg.eeprom_read, self.dbg.eeprom_write)
+            return(iaddr, self.eeprom_read, self.eeprom_write)
         if addr_section == "82": # fuse
             self.logger.error("Fuses cannot be accessed: request ignored")
-            return (0, lambda *x: bytes(), lambda *x: None)
+            return (0, lambda addr, num: bytes([0xFF]*num), lambda *x: None)
             #if self.programming_mode and self.dbg.get_iface() in ['jtag', 'updi']:
             #    return(iaddr, self.fuse_read, self.fuse_write)
         if addr_section == "83": #  lock
             self.logger.error("Lock bits cannot be accessed: request ignored")
-            return (0, lambda *x: bytes(), lambda *x: None)
-            #if (self.programming_mode and self.dbg.get_iface() == 'jtag') or self.dbg.get_iface() == 'updi':
+            return (0, lambda addr, num: bytes([0xFF]*num), lambda *x: None)
+            #if (self.programming_mode and self.dbg.get_iface() == 'jtag') or \
+            #    self.dbg.get_iface() == 'updi':
             #    return(iaddr, self.lock_read, self.lock_write)
         if addr_section == "84": # signature
-            if not self.programming_mode:
-                self.logger.error("Signatures cannot be accessed: request ignored")
-            return (0, lambda *x: bytes(), self.compare_signatures)
+            self.logger.error("Signatures cannot be accessed: request ignored")
+            return (0, lambda addr, num: bytes([0xFF]*num), self.compare_signatures)
             #if (self.programming_mode and self.dbg.get_iface() in ['jtag', 'updi']) \
             #  or self.dbg.get_iface() == 'debugwire':
             #    return(iaddr, self.sig_read, lambda *x: 'E13')
         if addr_section == "85":  # user signature
             self.logger.error("User signature cannot be accessed: request ignored")
-            return (0, lambda *x: bytes(), lambda *x: None)
+            return (0, lambda addr, num: bytes([0xFF]*num), lambda *x: None)
             #if self.dbg.get_iface() in ['jtag', 'updi']:
             #    return(iaddr, self.usig_read, self.usig_write)
         self.logger.error("Illegal memtype in memory access operation at %s: %s",
                               addr, addr_section)
-        return (0, lambda *x: bytes(), lambda *x: 'E13')
+        return (0, lambda addr, num: bytes([0xFF]*num), lambda *x: 'E13')
 
     def sram_masked_read(self, addr, size):
         """

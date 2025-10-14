@@ -75,6 +75,8 @@ DEVICE_INFO = {
     'prog_clock_khz': 900,
     'address_size': '16-bit',
     'hv_implementation': 0,
+    'eesave_base' : 0x5,
+    'eesave_mask' : 0x01,
     'device_id': 0x1E922A,
     'interface': 'UPDI'
 }

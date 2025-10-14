@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
 
-    @patch('pyavrocd.xnvmdebugwire.XTinyAvrTarget',MagicMock())
+    @patch('pyavrocd.xnvmmegaavrjtag.XMegaAvrJtagTarget',MagicMock())
     def setUp(self):
         self.nvm = XNvmAccessProviderCmsisDapMegaAvrJtag(MagicMock(), DEVICE_INFO, manage=None)
         self.nvm.avr = create_autospec(XMegaAvrJtagTarget)

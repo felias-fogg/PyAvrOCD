@@ -71,7 +71,10 @@ DEVICE_INFO = {
     'osccal_base' : 0x31,
     'dwen_base' : 0x01,
     'dwen_mask' : 0x08,
+    'eesave_base' : 0x00,
+    'eesave_mask' : 0x40,
     'masked_registers' : [0x4e],
+    'ronly_registers' : [0x26, 0x28, 0x36, 0x41, 0x45, 0x46, 0x50, 0x51, 0x57, 0x58, 0x5a],
     'device_id': 0x1E9007,
     'interface': 'ISP+HVSP+debugWIRE'
 }

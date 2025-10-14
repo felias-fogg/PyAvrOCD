@@ -1,12 +1,11 @@
 [project]
 name = "pyavrocd"
-version = "0.16.2"
+version = "0.16.3"
 description = "A platform-agnostic GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
     ]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",

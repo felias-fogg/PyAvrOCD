@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.16.3
+- **Fixed:**
+   - SVD and device files freshly generate, now with read-only registers
+
+- **Changed:**
+   - `svd` folder is now located in pyavrocd-util
+
 ### 0.16.2
 
 - **Fixed:**

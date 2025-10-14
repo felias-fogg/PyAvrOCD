@@ -23,7 +23,7 @@ a = Analysis(
     ['pyavrocd/main.py'],
     pathex=['pyavrocd/deviceinfo/devices/', 'pyavrocd/deviceinfo'],
     binaries= binlist,
-    datas=[],
+    datas=[('./svd','svd')],
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},

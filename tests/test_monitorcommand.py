@@ -96,6 +96,32 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(len(self.mo.dispatch(['info'])[1]) > 50)
         self.assertEqual(self.mo.dispatch(['info'])[0], 'info')
 
+    def test_dispatch_atexit(self):
+        self.assertFalse(self.mo._leaveonexit)
+        self.assertEqual(self.mo.dispatch(['atexit']), ("", "MCU will stay in debugWIRE mode on exit"))
+        self.assertEqual(self.mo.dispatch(['at', 'leave']), ("",  "MCU will leave debugWIRE mode on exit"))
+        self.assertTrue(self.mo._leaveonexit)
+        self.assertEqual(self.mo.dispatch(['a', 'stay']), ("",   "MCU will stay in debugWIRE mode on exit"))
+        self.assertFalse(self.mo._leaveonexit)
+
+    def test_dispatch_erase_before_load_dw(self):
+        self.assertFalse(self.mo._erase_before_load)
+        self.assertEqual(self.mo.dispatch(['erase']),
+                         ("", "On debugWIRE targets, flash memory cannot be erased before loading executable"))
+
+    def test_dispatch_erase_before_load_jtag(self):
+        self.mo._iface = 'jtag'
+        self.mo.set_default_state()
+        self.assertTrue(self.mo._erase_before_load)
+        self.assertEqual(self.mo.dispatch(['erase']),
+                         ("", "Flash memory will be erased before loading executable"))
+        self.assertEqual(self.mo.dispatch(['erase', 'disable']),
+                         ("", "Flash memory will not be erased before loading executable"))
+        self.assertFalse(self.mo._erase_before_load)
+        self.assertEqual(self.mo.dispatch(['era', 'e']),
+                         ("", "Flash memory will be erased before loading executable"))
+        self.assertTrue(self.mo._erase_before_load)
+
     def test_dispatch_load(self):
         self.assertTrue(self.mo._read_before_write)
         self.assertEqual(self.mo.dispatch(['load']), ("", "Reading before writing when loading"))

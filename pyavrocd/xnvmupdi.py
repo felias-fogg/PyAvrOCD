@@ -25,13 +25,11 @@ class XNvmAccessProviderCmsisDapUpdi(NvmAccessProviderCmsisDapUpdi):
     """
     #pylint: disable=non-parent-init-called, super-init-not-called
     #we want to set up the debug session much later
-    def __init__(self, transport, device_info):
+    def __init__(self, transport, device_info, manage=None):
+        self.manage = [] if manage is None else manage
         self.logger_local = getLogger('pyavrocd.nvmupdi')
         NvmAccessProviderCmsisDapAvr.__init__(self, device_info)
         self.avr = XTinyXAvrTarget(transport)
-        self.logger_local.debug("Setting up device info ...")
-        self.avr.setup_config(device_info)
-        self.logger_local.debug("... setup done")
 
     def __del__(self):
         pass

@@ -74,11 +74,8 @@ class TestMemory(TestCase):
         self.assertEqual(self.mem.readmem("800005", "3"), bytearray([9, 0x00, 7]))
         self.assertEqual(self.mem.readmem("800004", "3"), bytearray([10, 9, 0x00]))
 
-    def test_readmem_eprom(self):
-        eeprom = list(range(5))
-        def access_eeprom(ix, length):
-            return bytearray(eeprom[ix:ix+length])
-        self.mem.dbg.eeprom_read = MagicMock(side_effect=access_eeprom)
+    def test_readmem_eeprom(self):
+        self.mem.dbg.device.read.return_value=bytearray([1,2,3])
         self.assertEqual(self.mem.readmem("810001", "3"), bytearray([1, 2, 3]))
 
     def test_readmem_flash_cached(self):
@@ -88,8 +85,20 @@ class TestMemory(TestCase):
         self.assertEqual(self.mem.readmem("0003", "2"), bytearray([22, 21]))
         self.mem.dbg.flash_read.assert_has_calls([call(2,2), call(4,2)])
 
+    def test_readmem_fuse(self):
+        self.assertEqual(self.mem.readmem("820000", "3"),bytearray([0xFF, 0xFF, 0xFF]))
+
+    def test_readmem_lock(self):
+        self.assertEqual(self.mem.readmem("830000", "1"),bytearray([0xFF]))
+
+    def test_readmem_sig(self):
+        self.assertEqual(self.mem.readmem("840000", "2"),bytearray([0xFF, 0xFF]))
+
+    def test_readmem_usig(self):
+        self.assertEqual(self.mem.readmem("850000", "4"),bytearray([0xFF, 0xFF, 0xFF, 0xFF]))
+
     def test_readmem_undef(self):
-        self.assertEqual(self.mem.readmem("820000", "2"),bytearray())
+        self.assertEqual(self.mem.readmem("890000", "1"),bytearray([0xFF]))
 
     # flash_read has been tested above already
 
@@ -102,16 +111,31 @@ class TestMemory(TestCase):
         self.assertEqual(self.mem.writemem("800001", bytearray([0x55])), "OK")
         self.mem.dbg.sram_write.assert_not_called()
 
-    def test_weitemem_sram_ronly_register_bytearray(self):
+    def test_writemem_sram_ronly_register_bytearray(self):
         self.mem._ronly_registers = [15, 1, 6]
         self.assertEqual(self.mem.writemem("800001", bytearray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])), "OK")
         self.mem.dbg.sram_write.assert_has_calls([call(2,bytearray([0x02, 0x03, 0x04, 0x05])), call(7,bytearray([0x07]))])
         self.assertEqual(self.mem.dbg.sram_write.call_count, 2)
 
     def test_writemem_eeprom(self):
-        self.mem.dbg.eeprom_write.return_value = None
+        self.mem.dbg.device.write.return_value = None
         self.assertEqual(self.mem.writemem("810002", bytearray([1,2,3])), "OK")
-        self.mem.dbg.eeprom_write.assert_called_with(0x02, bytearray([1,2,3]))
+
+    def test_writemem_fuse(self):
+        self.assertEqual(self.mem.writemem("820000", bytearray([1,2,3])), "OK")
+
+    def test_writemem_lock(self):
+        self.assertEqual(self.mem.writemem("830000", bytearray([1])), "OK")
+
+    def test_writemem_sig_wrong(self):
+        self.mem.programming_mode = True
+        self.mem.dbg.device_info.__getitem__.return_value = 0x1e950f
+        self.assertRaises(FatalError, self.mem.writemem, "840000", bytearray([1,2,3]))
+
+    def test_writemem_sig_right(self):
+        self.mem.programming_mode = True
+        self.mem.dbg.device_info.__getitem__.return_value = 0x1e950f
+        self.assertEqual(self.mem.writemem("840000", bytearray([0x0f, 0x95, 0x1e])), "OK")
 
     def test_store_to_cache_error(self):
         self.mem._flash = bytearray(10)

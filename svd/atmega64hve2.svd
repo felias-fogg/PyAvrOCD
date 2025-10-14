@@ -1181,7 +1181,7 @@
       <registers>
         <register>
           <name>CLKPR</name>
-          <description>Clock Prescale Register</description>
+          <description>Clock Prescale Register (read-only for debugger)</description>
           <addressOffset>0x23</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -1301,7 +1301,7 @@
         </register>
         <register>
           <name>MCUSR</name>
-          <description>MCU Status Register</description>
+          <description>MCU Status Register (read-only for debugger)</description>
           <addressOffset>0x16</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -1653,7 +1653,7 @@
         </register>
         <register>
           <name>EIFR</name>
-          <description>External Interrupt Flag Register</description>
+          <description>External Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -1704,7 +1704,7 @@
         </register>
         <register>
           <name>PCIFR</name>
-          <description>Pin Change Interrupt Flag Register</description>
+          <description>Pin Change Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -1748,6 +1748,146 @@
               <maximum>255</maximum>
             </range>
           </writeConstraint>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>FUSE</name>
+      <description>Fuses</description>
+      <baseAddress>0x00800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x2</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>HIGH</name>
+          <description>No Description.</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BOOTRST</name>
+              <description>Boot Reset vector Enabled</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BOOTSZ</name>
+              <description>Select Boot Size</description>
+              <bitRange>[2:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>4096W_7000</name>
+                  <description>Boot Flash size=4096 words Boot address=$7000</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2048W_7800</name>
+                  <description>Boot Flash size=2048 words Boot address=$7800</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1024W_7C00</name>
+                  <description>Boot Flash size=1024 words Boot address=$7C00</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>512W_7E00</name>
+                  <description>Boot Flash size=512 words Boot address=$7E00</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>DWEN</name>
+              <description>Debug Wire enable</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>LOW</name>
+          <description>No Description.</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OSCSEL0</name>
+              <description>Oscillator select</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SUT</name>
+              <description>Select start-up time</description>
+              <bitRange>[2:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>14CK_0MS</name>
+                  <description>Start-up time 14 CK + 0 ms</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>14CK_16MS</name>
+                  <description>Start-up time 14 CK + 16 ms</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>14CK_32MS</name>
+                  <description>Start-up time 14 CK + 32 ms</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>14CK_64MS</name>
+                  <description>Start-up time 14 CK + 64 ms</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>CKDIV8</name>
+              <description>Divide clock by 8</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BODEN</name>
+              <description>Brown-out detection enabled</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPIEN</name>
+              <description>Serial program downloading (SPI) enabled</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>EESAVE</name>
+              <description>Preserve EEPROM through the Chip Erase cycle</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDTON</name>
+              <description>Watch-dog Timer always on</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
         </register>
       </registers>
     </peripheral>
@@ -1883,7 +2023,7 @@
         </register>
         <register>
           <name>LINDAT</name>
-          <description>LIN Data Register (not readable by debugger)</description>
+          <description>LIN Data Register (write-only for debugger)</description>
           <addressOffset>0xA</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -1970,7 +2110,7 @@
         </register>
         <register>
           <name>LINERR</name>
-          <description>LIN Error Register</description>
+          <description>LIN Error Register (read-only for debugger)</description>
           <addressOffset>0x3</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2139,6 +2279,115 @@
       </registers>
     </peripheral>
     <peripheral>
+      <name>LOCKBIT</name>
+      <description>Lockbits</description>
+      <baseAddress>0x00800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>LOCKBIT</name>
+          <description>No Description.</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>LB</name>
+              <description>Memory Lock</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>PROG_VER_DISABLED</name>
+                  <description>Further programming and verification disabled</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PROG_DISABLED</name>
+                  <description>Further programming disabled</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No memory lock features enabled</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BLB0</name>
+              <description>Boot Loader Protection Mode</description>
+              <bitRange>[3:2]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LPM_SPM_DISABLE</name>
+                  <description>LPM and SPM prohibited in Application Section</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LPM_DISABLE</name>
+                  <description>LPM prohibited in Application Section</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SPM_DISABLE</name>
+                  <description>SPM prohibited in Application Section</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No lock on SPM and LPM in Application Section</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BLB1</name>
+              <description>Boot Loader Protection Mode</description>
+              <bitRange>[5:4]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LPM_SPM_DISABLE</name>
+                  <description>LPM and SPM prohibited in Boot Section</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LPM_DISABLE</name>
+                  <description>LPM prohibited in Boot Section</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SPM_DISABLE</name>
+                  <description>SPM prohibited in Boot Section</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No lock on SPM and LPM in Boot Section</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
       <name>PORTA</name>
       <description>I/O Port</description>
       <baseAddress>0x00800020</baseAddress>
@@ -2163,7 +2412,7 @@
         </register>
         <register>
           <name>PINA</name>
-          <description>Port A Input Pins</description>
+          <description>Port A Input Pins (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2246,7 +2495,7 @@
         </register>
         <register>
           <name>PINB</name>
-          <description>Port B Input Pins</description>
+          <description>Port B Input Pins (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2355,7 +2604,7 @@
         </register>
         <register>
           <name>SPDR</name>
-          <description>SPI Data Register (not readable by debugger)</description>
+          <description>SPI Data Register (write-only for debugger)</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2368,7 +2617,7 @@
         </register>
         <register>
           <name>SPSR</name>
-          <description>SPI Status Register</description>
+          <description>SPI Status Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2564,7 +2813,7 @@
         </register>
         <register>
           <name>TIFR0</name>
-          <description>Timer/Counter Interrupt Flag register</description>
+          <description>Timer/Counter Interrupt Flag register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2832,7 +3081,7 @@
         </register>
         <register>
           <name>TIFR1</name>
-          <description>Timer/Counter Interrupt Flag register</description>
+          <description>Timer/Counter Interrupt Flag register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2910,7 +3159,7 @@
       <registers>
         <register>
           <name>WUTCSR</name>
-          <description>Wake-up Timer Control and Status Register</description>
+          <description>Wake-up Timer Control and Status Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2999,7 +3248,7 @@
         </register>
         <register>
           <name>WDTCSR</name>
-          <description>Watchdog Timer Control Register</description>
+          <description>Watchdog Timer Control Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>

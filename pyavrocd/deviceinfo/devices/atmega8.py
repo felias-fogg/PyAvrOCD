@@ -69,7 +69,10 @@ DEVICE_INFO = {
     'osccal_base' : 0x31,
     'bootrst_base' : 0x01,
     'bootrst_mask' : 0x01,
+    'eesave_base' : 0x01,
+    'eesave_mask' : 0x08,
     'masked_registers' : [0x2c, 0x2f, 0x40],
+    'ronly_registers' : [0x28, 0x2b, 0x2e, 0x30, 0x33, 0x36, 0x56, 0x58],
     'device_id': 0x1E9307,
     'interface': 'ISP+HVPP'
 }

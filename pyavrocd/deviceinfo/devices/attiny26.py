@@ -66,6 +66,9 @@ DEVICE_INFO = {
     'eecr_base' : 0x1C,
     'eedr_base' : 0x1D,
     'osccal_base' : 0x31,
+    'eesave_base' : 0x01,
+    'eesave_mask' : 0x04,
+    'ronly_registers' : [0x2e, 0x36, 0x39],
     'device_id': 0x1E9109,
     'interface': 'ISP+HVPP'
 }

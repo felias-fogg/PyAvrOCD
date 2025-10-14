@@ -1,9 +1,14 @@
 # Release Notes
 
+## Release v0.16.3
+
+- Refreshed svd and device files.
+- Svd files are now distributed as part of `pyavrocd-util` folder.
+
 ## Release v0.16.2
 
 - The assets files names now also contain the PyAvrOCD version number.
-- For the ATmega128, the breakpoint mode is now harware-only and that cannot be changed.
+- For the ATmega128, the breakpoint mode is now hardware-only and cannot be changed.
 
 
 ## Release v0.16.0

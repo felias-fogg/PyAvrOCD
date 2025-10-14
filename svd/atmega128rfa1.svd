@@ -1299,7 +1299,7 @@
         </register>
         <register>
           <name>MCUSR</name>
-          <description>MCU Status Register</description>
+          <description>MCU Status Register (read-only for debugger)</description>
           <addressOffset>0x16</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2043,7 +2043,7 @@
         </register>
         <register>
           <name>EIFR</name>
-          <description>External Interrupt Flag Register</description>
+          <description>External Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2146,7 +2146,7 @@
         </register>
         <register>
           <name>PCIFR</name>
-          <description>Pin Change Interrupt Flag Register</description>
+          <description>Pin Change Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2385,6 +2385,271 @@
       </registers>
     </peripheral>
     <peripheral>
+      <name>FUSE</name>
+      <description>Fuses</description>
+      <baseAddress>0x00800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>EXTENDED</name>
+          <description>No Description.</description>
+          <addressOffset>0x2</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BODLEVEL</name>
+              <description>Brown-out Detector trigger level</description>
+              <bitRange>[2:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>2V4</name>
+                  <description>Brown-out detection at VCC=2.4 V</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2V3</name>
+                  <description>Brown-out detection at VCC=2.3 V</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2V2</name>
+                  <description>Brown-out detection at VCC=2.2 V</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2V1</name>
+                  <description>Brown-out detection at VCC=2.1 V</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2V0</name>
+                  <description>Brown-out detection at VCC=2.0 V</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1V9</name>
+                  <description>Brown-out detection at VCC=1.9 V</description>
+                  <value>5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1V8</name>
+                  <description>Brown-out detection at VCC=1.8 V</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DISABLED</name>
+                  <description>Brown-out detection disabled</description>
+                  <value>7</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>HIGH</name>
+          <description>No Description.</description>
+          <addressOffset>0x1</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>BOOTRST</name>
+              <description>Boot Reset vector Enabled</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>BOOTSZ</name>
+              <description>Select Boot Size</description>
+              <bitRange>[2:1]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>4096W_F000</name>
+                  <description>Boot Flash size=4096 words start address=$F000</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2048W_F800</name>
+                  <description>Boot Flash size=2048 words start address=$F800</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>1024W_FC00</name>
+                  <description>Boot Flash size=1024 words start address=$FC00</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>512W_FE00</name>
+                  <description>Boot Flash size=512 words start address=$FE00</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>EESAVE</name>
+              <description>Preserve EEPROM through the Chip Erase cycle</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>WDTON</name>
+              <description>Watchdog timer always on</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>SPIEN</name>
+              <description>Serial program downloading (SPI) enabled</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>JTAGEN</name>
+              <description>JTAG Interface Enabled</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>OCDEN</name>
+              <description>On-Chip Debug Enabled</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>LOW</name>
+          <description>No Description.</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CKSEL_SUT</name>
+              <description>Select Clock Source : Start-up time</description>
+              <bitRange>[5:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>EXTCLK_6CK_0MS</name>
+                  <description>Ext. Clock; Start-up time: 6 CK + 0 ms</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_6CK_0MS</name>
+                  <description>Int. RC Osc.; Start-up time: 6 CK + 0 ms</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_128KHZ_6CK_0MS</name>
+                  <description>Int. 128kHz RC Osc.; Start-up time: 6 CK + 0 ms</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_258CK_4MS1</name>
+                  <description>Transceiver Oscillator; Start-up time: 258 CK + 4.1 ms</description>
+                  <value>6</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_1KCK_65MS</name>
+                  <description>Transceiver Oscillator; Start-up time: 1K CK + 65 ms</description>
+                  <value>7</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTCLK_6CK_4MS1</name>
+                  <description>Ext. Clock; Start-up time: 6 CK + 4.1 ms</description>
+                  <value>16</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_6CK_4MS1</name>
+                  <description>Int. RC Osc.; Start-up time: 6 CK + 4.1 ms</description>
+                  <value>18</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_128KHZ_6CK_4MS1</name>
+                  <description>Int. 128kHz RC Osc.; Start-up time: 6 CK + 4.1 ms</description>
+                  <value>19</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_258CK_65MS</name>
+                  <description>Transceiver Oscillator; Start-up time: 258 CK + 65 ms</description>
+                  <value>22</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_16KCK_0MS</name>
+                  <description>Transceiver Oscillator; Start-up time: 16K CK + 0 ms</description>
+                  <value>23</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EXTCLK_6CK_65MS</name>
+                  <description>Ext. Clock; Start-up time: 6 CK + 65 ms</description>
+                  <value>32</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_6CK_65MS</name>
+                  <description>Int. RC Osc.; Start-up time: 6 CK + 65 ms</description>
+                  <value>34</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>INTRCOSC_128KHZ_6CK_65MS</name>
+                  <description>Int. 128kHz RC Osc.; Start-up time: 6 CK + 65 ms</description>
+                  <value>35</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_1KCK_0MS</name>
+                  <description>Transceiver Oscillator; Start-up time: 1K CK + 0 ms</description>
+                  <value>38</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_16KCK_4MS1</name>
+                  <description>Transceiver Oscillator; Start-up time: 16K CK + 4.1 ms</description>
+                  <value>39</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_1KCK_4MS1</name>
+                  <description>Transceiver Oscillator; Start-up time: 1K CK + 4.1 ms</description>
+                  <value>54</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRXOSC_16KCK_65MS</name>
+                  <description>Transceiver Oscillator; Start-up time: 16K CK + 65 ms</description>
+                  <value>55</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>CKOUT</name>
+              <description>Clock output on PORTE7</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>CKDIV8</name>
+              <description>Divide clock by 8 internally</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
       <name>JTAG</name>
       <description>JTAG Interface</description>
       <baseAddress>0x00800051</baseAddress>
@@ -2431,7 +2696,7 @@
         </register>
         <register>
           <name>OCDR</name>
-          <description>On-Chip Debug Register (not readable by debugger)</description>
+          <description>On-Chip Debug Register (write-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -2449,6 +2714,115 @@
                   <name>REFER_TO_THE_DEBUGGER_DOCUMENTATION_FOR_FURTHER_INFORMATION_ON_HOW_TO_USE_THIS_REGISTER</name>
                   <description>Refer to the debugger documentation for further information on how to use this register.</description>
                   <value>0</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>LOCKBIT</name>
+      <description>Lockbits</description>
+      <baseAddress>0x00800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>LOCKBIT</name>
+          <description>No Description.</description>
+          <addressOffset>0x0</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>LB</name>
+              <description>Memory Lock</description>
+              <bitRange>[1:0]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>PROG_VER_DISABLED</name>
+                  <description>Further programming and verification disabled</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PROG_DISABLED</name>
+                  <description>Further programming disabled</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No memory lock features enabled</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BLB0</name>
+              <description>Boot Loader Protection Mode</description>
+              <bitRange>[3:2]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LPM_SPM_DISABLE</name>
+                  <description>LPM and SPM prohibited in Application Section</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LPM_DISABLE</name>
+                  <description>LPM prohibited in Application Section</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SPM_DISABLE</name>
+                  <description>SPM prohibited in Application Section</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No lock on SPM and LPM in Application Section</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BLB1</name>
+              <description>Boot Loader Protection Mode</description>
+              <bitRange>[5:4]</bitRange>
+              <access>read-write</access>
+              <writeConstraint>
+                <useEnumeratedValues>true</useEnumeratedValues>
+              </writeConstraint>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>LPM_SPM_DISABLE</name>
+                  <description>LPM and SPM prohibited in Boot Section</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LPM_DISABLE</name>
+                  <description>LPM prohibited in Boot Section</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SPM_DISABLE</name>
+                  <description>SPM prohibited in Boot Section</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>NO_LOCK</name>
+                  <description>No lock on SPM and LPM in Boot Section</description>
+                  <value>3</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -3448,7 +3822,7 @@
         </register>
         <register>
           <name>SPDR</name>
-          <description>SPI Data Register (not readable by debugger)</description>
+          <description>SPI Data Register (write-only for debugger)</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -3461,7 +3835,7 @@
         </register>
         <register>
           <name>SPSR</name>
-          <description>SPI Status Register</description>
+          <description>SPI Status Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4100,7 +4474,7 @@
         </register>
         <register>
           <name>SCSR</name>
-          <description>Symbol Counter Status Register</description>
+          <description>Symbol Counter Status Register (read-only for debugger)</description>
           <addressOffset>0x2</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4127,7 +4501,7 @@
         </register>
         <register>
           <name>SCTSRHH</name>
-          <description>Symbol Counter Frame Timestamp Register HH-Byte</description>
+          <description>Symbol Counter Frame Timestamp Register HH-Byte (read-only for debugger)</description>
           <addressOffset>0x10</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4148,7 +4522,7 @@
         </register>
         <register>
           <name>SCTSRHL</name>
-          <description>Symbol Counter Frame Timestamp Register HL-Byte</description>
+          <description>Symbol Counter Frame Timestamp Register HL-Byte (read-only for debugger)</description>
           <addressOffset>0xF</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4169,7 +4543,7 @@
         </register>
         <register>
           <name>SCTSRLH</name>
-          <description>Symbol Counter Frame Timestamp Register LH-Byte</description>
+          <description>Symbol Counter Frame Timestamp Register LH-Byte (read-only for debugger)</description>
           <addressOffset>0xE</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4190,7 +4564,7 @@
         </register>
         <register>
           <name>SCTSRLL</name>
-          <description>Symbol Counter Frame Timestamp Register LL-Byte</description>
+          <description>Symbol Counter Frame Timestamp Register LL-Byte (read-only for debugger)</description>
           <addressOffset>0xD</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4515,7 +4889,7 @@
         </register>
         <register>
           <name>TIFR0</name>
-          <description>Timer/Counter0 Interrupt Flag Register</description>
+          <description>Timer/Counter0 Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -4966,7 +5340,7 @@
         </register>
         <register>
           <name>TIFR1</name>
-          <description>Timer/Counter1 Interrupt Flag Register</description>
+          <description>Timer/Counter1 Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -5397,7 +5771,7 @@
         </register>
         <register>
           <name>TIFR2</name>
-          <description>Timer/Counter Interrupt Flag Register</description>
+          <description>Timer/Counter Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -5848,7 +6222,7 @@
         </register>
         <register>
           <name>TIFR3</name>
-          <description>Timer/Counter3 Interrupt Flag Register</description>
+          <description>Timer/Counter3 Interrupt Flag Register (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6264,7 +6638,7 @@
         </register>
         <register>
           <name>TIFR4</name>
-          <description>Timer/Counter4 Interrupt Flag Register (not readable by debugger)</description>
+          <description>Timer/Counter4 Interrupt Flag Register (write-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6680,7 +7054,7 @@
         </register>
         <register>
           <name>TIFR5</name>
-          <description>Timer/Counter5 Interrupt Flag Register (not readable by debugger)</description>
+          <description>Timer/Counter5 Interrupt Flag Register (write-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -6915,7 +7289,7 @@
         </register>
         <register>
           <name>AES_STATUS</name>
-          <description>AES Status Register</description>
+          <description>AES Status Register (read-only for debugger)</description>
           <addressOffset>0x1</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7776,7 +8150,7 @@
         </register>
         <register>
           <name>MAN_ID_0</name>
-          <description>Device Identification Register (Manufacture ID Low Byte)</description>
+          <description>Device Identification Register (Manufacture ID Low Byte) (read-only for debugger)</description>
           <addressOffset>0x22</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7833,7 +8207,7 @@
         </register>
         <register>
           <name>MAN_ID_1</name>
-          <description>Device Identification Register (Manufacture ID High Byte)</description>
+          <description>Device Identification Register (Manufacture ID High Byte) (read-only for debugger)</description>
           <addressOffset>0x23</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -7936,7 +8310,7 @@
         </register>
         <register>
           <name>PART_NUM</name>
-          <description>Device Identification Register (Part Number)</description>
+          <description>Device Identification Register (Part Number) (read-only for debugger)</description>
           <addressOffset>0x20</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -8098,7 +8472,7 @@
         </register>
         <register>
           <name>PHY_ED_LEVEL</name>
-          <description>Transceiver Energy Detection Level Register</description>
+          <description>Transceiver Energy Detection Level Register (read-only for debugger)</description>
           <addressOffset>0xB</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -8143,7 +8517,7 @@
         </register>
         <register>
           <name>PHY_RSSI</name>
-          <description>Receiver Signal Strength Indicator Register</description>
+          <description>Receiver Signal Strength Indicator Register (read-only for debugger)</description>
           <addressOffset>0xA</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -8854,7 +9228,7 @@
         </register>
         <register>
           <name>TRX_STATUS</name>
-          <description>Transceiver Status Register</description>
+          <description>Transceiver Status Register (read-only for debugger)</description>
           <addressOffset>0x5</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -9048,7 +9422,7 @@
         </register>
         <register>
           <name>VERSION_NUM</name>
-          <description>Device Identification Register (Version Number)</description>
+          <description>Device Identification Register (Version Number) (read-only for debugger)</description>
           <addressOffset>0x21</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -9456,7 +9830,7 @@
         </register>
         <register>
           <name>TWCR</name>
-          <description>TWI Control Register</description>
+          <description>TWI Control Register (read-only for debugger)</description>
           <addressOffset>0x4</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -9633,7 +10007,7 @@
         </register>
         <register>
           <name>UCSR0A</name>
-          <description>USART0 Control and Status Register A</description>
+          <description>USART0 Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -9891,7 +10265,7 @@
         </register>
         <register>
           <name>UDR0</name>
-          <description>USART0 I/O Data Register (not readable by debugger)</description>
+          <description>USART0 I/O Data Register (write-only for debugger)</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -9916,7 +10290,7 @@
       <registers>
         <register>
           <name>UCSR0A</name>
-          <description>USART0 MSPIM Control and Status Register A</description>
+          <description>USART0 MSPIM Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -10039,7 +10413,7 @@
         </register>
         <register>
           <name>UCSR1A</name>
-          <description>USART1 Control and Status Register A</description>
+          <description>USART1 Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -10297,7 +10671,7 @@
         </register>
         <register>
           <name>UDR1</name>
-          <description>USART1 I/O Data Register (not readable by debugger)</description>
+          <description>USART1 I/O Data Register (write-only for debugger)</description>
           <addressOffset>0x6</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
@@ -10322,7 +10696,7 @@
       <registers>
         <register>
           <name>UCSR1A</name>
-          <description>USART1 MSPIM Control and Status Register A</description>
+          <description>USART1 MSPIM Control and Status Register A (read-only for debugger)</description>
           <addressOffset>0x0</addressOffset>
           <size>0x8</size>
           <access>read-write</access>
