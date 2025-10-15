@@ -60,7 +60,7 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#debugging-with-a-command-line-interface">Debugging with a command-line interface</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#debugging-using-the-arduino-ide-2">Debugging using the Arduino IDE 2</a>
+    <li class="toctree-l2"><a class="reference internal" href="#debugging-using-the-arduino-ide-2-not-yet-implemented">Debugging using the Arduino IDE 2 (not yet implemented)</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#compiling-the-sketch">Compiling the sketch</a>
     </li>
@@ -175,7 +175,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 </code></pre>
 <p>If you have reached this point, I trust that you are familiar with GDB and know how to proceed.</p>
 <p>Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command <code>monitor debugwire disable</code>.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.</p>
-<h2 id="debugging-using-the-arduino-ide-2">Debugging using the Arduino IDE 2</h2>
+<h2 id="debugging-using-the-arduino-ide-2-not-yet-implemented">Debugging using the Arduino IDE 2 (not yet implemented)</h2>
 <p>If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most straightforward option.</p>
 <h3 id="compiling-the-sketch">Compiling the sketch</h3>
 <p>You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the <code>MiniCore</code> in the <code>Tools</code> menu. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).</p>

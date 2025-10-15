@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Release notes - PyAvrOCD</title>
+    <title>Troubleshooting - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Release notes";
-        var mkdocs_page_input_path = "release-notes.md";
+        var mkdocs_page_name = "Troubleshooting";
+        var mkdocs_page_input_path = "troubleshooting.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -80,20 +80,10 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#release-v0163">Release v0.16.3</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#release-v0162">Release v0.16.2</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#release-v0160">Release v0.16.0</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#release-v0150">Release v0.15.0</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
                   </li>
@@ -116,10 +106,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">About</li>
-      <li class="breadcrumb-item active">Release notes</li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/release-notes.md">Edit on PyAvrOCD</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/troubleshooting.md">Edit on PyAvrOCD</a>
     </li>
   </ul>
   <hr/>
@@ -127,55 +116,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="release-notes">Release Notes</h1>
-<h2 id="release-v0163">Release v0.16.3</h2>
-<ul>
-<li>Refreshed svd and device files.</li>
-<li>Svd files are now distributed as part of <code>pyavrocd-util</code> folder.</li>
-</ul>
-<h2 id="release-v0162">Release v0.16.2</h2>
-<ul>
-<li>The assets files names now also contain the PyAvrOCD version number.</li>
-<li>For the ATmega128, the breakpoint mode is now hardware-only and cannot be changed.</li>
-</ul>
-<h2 id="release-v0160">Release v0.16.0</h2>
-<ul>
-<li>The tool files are now only distributed as assets in the GitHub release. This means for the Arduino board packages that the tools files needs to be sourced from a new place.</li>
-</ul>
-<h2 id="release-v0150">Release v0.15.0</h2>
-<p>This is considered a pre-release in order to give people a chance to play around with PyAvrOCD. The following things have changed since the last release of dw-gdbserver:</p>
-<ul>
-<li>Support for JTAG debugging has been added.</li>
-<li>A number of command-line options have been added, and one option has been removed:<ul>
-<li><code>--debug-clock</code> for setting the JTAG clock frequency for debugging</li>
-<li><code>--prog-clock</code> for setting the JTAG clock frequency for programming</li>
-<li><code>--manage</code> in order to specify which fuses and lock bits should be managed by the GDB server</li>
-<li>and all <code>monitor</code> settings can now be done at the command-line, e.g., <code>--timers freeze</code>.</li>
-<li>In addition, you can set options in the file <code>pyavrocd.options</code> that will override the options on the command line.</li>
-<li>Using the notation <code>@file.ext</code>, any arguments in the file <code>file.ext</code> will be spliced into  the command line.</li>
-<li>The option <code>-g</code>/<code>--gede</code> has been removed since the effect of this option can be achieved with the <code>-s</code> option.</li>
-</ul>
-</li>
-<li>A few monitor commands have been added or modified:<ul>
-<li><code>atexit</code>: With this option, one can control whether the debugWIRE mode will be left when the debugging session is terminated.</li>
-<li><code>erasebeforeload</code>: With this option, one can control whether flash memory is completely erased before a file is loaded.</li>
-<li>Some defaults have been adapted, e.g., <code>readbeforewrite</code> is only enabled for debugWIRE targets, because for other targets it is counter-productive.</li>
-</ul>
-</li>
-<li>The breakpoint management has been redesigned and can now deal with multiple hardware breakpoints (as offered by the JTAG targets).</li>
-<li>Single-stepping has been reworked so that no hardware breakpoint is needed any longer.</li>
-<li>The problematic ATmega48 and 88 are now recognized before an attempt is made to switch them into debugWIRE mode. This helps to avoid "bricking" chips.</li>
-<li>The CI/CD has been enhanced so that we can now see a number of indicators in real-time.</li>
-<li>Executables are now generated on the GitHub hosts, which makes my life much easier.</li>
-<li>The documentation now uses mkdocs and the readthedocs theme, which looks much better and is more readable, I believe.</li>
-</ul>
+                <h1 id="troubleshooting">Troubleshooting</h1>
+<p>No Hardware Debugger Recognized</p>
+<p>Cannot </p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../license-link/" class="btn btn-neutral float-left" title="License"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../contributing/" class="btn btn-neutral float-right" title="Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -201,10 +147,6 @@
         </span>
     
     
-      <span><a href="../license-link/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../contributing/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
