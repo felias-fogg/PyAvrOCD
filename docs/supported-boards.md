@@ -87,7 +87,7 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 
 - <u>AVR-CAN (AT90CAN128)</u>: no core yet
 - AVR-GSM (ATMega32): no core yet
-- <s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with stuck-at-one bit
+- <s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with a stuck-at-one bit
 - <u>AVR-MT128 (ATmega128)</u>: no core yet, only hardware breakpoints (!)
 - AVR-USB-STK (AT90USB162): no core at all!
 - <u>AVR-USB-162 (AT90USB162)</u>: no core at all!
