@@ -5,7 +5,7 @@
    - SVD and device files freshly generated, now with read-only registers
    - During startup, we handle now situations with more than one connected tool and requiring the connection to a third one. It used to fail silently after trying to connect to dw-link. Now, a critical error message is printed without trying to connect to dw-link.
 - **Changed:**
-   - `svd` folder is now located in pyavrocd-util
+   - The `svd` folder is now located in pyavrocd-util.
 
 ### 0.16.2
 
