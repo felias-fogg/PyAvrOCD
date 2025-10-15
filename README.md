@@ -8,7 +8,7 @@
 ![Coverage badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/felias-fogg/c0d539e3ad0d10252d2aab8ad325246a/raw/pycoverage.json&maxAge=30)
 [![Release workflow](https://github.com/felias-fogg/PyAvrOCD/actions/workflows/release.yml/badge.svg)](https://github.com/felias-fogg/PyAvrOCD/actions/workflows/release.yml)
 [![Commits since latest](https://img.shields.io/github/commits-since/felias-fogg/PyAvrOCD/latest?include_prereleases&logo=github)](https://github.com/felias-fogg/PyAvrOCD/commits/main)
-[![PyPI Downloads](https://static.pepy.tech/personalized-badge/pyavrocd?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=BLUE&left_text=pypi downloads)](https://pepy.tech/projects/pyavrocd)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/pyavrocd?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=BLUE&left_text='pypi downloads')](https://pepy.tech/projects/pyavrocd)
 ![Hit Counter](https://visitor-badge.laobi.icu/badge?page_id=felias-fogg_PyAvrOCD)
 
 <p align="center">
