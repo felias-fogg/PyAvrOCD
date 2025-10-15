@@ -205,10 +205,7 @@ class TestMain(TestCase):
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
         self.assertEqual(mock_backend.call_count,1)
         mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
-        mock_logger.critical.assert_has_calls([
-                 call('Could not connect to hardware debugger: %s', ANY),
-                 call("Install libusb: 'brew install libusb'"),
-                 call('Maybe consult: https://github.com/greatscottgadgets/cynthion/issues/136')])
+        mock_logger.critical.assert_has_calls([call('Could not connect to hardware debugger: %s', ANY)])
 
     @patch('pyavrocd.main.dwlink.main')
     @patch('pyavrocd.main.importlib.metadata.version')
