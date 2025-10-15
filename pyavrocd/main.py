@@ -1,5 +1,3 @@
-
-
 """
 AVR GDB server main program
 """
@@ -23,8 +21,8 @@ import usb
 
 # debugger modules
 import pymcuprog
+import pymcuprog.backend
 from pyedbglib.hidtransport.hidtransportfactory import hid_transport
-from pymcuprog.backend import Backend
 from pymcuprog.toolconnection import ToolUsbHidConnection
 
 from pyavrocd import dwlink
@@ -260,7 +258,6 @@ def setup_logging(args, log_rsp):
     else:
         form = "[%(levelname)s] %(name)s: %(message)s"
     logging.basicConfig(stream=sys.stdout,level=args.verbose.upper(), format = form)
-    logger = getLogger()
 
     if args.verbose.lower() == "debug":
         getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
@@ -277,12 +274,13 @@ def setup_logging(args, log_rsp):
         getLogger('pymcuprog.nvm').setLevel(logging.CRITICAL)
         # we do not want to see the "read flash" messages
         getLogger('pymcuprog.avr8target').setLevel(logging.ERROR)
-    return logger
+        # we do not want to see the message 'Looking for ...' from getdeviceinfo
+        getLogger('pymcuprog.deviceinfo.deviceinfo').setLevel(logging.ERROR)
 
 def process_arguments(args, logger): #pylint: disable=too-many-branches
     """
     Process the parsed options. Return triple of
-    - return value (if program should be terminated, else None;
+    - return value (if program should be terminated, else None);
     - device name
     - interface string
     """
@@ -380,15 +378,16 @@ def run_server(server, logger):
     return 0
 
 #pylint: disable=too-many-branches
-def main():
+def startup(command_line, logger):
     """
-    Configures the CLI and parses the arguments, connects to a tool and starts debugger
+    Configures the CLI, connects to a tool, and starts debugger
     """
     no_backend_error = False # will become true when libusb is not found
-    no_hw_dbg_error = False # will become true, when no HW debugger is found
-    log_rsp = False
+    no_hw_dbg_error = False # will become true when no HW debugger is found
+    too_many_hw_dbg_error = False # will become true when too many HW debuggers are discovered
+    log_rsp = False # will becomce true when verbosity is 'all'
 
-    args = options(sys.argv[1:])
+    args = options(command_line)
 
     # verbose option 'all' is a special one
     if args.verbose == "all":
@@ -396,64 +395,77 @@ def main():
         args.verbose = "debug"
 
     # set up logging
-    logger = setup_logging(args, log_rsp)
-    logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
+    setup_logging(args, log_rsp)
 
+    #process arguments
     result, device, intf = process_arguments(args, logger)
     if result is not None:
         return result
-    #print(args)
+
+    #now report startup
+    logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
+
     if args.tool == "dwlink":
         dwlink.main(args, intf) # if we return, then there is no HW debugger
         no_hw_dbg_error = True
-        logger.critical("No hardware debugger discovered")
-    else:
-        # Use pymcuprog backend for initial connection here
-        backend = Backend()
-        toolconnection = _setup_tool_connection(args, logger)
-
-        try:
-            backend.connect_to_tool(toolconnection)
-        except usb.core.NoBackendError as e:
-            no_backend_error = True
-            logger.critical("Could not connect to hardware debugger: %s", e)
-            if platform.system() == 'Darwin':
-                logger.critical("Install libusb: 'brew install libusb'")
-                logger.critical("Maybe consult: " +
+        logger.critical("No compatible tool discovered")
+        return 1
+    # Use pymcuprog backend for initial connection here
+    backend = pymcuprog.backend.Backend()
+    toolconnection = _setup_tool_connection(args, logger)
+    try:
+        backend.connect_to_tool(toolconnection)
+    except usb.core.NoBackendError as e:
+        no_backend_error = True
+        logger.critical("Could not connect to hardware debugger: %s", e)
+        if platform.system() == 'Darwin':
+            logger.critical("Install libusb: 'brew install libusb'")
+            logger.critical("Maybe consult: " +
                                 "https://github.com/greatscottgadgets/cynthion/issues/136")
-            elif platform.system() == 'Linux':
-                logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
-            else:
-                logger.critical("This error should not happen!")
-        except pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError:
-            dwlink.main(args, intf)
+        elif platform.system() == 'Linux':
+            logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
+        else:
+            logger.critical("This error should not happen!")
+    except pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError:
+        available = backend.get_available_hid_tools(serialnumber_substring=toolconnection.serialnumber,
+                                                            tool_name=toolconnection.tool_name)
+        logger.debug("Available HW debugers: %d", len(available))
+        if not available:
+            if args.tool is None and args.serialnumber is None:
+                dwlink.main(args, intf)
             no_hw_dbg_error = True
-        finally:
-            backend.disconnect_from_tool()
+        elif len(available) > 1:
+            too_many_hw_dbg_error = True
+    finally:
+        backend.disconnect_from_tool()
 
-        transport = hid_transport()
-        if len(transport.devices) > 1:
-            logger.critical("Too many hardware debuggers connected")
-            return 1
-        if len(transport.devices) == 0 and no_hw_dbg_error:
-            logger.critical("No hardware debugger discovered")
-        if not no_backend_error and not no_hw_dbg_error:
-            transport.connect(serial_number=toolconnection.serialnumber,
-                                product=toolconnection.tool_name)
+    if too_many_hw_dbg_error:
+        logger.critical("Too many connected tools. Use -t or -s to distinguish!")
+        return 1
+    if no_hw_dbg_error:
+        logger.critical("No compatible tool discovered")
+    transport = hid_transport()
+    if not no_backend_error and not no_hw_dbg_error:
+        if transport.connect(serial_number=toolconnection.serialnumber,
+                                    product=toolconnection.tool_name):
             logger.info("Connected to %s", transport.hid_device.get_product_string())
-        elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices) == 0:
-            if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-                path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
-                path_to_prog +=  '/pyavrocd'
-            else:
-                path_to_prog = 'pyavrocd'
-            logger.critical(("Perhaps you need to install the udev rules first:\n"
-                             "'sudo %s --install-udev-rules'\n" +
-                             "and then unplug and replug the debugger."), path_to_prog)
+        else:
+            logger.critical("Far too many connected tools. Use -t or -s to distinguish!")
+            return 1
+    elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices) == 0:
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
+            path_to_prog +=  '/pyavrocd'
+        else:
+            path_to_prog = 'pyavrocd'
+        logger.critical(("Perhaps you need to install the udev rules first:\n"
+                         "'sudo %s --install-udev-rules'\n" +
+                         "and then unplug and replug the debugger."), path_to_prog)
 
     if no_hw_dbg_error or no_backend_error:
         return 1
 
+    # tool is connected, now we can start
     logger.info("Starting GDB server")
     try:
         avrdebugger = XAvrDebugger(transport, device, intf, args.manage, args.clkprg, args.clkdeb)
@@ -465,6 +477,13 @@ def main():
         raise
     startup_helper_prog(args, logger)
     return run_server(server, logger)
+
+def main():
+    """
+    This generates the root logger and forwards it as well as the arguments to the startup function
+    """
+    logger = getLogger()
+    return startup(sys.argv[1:], logger)
 
 if __name__ == "__main__":
     sys.exit(main())

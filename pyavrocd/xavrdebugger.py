@@ -61,6 +61,7 @@ class XAvrDebugger(AvrDebugger):
         # Gather device info
         # moved here so that we have mem + device info before the debug process starts
         try:
+            self.logger.info("Looking for device %s", devicename)
             self.device_info = deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices." + devicename)
         except ImportError:
             raise PymcuprogNotSupportedError("No device info for device: {}".format(devicename)) #pylint: disable=raise-missing-from

@@ -3,13 +3,15 @@ The test suit for main module
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 import logging
-from unittest.mock import MagicMock, call, patch
+import os.path
+from unittest.mock import MagicMock, Mock, call, patch, ANY
 from unittest import TestCase
 from types import SimpleNamespace
 import sys
-
+from usb.core import NoBackendError
+import pymcuprog.pymcuprog_errors
 from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, \
-     process_arguments, startup_helper_prog, run_server
+     process_arguments, startup_helper_prog, run_server, startup
 logging.basicConfig(level=logging.CRITICAL)
 
 class TestMain(TestCase):
@@ -99,7 +101,7 @@ class TestMain(TestCase):
     def test_setup_logging_debug(self):
         args = SimpleNamespace()
         args.verbose = "debug"
-        _logger = setup_logging(args, False)
+        setup_logging(args, False)
         logging.basicConfig.assert_called_with(stream=sys.stdout, level='DEBUG', format='[%(levelname)s] %(name)s: %(message)s') #pylint: disable=no-member
 
     @patch('pyavrocd.main.logging.basicConfig', MagicMock())
@@ -107,7 +109,7 @@ class TestMain(TestCase):
     def test_setup_logging_info(self):
         args = SimpleNamespace()
         args.verbose = "info"
-        _logger = setup_logging(args, True)
+        setup_logging(args,  True)
         logging.basicConfig.assert_called_with(stream=sys.stdout, level='INFO', format='[%(levelname)s] %(message)s')  #pylint: disable=no-member
 
     def test_process_arguments_manage_override(self):
@@ -171,4 +173,68 @@ class TestMain(TestCase):
         mock_server.serve.return_value = 0
         mock_logger = MagicMock()
         self.assertEqual(run_server(mock_server, mock_logger), 0)
+
+    @patch('pyavrocd.main.sys.stdout.write')
+    def test_startup_no_args(self, mock_print):
+        self.assertRaises(SystemExit,startup, [], Mock)
+        self.assertEqual(mock_print.call_count,1)
+
+    @patch('pyavrocd.main.sys.stderr.write')
+    def test_startup_wrong_args(self, mock_print):
+        self.assertRaises(SystemExit,startup, ['-x'], Mock)
+        caller = os.path.basename(sys.argv[0])
+        mock_print.assert_has_calls([call('usage: ' + caller + ' [options]\n'),
+                                     call(caller + ': error: unrecognized arguments: -x\n')])
+
+    @patch('pyavrocd.main.importlib.metadata.version')
+    @patch('pyavrocd.main.dwlink.main')
+    def test_startup_no_dwlink(self, mock_dwlink, mock_version):
+        mock_logger = MagicMock()
+        mock_version.return_value='VERSION'
+        self.assertEqual(startup(['-d', 'atmega328p', '-t', 'dwlink'], mock_logger), 1)
+        mock_logger.critical.assert_has_calls([call('No compatible tool discovered')])
+        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
+        self.assertEqual(mock_dwlink.call_count,1)
+
+    @patch('pyavrocd.main.importlib.metadata.version')
+    @patch('pyavrocd.main.pymcuprog.backend.Backend')
+    def test_startup_no_backend(self, mock_backend, mock_version):
+        mock_logger = MagicMock()
+        mock_version.return_value='VERSION'
+        mock_backend.return_value = Mock(connect_to_tool=Mock(side_effect = NoBackendError("")))
+        self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
+        self.assertEqual(mock_backend.call_count,1)
+        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
+        mock_logger.critical.assert_has_calls([
+                 call('Could not connect to hardware debugger: %s', ANY),
+                 call("Install libusb: 'brew install libusb'"),
+                 call('Maybe consult: https://github.com/greatscottgadgets/cynthion/issues/136')])
+
+    @patch('pyavrocd.main.dwlink.main')
+    @patch('pyavrocd.main.importlib.metadata.version')
+    @patch('pyavrocd.main.pymcuprog.backend.Backend')
+    def test_startup_no_tools(self, mock_backend, mock_version, mock_dwlink):
+        mock_logger = MagicMock()
+        mock_version.return_value='VERSION'
+        mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=Mock(return_value=[]))
+        self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
+        self.assertEqual(mock_backend.call_count,1)
+        self.assertEqual(mock_dwlink.call_count,1)
+        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
+        mock_logger.critical.assert_has_calls([call('No compatible tool discovered')])
+
+    @patch('pyavrocd.main.importlib.metadata.version')
+    @patch('pyavrocd.main.pymcuprog.backend.Backend')
+    def test_startup_two_tools(self, mock_backend, mock_version):
+        mock_logger = MagicMock()
+        mock_version.return_value='VERSION'
+        mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=Mock(return_value=[1,2]))
+        self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
+        self.assertEqual(mock_backend.call_count,1)
+        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
+        mock_logger.critical.assert_has_calls([call('Too many connected tools. Use -t or -s to distinguish!')])
+
+
+
+
 
