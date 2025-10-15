@@ -122,13 +122,15 @@ Some AVR MCUs are not debuggable or offer only limited debug support.
 
 MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:
 
-- *ATmega48*,
-- *ATmega88*,
-- *ATmega16*,
+- ATmega48,
+- ATmega88,
 
-all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match.
+- ATmega16, and
+- Atmega16A.
 
-Finally, we have the *ATmega128(A)*, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the `BREAK` instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to `software_breakpoint_set` throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (*not yet implemented*).
+These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them.
+
+Finally, we have the ATmega128(A), which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the `BREAK` instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to `software_breakpoint_set` throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode.
 
 ## DebugWIRE can brick MCUs
 
