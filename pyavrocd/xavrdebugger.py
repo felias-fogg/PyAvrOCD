@@ -3,7 +3,7 @@ Python AVR MCU debugger
 """
 # utilities
 import time
-from logging import getLogger
+import logging
 
 #edbg library
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
@@ -47,7 +47,7 @@ class XAvrDebugger(AvrDebugger):
         We do not want to make use of the base class' init method,
         because all startup code is collected in the start_debugging method!
         """
-        self.logger = getLogger(__name__)
+        self.logger = logging.getLogger(__name__)
         self.transport = transport
         self._devicename = devicename
         self._iface = iface
@@ -281,8 +281,8 @@ class XAvrDebugger(AvrDebugger):
         There are only very few MCUs with this issue and GDB cannot deal with it at all. Since for the
         MCUs with debugWIRE OCD  (ATmega48, ATmega88), this also lead to other issues,
         we try to terminate debugWIRE mode immediately and then initiate a shutdown sequence.
-        For some JTAG MCUs (ATmega16), the debuggers apparently mask out the stuck bit, but
-        the stuck bits show when the return address is pushed on the stack.
+        For some JTAG MCUs (ATmega16), the OCD apparently masks out the stuck bits, but
+        the stuck bits show when the return address is pushed onto the stack.
         """
         self.reset()
         pc = self.program_counter_read()

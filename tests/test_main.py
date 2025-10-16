@@ -70,7 +70,7 @@ class TestMain(TestCase):
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
     @patch('pyavrocd.main.sys.exit', MagicMock())
-    def test_options_questionmark(self):
+    def test_options_tools_questionmark(self):
         args = options(["-d", "mcu", "-t", "?"])
         self.assertEqual(args.dev, "mcu")
         self.assertEqual(args.tool, "?")
@@ -78,10 +78,32 @@ class TestMain(TestCase):
 
     @patch('builtins.print')
     @patch('pyavrocd.main.sys.exit', MagicMock())
-    def test_options_device_questionmark(self, mocked_print):
+    def test_options_device_with_interface_questionmark(self, mocked_print):
         options(["-d", "?", "-i", "pdi"])
         sys.exit.assert_called_once()
-        mocked_print.assert_has_calls([call("Supported device with debugging interface 'pdi':"), call('None')])
+        mocked_print.assert_has_calls([call("Supported devices with debugging interface 'pdi':"), call('None')])
+
+    @patch('builtins.print')
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    def test_options_device_questionmark(self, mocked_print):
+        options(["-d", "?"])
+        sys.exit.assert_called_once()
+        mocked_print.assert_has_calls([call("Supported devices:")])
+
+
+    @patch('builtins.print')
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    def test_options_questionmarks(self, mocked_print):
+        options(['-i?', '-m', '?', '--verbose=?'])
+        sys.exit.assert_called_once()
+        mocked_print.assert_has_calls([
+            call('Possible interfaces (-i) are: ', end=''),
+            call('debugwire, jtag, pdi, updi'),
+            call('Possible (repeatable) fuse management options (-m) are: '),
+            call('all, none, bootrst, nobootrst, dwen, nodwen, ocden, noocden, lockbits, nolockbits, eesave, noeesave'),
+            call('Possible verbosity levels (-v) are: ', end=''),
+            call('all, debug, info, warning, error, critical')])
+
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
     @patch('pyavrocd.main.sys.exit', MagicMock())
@@ -125,6 +147,48 @@ class TestMain(TestCase):
         self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
         self.assertEqual(args.manage, ['ocden', 'lockbits', 'eesave'])
 
+    def test_process_arguments_gdb_manage_none(self):
+        args = SimpleNamespace()
+        args.dev = 'atmega328p'
+        args.interface = 'debugwire'
+        args.version = None
+        args.cmd = [ 'tcl_port 56', 'gdb_port 9999' ]
+        args.tool = None
+        args.manage = ['all', 'nobootrst', 'nodwen', 'none', 'eesave' ]
+        args.clkprg = 1000
+        args.clkdeb = 200
+        self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
+        self.assertEqual(args.manage, ['eesave'])
+        self.assertEqual(args.port, 9999)
+
+    @patch('builtins.print')
+    def test_process_arguments_neg_freq(self, mocked_print):
+        args = SimpleNamespace()
+        args.dev = 'atmega328p'
+        args.interface = 'debugwire'
+        args.version = None
+        args.cmd = None
+        args.tool = None
+        args.manage = []
+        args.clkprg = -10
+        args.clkdeb = 200
+        self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
+        mocked_print.assert_has_calls([call("Negative frequency values are discouraged")])
+    
+    @patch('builtins.print')
+    def test_process_arguments_no_device(self, mocked_print):
+        args = SimpleNamespace()
+        args.dev = None
+        args.interface = 'debugwire'
+        args.version = None
+        args.cmd = None
+        args.tool = None
+        args.manage = []
+        args.clkprg = 1000
+        args.clkdeb = 200
+        self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
+        mocked_print.assert_has_calls([call("Please specify target MCU with -d option")])
+    
     @patch('builtins.print')
     def test_process_arguments_wrong_iface(self, mocked_print):
         args = SimpleNamespace()
@@ -138,6 +202,20 @@ class TestMain(TestCase):
         args.clkdeb = 200
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Device 'atmega328p' does not have the interface 'jtag'")])
+
+    @patch('builtins.print')
+    def test_process_arguments_no_support(self, mocked_print):
+        args = SimpleNamespace()
+        args.dev = 'atmega31'
+        args.interface = 'jtag'
+        args.version = None
+        args.cmd = None
+        args.tool = None
+        args.manage = ['all', 'nobootrst', 'nodwen']
+        args.clkprg = 1000
+        args.clkdeb = 200
+        self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
+        mocked_print.assert_has_calls([call("Device 'atmega31' is not supported by PyAvrOCD")])
 
     @patch('pyavrocd.main.subprocess.Popen')
     def test_startup_helper_prog_noop(self, mocked_popen):

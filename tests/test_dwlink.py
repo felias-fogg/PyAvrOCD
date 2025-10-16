@@ -4,8 +4,10 @@ The test suite for dwlink
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 import logging
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, Mock, patch, call
 from unittest import TestCase
+
+from serial import SerialException
 
 from pyavrocd.dwlink import SerialToNet, discover, main
 
@@ -129,9 +131,10 @@ class TestSerialToNet(TestCase):
     @patch('pyavrocd.dwlink.sys.stdout.write')
     def test_main_no_interface(self, mock_write,  mock_discover):
         args = SimpleNamespace()
-        args.verbose = 'info'
+        args.verbose = 'all'
         args.dev = 'atmega328p'
         mock_discover.return_value = (10, '/dev/null')
         self.assertRaises(SystemExit, main, args, 'jtag')
         mock_write.assert_called_once()
+
 

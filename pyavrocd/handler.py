@@ -3,7 +3,7 @@ This is the RSP command handler module.
 """
 
 # args, logging
-from logging import getLogger
+import logging
 
 
 # utilities
@@ -34,8 +34,8 @@ class GdbHandler():
     """
     def __init__ (self, comsocket, avrdebugger, devicename, args):
         self.packet_size = RECEIVE_BUFFER - 20
-        self.logger = getLogger('pyavrocd.handler')
-        self.rsp_logger = getLogger('pyavrocd.rsp')
+        self.logger = logging.getLogger('pyavrocd.handler')
+        self.rsp_logger = logging.getLogger('pyavrocd.rsp')
         self.dbg = avrdebugger
         self.mon = MonitorCommand(self.dbg.get_iface(), args)
         self.mem = Memory(avrdebugger, self.mon)
@@ -104,7 +104,9 @@ class GdbHandler():
             if cmd not in {'X', 'vFlashWrite'}: # no binary data in packet
                 packet = packet.decode('ascii')
             handler(packet)
-        except (FatalError, PymcuprogNotSupportedError, PymcuprogError, AssertionError) as e:
+        except (EndOfSession, KeyboardInterrupt):
+            raise
+        except Exception as e:
             self.logger.critical(e)
             if not self.critical:
                 self.critical = e
@@ -156,7 +158,7 @@ class GdbHandler():
             return False
         return True
 
-    def __send_execution_result_signal(self, sig):
+    def _send_execution_result_signal(self, sig):
         """
         Internal method for continue and step:
         Print message and send signal according the result of the execution.
@@ -166,10 +168,10 @@ class GdbHandler():
             self.logger.warning("Too many breakpoints.")
         if sig == SIGILL:
             self.send_debug_message("Cannot execute because of  BREAK instruction")
-            self.logger.warning("Cannot execute because of BREAK instruction")
+            self.logger.warning("Cannot execute because of BREAK instruction.")
         if sig == SIGBUS:
             self.send_debug_message("Cannot execute because stack pointer is too low")
-            self.logger.warning("Cannot execute because stack pointer is too low")
+            self.logger.warning("Cannot execute because stack pointer is too low.")
         if sig is not None:
             self.send_signal(sig)
 
@@ -185,7 +187,7 @@ class GdbHandler():
         if packet:
             newpc = int(packet,16)
             self.logger.debug("Set PC to 0x%X before resuming execution", newpc)
-        self.__send_execution_result_signal(self.bp.resume_execution(newpc))
+        self._send_execution_result_signal(self.bp.resume_execution(newpc))
 
     def _continue_with_signal_handler(self, packet):
         """
@@ -379,8 +381,8 @@ class GdbHandler():
             if response[0] == 'dwon':
                 if self.critical:
                     raise FatalError(self.critical)
-                self.dbg.prepare_debugging(callback=self.__send_power_cycle,
-                                               recognition=self.__send_ready_message)
+                self.dbg.prepare_debugging(callback=self._send_power_cycle,
+                                               recognition=self._send_ready_message)
                 self.dbg.start_debugging()
                 # will only be called if there was no error in connecting to OCD:
                 self.mon.set_debug_mode_active()
@@ -424,7 +426,7 @@ class GdbHandler():
             self.send_reply_packet(response[1])
 
 
-    def __send_power_cycle(self):
+    def _send_power_cycle(self):
         """
         This is a call back function that will try to power-cycle
         automagically. If successful, it will return True.
@@ -449,7 +451,7 @@ class GdbHandler():
         self.send_debug_message("*** Please power-cycle the target system ***")
         return False
 
-    def __send_ready_message(self):
+    def _send_ready_message(self):
         self.send_debug_message("*** Power-down recognized. Apply power again! ***")
 
     def _supported_handler(self, _):
@@ -514,7 +516,7 @@ class GdbHandler():
         if packet:
             newpc = int(packet,16)
             self.logger.debug("Set PC to 0x%X before single step",newpc)
-        self.__send_execution_result_signal(self.bp.single_step(newpc))
+        self._send_execution_result_signal(self.bp.single_step(newpc))
 
 
     def _step_with_signal_handler(self, packet):
@@ -545,7 +547,7 @@ class GdbHandler():
                 self._step_handler("")
             elif packet[1] == 'r':
                 step_range = packet[2:].split(':')[0].split(',')
-                self.__send_execution_result_signal(
+                self._send_execution_result_signal(
                     self.bp.range_step(int(step_range[0],16), int(step_range[1],16)))
             else:
                 self.send_packet("") # unknown
@@ -801,7 +803,7 @@ class GdbHandler():
         """
         self.last_sigval = signal
         if signal: # do nothing if None or 0
-            if signal in [SIGHUP, SIGILL, SIGABRT, SIGSYS, SIGSEGV]:
+            if signal in [SIGHUP, SIGILL, SIGABRT, SIGSYS, SIGSEGV, SIGBUS]:
                 self.send_packet("S{:02X}".format(signal))
                 return
             sreg = self.dbg.status_register_read()[0]

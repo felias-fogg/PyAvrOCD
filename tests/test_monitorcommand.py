@@ -15,6 +15,24 @@ class TestMonitorCommand(TestCase):
 
     def setUp(self):
         self.mo = MonitorCommand('debugwire', options(['-f', 'foo', '-d', 'atmega328p']))
+        self.moj = MonitorCommand('jtag', options(['-f', 'foo', '-d', 'atmega128', '--timer', 'freeze']))
+
+
+    def test_defaults_atmega128(self):
+        self.assertTrue(self.moj._onlyhwbps)
+        self.assertFalse(self.moj._onlyswbps)
+        self.assertTrue(self.moj._bpfixed)
+        self.assertTrue(self.moj._timersfreeze)
+        self.assertTrue(self.moj._erase_before_load)
+        self.assertFalse(self.moj._read_before_write)
+
+    def test_defaults_atmega328p(self):
+        self.assertFalse(self.mo._onlyhwbps)
+        self.assertFalse(self.mo._onlyswbps)
+        self.assertFalse(self.mo._bpfixed)
+        self.assertFalse(self.mo._timersfreeze)
+        self.assertFalse(self.mo._erase_before_load)
+        self.assertTrue(self.mo._read_before_write)
 
     def test_dispatch_ambigious(self):
         self.assertEqual(self.mo.dispatch(["ver"]), ("", "Ambiguous 'monitor' command string"))
@@ -45,6 +63,9 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo._onlyhwbps, False)
         self.assertEqual(self.mo._onlyswbps, True)
         self.assertEqual(self.mo.dispatch(["break", "X"]), ("", "Unknown argument in 'monitor' command"))
+        self.mo._onlyhwbps = False
+        self.mo._onlyswbps = False
+
 
     def test_dispatch_Cache(self):
         self.mo._cache = False
@@ -174,3 +195,18 @@ class TestMonitorCommand(TestCase):
         except importlib.metadata.PackageNotFoundError:
             return
         self.assertEqual(self.mo.dispatch(['version']), ("", "PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd"))))
+
+    def test_dispatch_oldExec_ok(self):
+        self.assertEqual(self.mo.dispatch(['OldExecution']), ("", "Old execution mode"))
+
+    def test_dispatch_oldExec_no_abbrev(self):
+        self.assertEqual(self.mo.dispatch(['OldExec']), ("", "Unknown 'monitor' command"))
+
+    def test_dispatch_target(self):
+        self.assertEqual(self.mo.dispatch(['Target']), ("", "Target power is on"))
+        self.assertEqual(self.mo.dispatch(['Target', 'on']), ("power on", "Target power on"))
+        self.assertEqual(self.mo.dispatch(['Target', 'off']), ("power off", "Target power off"))
+        self.assertEqual(self.mo.dispatch(['Target']), ("", "Target power is off"))
+        self.assertEqual(self.mo.dispatch(['Target', 'query']), ("power query", "Target query"))
+
+

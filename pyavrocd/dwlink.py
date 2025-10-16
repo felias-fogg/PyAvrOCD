@@ -152,9 +152,6 @@ def main(args, intf):
         serial_worker = serial.threaded.ReaderThread(ser, ser_to_net)
         serial_worker.start()
 
-        if args.gede:
-            args.prg = "gede"
-
         srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:

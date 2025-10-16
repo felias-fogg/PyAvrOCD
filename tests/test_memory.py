@@ -40,6 +40,7 @@ class TestMemory(TestCase):
         self.mem.programming_mode = False
 
     def test_init_flash_True(self):
+        self.mem.init_flash()
         self.assertEqual(self.mem._flash,bytearray())
         self.assertEqual(self.mem._flashmem_start_prog,0)
 
@@ -136,6 +137,17 @@ class TestMemory(TestCase):
         self.mem.programming_mode = True
         self.mem.dbg.device_info.__getitem__.return_value = 0x1e950f
         self.assertEqual(self.mem.writemem("840000", bytearray([0x0f, 0x95, 0x1e])), "OK")
+
+    def test_writemem_no_data(self):
+        self.assertEqual(self.mem.writemem("810022", bytearray()), "OK")
+
+    def test_writemem_flash_fail(self):
+        self.mem.programming_mode = False
+        self.assertEqual(self.mem.writemem("100", bytearray(1)), "E13")    
+
+    def test_writemem_flash_ok(self):
+        self.mem.programming_mode = True
+        self.assertEqual(self.mem.writemem("100", bytearray(1)), "OK")    
 
     def test_store_to_cache_error(self):
         self.mem._flash = bytearray(10)

@@ -8,11 +8,13 @@ from unittest import TestCase
 import socket
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.handler import GdbHandler
-from pyavrocd.errors import EndOfSession
+from pyavrocd.errors import EndOfSession, FatalError
 from pyavrocd.memory import Memory
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.breakexec import BreakAndExec, SIGINT, SIGHUP
 from pyavrocd.main import options
+from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGSEGV, SIGSYS
+
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -23,6 +25,7 @@ def rsp(packet):
 
 class TestGdbHandler(TestCase):
 
+    @patch('pyavrocd.handler.logging.getLogger', MagicMock())
     def setUp(self):
         mock_socket = create_autospec(socket.socket, spec_set=True, instance=True)
         mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
@@ -50,6 +53,19 @@ class TestGdbHandler(TestCase):
         self.gh.dispatch('_', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp(""))
 
+    @patch('pyavrocd.handler.GdbHandler._set_binary_memory_handler_finalize',Mock())
+    def test_empty_packet(self):
+        self.gh.mem.lazy_loading = True
+        self.gh.dispatch(None,'')
+        self.gh._set_binary_memory_handler_finalize.assert_called_once()
+
+    def test_exception_in_packet_handler(self):
+        self.gh.critical = None
+        self.gh.dispatch('!', None)
+        self.gh._comsocket.sendall.assert_called_with(rsp("S06"))
+        self.assertFalse(self.gh.critical is None)
+        self.gh.critical = None
+
     def test_extended_remote_handler(self):
         self.assertFalse(self.gh._extended_remote_mode)
         self.gh.dispatch('!', b'')
@@ -65,6 +81,23 @@ class TestGdbHandler(TestCase):
         self.gh.last_sigval = SIGINT
         self.gh.dispatch('?', b'')
         self.gh._comsocket.sendall.assert_called_with(rsp("S02"))
+
+    def test__send_execution_results_SIGSYS(self):
+        self.gh._send_execution_result_signal(SIGSYS)
+        self.gh._comsocket.sendall.assert_called_with(rsp("S0C"))
+        self.gh.logger.warning.assert_called_with("Too many breakpoints.")
+
+    def test__send_execution_results_SIGILL(self):
+        self.gh._send_execution_result_signal(SIGILL)
+        self.gh._comsocket.sendall.assert_called_with(rsp("S04"))
+        self.gh.logger.warning.assert_called_with("Cannot execute because of BREAK instruction.")
+
+    def test__send_execution_results_SIGBUS(self):
+        self.gh._send_execution_result_signal(SIGBUS)
+        self.gh._comsocket.sendall.assert_called_with(rsp("S0A"))
+        self.gh.logger.warning.assert_called_with("Cannot execute because stack pointer is too low.")
+
+
 
     def test_continue_handler_impossible(self):
         self.gh.mon.is_debugger_active.return_value = False
@@ -109,6 +142,11 @@ class TestGdbHandler(TestCase):
         self.gh.dispatch('C',b'09')
         self.gh.bp.resume_execution.assert_called_with(None)
         self.gh._comsocket.sendall.assert_not_called()
+
+    def test_continue_after_critical_error(self):
+        self.gh.critical = True
+        self.gh.dispatch('C',b'')
+        self.gh._comsocket.sendall.assert_called_with(rsp("S06"))
 
     def test_detach_handler(self):
         with self.assertRaises(EndOfSession):

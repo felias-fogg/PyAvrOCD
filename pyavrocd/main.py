@@ -171,7 +171,7 @@ You can also use monitor command options, e.g., --timer=freeze.
     if args.dev == "?":
         questionmark = True
         if args.interface and args.interface != '?':
-            print("Supported device with debugging interface '%s':" % args.interface)
+            print("Supported devices with debugging interface '%s':" % args.interface)
             alldev = [x for x in sorted(dev_id) if args.interface in dev_iface[dev_id[x]].lower().split("+")]
         else:
             print("Supported devices:")
