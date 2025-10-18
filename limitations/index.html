@@ -233,12 +233,17 @@ IN R2, PINB
 <p>Some AVR MCUs are not debuggable or offer only limited debug support.</p>
 <p>MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:</p>
 <ul>
-<li><em>ATmega48</em>,</li>
-<li><em>ATmega88</em>,</li>
-<li><em>ATmega16</em>,</li>
+<li>ATmega48,</li>
+<li>
+<p>ATmega88,</p>
+</li>
+<li>
+<p>ATmega16, and</p>
+</li>
+<li>Atmega16A.</li>
 </ul>
-<p>all without any A- or P-suffix. These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since these chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them. Furthermore, I have seen a relabeled ATmega16 chip, which was sold as an ATmega16A, but the internal revision number did not match.</p>
-<p>Finally, we have the <em>ATmega128(A)</em>, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode (<em>not yet implemented</em>).</p>
+<p>These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them.</p>
+<p>Finally, we have the ATmega128(A), which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode.</p>
 <h2 id="debugwire-can-brick-mcus">DebugWIRE can brick MCUs</h2>
 <p>DebugWIRE can be dangerous to the health of your MCU.</p>
 <p>While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, for example, the <code>monitor debugwire enable</code> command), the RESET line can no longer be used to reset the chip, and it is impossible to use SPI programming to change fuses, particularly the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chip?</p>
