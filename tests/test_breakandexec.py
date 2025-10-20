@@ -2,7 +2,6 @@
 The test suit for the BreakAndExec class
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-import logging
 from unittest.mock import Mock, call, create_autospec
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
@@ -10,11 +9,12 @@ from pyavrocd.monitor import MonitorCommand
 from pyavrocd.breakexec import BreakAndExec, SIGTRAP, SIGILL, SIGBUS, SIGSYS, BREAKCODE, \
      SLEEPCODE, SWBP, HWBP
 
-logging.basicConfig(level=logging.CRITICAL)
-
 class TestBreakAndExec(TestCase):
 
     def setUp(self):
+        self.bp = None
+
+    def set_up(self):
         mock_mon = create_autospec(MonitorCommand, specSet=True, instance=True)
         mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
         mock_dbg.memory_info = Mock()
@@ -26,20 +26,24 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_safe.return_value = True
 
     def test_maxbpnum_all(self):
+        self.set_up()
         self.bp.mon.is_onlyhwbps.return_value = False
         self.assertEqual(self.bp.maxbpnum(), 1024)
 
     def test_maxbpnum_hwbponly(self):
+        self.set_up()
         self.bp.mon.is_onlyhwbps.return_value = True
         self.assertEqual(self.bp.maxbpnum(), 1)
 
     def test_insert_breakpoint_old_exec(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = True
         self.bp.insert_breakpoint(2)
         self.bp.dbg.software_breakpoint_set.assert_called_with(2)
         self.assertFalse(bool(self.bp._bp))
 
     def test_insert_breakpoint_odd(self):
+        self.set_up()
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.insert_breakpoint(3)
         self.assertFalse(bool(self.bp._bp))
@@ -47,6 +51,7 @@ class TestBreakAndExec(TestCase):
         self.assertTrue(bool(self.bp._bp[2]))
 
     def test_insert_breakpoints_regular(self):
+        self.set_up()
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._read_flash_word.side_effect = [ BREAKCODE, 0x1111, 0x2222, 0x3333 ]
         self.bp.insert_breakpoint(100)
@@ -57,11 +62,13 @@ class TestBreakAndExec(TestCase):
                                     'opcode': 0x2222, 'secondword' : 0x3333, 'timestamp' : 2 }})
 
     def test_remove_breakpoint_old_exec(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = True
         self.bp.remove_breakpoint(2)
         self.bp.dbg.software_breakpoint_clear.assert_called_with(2)
 
     def test_remove_breakpoints_regular_idempotent(self):
+        self.set_up()
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._bp = {100: { 'active': True, 'allocated' : None,
                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 },
@@ -84,11 +91,13 @@ class TestBreakAndExec(TestCase):
                                     'opcode': 0x2222, 'secondword' : 0x3333, 'timestamp' : 2 }})
 
     def test_read_filtered_flash_word_nobp(self):
+        self.set_up()
         self.bp._read_flash_word.return_value = 0x1234
         self.assertEqual(self.bp._read_filtered_flash_word(100), 0x1234)
         self.bp._read_flash_word.assert_called_once()
 
     def test_read_filtered_flash_word_bp(self):
+        self.set_up()
         self.bp._read_flash_word.return_value = 0x1234
         self.bp._bp = {100: { 'active': True, 'allocated' : None, # will get swbp
                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 2 }}
@@ -96,6 +105,7 @@ class TestBreakAndExec(TestCase):
         self.bp._read_flash_word.assert_not_called()
 
     def test_update_breakpoints_remove_sethwbp(self):
+        self.set_up()
         self.maxDiff = None
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
@@ -119,6 +129,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.software_breakpoint_set.assert_called_with(100)
 
     def test_update_breakpoints_with_protected_bp_and_reserved_hwbp(self):
+        self.set_up()
         self.maxDiff = None
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
@@ -142,6 +153,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.software_breakpoint_set.assert_has_calls([call(100)], any_order=True)
 
     def test_update_breakpoints_update_remove_stealhwbp(self):
+        self.set_up()
         self.maxDiff = None
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
@@ -171,6 +183,7 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(self.bp._bpactive, 3)
 
     def test_cleanup_breakpoints(self):
+        self.set_up()
         self.bp._hwbp._hwbplist = [ 1 ]
         self.bp._bp = { 1: 1}
         self.bp._bpactive = 1
@@ -181,6 +194,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.software_breakpoint_clear_all.assert_called_once()
 
     def test_resume_execution_old_exec(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_old_exec.return_value = True
         self.bp.resume_execution(2224)
@@ -188,6 +202,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run.assert_called_once()
 
     def test_resume_execution_with_hwbp(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._hwbp._hwbplist = [ 8888 ]
@@ -196,6 +211,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_called_with(8888)
 
     def test_resume_execution_break(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._read_flash_word.side_effect = [ BREAKCODE ]
@@ -203,6 +219,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.program_counter_write.assert_called_with(1112)
 
     def test_resume_execution_sleep(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._read_flash_word.side_effect = [ SLEEPCODE ]
@@ -212,6 +229,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_called_with(8888)
 
     def test_resume_execution_without_hwbp(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = True
         self.bp._hwbp._hwbplist = [ None ]
         self.bp.resume_execution(None)
@@ -219,6 +237,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run.assert_called_once()
 
     def test_resume_execution_at_break_one_word_with_hwbp(self):
+        self.set_up()
         self.bp._bstamp = 3
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
@@ -231,6 +250,7 @@ class TestBreakAndExec(TestCase):
         self.assertFalse(2224 in self.bp._bp)
 
     def test_resume_execution_at_break_two_word_instr_with_hwbp(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._hwbplist = [ 2224 ]
@@ -241,6 +261,7 @@ class TestBreakAndExec(TestCase):
         self.assertFalse(2224 in self.bp._bp)
 
     def test_single_step_old_exec(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = True
         self.bp.dbg.program_counter_read.return_value = 22
         self.assertTrue(self.bp.single_step(None), SIGTRAP)
@@ -249,6 +270,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_break(self):
+        self.set_up()
         self.bp.mon.is_safe.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
@@ -257,6 +279,7 @@ class TestBreakAndExec(TestCase):
         self.bp._read_flash_word.assert_called_once()
 
     def test_single_step_sleep(self):
+        self.set_up()
         self.bp.mon.is_safe.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
@@ -266,6 +289,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.program_counter_write.assert_has_calls([call(23)])
 
     def test_single_step_two_word_instr_at_BP_without_start(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
@@ -278,6 +302,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_unsafe_with_start(self):
+        self.set_up()
         self.bp.mon.is_safe.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp._read_flash_word.return_value = 0x0000 # return NOP
@@ -289,6 +314,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_nobranch_oneWordInstr(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ 0x1807, 0x1807, 0x8FFF ]
@@ -300,6 +326,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_nobranch_two_word_instr(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ 0x9000, 0x9000, 0x88FF ]
@@ -310,6 +337,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_reti_one_word_instr(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ 0x9518, 0x9518, 0x8FFF ] # RETI
@@ -325,6 +353,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_reti_one_word_instr_sigbus(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ 0x9518, 0x9518, 0x8FFF ] # RETI
@@ -339,6 +368,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_branch_two_word_instr(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ 0x950C, 0x950C, 0x8FFF ] # JMP 0x40XXXX
@@ -353,6 +383,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_brie(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ 0xF017, 0xF017 ]
@@ -364,6 +395,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_single_step_safe_push_illegal(self):
+        self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
@@ -371,30 +403,35 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(self.bp.single_step(None, fresh= True), SIGBUS)
 
     def test_stack_pointer_legal_pop(self):
+        self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5E, 0x00 ])
         self.assertFalse(self.bp._stack_pointer_legal(0x900F)) # POP R0
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
         self.assertTrue(self.bp._stack_pointer_legal(0x900F))
 
     def test_stack_pointer_legal_ret(self):
+        self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5E, 0x00 ])
         self.assertFalse(self.bp._stack_pointer_legal(0x9508)) # RET
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
         self.assertTrue(self.bp._stack_pointer_legal(0x9518)) # RETI
 
     def test_stack_pointer_legal_push(self):
+        self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5F, 0x00 ])
         self.assertFalse(self.bp._stack_pointer_legal(0x920F)) # PUSH R0
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x60, 0x00 ])
         self.assertTrue(self.bp._stack_pointer_legal(0x920F)) # PUSH R0
 
     def test_stack_pointer_legal_call(self):
+        self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x60, 0x00 ])
         self.assertFalse(self.bp._stack_pointer_legal(0xD000)) # RCALL
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x61, 0x00 ])
         self.assertTrue(self.bp._stack_pointer_legal(0x9509)) # ICALL
 
     def test_range_step_impossible_mon(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = True
         self.bp.mon.is_range.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
@@ -406,6 +443,7 @@ class TestBreakAndExec(TestCase):
         self.bp._read_flash_word.assert_called_once()
 
     def test_range_step_impossible_odd(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = False
         self.bp.mon.is_range.return_value = True
         self.bp.mon.is_onlyswbps.return_value = False
@@ -417,6 +455,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.step.assert_called_with()
 
     def test_range_step_possible_onlyhwbp0(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = False
         self.bp.mon.is_range.return_value = True
         self.bp.mon.is_onlyhwbps.return_value = True
@@ -430,6 +469,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_range_step_impossible_onlyhwbp2(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = False
         self.bp.mon.is_range.return_value = True
         self.bp.mon.is_onlyhwbps.return_value = True
@@ -444,6 +484,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_range_step_break(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = False
         self.bp.mon.is_range.return_value = True
         self.bp.mon.is_onlyhwbps.return_value = False
@@ -458,6 +499,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_range_step_sleep(self):
+        self.set_up()
         self.bp.mon.is_old_exec.return_value = False
         self.bp.mon.is_range.return_value = True
         self.bp.mon.is_onlyhwbps.return_value = False
@@ -473,6 +515,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_not_called()
 
     def test_range_step_race_to_branch(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         # while (++i) { if ( i < 0 ) return(i); }
         code = [ 0x2f98, 0x5f8f, 0xf011, 0xf7e2, 0x9508, 0xe083, 0x2f98, ]
@@ -485,6 +528,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.run_to.assert_called_with(0x033e)
 
     def test_range_step_return_after_first_step(self):
+        self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         # while (++i) { if ( i < 0 ) return(i); }
         code = [ 0x2f98, 0x5f8f, 0xf011, 0xf7e2, 0x9508, 0xe083, 0x2f98, 0x2f98, 0x2f98, 0x2f98 ]
@@ -497,6 +541,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.step.assert_called()
 
     def test_build_range_one_exit(self):
+        self.set_up()
         # _delay_ms(100)
         code = [ 0xef2f, 0xee81, 0xe094, 0x5021, 0x4080, 0x0490, 0xf7e1, 0xc000, 0x0000, 0xe061 ]
         self.bp._read_flash_word.side_effect = code
@@ -510,6 +555,7 @@ class TestBreakAndExec(TestCase):
         self.assertEqual([ 0x370, 0x372, 0x376], self.bp._range_branch)
 
     def test_build_range_two_exits(self):
+        self.set_up()
         # while (++i) { if ( i < 0 ) return(i); }
         code = [ 0x2f98, 0x5f8f, 0xf011, 0xf7e2, 0x9508, 0xe083 ]
         self.bp._read_flash_word.side_effect = code
@@ -523,10 +569,12 @@ class TestBreakAndExec(TestCase):
         self.assertEqual([ 0x33e, 0x340, 0x342, 0x344], self.bp._range_branch)
 
     def test_compute_possible_destination_of_branch(self):
+        self.set_up()
         self.assertEqual(self.bp._compute_possible_destination_of_branch(0xF02F, 20), 32)
         self.assertEqual(self.bp._compute_possible_destination_of_branch(0xF7FF, 20), 20)
 
     def test_computeDestinationOfBranch(self):
+        self.set_up()
         self.assertEqual(self.bp._compute_destination_of_ibranch(0xF02F, 1, 20), 32)
         self.assertEqual(self.bp._compute_destination_of_ibranch(0xF3FF, 1, 20), 20)
         self.assertEqual(self.bp._compute_destination_of_ibranch(0xF02F, 0, 20), 22)
@@ -537,6 +585,7 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(self.bp._compute_destination_of_ibranch(0xF7FF, 1, 20), 22)
 
     def test_sim_two_word_instr_lds(self):
+        self.set_up()
         self.bp.dbg.sram_read.return_value = bytearray(0x55)
         self.assertTrue(self.bp._two_word_instr(0x90F0))
         self.assertEqual(self.bp._sim_two_word_instr(0x90F0, 0x1000, 0x2002), 0x2006)
@@ -544,6 +593,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.sram_write.assert_called_with(15,bytearray(0x55))
 
     def test_sim_two_word_instr_sts(self):
+        self.set_up()
         self.bp.dbg.sram_read.return_value = bytearray(0x44)
         self.assertTrue(self.bp._two_word_instr(0x92E0))
         self.assertEqual(self.bp._sim_two_word_instr(0x92E0, 0x1000, 0x2002), 0x2006)
@@ -551,10 +601,12 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.sram_write.assert_called_with(0x1000,bytearray(0x44))
 
     def test_sim_two_word_instr_jmp_small(self):
+        self.set_up()
         self.assertTrue(self.bp._two_word_instr(0x940C))
         self.assertEqual(self.bp._sim_two_word_instr(0x940C, 0x2244, 0x2002), 0x4488)
 
     def test_sim_two_word_instr_call_small(self):
+        self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([0x02, 0x01])
         self.assertEqual(self.bp._sim_two_word_instr(0x940E, 0x2244, 0x2002), 0x4488)
         self.bp.dbg.stack_pointer_write.assert_called_with(bytearray([0x00, 0x01]))

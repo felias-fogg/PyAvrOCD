@@ -2,31 +2,30 @@
 The test suite for dwlink
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-import logging
 from types import SimpleNamespace
 from unittest.mock import MagicMock, Mock, patch, call
 from unittest import TestCase
 
-from serial import SerialException
-
 from pyavrocd.dwlink import SerialToNet, discover, main
-
-logging.basicConfig(level=logging.CRITICAL)
 
 class TestSerialToNet(TestCase):
 
     def setUp(self):
+        self.sn = None
+
+    def set_up(self):
         self.sn = SerialToNet(False)
         self.sn.socket = MagicMock()
         self.sn.socket.sendall = MagicMock()
 
-
     def test_convert_gdb_message(self):
+        self.set_up()
         self.sn.last = b'$O48656C6C6F#XX'
         self.assertEqual(self.sn.convert_gdb_message(), 'Hello')
 
     @patch('pyavrocd.dwlink.sys.stdout.write')
     def test_data_received_nolog(self, mock_write):
+        self.set_up()
         self.sn.data_received(b'$O48656C6C6F#XX')
         self.sn.socket.sendall.assert_called_once_with(b'$O48656C6C6F#XX')
         self.assertEqual(self.sn.last, b"")
@@ -34,6 +33,7 @@ class TestSerialToNet(TestCase):
 
     @patch('pyavrocd.dwlink.sys.stdout.write')
     def test_data_received_log(self, mock_write):
+        self.set_up()
         self.sn.logging = True
         self.sn.data_received(b'$O48656C6C6F#XX')
         self.sn.socket.sendall.assert_called_once_with(b'$O48656C6C6F#XX')
@@ -43,6 +43,7 @@ class TestSerialToNet(TestCase):
 
     @patch('pyavrocd.dwlink.sys.stdout.write')
     def test_data_received_warning(self, mock_write):
+        self.set_up()
         self.sn.logging = False
         self.sn.data_received(b'$O2A2A2A204572726F72#XX')
         self.sn.socket.sendall.assert_called_once_with(b'$O2A2A2A204572726F72#XX')
@@ -54,6 +55,7 @@ class TestSerialToNet(TestCase):
     @patch('pyavrocd.dwlink.os._exit')
     @patch('pyavrocd.dwlink.time.sleep')
     def test_connection_lost_exception(self, mock_sleep, mock_exit, mock_write):
+        self.set_up()
         self.sn.connection_lost("LOST")
         mock_write.assert_has_calls([call("[ERROR] 'LOST'\n\r"),
                                                call("[INFO] Serial connection lost, will exit\n\r")])
@@ -65,6 +67,7 @@ class TestSerialToNet(TestCase):
     @patch('pyavrocd.dwlink.os._exit')
     @patch('pyavrocd.dwlink.time.sleep')
     def test_connection_lost_closed(self, mock_sleep, mock_exit, mock_write):
+        self.set_up()
         self.sn.connection_lost(None)
         mock_write.assert_has_calls([call("[INFO] Serial connection closed\n\r")])
         self.assertEqual(mock_write.call_count, 1)
@@ -73,9 +76,10 @@ class TestSerialToNet(TestCase):
 
     @patch('pyavrocd.dwlink.serial.tools.list_ports.comports')
     @patch('pyavrocd.dwlink.sys.stdout.write')
-    @patch('pyavrocd.dwlink.sys.stdout.flush')
-    @patch('pyavrocd.dwlink.time.sleep')
-    def test_discover_postive(self, mock_sleep, mock_flush, mock_write, mock_comports):
+    @patch('pyavrocd.dwlink.sys.stdout.flush', Mock())
+    @patch('pyavrocd.dwlink.time.sleep', Mock())
+    def test_discover_postive(self, mock_write, mock_comports):
+        self.set_up()
         mock_ser0 = SimpleNamespace()
         mock_ser0.device = '/dev/cu.debug-console'
         mock_ser1 = SimpleNamespace()
@@ -97,9 +101,10 @@ class TestSerialToNet(TestCase):
 
     @patch('pyavrocd.dwlink.serial.tools.list_ports.comports')
     @patch('pyavrocd.dwlink.sys.stdout.write')
-    @patch('pyavrocd.dwlink.sys.stdout.flush')
-    @patch('pyavrocd.dwlink.time.sleep')
-    def test_discover_negative(self, mock_sleep, mock_flush, mock_write, mock_comports):
+    @patch('pyavrocd.dwlink.sys.stdout.flush', Mock())
+    @patch('pyavrocd.dwlink.time.sleep', Mock())
+    def test_discover_negative(self, mock_write, mock_comports):
+        self.set_up()
         mock_ser0 = SimpleNamespace()
         mock_ser0.device = '/dev/cu.debug-console'
         mock_ser1 = SimpleNamespace()
@@ -120,6 +125,7 @@ class TestSerialToNet(TestCase):
     @patch('pyavrocd.dwlink.discover')
     @patch('pyavrocd.dwlink.sys.stdout.write')
     def test_main_no_dwlink(self, mock_write, mock_discover):
+        self.set_up()
         args = SimpleNamespace()
         args.verbose = 'info'
         args.dev = 'atmega328p'
@@ -130,6 +136,7 @@ class TestSerialToNet(TestCase):
     @patch('pyavrocd.dwlink.discover')
     @patch('pyavrocd.dwlink.sys.stdout.write')
     def test_main_no_interface(self, mock_write,  mock_discover):
+        self.set_up()
         args = SimpleNamespace()
         args.verbose = 'all'
         args.dev = 'atmega328p'

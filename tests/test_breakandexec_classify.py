@@ -3,15 +3,11 @@ The test suite for classifying opcodes
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 
-import logging
-
 from unittest import TestCase
 from unittest.mock import Mock, create_autospec
 from pyavrocd.breakexec import BreakAndExec
 from pyavrocd.xavrdebugger import XAvrDebugger
 from .util.instr import instrmap
-
-logging.basicConfig(level=logging.CRITICAL)
 
 class TestBreakAndExecClassify(TestCase):
 

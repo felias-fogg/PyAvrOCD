@@ -18,8 +18,13 @@ logging.basicConfig(level=logging.DEBUG)
 
 class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
 
-    @patch('pyavrocd.xnvmmegaavrjtag.XMegaAvrJtagTarget',MagicMock())
     def setUp(self):
+        self.nvm = None
+        self.device_info = None
+        self.memory_info = None
+
+    @patch('pyavrocd.xnvmmegaavrjtag.XMegaAvrJtagTarget',MagicMock())
+    def set_up(self):
         self.nvm = XNvmAccessProviderCmsisDapMegaAvrJtag(MagicMock(), DEVICE_INFO, manage=None)
         self.nvm.avr = create_autospec(XMegaAvrJtagTarget)
         self.device_info = deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices." + "atmega644")
@@ -27,6 +32,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.logger_local.info = Mock()
 
     def test_read_flash_page(self):
+        self.set_up()
         rpage = bytearray(list(range(0x40)))
         self.nvm.avr.read_memory_section.return_value=rpage
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE
@@ -35,6 +41,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.read_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_SPM, 0x100, 0x40, 0x40)
 
     def test_read_flash_arbitrary(self):
+        self.set_up()
         rpage = bytearray(list(range(0x60)))
         self.nvm.avr.read_memory_section.return_value=rpage
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE
@@ -43,6 +50,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.read_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_SPM, 0x100, 0x60, 0x60)
 
     def test_read_flash_page_prog_mode(self):
+        self.set_up()
         rpage = bytearray(list(range(0x40)))
         self.nvm.avr.read_memory_section.return_value=rpage
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE
@@ -51,6 +59,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.read_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE, 0x100, 0x40, 0x40)
 
     def test_read_eeprom(self):
+        self.set_up()
         rpage = bytearray(list(range(0x2)))
         self.nvm.avr.read_memory_section.return_value=rpage
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_EEPROM
@@ -59,6 +68,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.read_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_EEPROM, 0x100, 0x02, 0x02)
 
     def test_read_eeprom_prog_mode(self):
+        self.set_up()
         rpage = bytearray(list(range(0x2)))
         self.nvm.avr.read_memory_section.return_value=rpage
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_EEPROM
@@ -67,6 +77,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.read_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE, 0x100, 0x02, 0x02)
 
     def test_read_sram(self):
+        self.set_up()
         rpage = bytearray(list(range(0x9)))
         self.nvm.avr.read_memory_section.return_value=rpage
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_SRAM
@@ -75,6 +86,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.read_memory_section.assert_called_with(Avr8Protocol.AVR8_MEMTYPE_SRAM, 0x200, 0x09, 0x09)
 
     def test_write_flash_page(self):
+        self.set_up()
         wpage = bytearray(list(range(0x100)))
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_FLASH_PAGE
         self.nvm.write(self.memory_info.memory_info_by_name('flash'), 0x200, wpage)
@@ -83,6 +95,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
 
 
     def test_write_eeprom(self):
+        self.set_up()
         wpage = bytearray(list(range(0x07)))
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_EEPROM_PAGE
         self.nvm.write(self.memory_info.memory_info_by_name('eeprom'), 0x100, wpage)
@@ -90,6 +103,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
                                                                  0x100, wpage, 0x07, allow_blank_skip=False)
 
     def test_write_sram(self):
+        self.set_up()
         wpage = bytearray(list(range(0x05)))
         self.nvm.avr.memtype_read_from_string.return_value=Avr8Protocol.AVR8_MEMTYPE_SRAM
         self.nvm.write(self.memory_info.memory_info_by_name('internal_sram'), 0x200-0x100, wpage)
@@ -97,6 +111,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
                                                                  0x200, wpage, len(wpage), allow_blank_skip=False)],any_order=True)
 
     def test_erase_page(self):
+        self.set_up()
         self.nvm.avr.protocol = Mock()
         self.assertTrue(self.nvm.erase_page(0x100, False))
         self.nvm.avr.switch_to_debmode.assert_not_called()
@@ -104,6 +119,7 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.protocol.jtagice3_command_response.assert_called_once_with(b'P\x00\x00\x01\x00\x00')
 
     def test_erase_page_progmode(self):
+        self.set_up()
         self.nvm.avr.protocol = Mock()
         self.assertTrue(self.nvm.erase_page(0x100, True))
         self.nvm.avr.switch_to_debmode.assert_called_once()
@@ -111,18 +127,21 @@ class TestXNvmAccessProviderCmsisDapDebugwire(TestCase):
         self.nvm.avr.protocol.jtagice3_command_response.assert_called_once_with(b'P\x00\x00\x01\x00\x00')
 
     def test_erase_chip(self):
+        self.set_up()
         self.assertTrue(self.nvm.erase_chip(False))
         self.nvm.avr.switch_to_progmode.assert_called_once()
         self.nvm.avr.switch_to_debmode.assert_called_once()
         self.nvm.avr.erase.assert_called_once_with(0,0)
 
     def test_erase_chip_progmode(self):
+        self.set_up()
         self.assertTrue(self.nvm.erase_chip(True))
         self.nvm.avr.switch_to_progmode.assert_not_called()
         self.nvm.avr.switch_to_debmode.assert_not_called()
         self.nvm.avr.erase.assert_called_once_with(0,0)
 
     def test_erase_chip_progmode_eesave(self):
+        self.set_up()
         self.nvm.manage = [ 'eesave' ]
         self.nvm.avr.memory_read.return_value = bytearray([0xFF])
         self.assertTrue(self.nvm.erase_chip(True))

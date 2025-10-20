@@ -15,6 +15,9 @@ from pyavrocd.errors import  EndOfSession
 class TestRspServer(TestCase):
 
     def setUp(self):
+        self.rs = None
+
+    def set_up(self):
         mock_dbg = create_autospec(XAvrDebugger)
         mock_dbg.device = 'atmega328p'
         args = SimpleNamespace()
@@ -25,6 +28,7 @@ class TestRspServer(TestCase):
         self.rs.logger.getEffectiveLevel.return_value = logging.INFO
 
     def test_signal_server(self):
+        self.set_up()
         self.rs._signal_server(None, None)
         self.assertTrue(self.rs._terminate)
         self.rs.logger.info.assert_called_with("System requested termination using SIGTERM signal")
@@ -34,6 +38,7 @@ class TestRspServer(TestCase):
     @patch('pyavrocd.server.select.select')
     @patch('pyavrocd.server.GdbHandler')
     def test_serve(self, mock_handler, mock_select, mock_socket):
+        self.set_up()
         mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
         mock_socket.return_value.accept.return_value[0].recv.side_effect = [b'123', b'123', b'']
         mock_handler.return_value = create_autospec(GdbHandler)
@@ -51,6 +56,7 @@ class TestRspServer(TestCase):
     @patch('pyavrocd.server.select.select')
     @patch('pyavrocd.server.GdbHandler')
     def test_serve_EOS(self, mock_handler, mock_select, mock_socket):
+        self.set_up()
         mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
         mock_socket.return_value.accept.return_value[0].recv.side_effect = EndOfSession("")
         mock_handler.return_value = create_autospec(GdbHandler)
@@ -70,6 +76,7 @@ class TestRspServer(TestCase):
     @patch('pyavrocd.server.select.select')
     @patch('pyavrocd.server.GdbHandler')
     def test_serve_KI(self, mock_handler, mock_select, mock_socket, mock_print):
+        self.set_up()
         mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
         mock_socket.return_value.accept.return_value[0].recv.side_effect = KeyboardInterrupt("")
         mock_handler.return_value = create_autospec(GdbHandler)

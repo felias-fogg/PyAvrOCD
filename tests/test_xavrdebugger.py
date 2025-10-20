@@ -2,7 +2,6 @@
 The test suit for the XAvrDebugger class
 """
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-import logging
 from unittest.mock import MagicMock, patch,  Mock, call
 from unittest import TestCase
 
@@ -15,6 +14,11 @@ from pyavrocd.errors import FatalError
 class TestXAvrDebugger(TestCase):
 
     def setUp(self):
+        self.xa = None
+        self.xaj = None
+        self.xau = None
+
+    def set_up(self):
         mock_transport = MagicMock()
         # a debugWIRE target
         self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", ['bootrst', 'lockbits', 'dwen'], 4000, 500)
@@ -47,16 +51,19 @@ class TestXAvrDebugger(TestCase):
 
 
     def test_get_iface(self):
+        self.set_up()
         self.assertEqual(self.xa.get_iface(), 'debugwire')
         self.assertEqual(self.xaj.get_iface(), 'jtag')
         self.assertEqual(self.xau.get_iface(), 'updi')
 
     def test_get_architecture(self):
+        self.set_up()
         self.assertEqual(self.xa.get_architecture(), 'avr8')
         self.assertEqual(self.xaj.get_architecture(), 'avr8')
         self.assertEqual(self.xau.get_architecture(), 'avr8x')
 
     def test_get_hwbpnum(self):
+        self.set_up()
         self.assertEqual(self.xa.get_hwbpnum(), 1)
         self.assertEqual(self.xaj.get_hwbpnum(), 4)
         self.assertEqual(self.xau.get_hwbpnum(), 2)
@@ -64,6 +71,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
     def test_start_debugging_dw(self):
+        self.set_up()
         self.xa.device.avr.activate_physical.return_value = bytearray([0x0B, 0x93, 0, 0])
         self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
         self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
@@ -80,6 +88,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
     def test_start_debugging_dw_warmstart_fail(self):
+        self.set_up()
         self.xa.device.avr.activate_physical.return_value = Exception()
         self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
         self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
@@ -87,6 +96,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
     def test_start_debugging_dw_coldstart_fail(self):
+        self.set_up()
         self.xa.device.avr.activate_physical.return_value = Exception()
         self.xa.device.avr.protocol.program_counter_read.return_value = 0x0
         self.xa.memory_info.memory_info_by_name.return_value={'size': 0x1000}
@@ -94,6 +104,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
     def test_start_debugging_jtag(self):
+        self.set_up()
         self.xaj.device_info['bootrst_base'] = 0x01
         self.xaj.device_info['bootrst_mask'] = 0x08
         self.xaj.device_info['ocden_base'] = 0x02
@@ -120,10 +131,12 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.housekeepingprotocol.Jtagice3HousekeepingProtocol', MagicMock())
     def test_start_jtag_fail(self):
+        self.set_up()
         self.xaj.device.avr.activate_physical.return_value = bytearray([0x3E, 0x93, 0, 0])
         self.assertRaises(FatalError, self.xaj.start_debugging)
 
     def test_stop_debugging_dw(self):
+        self.set_up()
         self.xa.stop_debugging(graceful=False)
         self.xa.device.avr.switch_to_debmode.assert_called_once()
         self.xa.device.avr.protocol.stop.assert_called_once()
@@ -134,6 +147,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.device.avr.deactivate_physical.assert_called_once()
 
     def test_stop_debugging_jtag(self):
+        self.set_up()
         self.xaj.stop_debugging(graceful=False)
         self.xaj.device.avr.switch_to_debmode.assert_called_once()
         self.xaj.device.avr.protocol.stop.assert_called_once()
@@ -144,6 +158,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.device.avr.deactivate_physical.assert_called_once()
 
     def test__post_process_after_start_jtag(self):
+        self.set_up()
         self.xaj._iface = 'jtag'
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden']
         self.xaj.device_info['bootrst_base'] = 0x01
@@ -166,6 +181,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
     def test__post_process_after_start_not_managed(self):
+        self.set_up()
         self.xaj.device.avr.memory_read.return_value = bytes([0xFF])
         self.xaj._iface = 'jtag'
         self.xaj.manage = ['bootrst', 'lockbits']
@@ -181,6 +197,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
     def test__post_process_after_start_nothing_to_do(self):
+        self.set_up()
         self.xaj.device.avr.memory_read.side_effect = [
             bytes([0xFF]), bytes([0xFF]), bytes([0x00]) ]
         self.xaj._iface = 'jtag'
@@ -194,30 +211,36 @@ class TestXAvrDebugger(TestCase):
             call("OCDEN is already programmed")])
 
     def test__verify_target_fail(self):
+        self.set_up()
         self.assertRaises(FatalError, self.xa._verify_target, 0x920B)
 
     def test__verify_target_ok(self):
+        self.set_up()
         self.xa.device_info['device_id'] = 0x1E9205 # ATmega48(A)
         self.xa._verify_target(0x920A)              # ATmega48PA
         self.xa.device_info['device_id'] = 0x1E930B # ATtiny85 restored
 
     def test__check_stuck_at_one_pc_fail(self):
+        self.set_up()
         self.xa.device.avr.protocol.program_counter_read.return_value = 0x4000
         self.xa.memory_info.memory_info_by_name.return_value = {'size': 0x1000}
         self.assertRaises(FatalError, self.xa._check_stuck_at_one_pc)
 
     def test__check_stuck_at_one_pc_ok(self):
+        self.set_up()
         self.xa.device.avr.protocol.program_counter_read.return_value = 0x0000
         self.xa.memory_info.memory_info_by_name.return_value = {'size': 0x1000}
         self.xa._check_stuck_at_one_pc()
 
     def test__check_atmega16_fail(self):
+        self.set_up()
         self.xa.memory_info.memory_info_by_name.return_value = {'size': 0x1000, 'address': 0x200}
         self.xa.device.avr.stack_pointer_read.return_value = bytearray([0xFD, 0x11]) # 0x1200-3
         self.xa.device.read.return_value =  bytearray([0x40, 0x00])
         self.assertRaises(FatalError, self.xa._check_atmega16)
 
     def test__check_atmega16_ok(self):
+        self.set_up()
         self.xa.memory_info.memory_info_by_name.return_value = {'size': 0x1000, 'address': 0x200}
         self.xa.device.avr.stack_pointer_read.return_value = bytearray([0xFD, 0x11]) # 0x1200-3
         self.xa.device.read.return_value =  bytearray([0x01, 0x00])
@@ -225,6 +248,7 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
     def test__check_atmega16_no_irq(self):
+        self.set_up()
         self.xa.memory_info.memory_info_by_name.return_value = {'size': 0x1000, 'address': 0x200}
         self.xa.device.avr.stack_pointer_read.return_value = bytearray([0xFF, 0x11]) # 0x1200-3
         self.xa.device.read.return_value =  bytearray([0x01, 0x00])
@@ -234,15 +258,18 @@ class TestXAvrDebugger(TestCase):
 
 
     def test__activate_interface_ok(self):
+        self.set_up()
         self.xa.device.avr.activate_physical.return_value = bytearray([0x01, 0x02, 0x03, 0x04])
         self.assertEqual(self.xa._activate_interface(), 0x04030201)
 
     def test__activate_interface_fail(self):
+        self.set_up()
         self.xa.device.avr.activate_physical.side_effect = Jtagice3ResponseError("Error",
                                     Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE)
         self.assertRaises(Jtagice3ResponseError, self.xa._activate_interface)
 
     def test__handle_bootrst_fail(self):
+        self.set_up()
         self.xaj.manage = []
         self.xaj.device_info['bootrst_base'] = 0x01
         self.xaj.device_info['bootrst_mask'] = 0x08
@@ -254,6 +281,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden'] # restore!
 
     def test__handle_bootrst_ok(self):
+        self.set_up()
         self.xaj.device_info['bootrst_base'] = 0x01
         self.xaj.device_info['bootrst_mask'] = 0x08
         read = Mock(side_effect=[bytearray([0x00]), bytearray([0x08])])
@@ -264,12 +292,14 @@ class TestXAvrDebugger(TestCase):
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden'] # restore!
 
     def test__handle_lockbits_fail(self):
+        self.set_up()
         self.xaj.manage = []
         read = Mock(side_effect=[bytes([0x00])])
         self.assertRaises(FatalError,self.xaj._handle_lockbits, read, Mock(), Mock(), Mock())
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden'] # restore!
 
     def test__handle_lockbits_ok(self):
+        self.set_up()
         read = Mock(side_effect=[bytes([0x00]), bytes([0xFF])])
         erase = Mock()
         self.xaj._handle_lockbits(read, erase, Mock(), Mock())
@@ -278,6 +308,7 @@ class TestXAvrDebugger(TestCase):
             call("MCU has been erased and lockbits have been cleared.")])
 
     def test_handle_lockbits_nochange(self):
+        self.set_up()
         read = Mock(side_effect=[bytes([0xFF])])
         erase = Mock()
         self.xaj._handle_lockbits(read, erase, Mock(), Mock())
@@ -300,6 +331,7 @@ class TestXAvrDebugger(TestCase):
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.write_fuse_byte', MagicMock())
     #pylint: disable=no-member
     def test_prepare_debugging_debugWIRE(self):
+        self.set_up()
         self.xa.manage = ['bootrst', 'lockbits', 'dwen']
         self.xa.device_info['bootrst_base'] = 0x01
         self.xa.device_info['bootrst_mask'] = 0x08
@@ -317,11 +349,13 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
     def test_prepare_debugging_jtag(self):
+        self.set_up()
         self.xaj.prepare_debugging()
         self.xaj.logger.info.assert_not_called()
 
     @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(return_value=0.8))
     def test_prepare_debugging_no_power(self):
+        self.set_up()
         self.assertRaises(FatalError, self.xa.prepare_debugging)
 
     @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(return_value=5.0))
@@ -330,6 +364,7 @@ class TestXAvrDebugger(TestCase):
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.enter_progmode', MagicMock())
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.leave_progmode', MagicMock())
     def test_prepare_debugging_wrong_mcu(self):
+        self.set_up()
         self.assertRaises(FatalError, self.xa.prepare_debugging)
 
     @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(return_value=5.0))
@@ -345,6 +380,7 @@ class TestXAvrDebugger(TestCase):
                                         bytearray([0x14])]))
     @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
     def test_prepare_debugging_dwen_not_managed(self):
+        self.set_up()
         self.xa.manage = ['bootrst', 'lockbits' ]
         self.xa.device_info['bootrst_base'] = 0x01
         self.xa.device_info['bootrst_mask'] = 0x08
@@ -357,29 +393,34 @@ class TestXAvrDebugger(TestCase):
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     def test__check_atmega48_and_88_fail(self):
+        self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.read.side_effect=[bytes([0x00])]
         self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E9025)
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     def test__check_atmega48_and_88_ok(self):
+        self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.read.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9025)
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     def test__check_atmega48_and_88_atmega88_ok(self):
+        self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.read.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E930A)
 
     def test__eesave_set_and_save_nochange(self):
+        self.set_up()
         read = Mock(side_effect=[bytes([0xFF])])
         write = Mock()
         self.assertEqual(self.xaj._eesave_set_and_save(read, write), None)
         write.assert_not_called()
 
     def test__eesave_set_and_save_ok(self):
+        self.set_up()
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden', 'eesave']
         read = Mock(side_effect=[bytes([0xFF])])
         write = Mock()
@@ -388,6 +429,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden']
 
     def test__eesave_restore(self):
+        self.set_up()
         write = Mock()
         self.xaj._eesave_restore((1,0xFF), write)
         write.assert_has_calls([call(1,bytes([0xFF]))])
@@ -397,29 +439,34 @@ class TestXAvrDebugger(TestCase):
         5.0, 5.0, 0.0, 0.0, 0.0, 5.0, 5.0, 5.0]))
     @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
     def test__power_cycle(self):
+        self.set_up()
         self.xa._power_cycle()
         self.xa.logger.info.assert_has_calls([call("Signed on to tool again")])
-        
+
 
     def test_stack_pointer_write(self):
+        self.set_up()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock(spec=XTinyAvrTarget)
         self.xa.stack_pointer_write(b'\x34\x12')
         self.xa.device.avr.stack_pointer_write.assert_called_with(b'\x34\x12')
 
     def test_stack_pointer_read(self):
+        self.set_up()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock(spec=XTinyAvrTarget)
         self.xa.device.avr.stack_pointer_read.return_value = b'\x34\x12'
         self.assertEqual(self.xa.stack_pointer_read(), b'\x34\x12')
 
     def test_status_register_write(self):
+        self.set_up()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock(spec=XTinyAvrTarget)
         self.xa.status_register_write(b'\x12')
         self.xa.device.avr.statreg_write.assert_called_with(b'\x12')
 
     def test_status_register_read(self):
+        self.set_up()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock(spec=XTinyAvrTarget)
         self.xa.device.avr.statreg_read.return_value = b'\x34'
@@ -427,6 +474,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.device.avr.statreg_read.assert_called_once()
 
     def test_register_file_write(self):
+        self.set_up()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock(spec=XTinyAvrTarget)
         rfile = bytearray(list(range(32)))
@@ -434,6 +482,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.device.regfile_write(rfile)
 
     def test_register_file_read(self):
+        self.set_up()
         self.xa.device = MagicMock()
         self.xa.device.avr = MagicMock(spec=XTinyAvrTarget)
         rfile = bytearray(list(range(32)))

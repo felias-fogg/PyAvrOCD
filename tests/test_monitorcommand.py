@@ -2,23 +2,24 @@
 The test suit for the MonitorCommand class
 """
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring
-import logging
 import importlib
 from unittest import TestCase
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.main import options
 
 
-logging.basicConfig(level=logging.DEBUG)
-
 class TestMonitorCommand(TestCase):
 
     def setUp(self):
+        self.mo = None
+        self.moj = None
+
+    def set_up(self):
         self.mo = MonitorCommand('debugwire', options(['-f', 'foo', '-d', 'atmega328p']))
         self.moj = MonitorCommand('jtag', options(['-f', 'foo', '-d', 'atmega128', '--timer', 'freeze']))
 
-
     def test_defaults_atmega128(self):
+        self.set_up()
         self.assertTrue(self.moj._onlyhwbps)
         self.assertFalse(self.moj._onlyswbps)
         self.assertTrue(self.moj._bpfixed)
@@ -27,6 +28,7 @@ class TestMonitorCommand(TestCase):
         self.assertFalse(self.moj._read_before_write)
 
     def test_defaults_atmega328p(self):
+        self.set_up()
         self.assertFalse(self.mo._onlyhwbps)
         self.assertFalse(self.mo._onlyswbps)
         self.assertFalse(self.mo._bpfixed)
@@ -35,12 +37,15 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._read_before_write)
 
     def test_dispatch_ambigious(self):
+        self.set_up()
         self.assertEqual(self.mo.dispatch(["ver"]), ("", "Ambiguous 'monitor' command string"))
 
     def test_dispatch_unknown(self):
+        self.set_up()
         self.assertEqual(self.mo.dispatch(["XXX"]), ("", "Unknown 'monitor' command"))
 
     def test_dispatch_breakpoints(self):
+        self.set_up()
         self.mo._onlyhwbps = False
         self.mo._onlyswbps = False
         self.assertEqual(self.mo.dispatch(["break"]), ("", "All breakpoints are allowed"))
@@ -68,6 +73,7 @@ class TestMonitorCommand(TestCase):
 
 
     def test_dispatch_Cache(self):
+        self.set_up()
         self.mo._cache = False
         self.assertEqual(self.mo.dispatch(["caching", "enable"]), ("", "Flash memory will be cached"))
         self.assertEqual(self.mo._cache, True)
@@ -78,6 +84,7 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(["ca"]), ("", "Flash memory will not be cached"))
 
     def test_dispatch_debugWIRE(self):
+        self.set_up()
         self.mo._debugger_active = False
         self.assertEqual(self.mo.dispatch(["d"]), ("", "debugWIRE is disabled"))
         self.mo._debugger_active = True
@@ -95,6 +102,7 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._debugger_activated_once)
 
     def test_dispatch_flashVerify(self):
+        self.set_up()
         self.assertTrue(self.mo._verify)
         self.assertEqual(self.mo.dispatch(['veri']), ("", "Verifying flash after load"))
         self.assertEqual(self.mo.dispatch(['verify', 'disable']), ("", "Load operations are not verified"))
@@ -106,10 +114,12 @@ class TestMonitorCommand(TestCase):
 
 
     def test_dispatch_help(self):
+        self.set_up()
         self.assertTrue(len(self.mo.dispatch(['help'])[1]) > 1000)
         self.assertTrue(len(self.mo.dispatch([])[1]) > 1000)
 
     def test_dispatch_info(self):
+        self.set_up()
         try:
             importlib.metadata.version("pyavrocd")
         except importlib.metadata.PackageNotFoundError:
@@ -118,6 +128,7 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(['info'])[0], 'info')
 
     def test_dispatch_atexit(self):
+        self.set_up()
         self.assertFalse(self.mo._leaveonexit)
         self.assertEqual(self.mo.dispatch(['atexit']), ("", "MCU will stay in debugWIRE mode on exit"))
         self.assertEqual(self.mo.dispatch(['at', 'leave']), ("",  "MCU will leave debugWIRE mode on exit"))
@@ -126,11 +137,13 @@ class TestMonitorCommand(TestCase):
         self.assertFalse(self.mo._leaveonexit)
 
     def test_dispatch_erase_before_load_dw(self):
+        self.set_up()
         self.assertFalse(self.mo._erase_before_load)
         self.assertEqual(self.mo.dispatch(['erase']),
                          ("", "On debugWIRE targets, flash memory cannot be erased before loading executable"))
 
     def test_dispatch_erase_before_load_jtag(self):
+        self.set_up()
         self.mo._iface = 'jtag'
         self.mo.set_default_state()
         self.assertTrue(self.mo._erase_before_load)
@@ -144,6 +157,7 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._erase_before_load)
 
     def test_dispatch_load(self):
+        self.set_up()
         self.assertTrue(self.mo._read_before_write)
         self.assertEqual(self.mo.dispatch(['load']), ("", "Reading before writing when loading"))
         self.assertEqual(self.mo.dispatch(['load', 'writeonly']),  ("", "No reading before writing when loading"))
@@ -152,6 +166,7 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._read_before_write)
 
     def test_dispatch_noload(self):
+        self.set_up()
         self.assertFalse(self.mo._noload)
         self.assertEqual(self.mo.dispatch(['onlywhenloaded', 'dis']), ("", "Execution is always possible"))
         self.assertTrue(self.mo._noload)
@@ -159,6 +174,7 @@ class TestMonitorCommand(TestCase):
         self.assertFalse(self.mo._noload)
 
     def test_dispatch_range(self):
+        self.set_up()
         self.assertTrue(self.mo._range)
         self.assertEqual(self.mo.dispatch(['rangestepping', 'disable']), ("", "Range stepping is disabled"))
         self.assertFalse(self.mo._range)
@@ -168,12 +184,14 @@ class TestMonitorCommand(TestCase):
 
 
     def test_dispatch_reset(self):
+        self.set_up()
         self.mo._debugger_active = False
         self.assertEqual(self.mo.dispatch(['reset', 'halt']), ("","Debugger is not enabled"))
         self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(['res']), ("reset", "MCU has been reset"))
 
     def test_dispatch_singlestep(self):
+        self.set_up()
         self.assertTrue(self.mo._safe)
         self.assertEqual(self.mo.dispatch(['singlestep', 'interruptible']), ("", "Single-stepping is interruptible"))
         self.assertFalse(self.mo._safe)
@@ -182,6 +200,7 @@ class TestMonitorCommand(TestCase):
         self.assertTrue(self.mo._safe)
 
     def test_dispatch_timers(self):
+        self.set_up()
         self.assertFalse(self.mo._timersfreeze)
         self.assertEqual(self.mo.dispatch(['timers', 'run']), (1, "Timers will run when execution is stopped"))
         self.assertFalse(self.mo._timersfreeze)
@@ -190,6 +209,7 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(['timers']), (0, "Timers are frozen when execution is stopped"))
 
     def test_dispatch_version(self):
+        self.set_up()
         try:
             importlib.metadata.version("pyavrocd")
         except importlib.metadata.PackageNotFoundError:
@@ -197,12 +217,15 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.dispatch(['version']), ("", "PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd"))))
 
     def test_dispatch_oldExec_ok(self):
+        self.set_up()
         self.assertEqual(self.mo.dispatch(['OldExecution']), ("", "Old execution mode"))
 
     def test_dispatch_oldExec_no_abbrev(self):
+        self.set_up()
         self.assertEqual(self.mo.dispatch(['OldExec']), ("", "Unknown 'monitor' command"))
 
     def test_dispatch_target(self):
+        self.set_up()
         self.assertEqual(self.mo.dispatch(['Target']), ("", "Target power is on"))
         self.assertEqual(self.mo.dispatch(['Target', 'on']), ("power on", "Target power on"))
         self.assertEqual(self.mo.dispatch(['Target', 'off']), ("power off", "Target power off"))

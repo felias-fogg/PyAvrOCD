@@ -6,7 +6,9 @@ When you want to debug a program on a target board, usually some modifications o
 - download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and
 - record necessary physical changes on the target board.
 
-With that, it will be easy to [restore the original](restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the Burn Bootloader function. However, you should record any physical changes. You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue.
+With that, it will be easy to [restore the original](restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the `Burn Bootloader` function. However, you should record any physical changes.
+
+You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue.
 
 ## General considerations
 

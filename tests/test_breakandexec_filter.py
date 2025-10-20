@@ -3,19 +3,18 @@ The test suite for filtering out unsafe instructions and simulate them offline
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods,too-many-positional-arguments
 
-import logging
-
 from unittest import TestCase
 from unittest.mock import Mock, create_autospec, call
 from pyavrocd.breakexec import BreakAndExec
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.errors import FatalError
 
-logging.basicConfig(level=logging.CRITICAL)
-
 class TestBreakAndExecFilter(TestCase):
 
     def setUp(self):
+        self.bp = None
+
+    def set_up(self):
         mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
         mock_dbg.memory_info = Mock()
         mock_dbg.memory_info.memory_info_by_name.return_value = {'size' : 100,'address' : 0x60 }
@@ -63,27 +62,32 @@ class TestBreakAndExecFilter(TestCase):
             self.bp.dbg.status_register_read.assert_called_once_with()
 
     def test_filter_low_alu(self):
+        self.set_up()
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x0000))
         self.assertFalse(self.bp._filter_unsafe_instruction(0x2000, 0x27F7))
         self.assertFalse(self.bp._filter_unsafe_instruction(0x3000, 0x7FFF))
 
     def test_filter_big_sram(self):
+        self.set_up()
         self.bp._big_sram = True
         with self.assertRaises(FatalError):
             self.bp._filter_unsafe_instruction(0x1000,0x1234)
 
     def test_filter_lds_positive(self):
+        self.set_up()
         self.bp._read_flash_word.return_value=0x005F
         self.verify_load_or_store(0x90F0, store=False, reg=15) # LDS r15, 0x005F
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1004 >> 1)
 
 
     def test_filter_sts_positive(self):
+        self.set_up()
         self.bp._read_flash_word.return_value=0x005F
         self.verify_load_or_store(0x9200, store=True,  reg=0) # STS 0x005F, r0
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1004 >> 1)
 
     def test_filter_lds_sts_negative(self):
+        self.set_up()
         self.bp._read_flash_word.side_effect = [ 0x0056, 0x005E, 0x0060, 0x1000 ]
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x90F0)) # LDS r15, 0x0056
         self.assertFalse(self.bp._filter_unsafe_instruction(0x2000, 0x91F0)) # LDS r31, 0x005E
@@ -91,62 +95,77 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x4000, 0x92a0)) # STS r10, 0x1000
 
     def test_filter_ld_x_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x909C, store=False,  reg=9, ixreg='X', ixregval=0x5F) # LD r9, X
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_x_predec_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x911E, store=False,  reg=17, ixreg='X', predec=True, ixregval=0x60) # LD r17, -X
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_x_postinc_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x916D, store=False,  reg=22, ixreg='X', postinc=True, ixregval=0x5F) # LD r22, X+
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_y_predec_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x90EA, store=False,  reg=14, ixreg='Y', predec=True, ixregval=0x60) # LD r14, -Y
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_y_postinc_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x91B9, store=False,  reg=27, ixreg='Y', postinc=True, ixregval=0x5F) # LD r27, Y+
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_z_predec_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x91E2, store=False,  reg=30, ixreg='Z', predec=True, ixregval=0x60) # LD r30, -Y
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_z_postinc_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x91F1, store=False,  reg=31, ixreg='Z', postinc=True, ixregval=0x5F) # LD r27, Y+
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_x_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x920C, store=True,  reg=0, ixreg='X', ixregval=0x5F) # ST X, r0
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_x_predec_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x920E, store=True,  reg=0, ixreg='X', predec=True, ixregval=0x60) # ST -X, r0
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_x_postinc_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x929D, store=True,  reg=9, ixreg='X', postinc=True, ixregval=0x5F) # ST X+, r9
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_y_predec_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x92AA, store=True,  reg=10, ixreg='Y', predec=True, ixregval=0x60) # ST -Y, r10
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_y_postinc_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x9349, store=True,  reg=20, ixreg='Y', postinc=True, ixregval=0x5F) # ST Y+, r20
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_z_predec_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x9362, store=True,  reg=22, ixreg='Z', predec=True, ixregval=0x60) # ST -Z, r22
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_st_z_postinc_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x9371, store=True,  reg=23, ixreg='Z', postinc=True, ixregval=0x5F) # ST Z+, r23
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ld_st_xyz_below_negative(self):
+        self.set_up()
         self.bp.dbg.sram_read.return_value = bytearray([0x5E, 0x00]) # the indirect address from the index register
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x901C)) # LD r1, X
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x902D)) # LD r2, X+
@@ -165,6 +184,7 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x925A)) # ST -Z, r6
 
     def test_filter_ld_st_xyz_above_negative(self):
+        self.set_up()
         self.bp.dbg.sram_read.return_value = bytearray([0x61, 0x00]) # the indirect address from the index register
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x901C)) # LD r1, X
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x902D)) # LD r2, X+
@@ -183,22 +203,27 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x925A)) # ST -Z, r6
 
     def test_filter_ldd_y_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x80D8, store=False,  reg=13, ixreg='Y', ixregval=0x5F) # LD r13, Y
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ldd_z_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x8197, store=False,  reg=25, ixreg='Z', ixregval=0x58) # LD r25, Z+7
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_std_y_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x82D8, store=True,  reg=13, ixreg='Y', ixregval=0x5F) # ST Y, r13
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_std_z_positive(self):
+        self.set_up()
         self.verify_load_or_store(0x8397, store=True,  reg=25, ixreg='Z', ixregval=0x58) # STD Z+7, r25
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_ldd_std_above_and_below_negative(self):
+        self.set_up()
         self.bp.dbg.sram_read.return_value = bytearray([0x57, 0x00]) # the indirect address from the index register
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x81ff)) # LDD r31, Y+7
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x8264)) # LDD r6, Z+4
@@ -210,30 +235,36 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x8e66)) # STD Z+30, r6
 
     def test_filter_in_positive(self):
+        self.set_up()
         self.verify_load_or_store(0xB63F, store=False,  reg=3) # IN r3, 0x3F
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_out_positive(self):
+        self.set_up()
         self.verify_load_or_store(0xBF1F, store=True,  reg=17) # OUT r17, 0x3F
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_in_out_below_negative(self):
+        self.set_up()
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xBF1E)) # OUT 0x3E, r17
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xB63E)) # IN r3, 0x3E
 
     def test_filter_cli(self):
+        self.set_up()
         self.bp.dbg.status_register_read.return_value = bytearray([0xFF])
         self.assertTrue(self.bp._filter_unsafe_instruction(0x1000, 0x94F8)) # CLI
         self.bp.dbg.status_register_write.assert_called_once_with(bytearray([0x7F]))
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_sei(self):
+        self.set_up()
         self.bp.dbg.status_register_read.return_value = bytearray([0x0F])
         self.assertTrue(self.bp._filter_unsafe_instruction(0x1000, 0x9478)) # SEI
         self.bp.dbg.status_register_write.assert_called_once_with(bytearray([0x8F]))
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_bclr_negative(self):
+        self.set_up()
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9488)) # CLC
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9498)) # CLZ
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x94A8)) # CLN
@@ -243,6 +274,7 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x94E8)) # CLT
 
     def test_filter_bset_negative(self):
+        self.set_up()
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9408)) # SEC
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9418)) # SEZ
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9428)) # SEN
@@ -252,26 +284,31 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9468)) # SET
 
     def test_filter_brie_set(self):
+        self.set_up()
         self.bp.dbg.status_register_read.return_value = bytearray([0x80])
         self.assertTrue(self.bp._filter_unsafe_instruction(0x1000, 0xF08F)) # BRIE .+34
         self.bp.dbg.program_counter_write.assert_called_once_with((0x1000 + 36) >> 1)
 
     def test_filter_brie_clear(self):
+        self.set_up()
         self.bp.dbg.status_register_read.return_value = bytearray([0x00])
         self.assertTrue(self.bp._filter_unsafe_instruction(0x1000, 0xF08F)) # BRIE .+34
         self.bp.dbg.program_counter_write.assert_called_once_with((0x1000 + 2) >> 1)
 
     def test_filter_brid_set(self):
+        self.set_up()
         self.bp.dbg.status_register_read.return_value = bytearray([0x80])
         self.assertTrue(self.bp._filter_unsafe_instruction(0x1000, 0xF66F)) # BRID .-102
         self.bp.dbg.program_counter_write.assert_called_once_with((0x1000 + 2) >> 1)
 
     def test_filter_brid_clear(self):
+        self.set_up()
         self.bp.dbg.status_register_read.return_value = bytearray([0x00])
         self.assertTrue(self.bp._filter_unsafe_instruction(0x1000, 0xF66F)) # BRID .-102
         self.bp.dbg.program_counter_write.assert_called_once_with((0x1000 - 100) >> 1)
 
     def test_filter_brie_negative(self):
+        self.set_up()
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF590)) # BRCC .+100
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF591)) # BRNE .+100
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF592)) # BRPL .+100
@@ -281,6 +318,7 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF596)) # BRTC .+100
 
     def test_filter_brid_negative(self):
+        self.set_up()
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF2F8)) # BRCS .-66
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF2F9)) # BREQ .-66
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF2FA)) # BRMI .-66
@@ -290,6 +328,7 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0xF2FE)) # BRTS .-66
 
     def test_filter_xch(self):
+        self.set_up()
         self.bp.dbg.get_architecture.return_value = 'avr8e'
         self.bp.dbg.sram_read.side_effect = [bytearray([0x5F, 0x00]), bytearray([0x18])]
         self.bp.dbg.status_register_read.return_value = bytearray([0x99])
@@ -302,6 +341,7 @@ class TestBreakAndExecFilter(TestCase):
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_lac(self):
+        self.set_up()
         self.bp.dbg.get_architecture.return_value = 'avr8e'
         self.bp.dbg.sram_read.side_effect = [bytearray([0x5F, 0x00]), bytearray([0x18])]
         self.bp.dbg.status_register_read.return_value = bytearray([0x99])
@@ -314,6 +354,7 @@ class TestBreakAndExecFilter(TestCase):
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_las(self):
+        self.set_up()
         self.bp.dbg.get_architecture.return_value = 'avr8e'
         self.bp.dbg.sram_read.side_effect = [bytearray([0x5F, 0x00]), bytearray([0x28])]
         self.bp.dbg.status_register_read.return_value = bytearray([0x99])
@@ -326,6 +367,7 @@ class TestBreakAndExecFilter(TestCase):
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_lat(self):
+        self.set_up()
         self.bp.dbg.get_architecture.return_value = 'avr8e'
         self.bp.dbg.sram_read.side_effect = [bytearray([0x5F, 0x00]), bytearray([0x28])]
         self.bp.dbg.status_register_read.return_value = bytearray([0x99])
@@ -338,6 +380,7 @@ class TestBreakAndExecFilter(TestCase):
         self.bp.dbg.program_counter_write.assert_called_once_with(0x1002 >> 1)
 
     def test_filter_xch_lax_wrong_Z_value(self):
+        self.set_up()
         self.bp.dbg.get_architecture.return_value = 'avr8e'
         self.bp.dbg.sram_read.return_value = bytearray([0x5E, 0x00])
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x93F4)) # XCH Z, r31
@@ -346,6 +389,7 @@ class TestBreakAndExecFilter(TestCase):
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9367)) # LAT Z, R2
 
     def test_filter_xch_lax_wrong_arch(self):
+        self.set_up()
         self.bp.dbg.get_architecture.return_value = 'avr8'
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x93F4)) # XCH Z, r31
         self.assertFalse(self.bp._filter_unsafe_instruction(0x1000, 0x9276)) # LAC Z, R7

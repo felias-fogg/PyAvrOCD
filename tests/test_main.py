@@ -12,12 +12,8 @@ from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup
-logging.basicConfig(level=logging.CRITICAL)
 
 class TestMain(TestCase):
-
-    def setUp(self):
-        pass
 
     @patch('pyavrocd.main.logging.getLogger', MagicMock())
     def test_setup_tool_connection_full_spec(self):
@@ -174,7 +170,7 @@ class TestMain(TestCase):
         args.clkdeb = 200
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Negative frequency values are discouraged")])
-    
+
     @patch('builtins.print')
     def test_process_arguments_no_device(self, mocked_print):
         args = SimpleNamespace()
@@ -188,7 +184,7 @@ class TestMain(TestCase):
         args.clkdeb = 200
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Please specify target MCU with -d option")])
-    
+
     @patch('builtins.print')
     def test_process_arguments_wrong_iface(self, mocked_print):
         args = SimpleNamespace()
