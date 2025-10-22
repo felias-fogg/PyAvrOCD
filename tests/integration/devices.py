@@ -1,0 +1,131 @@
+#pylint: disable=missing-module-docstring
+# Clock combinations and naming
+MicroClock = {'1.2' : '1M2', '9.6' : '9M6', '16' : '16M'}
+MiniClock = {'1' : '1MHz_internal', '8' : '8MHz_internal', '16' : '16MHz_external'}
+ATTRcClock = {'1' : '1internal', '8' : '8internal'}
+ATTClock = {'1' : '1internal', '8' : '8internal', '16' : '16external'}
+CClock = {'1' : '1000000UL', '8' : '8000000UL', '16' : '16000000UL'}
+NoClock = {'none' : ''}
+
+test_devices = {"attiny13" : (MicroClock, ('small', 'arduino', 'dw', 'noadc'),
+                                   "MicroCore:avr:13:clock=", "Dev Board"),
+                "attiny2313" : (ATTClock, ('small', 'arduino', 'dw', 'noadc'),
+                                   "ATTinyCore:avr:attinyx313:chip=2313,clock=", "Programmer-ZF"),
+                "attiny4313" : (ATTClock, ('medium', 'arduino', 'dw', 'noadc'),
+                                   "ATTinyCore:avr:attinyx313:chip=4313,clock=", "Programmer-ZF"),
+                "attiny43u" : (ATTRcClock,  ('medium', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attiny43:clock=", "Breakout Board"),
+                "attiny24" : (ATTClock, ('small', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx4:chip=24,clock=", "Dev Board"),
+                "attiny44" : (ATTClock, ('medium', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx4:chip=44,clock=", "Dev Board"),
+                "attiny84" : (ATTClock, ('large', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx4:chip=84,clock=", "Dev Board"),
+                "attiny841" : (ATTRcClock, ('large', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx41:chip=841,clock=", "Breakout Board"),
+                "attiny441" : (ATTRcClock, ('medium', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx41:chip=441,clock=", "Breadboard setup"),
+                "attiny25" : (ATTClock, ('small', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx5:chip=25,clock=", "Dev Board"),
+                "attiny45" : (ATTClock, ('medium', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx5:chip=45,clock=", "Dev Board"),
+                "attiny85" : (ATTClock, ('large', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx5:chip=85,clock=", "Dev Board"),
+                "attiny261" : (ATTClock, ('small', 'arduino', 'dw'),
+                                    "ATTinyCore:avr:attinyx61:chip=261,clock=", "Dev Board"),
+                "attiny461" : (ATTClock, ('medium', 'arduino', 'dw'),
+                                    "ATTinyCore:avr:attinyx61:chip=461,clock=", "Dev Board"),
+                "attiny861" : (ATTClock, ('large', 'arduino', 'dw'),
+                                    "ATTinyCore:avr:attinyx61:chip=861,clock=", "Dev Board"),
+                "attiny87" : (ATTClock, ('large', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx7:chip=87,clock=", "Breakout Board"),
+                "attiny167" : (ATTClock, ('large', 'arduino', 'dw'),
+                                    "ATTinyCore:avr:attinyx7:chip=167,clock=", "Breakout Board"),
+                "attiny48" : (ATTRcClock, ('medium', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx8:chip=48,clock=", "Programmer-ZF"),
+                "attiny88" : (ATTRcClock, ('large', 'arduino', 'dw'),
+                                   "ATTinyCore:avr:attinyx8:chip=88,clock=", "Programmer-ZF"),
+                "attiny828" : (ATTRcClock, ('large', 'arduino', 'dw'),
+                                    "ATTinyCore:avr:attiny828:clock=", "Breakout Board"),
+                "attiny1634" : (ATTRcClock, ('large', 'arduino', 'dw'),
+                                     "ATTinyCore:avr:attiny1634:clock=", "Breakout Board"),
+                "atmega48a" : (MiniClock, ('medium', 'arduino', 'dw'),
+                                    "MiniCore:avr:48:variant=modelNonP,bootloader=no_bootloader," +
+                                    "clock=", "Programmer-ZF"),
+                "atmega48pa" : (MiniClock, ('medium', 'arduino', 'dw'),
+                                    "MiniCore:avr:48:variant=modelP,bootloader=no_bootloader," +
+                                    "clock=", "Programmer-ZF"),
+                "atmega88a" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:88:variant=modelNonP,bootloader=no_bootloader," +
+                                    "clock=", "Programmer-ZF"),
+                "atmega88pa" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:88:variant=modelP,bootloader=no_bootloader,clock=",
+                                    "Programmer-ZF"),
+                "atmega168a" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:168:variant=modelNonP,bootloader=no_bootloader,clock=",
+                                    "Programmer-ZF"),
+                "atmega168pa" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:168:variant=modelP,bootloader=no_bootloader,clock=",
+                                    "Programmer-ZF / XPLAINED Mini Board"),
+                "atmega328" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:328:variant=modelNonP,bootloader=no_bootloader,clock=",
+                                    "Programmer-ZF"),
+                "atmega328p" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:328:variant=modelP,bootloader=no_bootloader,clock=",
+                                    "Programmer-ZF / XPLAINED Mini Board"),
+                "atmega328pb" : (MiniClock, ('large', 'arduino', 'dw'),
+                                    "MiniCore:avr:328:variant=modelPB,bootloader=no_bootloader,clock=",
+                                    "XPLAINED Mini Board"),
+
+                # debugWIRE targets with no Core support
+                "at90usb162" : (CClock, ('large', 'nonarduino', 'dw', 'noadc'), "", "AVR-USB-162 Olimex board"),
+
+                # JTAG targets: MightyCore
+                "atmega324pb" : (MiniClock, ('large', 'arduino', 'jtag'),
+                                     "MightyCore:avr:324:variant=modelPB,bootloader=no_bootloader,clock=",
+                                     "XPLAINED Pro Board"),
+                "atmega16" : (MiniClock, ('dirty',),
+                                     "MightyCore:avr:16:bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega16a" : (MiniClock, ('large', 'arduino',  'jtag'),
+                                     "MightyCore:avr:16:bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega32" : (MiniClock, ('large', 'arduino',  'jtag'),
+                                     "MightyCore:avr:32:bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega164pa" : (MiniClock, ('large', 'arduino',  'jtag'),
+                                     "MightyCore:avr:164:variant=modelP,bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega644" : (MiniClock, ('large', 'arduino',  'jtag'),
+                                     "MightyCore:avr:644:variant=modelA,bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+                "atmega1284p" : (MiniClock, ('huge', 'arduino',  'jtag'),
+                                     "MightyCore:avr:1284:variant=modelP,bootloader=no_bootloader,clock=",
+                                     "MightyCore development board"),
+
+                # JTAG targets: MegaCore
+                "atmega2560": (MiniClock, ('huge', 'arduino',  'jtag'),
+                                   "MegaCore:avr:2560:bootloader=no_bootloader,clock=",
+                                   "Arduino Mega"),
+                "atmega1280": (MiniClock, ('huge', 'arduino',  'jtag'),
+                                   "MegaCore:avr:1280:bootloader=no_bootloader,clock=",
+                                   "Arduino Mega 1280"),
+                "atmega169P": (MiniClock, ('large', 'arduino',  'jtag'),
+                                   "MegaCore:avr:169:variant=modelP,bootloader=no_bootloader,clock=",
+                                   "Butterfly"),
+
+                "atmega128": (MiniClock, ('huge', 'arduino',  'jtag'),
+                                   "MegaCore:avr:128:bootloader=no_bootloader,clock=",
+                                   "Olimex AVR-MT-128"),
+
+                # JTAG targets: MajorCore
+                "atmega162": (MiniClock, ('large', 'arduino',  'jtag'),
+                                   "MajorCore:avr:162:bootloader=no_bootloader,clock=",
+                                   "Butterfly"),
+
+                # JTAG targets: Arduino AVR Core
+                "atmega32u4": (NoClock, ('large', 'arduino',  'jtag'),
+                                   "arduino:avr:leonardo",
+                                   "Leonardo"),
+
+                    }

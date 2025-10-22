@@ -69,7 +69,7 @@ class XNvmAccessProviderCmsisDapDebugwire(NvmAccessProviderCmsisDapDebugwire):
         data = self.avr.read_memory_section(memtype, offset, numbytes, numbytes)
         return data
 
-    def write(self, memory_info, offset, data):
+    def write(self, memory_info, offset, data, _programming_mode=False):
         """
         Write the memory with data
 

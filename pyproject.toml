@@ -82,7 +82,9 @@ disable= ['broad-exception-caught',
 	 'duplicate-code',
 	 'consider-using-with',
 	 'consider-using-dict-items',
-	 'consider-using-generator']
+	 'consider-using-generator',
+         'consider-iterating-dictionary',
+         'use-a-generator']
 
 [tool.pylint.REPORTS]
 output-format = 'text'

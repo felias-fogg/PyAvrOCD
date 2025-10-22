@@ -347,9 +347,14 @@ class XAvrDebugger(AvrDebugger):
         except Jtagice3ResponseError as error:
             # The debugger could be out of sync with the target, retry
             if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_PHYSICAL_STATE:
-                self.logger.info("Physical state out of sync.  Retrying.")
+                self.logger.warning("Physical state out of sync. Retrying.")
                 self.device.avr.deactivate_physical()
                 self.logger.info("Physical interface deactivated")
+                dev_id = self.device.avr.activate_physical()
+                dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
+                self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)
+            elif error.code == Avr8Protocol.AVR8_FAILURE_CLOCK_ERROR:
+                self.logger.warning("Communication clock failure. Retrying.")
                 dev_id = self.device.avr.activate_physical()
                 dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
                 self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)

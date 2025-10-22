@@ -1,6 +1,20 @@
 # Changelog
 
+### NEW:
+
+- **Fixed:**
+     - On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.
+- **Added:**
+     - New integration test: cblink (a C program implementing a blinky)
+     - New integration test: measure (a C++ program to measure supply voltage)
+     - Added a keyword $SUCCESS_IF for the integration test scripts in order to terminate a test prematurely (when something is not implemented) based on the output of the previous command
+     - Added the possibility in the integration tests to compile pure C programs that do not depend on the Arduino framework.
+     - Added tags for scripts and MCUs. All MCU tags must be mentioned in the list of script tags for the test to be included.
+- **Changed:**
+     - Refactored the integration tests. Now we have two modules and the test driver.  Everything is now in the `integration` folder below `tests`.
+
 ### 0.16.3
+
 - **Fixed:**
    - SVD and device files freshly generated, now with read-only registers
    - During startup, we handle now situations with more than one connected tool and requiring the connection to a third one. It used to fail silently after trying to connect to dw-link. Now, a critical error message is printed without trying to connect to dw-link.
