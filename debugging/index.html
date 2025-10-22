@@ -137,7 +137,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="debugging-on-the-target">Debugging on the target</h1>
+                <h1 id="debugging-on-a-target">Debugging on a target</h1>
 <h2 id="debugging-with-a-command-line-interface">Debugging with a command-line interface</h2>
 <p>After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: <code>-Og</code> and <code>-ggdb3</code>. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.</p>
 <p>When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../board-preparation/#general-considerations">Preparing a target board</a>):</p>

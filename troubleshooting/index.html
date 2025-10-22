@@ -124,14 +124,29 @@
 </ul>
 <h2 id="debugging-does-not-start">Debugging does not start:</h2>
 <ul>
-<li>AVRISP protocol: Command failed</li>
 <li>Address already in use</li>
+<li>ISP programming failed</li>
 <li>Wrong MCU: ...</li>
 <li>Stuck-at-1-bit</li>
 <li>Debugging is impossible, because lockbits/OCDEN/DWEN cannot be programmed</li>
 <li>Target is not powered</li>
 </ul>
 <h2 id="problems-while-debugging">Problems while debugging</h2>
+<ul>
+<li>debugging/loading is slow</li>
+<li>Does not stop at a line with a set breakpoint, but later</li>
+<li>variable cannot be accessed</li>
+<li>analogwrite (PWM) does not appear to work when execution is stopped</li>
+<li>single step leads to jump to interrupt dispatch table</li>
+<li>Cannot run/continue<ul>
+<li>SIGSYS - breakpoints</li>
+<li>SIGABRT - Fatal error before</li>
+<li>SIGILL - BREAK instructions</li>
+<li>SIGBUS - stackpointer too low</li>
+<li>SIGSEGV - executable not yet flashed</li>
+</ul>
+</li>
+</ul>
               
             </div>
           </div><footer>

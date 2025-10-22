@@ -160,7 +160,8 @@
 <li>download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and</li>
 <li>record necessary physical changes on the target board.</li>
 </ul>
-<p>With that, it will be easy to <a href="../restore-original-state/">restore the original</a> state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the Burn Bootloader function. However, you should record any physical changes. You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue.</p>
+<p>With that, it will be easy to <a href="../restore-original-state/">restore the original</a> state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the <code>Burn Bootloader</code> function. However, you should record any physical changes.</p>
+<p>You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue.</p>
 <h2 id="general-considerations">General considerations</h2>
 <p>Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.</p>
 <p>Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage dwen</code>, when <a href="../command-line-options/">invoking the GDB server</a>:</p>
