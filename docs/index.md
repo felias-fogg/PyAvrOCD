@@ -11,11 +11,11 @@ In addition to being cross-platform, PyAvrOCD offers some enhancements over its 
 After [installing the package](install-link.md), the following steps are necessary for successful debugging:
 
 1. [Installing and configuring the appropriate debugging software](debugging-software.md)
-2. [Preparing the target board for debugging](board-preparation.md)
-3. [Connecting the hardware debugger to the target](connect-to-target.md)
+2. [Preparing a target board for debugging](board-preparation.md)
+3. [Connecting the hardware debugger to a target](connect-to-target.md)
 4. [Invoking the GDB server](command-line-options.md)
-5. [Debugging a program on the target](debugging.md)
-6. [Restoring the target to its original state](restore-original-state.md)
+5. [Debugging a program on a target](debugging.md)
+6. [Restoring a target to its original state](restore-original-state.md)
 
 Once you have a debugger connected to the server, you can control the server's behavior using [`monitor` commands](monitor-commands.md).
 
