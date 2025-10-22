@@ -55,7 +55,7 @@ The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the 
 
 ### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore)
 
-* <u>ATmega64(A)</u>, **ATmega128(A)**[^*]
+* <u>ATmega64(A)</u>, **ATmega128(A)**
 * ATmega640, **ATmega1280**, **ATmega2560**
 * <u>ATmega1281</u>, <u>ATmega2561</u>
 * <u>ATmega165(P)(A)</u>, <u>ATmega325(P)(A)</u>, <u>ATmega645(P)(A)</u>
@@ -64,7 +64,8 @@ The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the 
 * <u>ATmega3290(P)(A)</u>, <u>ATmega6490A</u>
 * AT90CAN32, AT90CAN64, <u>AT90CAN128</u>
 
-[^*]:The ATmega128(A) MCUs do not allow software breakpoints.
+The ATmega128(A) MCUs do not allow for software breakpoints. This
+means that you can use only four hardware breakpoints.
 
 ### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore)
 
