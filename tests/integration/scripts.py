@@ -387,8 +387,8 @@ all_scripts = {
 
 # load something into EEPROM
     "eeprom" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
-    "eeprom",
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+    "ceeprom",
     "",
     (("set logging file log/eeprom.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -397,8 +397,8 @@ all_scripts = {
      ("p ee_data", "data that's loaded straight into EEPROM"),
      ("p ver", "data that's loaded straight into EEPROM"),
      ("delete 1", ""),
-     ("break blink_exit", "Breakpoint 2"),
-     ("cont", "Breakpoint 2, blink_exit (OK=true)"),
+     ("break final", "Breakpoint 2"),
+     ("cont", "Breakpoint 2, final (OK=true)"),
      ("set var ee_data[0] = 'X'", ""),
      ("p ee_data", "Xata that's loaded straight into EEPROM")) + epilog),
 
