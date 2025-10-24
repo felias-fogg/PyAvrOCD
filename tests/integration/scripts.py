@@ -35,7 +35,7 @@ all_scripts = {
     (("set logging file log/live.log", ""),) + prolog + \
     (("monitor LiveTests", "live tests successfully finished"),) + epilog),
 
-# C blink built using make
+# C blink program built using make
     "cblink" : (
     ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
     "cblink",
@@ -47,6 +47,7 @@ all_scripts = {
      ("next", "setBit(LED2_DDR, LED2);"),
      ("next", "setBit(LED1_PORT, LED1);"),
      ("break", "Breakpoint 2"),
+     ("ignore 2 15", ""),
      ("delete 1", ""),
      ("continue", "Breakpoint 2"),
      ("n", "setBit(LED2_PORT, LED2);"),
@@ -83,6 +84,12 @@ all_scripts = {
      ("monitor version", "version"),
      ("monitor atexit leave", "MCU will leave debugWIRE mode on exit"),
      ("monitor atexit stayindebugwire", "MCU will stay in debugWIRE mode on exit"),
+     ("monitor breakpoints software", "Only software breakpoints",
+          "Breakpoint mode cannot be changed on this MCU"),
+     ("monitor breakpoints hardware", "Only hardware breakpoints",
+          "Breakpoint mode cannot be changed on this MCU"),
+     ("monitor breakpoints all", "All breakpoints are allowed",
+          "Breakpoint mode cannot be changed on this MCU"),          
      ("monitor caching disable", "Flash memory will not be cached",
          "Caching is not implemented"),
      ("monitor caching enable", "Flash memory will be cached",
@@ -130,10 +137,23 @@ all_scripts = {
      ("monitor xxx", "Unknown 'monitor' command"),
      ("monitor load xxx", "Unknown argument in 'monitor' command")) + epilog),
 
-# tests extended-remote target
-    "extended" : (
+# test timer settings
+    "timers" :
     ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
     "blink",
+    (("set logging file log/blink.log", ""),) + prolog + \
+    (("load", "Loading"),
+     ("break loop", "Breakpoint 1"),
+     ("continue", "Breakpoint 1"),
+     ("monitor timers freeze", "Timers are frozen when execution is stopped"),
+     ("print TCNT0==TCNT0", " = true", " = 1"),
+     ("monitor timers run", "Timers will run when execution is stopped"),
+     ("print TCNT0==TCNT0", " = false", " = 0")) + epilog),
+
+# tests extended-remote target
+    "extended" : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noarduino', 'noadc'),
+    "cblink",
     "",
     (("set style enabled off", ""),
      ("set logging file log/extended.log", ""),
@@ -144,12 +164,9 @@ all_scripts = {
      ("monitor debugwire enable", "enabled", "This is not a debugWIRE target"),
      ("monitor reset", ""),
      ("load", "Start address 0x"),
-     ("break loop", "Breakpoint 1"),
+     ("break main", "Breakpoint 1"),
      ("run\ny", "Starting program:"),
-     ("kill\nn", "Not confirmed"),
-     ("detach", "detached"),
-     ("disconnect", "Ending remote debugging"))),
-
+     ("kill\nn", "Not confirmed"))  + epilog),
 
 # tests breaks in ISRs
 # tests asynchronous stop
@@ -432,8 +449,6 @@ all_scripts = {
      ("delete 2", ""),
      ("continue", "Serial.println(avg);"),
      ("print avg", "= -7196"),) + epilog),
-
-
 
 # switch off debugWIRE mode (if applicable)
 # this test script should be run last in each sequence in order to disable debugWIRE

@@ -2,7 +2,7 @@
 // Blink on all known LEAD pins
 #include <avr/io.h>
 #include <util/delay.h>
-#include "pindefs.h"
+#include "../includes/ledpindefs.h"
 
 #define DELAYTIME 400
 
