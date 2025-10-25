@@ -64,13 +64,27 @@ The **Arduino Pro Mini** is a simpler case. The pull-up resistor has a resistanc
 
 For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.
 
-### Fuse settings
+### Fuse settings, when PyAvrOCD manages the fuse
 
 In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the `RSTDSBL` fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when `SPIEN` (enabling SPI programming) is unprogrammed.
 
 The `DWEN` , `BOOTRST`, and `EESAVE` fuses and the `lockbits` will be taken care of by PyAvrOCD, if this is permitted (see above).
 
+### Fuse settings, when fuses are managed manually
 
+When you want full control over the fuses, then make sure that the fuses are set set as follows before you invoke te debugger:
+
+1. You may want to program the `EESAVE` fuse before the next step in order to save the EEPROM content.
+
+2. Clear the `lockbits` by erasing the entire chip. This is necessary because otherwise debugging is impossible. It will erase any bootloader as well.
+
+3. Unprogram the `BOOTRST` fuse, if present and programmed. Otherwise, execution will not start at adress 0, but in the bootloader area that has been cleared. 
+
+4. Program the `DWEN` fuse. After that, power-cycle the target board. 
+
+Now, you should be able to connect to the OCD on the target MCU. 
+
+After you have finished debugging and issued the `monitor debugwire disable` command, you can connect again with an SPI programmer and unprogram the `DWEN` fuse. Make sure that in between power is always applied to the target board because otherwise you may have switched back to debugWIRE mode.
 
 ## Preparing a JTAG target
 
@@ -78,7 +92,7 @@ The `DWEN` , `BOOTRST`, and `EESAVE` fuses and the `lockbits` will be taken care
 
 JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (`TDI`, `TDO`, `TMS`, `TCK`) or disconnect those components.
 
-### Fuse settings
+### Fuse settings, when PyAvrOCD manages fuses
 
 Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  `JTAGEN` fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.
 
@@ -86,7 +100,20 @@ As in the debugWIRE case, it could be that SPI programming has been disabled. If
 
 The `OCDEN` , `BOOTRST`, and `EESAVE` fuses and the `lockbits` will be taken care of by PyAvrOCD (see above).
 
+### Fuse settings, when fuses are managed manually
 
+When you want full control over the fuses, then make sure that the fuses are set set as follows before you invoke te debugger. Make sure that the JTAG pins are enabled (see above). Afterward use avrdude and an SPI programmer as follows:
+
+1. You may want to program the `EESAVE` fuse before the next step in order to save the EEPROM content. If you intend to load executables that contain EEPROM contents, you definitely need to program the fuse!
+
+2. Clear the `lockbits` by erasing the entire chip. This is necessary because otherwise debugging is impossible. It will erase any bootloader as well.
+3. Unprogram the `BOOTRST` fuse, if present and programmed. Otherwise, execution will not start at adress 0, but in the bootloader area that has been cleared. 
+
+4. Program the `OCDEN` fuse. 
+
+Now, you should be able to connect to the OCD on the target MCU. 
+
+After you have finished debugging you should unprogram `OCDEN` because otherwise no lower-power operation is possible. 
 
 ## Preparing a PDI target
 
