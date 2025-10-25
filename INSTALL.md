@@ -24,9 +24,9 @@ Since the binaries were generated on very recent versions of the respective oper
 
 ## PyPI
 
-I assume you already installed a recent Python version (>=3.9).
+I assume you already installed a recent Python version (>=3.10).
 
-Although it is possible to install PyAvrOCD using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/), it is recommended to use [pipx](https://pipx.pypa.io/). Pipx installs packages in a way that they are entirely isolated from the rest of your Python installation, and you are able to install them in a way that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the [pipx website](https://pipx.pypa.io/stable/installation/). Then proceed as follows.
+It is possible to install PyAvrOCD using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/). However, it is recommended to use [pipx](https://pipx.pypa.io/) instead. Pipx installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the [pipx website](https://pipx.pypa.io/stable/installation/). Then proceed as follows.
 
 ```bash
 > pipx install pyavrocd
@@ -50,7 +50,7 @@ With that, you can start executing the script inside the downloaded folder as fo
 > poetry run pyavrocd ...
 ```
 
-Furthermore, you can create a binary standalone package as follows (after having installed the [PyInstaller package](https://pyinstaller.org/en/stable/)):
+Furthermore, you can create a binary standalone package as follows:
 
 ```bash
 > poetry run pyinstaller pyavrocd.spec
