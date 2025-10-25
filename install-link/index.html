@@ -150,8 +150,8 @@
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> or (<code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <h4 id="pypi">PyPI</h4>
-<p>I assume you already installed a recent Python version (&gt;=3.9).</p>
-<p>Although it is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a>. Pipx installs packages in a way that they are entirely isolated from the rest of your Python installation, and you are able to install them in a way that they can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
+<p>I assume you already installed a recent Python version (&gt;=3.10).</p>
+<p>It is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>. However, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a> instead. Pipx installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
 <pre><code class="language-bash">&gt; pipx install pyavrocd
 &gt; pipx ensurepath
 </code></pre>
@@ -164,7 +164,7 @@
 <pre><code class="language-bash">&gt; poetry install
 &gt; poetry run pyavrocd ...
 </code></pre>
-<p>Furthermore, you can create a binary standalone package as follows (after having installed the <a href="https://pyinstaller.org/en/stable/">PyInstaller package</a>):</p>
+<p>Furthermore, you can create a binary standalone package as follows:</p>
 <pre><code class="language-bash">&gt; poetry run pyinstaller pyavrocd.spec
 </code></pre>
 <p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those to a place in your <code>PATH</code>.</p>
