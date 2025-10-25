@@ -58,7 +58,9 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#physical-preparations">Physical preparations</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings">Fuse settings</a>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings, when PyAvrOCD manages the fuse</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually">Fuse settings, when fuses are managed manually</a>
     </li>
         </ul>
     </li>
@@ -66,7 +68,9 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#physical-preparation">Physical preparation</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_1">Fuse settings</a>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-fuses">Fuse settings, when PyAvrOCD manages fuses</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually_1">Fuse settings, when fuses are managed manually</a>
     </li>
         </ul>
     </li>
@@ -74,7 +78,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#physical-preparation_1">Physical preparation</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_2">Fuse settings</a>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings">Fuse settings</a>
     </li>
         </ul>
     </li>
@@ -82,7 +86,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#physical-preparations_1">Physical preparations</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_3">Fuse settings</a>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings_1">Fuse settings</a>
     </li>
         </ul>
     </li>
@@ -200,27 +204,63 @@
 </p>
 
 <p>For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.</p>
-<h3 id="fuse-settings">Fuse settings</h3>
+<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings, when PyAvrOCD manages the fuse</h3>
 <p>In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the <code>RSTDSBL</code> fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when <code>SPIEN</code> (enabling SPI programming) is unprogrammed.</p>
 <p>The <code>DWEN</code> , <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD, if this is permitted (see above).</p>
+<h3 id="fuse-settings-when-fuses-are-managed-manually">Fuse settings, when fuses are managed manually</h3>
+<p>When you want full control over the fuses, then make sure that the fuses are set set as follows before you invoke te debugger:</p>
+<ol>
+<li>
+<p>You may want to program the <code>EESAVE</code> fuse before the next step in order to save the EEPROM content.</p>
+</li>
+<li>
+<p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise debugging is impossible. It will erase any bootloader as well.</p>
+</li>
+<li>
+<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at adress 0, but in the bootloader area that has been cleared. </p>
+</li>
+<li>
+<p>Program the <code>DWEN</code> fuse. After that, power-cycle the target board. </p>
+</li>
+</ol>
+<p>Now, you should be able to connect to the OCD on the target MCU. </p>
+<p>After you have finished debugging and issued the <code>monitor debugwire disable</code> command, you can connect again with an SPI programmer and unprogram the <code>DWEN</code> fuse. Make sure that in between power is always applied to the target board because otherwise you may have switched back to debugWIRE mode.</p>
 <h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
 <h3 id="physical-preparation">Physical preparation</h3>
 <p>JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (<code>TDI</code>, <code>TDO</code>, <code>TMS</code>, <code>TCK</code>) or disconnect those components.</p>
-<h3 id="fuse-settings_1">Fuse settings</h3>
+<h3 id="fuse-settings-when-pyavrocd-manages-fuses">Fuse settings, when PyAvrOCD manages fuses</h3>
 <p>Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  <code>JTAGEN</code> fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the <code>JTAG</code> attribute in the <code>Tools</code> menu to <code>enabled</code> and then performing the <code>Burn Bootloader</code> action afterward using SPI programming. From then on, you can connect to the board using the JTAG connector.</p>
 <p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.</p>
 <p>The <code>OCDEN</code> , <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD (see above).</p>
+<h3 id="fuse-settings-when-fuses-are-managed-manually_1">Fuse settings, when fuses are managed manually</h3>
+<p>When you want full control over the fuses, then make sure that the fuses are set set as follows before you invoke te debugger. Make sure that the JTAG pins are enabled (see above). Afterward use avrdude and an SPI programmer as follows:</p>
+<ol>
+<li>
+<p>You may want to program the <code>EESAVE</code> fuse before the next step in order to save the EEPROM content. If you intend to load executables that contain EEPROM contents, you definitely need to program the fuse!</p>
+</li>
+<li>
+<p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise debugging is impossible. It will erase any bootloader as well.</p>
+</li>
+<li>
+<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at adress 0, but in the bootloader area that has been cleared. </p>
+</li>
+<li>
+<p>Program the <code>OCDEN</code> fuse. </p>
+</li>
+</ol>
+<p>Now, you should be able to connect to the OCD on the target MCU. </p>
+<p>After you have finished debugging you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible. </p>
 <h2 id="preparing-a-pdi-target">Preparing a PDI target</h2>
 <h3 id="physical-preparation_1">Physical preparation</h3>
 <p>If the PDI interface is used, then the RESET line will be employed as a clock line. Here, we have the same restrictions as in the case of debugWIRE: no resistive or capacitive load, or active reset circuit, on the reset line.</p>
-<h3 id="fuse-settings_2">Fuse settings</h3>
+<h3 id="fuse-settings">Fuse settings</h3>
 <p>The <code>SPIEN</code> fuse could be disabled. In this case, the above comments apply. Otherwise, there is no need to change any fuses before beginning the debugging process.</p>
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
 <h3 id="physical-preparations_1">Physical preparations</h3>
 <p>Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible.</p>
 <p>On the <strong>Nano Every</strong>, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin.</p>
 <p>On the <strong>Uno WIFI Rev2</strong>, again the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.</p>
-<h3 id="fuse-settings_3">Fuse settings</h3>
+<h3 id="fuse-settings_1">Fuse settings</h3>
 <p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. To enable debugging and programming over this pin again, you will need to use a <a href="https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6">high-voltage UPDI programmer.</a> Here, you must ensure that the 12 V pulse does not damage any components on your board.</p>
               
             </div>
