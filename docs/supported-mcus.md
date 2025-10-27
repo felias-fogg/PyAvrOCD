@@ -36,7 +36,7 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 * <u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u>
 * ATmega32C1, ATmega64C1, ATmega16M1, <u>ATmega32M1</u>, <u>ATmega64M1</u>
-* AT90USB82, <u>AT90USB162</u>
+* AT90USB82, **AT90USB162**
 * AT90PWM1, <u>AT90PWM2B</u>, AT90PWM3B
 * <u>AT90PWM81</u>, AT90PWM161
 * <u>AT90PWM216</u>, AT90PWM316
