@@ -5,15 +5,23 @@
 - **Fixed:**
      - On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.
 - **Added:**
+     - Added 'borrow_hwbp0' in hardwarebp.py: Borrow the temporary HWBP. If HWBP0 is not used, used only by range-stepping, or one can move the HWBP to another slot, we simply return  None (and the HWBP0 can be used implicitly using run_to). Otherwise, we return the address of the blocking BP, which then has to be changed into a SWBP in order to free HWBP0.
+     - 'Sleep walking' in breakandexec.py: Instead of skipping a SLEEP instruction when single-stepping, we now place a hardware breakpoint after the SLEEP instruction, which is 'borrowed' (see above).
      - Added the possibility in the integration tests to compile pure C/C++ programs that do not depend on the Arduino framework.
      - Added tags for scripts and MCUs. All MCU tags must be mentioned in the list of script tags for the test to be included.
      - Added a keyword $SUCCESS_IF for test scripts in order to terminate a test prematurely (when something is not implemented) based on the output of the previous command.
      - New integration test: cblink (a C program implementing a blinky).
      - New integration test: measure (a C++ program to measure supply voltage).
      - Added timers script (used to be part of monitor script)
-     
+
 - **Changed:**
      - Refactored the integration tests. Now we have two modules and the test driver.  Everything is now in the `integration` folder below `tests`.
+     - Changed monitor script so that it can now be used for non-Arduino targets as well.
+     - Changed 'hardware debugger' to 'debug probe', which seems to be the more common term.
+- **Removed:**
+     - Paragraph about "Single-stepping SLEEP instructions" in limitations doc
+
+
 
 ### 0.16.3
 
@@ -93,7 +101,6 @@
 
 - **Fixed:**
   - Using the temporary HWBP for safe single-stepping had the problem that one might miss a BP in an interrupt routine. Accounting for that by reassigning the HWBP to a SWBP had the implication that one increases flash wear and makes safe single-stepping impossible when running with HWBP-only under dW. For this reason, filter_safe_instructions has been introduced (see below), and single-stepping using the HWBP has been removed (see below).
-
 - **Added:**
   - `ronly_registers` have been added in the device files.
   - `sram_masked_write` writes only to unmasked bates (i.e., those that are not read-only).
@@ -102,14 +109,13 @@
   - Check for trouble in single-stepping: If the stack pointer is below SRAM_START, and a stack operation is attempted, then stop execution with a SIGBUS signal, which will be caught on the GdbHandler level.
   - If SRAM > 64k or architecture != avr8, a fatal error is raised in filter_unsafe_instructions.This is mainly a reminder to myself.
   - Entries in the readthedocs documentation: Limitations, Contributing, Code of Conduct.
-
-- **Removed:**
-  - Safe stepping using the temporary HWBP.
 - **Changed:**
   - `update_breakpoints` has been changed significantly (and is much smaller now). Now, only the most recently introduced breakpoint that has no SW/HW BP allocated yet will allocate the temporary HWBP 0. This is forced by unallocating HWBP 0 (the respective BP will later allocate an SWBP)
   - All internal methods in BreakAndExec have been prefixed with an underscore.
   - `RspServer` got its own module `server`
   - `HardwareBP` got its own module `hardwarebp`
+- **Removed:**
+  - Safe stepping using the temporary HWBP.
 
 
 ### 0.13.5 (15-Sep-2025)
@@ -193,14 +199,13 @@
   - All monitor commands that change state can now be used as command-line options. For example, one can specify `--timers=freeze` on the command line.
   - We now also accept the `-f` option and ignore everything about it. This option is not shown in the 'usage' text (because it is suppressed).
   - In order to safeguard the user against debugging non-A ATmega48/88, pyavrocd refuses to debug any such non-A/P device. If an A-device (e.g., ATmega88A) is specified, a warning message is given that it is necessary to specify `--allow-potentially-bricking-actions` on the command line or in the `pyavrocd.options` file.  The option itself is not displayed in the help text since it would clutter the help text too much.
-- **Removed:**
-  - The `-g/--gede` option has been removed because `-s` also gives its functionality.
-  - The `-M/--monitor` option has been removed because now all state-changing monitor commands can be used as command-line options.
-
 - **Changed:**
   - `monitor onlyloaded` was changed to `monitor onlywhenloaded`
   - Since we now also deal with the `-f` option needed for the openOCD invocation by cortex-debug, we no longer tolerate unknown options.
   - Because printing the possible choices for option values looked very ugly, the help text now states that the choices can be asked for by using a '?'.  The help text looks very tidy now.
+- **Removed:**
+     - The `-g/--gede` option has been removed because `-s` also gives its functionality.
+     - The `-M/--monitor` option has been removed because now all state-changing monitor commands can be used as command-line options.
 
 
 ### 0.12.0 (26-August-2025)
@@ -365,10 +370,6 @@
 - **Changed:**
   - Changed the names of the atdf folders to `mega-<version>` and `tiny-<version>` and included them in the repo. In addition added `tiny` and `mega` soft links (so that patches are independent of the concrete version)
   - Refactored pyavrocd.py: all classes now have their own module
-
-
-
-
 
 
 ### 0.9.0 (27-Jul-2025)

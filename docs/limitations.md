@@ -87,9 +87,11 @@ On the other hand, often instructions need to be executed closely together. Sinc
 
 `BREAK` instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a `BREAK` instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from [a previous debugging session that has been ended abruptly](#unsafe-exits-from-debugging) (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user.
 
+<!--
+
 ### Single-stepping SLEEP instructions
 
-Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint.
+Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint. -->
 
 ## I/O register access
 
