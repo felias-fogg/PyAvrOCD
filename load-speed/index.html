@@ -69,7 +69,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
@@ -241,7 +241,7 @@
 </tr>
 </tbody>
 </table>
-<p>First of all, one notices that there is no difference between the different MCU clocks. The reason is that the hardware debugger generates the programming clock signal. Second, one notes that in the JTAG case, reading has non-negligible costs. The verifying setting has roughly half the speed of the non-verifying setting, and read-before-write halves the speed as well. The identical numbers in the third row have a simple explanation. Since this is the best case for read-before-write, i.e., no page has to be programmed, one also does not need to verify the write operation.</p>
+<p>First of all, one notices that there is no difference between the different MCU clocks. The reason is that the debug probe generates the programming clock signal. Second, one notes that in the JTAG case, reading has non-negligible costs. The verifying setting has roughly half the speed of the non-verifying setting, and read-before-write halves the speed as well. The identical numbers in the third row have a simple explanation. Since this is the best case for read-before-write, i.e., no page has to be programmed, one also does not need to verify the write operation.</p>
               
             </div>
           </div><footer>

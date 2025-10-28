@@ -95,7 +95,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
@@ -186,7 +186,7 @@
 <h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a></h3>
 <ul>
 <li><s><strong>ATmega16(A)</strong></s>, <strong>ATmega32(A)</strong></li>
-<li><strong>ATmega164(P)(A)</strong>, ATmega324(P)(A), <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
+<li><strong>ATmega164(P)(A)</strong>, <u>ATmega324(P)(A)</u>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.</p>
 <h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a></h3>
@@ -198,7 +198,7 @@
 <li><u>ATmega169(P)(A)</u>, <u>ATmega329(P)(A)</u>, <u>ATmega649(P)(A)</u></li>
 <li><u>ATmega3250(P)(A)</u>, <u>ATmega6450(P)(A)</u></li>
 <li><u>ATmega3290(P)(A)</u>, <u>ATmega6490A</u></li>
-<li>AT90CAN32, AT90CAN64, <u>AT90CAN128</u></li>
+<li><u>AT90CAN32</u>, AT90CAN64, <u>AT90CAN128</u></li>
 </ul>
 <p>The ATmega128(A) MCUs do not allow for software breakpoints. This
 means that you can use only four hardware breakpoints.</p>
@@ -208,7 +208,7 @@ means that you can use only four hardware breakpoints.</p>
 </ul>
 <h3 id="other-atmegas_1">Other ATmegas</h3>
 <ul>
-<li>AT90USB646, AT90USB647, AT90USB1286, AT90USB1287</li>
+<li>AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287</li>
 <li>ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2</li>
 <li>ATmega64rfr2, ATmega128rfr2, ATmega256rfr2</li>
 <li>ATmega128rfa1</li>

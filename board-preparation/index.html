@@ -109,7 +109,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Hardware debuggers</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
@@ -180,7 +180,7 @@
 <p>Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object.</p>
 <h2 id="preparing-a-debugwire-target">Preparing a debugWIRE target</h2>
 <h3 id="physical-preparations">Physical preparations</h3>
-<p>Since the RESET line is used for communication between the MCU and the hardware debugger, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
+<p>Since the RESET line is used for communication between the MCU and the debug probe, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
 <p>On the <strong>Arduino Uno</strong> and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg" width="50%">
@@ -217,13 +217,13 @@
 <p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise, debugging is impossible. It will erase any bootloader as well.</p>
 </li>
 <li>
-<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared. </p>
+<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.</p>
 </li>
 <li>
-<p>Program the <code>DWEN</code> fuse. After that, power-cycle the target board. </p>
+<p>Program the <code>DWEN</code> fuse. After that, power-cycle the target board.</p>
 </li>
 </ol>
-<p>Now, you should be able to connect to the OCD on the target MCU. </p>
+<p>Now, you should be able to connect to the OCD on the target MCU.</p>
 <p>After you have finished debugging and issued the <code>monitor debugwire disable</code> command, you can connect again with an SPI programmer and unprogram the <code>DWEN</code> fuse. Make sure that, in between, power is always applied to the target board because otherwise you may have switched back to debugWIRE mode.</p>
 <h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
 <h3 id="physical-preparation">Physical preparation</h3>
@@ -242,14 +242,14 @@
 <p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise debugging is impossible. This will erase any bootloader as well.</p>
 </li>
 <li>
-<p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared. </p>
+<p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.</p>
 </li>
 <li>
-<p>Program the <code>OCDEN</code> fuse. </p>
+<p>Program the <code>OCDEN</code> fuse.</p>
 </li>
 </ol>
-<p>Now, you should be able to connect to the OCD on the target MCU. </p>
-<p>After you have finished debugging, you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible. </p>
+<p>Now, you should be able to connect to the OCD on the target MCU.</p>
+<p>After you have finished debugging, you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible.</p>
 <h2 id="preparing-a-pdi-target">Preparing a PDI target</h2>
 <h3 id="physical-preparation_1">Physical preparation</h3>
 <p>If the PDI interface is used, then the RESET line will be employed as a clock line. Here, we have the same restrictions as in the case of debugWIRE: no resistive or capacitive load, or active reset circuit, on the reset line.</p>
