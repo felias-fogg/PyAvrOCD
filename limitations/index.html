@@ -104,8 +104,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#single-stepping-break-instructions">Single-stepping BREAK instructions</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-sleep-instructions">Single-stepping SLEEP instructions</a>
-    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#io-register-access">I/O register access</a>
@@ -209,8 +207,12 @@ IN R2, PINB
 <p>On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed.</p>
 <h3 id="single-stepping-break-instructions">Single-stepping BREAK instructions</h3>
 <p><code>BREAK</code> instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a <code>BREAK</code> instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from <a href="#unsafe-exits-from-debugging">a previous debugging session that has been ended abruptly</a> (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user.</p>
-<h3 id="single-stepping-sleep-instructions">Single-stepping SLEEP instructions</h3>
-<p>Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a <code>SLEEP</code> instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a <code>SLEEP</code> instruction, it is treated as a <code>NOP</code> instruction. When you want to debug the sleep state, use a breakpoint.</p>
+<!--
+
+### Single-stepping SLEEP instructions
+
+Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint. -->
+
 <h2 id="io-register-access">I/O register access</h2>
 <p>Some I/O registers cannot be accessed from the debugging UI.</p>
 <p>Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers <code>UDR</code> and <code>SPDR</code>). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2 or PlatformIO, then the <code>PERIPHERALS</code> debugger pane will show you a comment to this effect.</p>
