@@ -1,6 +1,6 @@
-# Connecting the hardware debugger to a target
+# Connecting the debug probe to a target
 
-The hardware debuggers have different connectors. The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, where a triangle marks pin 1. This connector is not compatible with any AVR debug connector.
+The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, where a triangle marks pin 1. This connector is not compatible with any AVR debug connector.
 
 If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as shown in the following picture.
 
@@ -39,7 +39,7 @@ In this case, it is essential to consult the user guide of the programmer and th
 
 ## Connecting to a debugWIRE target
 
-In principle, only two wires are necessary to connect your hardware debugger to a target chip or board: the debugWIRE line, which is the target chip's RESET line, and GND. Since the debugger also needs to know which voltage the target board uses, the Vcc line is also necessary. Note that none of the commercial debuggers source the target. They only have voltage-sensing lines to drive the level-shifting hardware.
+In principle, only two wires are necessary to connect your debug probe to a target chip or board: the debugWIRE line, which is the target chip's RESET line, and GND. Since the debugger also needs to know which voltage the target board uses, the Vcc line is also necessary. Note that none of the commercial debuggers source the target. They only have voltage-sensing lines to drive the level-shifting hardware.
 
 Since one also wants to change into and out of debugWIRE mode, change fuses, or upload firmware, it is necessary to connect all 6 SPI programming lines to the target: VTG, GND, RESET, MOSI, MISO, and SCK. For this reason, using all SPI programming lines makes a lot of sense. Moreover, most of the time, an SPI connector is already on the target board.
 

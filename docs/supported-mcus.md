@@ -49,7 +49,7 @@ The MCUs in the lists below are all supported by PyAvrOCD. However, the cores ha
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore)
 
 * <s>**ATmega16(A)**</s>, **ATmega32(A)**
-* **ATmega164(P)(A)**, ATmega324(P)(A), **ATmega324PB**, **ATmega644(P)(A)**, **ATmega1284(P)**
+* **ATmega164(P)(A)**, <u>ATmega324(P)(A)</u>, **ATmega324PB**, **ATmega644(P)(A)**, **ATmega1284(P)**
 
 The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.
 
@@ -62,7 +62,7 @@ The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the 
 * <u>ATmega169(P)(A)</u>, <u>ATmega329(P)(A)</u>, <u>ATmega649(P)(A)</u>
 * <u>ATmega3250(P)(A)</u>, <u>ATmega6450(P)(A)</u>
 * <u>ATmega3290(P)(A)</u>, <u>ATmega6490A</u>
-* AT90CAN32, AT90CAN64, <u>AT90CAN128</u>
+* <u>AT90CAN32</u>, AT90CAN64, <u>AT90CAN128</u>
 
 The ATmega128(A) MCUs do not allow for software breakpoints. This
 means that you can use only four hardware breakpoints.
@@ -73,7 +73,7 @@ means that you can use only four hardware breakpoints.
 
 ### Other ATmegas
 
-* AT90USB646, AT90USB647, AT90USB1286, AT90USB1287
+* AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
 * ATmega128rfa1

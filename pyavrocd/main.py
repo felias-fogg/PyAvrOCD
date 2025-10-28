@@ -417,7 +417,7 @@ def startup(command_line, logger):
         backend.connect_to_tool(toolconnection)
     except usb.core.NoBackendError as e:
         no_backend_error = True
-        logger.critical("Could not connect to hardware debugger: %s", e)
+        logger.critical("Could not connect to debug probe: %s", e)
         if platform.system() == 'Darwin':
             logger.critical("Install libusb: 'brew install libusb'")
             logger.critical("Maybe consult: " +

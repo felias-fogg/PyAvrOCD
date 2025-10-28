@@ -1,4 +1,4 @@
-# Supported hardware debuggers
+# Supported debug probes
 
 Except for [dw-link](https://github.com/felias-fogg/dw-link), this list is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD.
 

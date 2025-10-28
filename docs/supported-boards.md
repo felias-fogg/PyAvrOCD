@@ -11,12 +11,17 @@ In addition, the board packages supporting the boards, possible board modificati
 
 The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.
 
-- **ATmega328P**, **ATmega168PB**, and **ATmega328PB** **Xplained Mini**: Supported by [MiniCore](https://github.com/MCUdude/MiniCore); choose `16 MHz external`, `no bootloader`, the correct `variant`, and as the `Programmer` `Xplained Mini`. The `port` should be set to the USB port opened by the board. You can upload code to the board using the command `Upload Using Programmer`. Serial I/O can be used via the `Serial Monitor` of the IDE. Power-cycling (for enabling debugWIRE mode) is done automatically. For these boards, it makes sense to use `--atexit leavedebugwire` because then one can use the much faster upload via SPI programming.
+- **ATmega328P** **Xplained Mini**,
+
+- **ATmega168PB** **Xplained Mini**, and
+
+- **ATmega328PB** **Xplained Mini**: Supported by [MiniCore](https://github.com/MCUdude/MiniCore); choose `16 MHz external`, `no bootloader`, the correct `variant`, and as the `Programmer` `Xplained Mini`. The `port` should be set to the USB port opened by the board. You can upload code to the board using the command `Upload Using Programmer`. Serial I/O can be used via the `Serial Monitor` of the IDE. Power-cycling (for enabling debugWIRE mode) is done automatically. For these boards, it makes sense to use `--atexit leavedebugwire` because then one can use the much faster upload via SPI programming.
 
 - **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23.
 - AT90USBKEY (AT90USB1287): no core yet
 - ATmega256RFR2 Xplained Pro: no core yet
 - <u>AVR Butterfly (ATmega169)</u>: no core yet
+- MEGA-1284P Xplained: no core yet
 
 
 
@@ -79,7 +84,7 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 - Metro (ATmega328P): MiniCore; cut `RESET EN` solder bridge
 - Metro Mini 328P V2: MiniCore; you have to figure out which cap to remove
 - Teensy 2.0 (ATmega32U4): no core yet
-- Teensy++ (AT90USB1286): no core yet
+- <u>Teensy++ (AT90USB1286)</u>: no core yet
 - Trinket - Mini Microcontroller 3.3V/5V Logic: ATTinyCore fork
 - Pro Trinket - 5V 16MHz (ATmega328P): MiniCore
 

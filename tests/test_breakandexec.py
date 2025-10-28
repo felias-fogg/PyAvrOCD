@@ -110,7 +110,7 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp._bstamp = 6
-        self.bp._hwbp._hwbplist = [ 300 ]
+        self.bp.hwbp._hwbplist = [ 300 ]
         self.bp._bp = {100: { 'active': True, 'allocated' : None, # will get swbp
                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 2 },
                        200:  { 'active': False, 'allocated' : SWBP, # will remove swbp
@@ -124,7 +124,7 @@ class TestBreakAndExec(TestCase):
                                     'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 2 },
                                        400:  { 'active': True, 'allocated' : HWBP,
                                     'opcode': 0x2223, 'secondword' : 0x3333, 'timestamp' : 3 }})
-        self.assertEqual(self.bp._hwbp._hwbplist, [ 400 ])
+        self.assertEqual(self.bp.hwbp._hwbplist, [ 400 ])
         self.bp.dbg.software_breakpoint_clear.assert_called_with(200)
         self.bp.dbg.software_breakpoint_set.assert_called_with(100)
 
@@ -134,7 +134,7 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp._bstamp = 6
-        self.bp._hwbp._hwbplist = [ 300 ]
+        self.bp.hwbp._hwbplist = [ 300 ]
         self.bp._bp = {100: { 'active': True, 'allocated': None, # will get swbp
                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 2 },
                        200:  { 'active': False, 'allocated': SWBP, # will remove swbp
@@ -148,7 +148,7 @@ class TestBreakAndExec(TestCase):
                                         'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 2 },
                                         400:  { 'active': True, 'allocated': HWBP,
                                         'opcode': 0x2223, 'secondword' : 0x3333, 'timestamp' : 3 }})
-        self.assertEqual(self.bp._hwbp._hwbplist, [ 400 ])
+        self.assertEqual(self.bp.hwbp._hwbplist, [ 400 ])
         self.bp.dbg.software_breakpoint_clear.assert_called_with(200)
         self.bp.dbg.software_breakpoint_set.assert_has_calls([call(100)], any_order=True)
 
@@ -159,7 +159,7 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp._bstamp = 6
         self.bp._bpactive = 3
-        self.bp._hwbp._hwbplist = [ 100 ]
+        self.bp.hwbp._hwbplist = [ 100 ]
         self.bp._bp = {100: { 'active': True, 'allocated' : HWBP, # will have to give up hwbp
                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 },
                        200:  { 'active': False, 'allocated' : SWBP, # will remove swbp
@@ -177,18 +177,18 @@ class TestBreakAndExec(TestCase):
                                     'opcode': 0x2223, 'secondword' : 0x3333, 'timestamp' : 4 },
                                        500:  { 'active': True, 'allocated' : HWBP,
                                     'opcode': 0x2224, 'secondword' : 0x3334, 'timestamp' : 5 }})
-        self.assertEqual(self.bp._hwbp._hwbplist, [ 500 ])
+        self.assertEqual(self.bp.hwbp._hwbplist, [ 500 ])
         self.bp.dbg.software_breakpoint_clear.assert_has_calls([call(200), call(300)], any_order=True)
         self.bp.dbg.software_breakpoint_set.assert_has_calls([call(100), call(400)], any_order=True)
         self.assertEqual(self.bp._bpactive, 3)
 
     def test_cleanup_breakpoints(self):
         self.set_up()
-        self.bp._hwbp._hwbplist = [ 1 ]
+        self.bp.hwbp._hwbplist = [ 1 ]
         self.bp._bp = { 1: 1}
         self.bp._bpactive = 1
         self.bp.cleanup_breakpoints()
-        self.assertEqual(self.bp._hwbp._hwbplist, [None])
+        self.assertEqual(self.bp.hwbp._hwbplist, [None])
         self.assertEqual(self.bp._bp, {})
         self.assertEqual(self.bp._bpactive, 0)
         self.bp.dbg.software_breakpoint_clear_all.assert_called_once()
@@ -205,7 +205,7 @@ class TestBreakAndExec(TestCase):
         self.set_up()
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
-        self.bp._hwbp._hwbplist = [ 8888 ]
+        self.bp.hwbp._hwbplist = [ 8888 ]
         self.bp.resume_execution(2224)
         self.bp.dbg.program_counter_write.assert_called_with(1112)
         self.bp.dbg.run_to.assert_called_with(8888)
@@ -223,7 +223,7 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp._read_flash_word.side_effect = [ SLEEPCODE ]
-        self.bp._hwbp._hwbplist = [ 8888 ]
+        self.bp.hwbp._hwbplist = [ 8888 ]
         self.assertEqual(self.bp.resume_execution(2224), None)
         self.bp.dbg.program_counter_write.assert_has_calls([call(1112), call(1113)])
         self.bp.dbg.run_to.assert_called_with(8888)
@@ -231,7 +231,7 @@ class TestBreakAndExec(TestCase):
     def test_resume_execution_without_hwbp(self):
         self.set_up()
         self.bp.mon.is_onlyswbps.return_value = True
-        self.bp._hwbp._hwbplist = [ None ]
+        self.bp.hwbp._hwbplist = [ None ]
         self.bp.resume_execution(None)
         self.bp.dbg.program_counter_read.assert_called_once()
         self.bp.dbg.run.assert_called_once()
@@ -241,7 +241,7 @@ class TestBreakAndExec(TestCase):
         self.bp._bstamp = 3
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.mon.is_onlyhwbps.return_value = False
-        self.bp._hwbp._hwbplist = [ 100 ]
+        self.bp.hwbp._hwbplist = [ 100 ]
         self.bp._bp[100] = {'opcode' : 0x9000, 'secondword' : 0xFFFF, 'allocated': HWBP, 'active' : True, 'timestamp' : 2}
         self.bp._bp[2224] = {'opcode' : 0xffb6, 'secondword' : 0xFFFF, 'allocated' : SWBP, 'active' : False,
                                  'timestamp' : 1}
@@ -284,9 +284,9 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.dbg.program_counter_read.return_value = 22
         self.bp._read_flash_word.side_effect = [ SLEEPCODE ]
-        self.assertEqual(self.bp.single_step(None), SIGTRAP)
+        self.assertEqual(self.bp.single_step(None), None)
         self.bp._read_flash_word.assert_called_once()
-        self.bp.dbg.program_counter_write.assert_has_calls([call(23)])
+        self.bp.dbg.run_to.assert_called_with(46)
 
     def test_single_step_two_word_instr_at_BP_without_start(self):
         self.set_up()
@@ -440,7 +440,7 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.step.assert_called_once()
         self.bp.dbg.run.assert_not_called()
         self.bp.dbg.run_to.assert_not_called()
-        self.bp._read_flash_word.assert_called_once()
+        self.bp._read_flash_word.assert_not_called()
 
     def test_range_step_impossible_odd(self):
         self.set_up()
@@ -508,11 +508,11 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.program_counter_read.return_value = 10
         code = [ SLEEPCODE, 0xef2f, 0xee81, 0xe094, SLEEPCODE ]
         self.bp._read_flash_word.side_effect = code
-        self.assertEqual(self.bp.range_step(10,16), SIGTRAP)
-        self.bp.dbg.program_counter_write.assert_called_with(11)
+        self.assertEqual(self.bp.range_step(10,16), None)
+        self.bp.dbg.program_counter_write.assert_not_called()
         self.bp.dbg.step.assert_not_called()
         self.bp.dbg.run.assert_not_called()
-        self.bp.dbg.run_to.assert_not_called()
+        self.bp.dbg.run_to.assert_called_with(22)
 
     def test_range_step_race_to_branch(self):
         self.set_up()

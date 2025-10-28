@@ -1,6 +1,6 @@
 # Limitations
 
-The debugging system, consisting of the hardware debugger, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. Finally, debugging your AVR chips can also be a risk to the health of your MCU.
+The debugging system, consisting of the debug probe, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. Finally, debugging your AVR chips can also be a risk to the health of your MCU.
 
 ## Bootloader
 
@@ -14,7 +14,7 @@ When debugging with **JTAG**, the chip will be erased each time a new binary is 
 
 Low CPU clock frequencies can make the debugging process sluggish or even impossible.
 
-When using **debugWIRE**, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the `CKDIV8` fuse is programmed, then this would be only 2000 bps, at which point some of the hardware programmers may time out.
+When using **debugWIRE**, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the `CKDIV8` fuse is programmed, then this would be only 2000 bps, at which point some of the debug probes may time out.
 
 With **JTAG**, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.
 
@@ -24,7 +24,7 @@ In general, one should not choose CPU clock frequencies below 1 MHz while debugg
 
 Almost all power-saving features of the MCU are disabled while debugging.
 
-The reason for this is that all clocks need to be running so that the communication between the hardware debugger and the OCD does not break down. So, the functional behavior of the MCU can be debugged, but low-power properties cannot be tested while debugging.
+The reason for this is that all clocks need to be running so that the communication between the debug probe and the OCD does not break down. So, the functional behavior of the MCU can be debugged, but low-power properties cannot be tested while debugging.
 
 ## Compiler optimizations
 
@@ -107,14 +107,14 @@ Other I/O registers cannot be written to without side effects, e.g., registers w
 
 ## Unsafe exits from debugging
 
-MCU and hardware debugger can be in an undefined state after abrupt exits.
+MCU and debug probe can be in an undefined state after abrupt exits.
 
 When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:
 
 - Some fuses, such as `OCDEN`, might still be in the programmed state.
 - Software breakpoints (that are implemented as `BREAK` instructions) may not have been removed.
 
-It may be enough to start a new debugging session and reflash the program. However, the hardware debugger might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.
+It may be enough to start a new debugging session and reflash the program. However, the debug probe might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.
 
 ## Undebuggable MCUs
 
@@ -167,7 +167,7 @@ So, how severe is the flash wear problem? The data sheets state that for classic
 
 Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. This means ten flash-page-reprogramming operations. That will probably result on average in 3 additional reprogramming operations on an individual page, leading together with reprogramming flash memory to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This, however, holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so.
 
-A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, [all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) (because the hardware debuggers implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.
+A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, [all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) (because the debug probes implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.
 
 All in all, as Microchip states, you should not ship MCUs that have been used heavily in debugging to customers.
 

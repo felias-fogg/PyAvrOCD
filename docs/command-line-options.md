@@ -5,7 +5,7 @@ You invoke PyAvrOCD as follows:
 > pyavrocd [options]
 ```
 
-PyAvrOCD will then look for a hardware debugger, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the following command-line options.
+PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the following command-line options.
 
 | Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |

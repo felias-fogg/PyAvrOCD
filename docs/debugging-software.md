@@ -1,6 +1,6 @@
 # Installing & configuring the debugging software
 
-The GDB server PyAvrOCD provides an interface to the hardware debuggers on one side and to the symbolic debugger on the host on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you want more than that.
+The GDB server PyAvrOCD provides an interface to the debug probe on one side and to the symbolic debugger on the host on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you want more than that.
 
 Below, we will cover a number of cases ranging from CLI to IDEs. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software. A bit more space is dedicated to configuring the software.
 
@@ -32,7 +32,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
-After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to [modify the target board](board-preparation.md), and you need to [connect the hardware debugger to the target board](connect-to-target.md).
+After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
 
 ## PlatformIO and Visual Studio Code
 

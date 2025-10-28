@@ -129,3 +129,19 @@ class HardwareBP():
             return 0
         return len(self._tempalloc)
 
+    def borrow_hwbp0(self):
+        """
+        Borrow the temporary breakpoint for just one single step (over a sleep instruction).
+        If it is used as a temporary HWBP in range-stepping, simply return None. Same, if we can
+        reallocate HWBP0 to another HW breakpoint or if it is free from the beginning. Otherwise,
+        return address and let the caller decide what to do with it.
+        """
+        if self._hwbplist[0] is None or (self._tempalloc is not None and 0 in self._tempalloc):
+            return None
+        if self.available() > 0:
+            self.set(self._hwbplist[0])
+            self._free(0)
+            return None
+        reassign = self._hwbplist[0]
+        self._free(0)
+        return reassign

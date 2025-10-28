@@ -1,6 +1,6 @@
 # Troubleshooting
 
-## No hardware debugger recognized
+## No debug probe recognized
 
 - No compatible tool discovered
 - Too many connected tools
