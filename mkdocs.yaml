@@ -33,7 +33,7 @@ nav:
   - Supported devices:
     - MCUs: 'supported-mcus.md'
     - Boards: 'supported-boards.md'
-    - Hardware debuggers: 'supported-debuggers.md'
+    - Debug probes: 'supported-debuggers.md'
   - Caveats:
     - Disclaimer: 'disclaimer.md'
     - Limitations: 'limitations.md'
