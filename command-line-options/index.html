@@ -154,7 +154,7 @@
 </tr>
 <tr>
 <td><code>--manage</code><br/><code>-m</code></td>
-<td>Can be given multiple times and specifies which fuses should be managed by PyAvrOCD. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by PyAvrOCD need to be changed 'manually' before and/or after the GDB server is activated. The default for this option is <code>none</code>, i.e., all fuses have to be dealt with by the user. Note that dw-link ignores this option.</td>
+<td>Can be given multiple times and specifies which fuses should be managed by PyAvrOCD. Possible arguments are <code>all</code>, <code>none</code>, <code>bootrst</code>, <code>nobootrst</code>,  <code>dwen</code>, <code>nodwen</code>, <code>ocden</code>, <code>noocden</code>, <code>eesave</code>, <code>noeesave</code>, <code>lockbits</code>, and <code>nolockbits</code>. Later values in the command line override earlier ones. Any fuses not managed by PyAvrOCD need to be changed 'manually' before and/or after the GDB server is activated. The default for this option is <code>none</code>, i.e., all fuses have to be dealt with by the user. Note that dw-link ignores this option. It will manage all fuses.</td>
 </tr>
 <tr>
 <td><code>--port</code> <br><code>-p</code></td>
