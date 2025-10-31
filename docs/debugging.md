@@ -103,7 +103,7 @@ Let us assume you found the bug and made a correction in the source code. Note t
 2. Click again on the `Verify` button to start a new compilation.
 3. Restart the debugger by clicking on the `Debugging` button in the top line in order to try out your correction.
 
-If everything now works out, you may consider calling it a day and stopping work on the program. Before leaving the debugger, consider typing the command `monitor debugwire disable` into the last line of the `Debug Console`. If you were debugging on a debugWIRE target, this is necessary to bring the target chip back into normal mode, where it accepts SPI programming.
+If everything now works out, you may consider calling it a day and stop working on the program. If you were debugging on a debugWIRE target, onsider typing the command `monitor debugwire disable` into the last line of the `Debug Console` before terminating the debugger.  This is necessary to bring the target chip back into normal mode, where it accepts SPI programming.
 
 ## Debugging using PlatformIO/VSC
 

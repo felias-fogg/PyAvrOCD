@@ -4,6 +4,7 @@
 
 - **Fixed:**
      - On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.
+     - Captured "Cannot open HID" exception when trying to connect to a busy debug probe in main.py
 - **Added:**
      - Added 'borrow_hwbp0' in hardwarebp.py: Borrow the temporary HWBP. If HWBP0 is not used, used only by range-stepping, or one can move the HWBP to another slot, we simply return  None (and the HWBP0 can be used implicitly using run_to). Otherwise, we return the address of the blocking BP, which then has to be changed into a SWBP in order to free HWBP0.
      - 'Sleep walking' in breakandexec.py: Instead of skipping a SLEEP instruction when single-stepping, we now place a hardware breakpoint after the SLEEP instruction, which is 'borrowed' (see above).

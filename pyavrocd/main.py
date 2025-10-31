@@ -50,7 +50,6 @@ def _setup_tool_connection(args, logger):
         else:
             logger.info("Connecting to anything possible")
     toolconnection = ToolUsbHidConnection(serialnumber=usb_serial, tool_name=product)
-
     return toolconnection
 
 
@@ -446,13 +445,17 @@ def startup(command_line, logger):
         logger.critical("No compatible tool discovered")
     transport = hid_transport()
     if not no_backend_error and not no_hw_dbg_error:
-        if transport.connect(serial_number=toolconnection.serialnumber,
-                                    product=toolconnection.tool_name):
-            logger.info("Connected to %s", transport.hid_device.get_product_string())
-        else:
-            logger.critical("Far too many connected tools. Use -t or -s to distinguish!")
+        try:
+            if transport.connect(serial_number=toolconnection.serialnumber,
+                                     product=toolconnection.tool_name):
+                logger.info("Connected to %s", transport.hid_device.get_product_string())
+            else:
+                logger.critical("Far too many connected tools. Use -t or -s to distinguish!")
+                return 1
+        except OSError:
+            logger.critical("Debug probe busy, cannot connect")
             return 1
-    elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices) == 0:
+    elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices)==0:
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
             path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
             path_to_prog +=  '/pyavrocd'
