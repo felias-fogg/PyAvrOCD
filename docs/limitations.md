@@ -52,8 +52,6 @@ The disadvantage is that [link-time optimization prunes away essential informati
 
 All these problems disappear when link-time optimization is disabled. However, in this case, much more code space may be needed.
 
-
-
 ## Breakpoints in interrupt routines
 
 Breakpoints in interrupt routines can throw off the timing of time-critical code.
@@ -93,6 +91,18 @@ On the other hand, often instructions need to be executed closely together. Sinc
 
 Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint. -->
 
+## Serial communication
+
+Stopping program execution in the middle of interrupt-driven serial output may lead to dropping part of the output.
+
+Stopping the program in the middle of a communication action is always a problem. When some serial output is happening, some of the output may get dropped when the program is stopped before everything has been printed. This is not a problem for the functionality of the debugged program, but it may look annoying.
+
+## USB communication
+
+Stopping the program in the middle of a USB communication episode may lead to losing the USB connection.
+
+Some of the AVR MCUs support USB communication in hardware, e.g., ATmega32U4. Since this kind of communication depends on timely responses by the connected devices, breaking in the middle of such communication exchanges may lead to losing the connection. My experience is, however, that the connection is quite robust. You should not stop execution between the initial break in `main` and the end of the `Serial`.`begin` call, because in this case, USB enumeration may time out. Otherwise, the USB connection appears to be quite robust. However, output may be garbled when a program stops before all serial I/O has been transferred to the host, similar to what is happening with serial I/O.
+
 ## I/O register access
 
 Some I/O registers cannot be accessed from the debugging UI.
@@ -100,12 +110,6 @@ Some I/O registers cannot be accessed from the debugging UI.
 Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers `UDR` and `SPDR`). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2 or PlatformIO, then the `PERIPHERALS` debugger pane will show you a comment to this effect.
 
 Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). Again, if you use the Arduino IDE or PlatformIO, the `PERIPHERALS` pane will inform you about the fact that the register is read-only to the debugger.
-
-<!--
-
-## USB communication
-
--->
 
 ## Unsafe exits from debugging
 

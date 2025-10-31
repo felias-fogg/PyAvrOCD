@@ -53,7 +53,7 @@ If you prefer to use an IDE instead of a CLI, the Arduino IDE 2 is the most stra
 
 ### Compiling the sketch
 
-You must load the sketch into the editor and select a board as usual. If you want to debug an Arduino Uno R3 board, choose ATmega328 from the `MiniCore` in the `Tools` menu. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).
+You must load the sketch into the editor and select a board as usual. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).
 
 ![ide2-1](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png)
 
@@ -67,13 +67,13 @@ Instead of the message shown in the following screenshot, a warning "No debug pr
 
 ![ide2-2](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png)
 
-If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the debugger will not stop at this point.
+If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the GDB server will not stop at this point.
 
-After power-cycling the target, the debugger starts. Eventually, execution is stopped in line 4 at an initial internal breakpoint, indicated by the yellow triangle left of line 4 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
+After power-cycling the target, the symbolic debugger starts. Eventually, execution is stopped in the first line of the internal main function at an initial internal breakpoint, indicated by the yellow triangle left of line 35 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
 
-After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular the [`monitor` commands](monitor-commands.md) to control the GDB server. Here, the command `monitor debugwire disable` is crucial because it will disable the debugWIRE mode.
+After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch and other relevant source files on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular the [`monitor` commands](monitor-commands.md) to control the GDB server.
 
-![ide2-3](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3.png)
+![ide2-3](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3-new.png)
 
 Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13 in the picture below.
 
@@ -103,7 +103,7 @@ Let us assume you found the bug and made a correction in the source code. Note t
 2. Click again on the `Verify` button to start a new compilation.
 3. Restart the debugger by clicking on the `Debugging` button in the top line in order to try out your correction.
 
-If everything now works out, you may consider calling it a day and stop working on the program. If you were debugging on a debugWIRE target, onsider typing the command `monitor debugwire disable` into the last line of the `Debug Console` before terminating the debugger.  This is necessary to bring the target chip back into normal mode, where it accepts SPI programming.
+If everything now works out, you may consider calling it a day and stopping work on the program. If you were debugging on a debugWIRE target, consider typing the command `monitor debugwire disable` into the last line of the `Debug Console` before terminating the debugger.  This is necessary to bring the target chip back into normal mode, where it accepts SPI programming.
 
 ## Debugging using PlatformIO/VSC
 
@@ -117,7 +117,7 @@ In any case, if you are opting for PlatformIO/VSC, you are probably familiar wit
 
 ![Gede](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png)
 
-`Project dir` and `Program` are specific to your debugging session. The rest should be copied as it is shown. Before you click `OK`, you should switch to the `Commands` section, where you need to enter the command `monitor debugwire enable` if you are working with a debugWIRE target (otherwise, it does not hurt).
+`Project dir` and `Program` are specific to your debugging session. The rest should be copied as it is shown. Before you click `OK`, you should switch to the `Commands` section, where you need to enter the command `monitor debugwire enable` if you are working with a debugWIRE target.
 
 ![ ](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-cmds.png)
 
