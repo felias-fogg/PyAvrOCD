@@ -19,9 +19,9 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 
 - **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23.
 - AT90USBKEY (AT90USB1287): no core yet
-- ATmega256RFR2 Xplained Pro: no core yet
+- <u>ATmega256RFR2 Xplained Pro</u>: no core yet
 - <u>AVR Butterfly (ATmega169)</u>: no core yet
-- MEGA-1284P Xplained: no core yet
+- <u>MEGA-1284P Xplained</u>: no core yet
 
 
 

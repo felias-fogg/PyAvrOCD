@@ -75,7 +75,7 @@ means that you can use only four hardware breakpoints.
 
 * AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
-* ATmega64rfr2, ATmega128rfr2, ATmega256rfr2
+* ATmega64rfr2, ATmega128rfr2, <u>ATmega256rfr2</u>
 * ATmega128rfa1
 * ATmega16U4, **ATmega32U4**
 * ATmega406
