@@ -32,7 +32,7 @@ This project did not receive any financial support. And, currently, there is no 
 
 ## License
 
-This project is licensed under the [MIT license](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/LICENSE).
+This project is licensed under the [MIT license](https://felias-fogg.github.io/PyAvrOCD/license-link/).
 
 ## Acknowledgments
 

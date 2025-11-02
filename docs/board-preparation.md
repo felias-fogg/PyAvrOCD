@@ -94,11 +94,13 @@ JTAG targets are easier to deal with. Simply do not connect anything to the JTAG
 
 ### Fuse settings when PyAvrOCD manages fuses
 
-Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  `JTAGEN` fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action using SPI programming. From then on, you can connect to the board using the JTAG connector.
+Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  `JTAGEN` fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the `JTAG` attribute in the `Tools` menu to `enabled` and then performing the `Burn Bootloader` action using SPI programming.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG -enabled.png" width="50%">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
 </p>
+
+From then on, you can connect to the board using the JTAG connector.
 
 As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
 

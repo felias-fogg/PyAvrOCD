@@ -86,7 +86,9 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 - Teensy 2.0 (ATmega32U4): no core yet
 - <u>Teensy++ (AT90USB1286)</u>: no core yet
 - Trinket - Mini Microcontroller 3.3V/5V Logic: ATTinyCore fork
-- Pro Trinket - 5V 16MHz (ATmega328P): MiniCore
+- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): MiniCore
+- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): MiniCore
+- Bluefruit Micro: no core yet
 
 ## Supported Olimex boards
 
