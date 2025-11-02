@@ -452,8 +452,11 @@ def startup(command_line, logger):
             else:
                 logger.critical("Far too many connected tools. Use -t or -s to distinguish!")
                 return 1
-        except OSError:
-            logger.critical("Debug probe busy, cannot connect")
+        except OSError as e:
+            if str(e) == "open failed":
+                logger.critical("Debug probe busy, cannot connect")
+            else:
+                logger.critical("Could not connect to debug probe: %s", str(e))
             return 1
     elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices)==0:
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):

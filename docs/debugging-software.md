@@ -22,17 +22,17 @@ set logging overwrite 1
 
 If you are not a fan of a command-line interface, then an integrated development environment (IDE) or a simple graphical user interface (GUI) for avr-gdb is called for.
 
-## Arduino IDE 2 (not yet implemented)
+## Arduino IDE 2
 
-[Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) is probably the most straightforward option. After having installed it, you can extend the IDE's capabilities by [adding third-party platforms](https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE). This is done by adding [additional Board Manager URLs](https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE) in the preferences dialog and selecting a board in the Board Manager. For example, adding the following three Board Manager URLs enables debugging of almost all debugWIRE MCUs.
+[Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) is probably the most straightforward option. After having installed it, you can extend the IDE's capabilities by [adding third-party platforms](https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE). This is done by adding [additional Board Manager URLs](https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE) in the preferences dialog, installing a platform, and selecting a board in the Board Manager. For example, adding the following `Board Manager URLs` enables debugging of the ATtiny MCUs and all Arduino AVR Boards:
 
 ```
-https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
-https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
-https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+https://felias-fogg.github.io/package_debugging_index.json
 ```
 
-After that, you must install the respective cores. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you most probably need to [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
+After that, you must install the respective platforms. In this case, it is `Arduino AVR Boards (Debug enabled)` and `ATTinyCore (Debug enabled)`. Then, you can choose from all the classic Arduino AVR Boards and the ATtinys. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
+
+There will be more `Board Manager URLs` in the future that will extend the range of debuggable MCUs. In particular, the cores by MCUdude covering all ATmegaX8s and all classic JTAG mega chips will have a debug option.
 
 ## PlatformIO and Visual Studio Code
 

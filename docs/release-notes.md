@@ -1,5 +1,14 @@
 # Release Notes
 
+## Release v0.16.4
+
+- On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.
+- Captured "Cannot open HID" exception when trying to connect to a busy debug probe.
+
+- Instead of ignoring SLEEP instructions when single-stepping, we now do "sleep walking", i.e., use the hardware breakpoint to wait for a wake-up after the SLEEP instruction.
+
+- Integration tests now also work for non-Arduino MCUs.
+
 ## Release v0.16.3
 
 - Refreshed svd and device files.

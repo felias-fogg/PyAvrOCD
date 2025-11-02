@@ -27,15 +27,13 @@ So, why another open-source GDB server for AVR MCUs? The main intention is to pr
 </p>
 
 
-When you want to install PyAvrOCD, <!-- you can [install it as part of an Arduino core](https://felias-fogg.github.io/PyAvrOCD/install-link/#arduino-ide-2), so that it can be used in the Arduino IDE 2. -->you can [download binaries](https://felias-fogg.github.io/PyAvrOCD/install-link/#downloading-binaries), you can install PyAvrOCD using [PyPI](https://felias-fogg.github.io/PyAvrOCD/install-link/#pypi), or you can, of course, [clone or download the GitHub repo](https://felias-fogg.github.io/PyAvrOCD/install-link/#github).
+When you want to install PyAvrOCD, you can [install it as part of an Arduino core](https://felias-fogg.github.io/PyAvrOCD/install-link/#arduino-ide-2), so that it can be used in the Arduino IDE 2, you can [download binaries](https://felias-fogg.github.io/PyAvrOCD/install-link/#downloading-binaries), you can install PyAvrOCD using [PyPI](https://felias-fogg.github.io/PyAvrOCD/install-link/#pypi), or you can, of course, [clone or download the GitHub repo](https://felias-fogg.github.io/PyAvrOCD/install-link/#github).
 
 [Read the docs](https://felias-fogg.github.io/PyAvrOCD/index.html) for more information.
 
 
 ## What has been done so far, and what to expect in the future
 
-When moving from the earlier version of the GDBserver, called [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), to PyAvrOCD, support for JTAG Mega chips has been added. This was more work than anticipated. And the current release is not yet fit for serious work. A number of JTAG MCUs still need to be tested, and more unit and integration tests are called for.  If you would nevertheless like to give PyAvrOCD a try, you are welcome. Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
+When moving from the earlier version of the GDBserver, called [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), to PyAvrOCD, support for JTAG Mega chips has been added. This was more work than anticipated. And the current release is not yet fit for serious work. A number of JTAG MCUs still need to be tested, and more unit and integration tests are called for.  If you would nevertheless like to give PyAvrOCD a try, you are welcome. The integration into Arduino IDE 2 is already done (for ATtiny chips and the Arduino AVR Boards). Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
 
-The next step after the v1.0.0 release of PyAvrOCD will be to incorporate it into the respective Arduino cores, so that easy debugging in the Arduino IDE 2 will become possible. Until then, you need to live with the debugWIRE-only GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), which is part of MiniCore and my fork of ATTinyCore, if you would like to debug inside the Arduino IDE 2.
-
-After the integration into the Arduino IDE2, UPDI MCUs will follow next. I am unsure about Xmegas.
+UPDI MCUs will follow next. I am unsure about Xmegas.
