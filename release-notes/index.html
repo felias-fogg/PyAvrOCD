@@ -85,6 +85,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0164">Release v0.16.4</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0163">Release v0.16.3</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0162">Release v0.16.2</a>
@@ -128,6 +130,19 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v0164">Release v0.16.4</h2>
+<ul>
+<li>On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.</li>
+<li>
+<p>Captured "Cannot open HID" exception when trying to connect to a busy debug probe.</p>
+</li>
+<li>
+<p>Instead of ignoring SLEEP instructions when single-stepping, we now do "sleep walking", i.e., use the hardware breakpoint to wait for a wake-up after the SLEEP instruction.</p>
+</li>
+<li>
+<p>Integration tests now also work for non-Arduino MCUs.</p>
+</li>
+</ul>
 <h2 id="release-v0163">Release v0.16.3</h2>
 <ul>
 <li>Refreshed svd and device files.</li>
