@@ -10,7 +10,7 @@ Note that Linux users may need to add a few `udev` rules after having installed 
 
 Alternatively, one can add the `udev` rules manually, following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems).
 
-## Arduino IDE 2 (not implemented yet)
+## Arduino IDE 2
 
 If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" and install the respective core](https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2). It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules as described above.
 
