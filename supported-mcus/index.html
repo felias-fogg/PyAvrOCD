@@ -71,7 +71,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#attiny-supported-by-microcore">ATtiny supported by MicroCore</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-the-attinycore">ATtinys supported by the ATTinyCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-the-attinycore-debug-enabled">ATtinys supported by the ATTinyCore-debug-enabled</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore">ATmegas supported by MiniCore</a>
     </li>
@@ -83,7 +83,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore">ATmegas supported by MightyCore</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore">ATmegas supported by MegaCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore-arduinocore-avr-debug-enabled">ATmegas supported by MegaCore &amp; ArduinoCore-avr-debug-enabled</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-majorcore">ATmega supported by MajorCore</a>
     </li>
@@ -152,7 +152,7 @@
 <ul>
 <li><strong>ATtiny13</strong></li>
 </ul>
-<h3 id="attinys-supported-by-the-attinycore">ATtinys supported by the <a href="https://github.com/SpenceKonde/ATTinyCore"><em>ATTinyCore</em></a></h3>
+<h3 id="attinys-supported-by-the-attinycore-debug-enabled">ATtinys supported by the <a href="https://github.com/felias-fogg/ATTinyCore-debug-enabled"><em>ATTinyCore-debug-enabled</em></a></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
 <li><strong>ATtiny2313, ATtiny2313A, ATtiny4313</strong></li>
@@ -191,7 +191,8 @@
 <li><strong>ATmega164(P)(A)</strong>, <u>ATmega324(P)(A)</u>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.</p>
-<h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a></h3>
+<h3 id="atmegas-supported-by-megacore-arduinocore-avr-debug-enabled">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a> &amp; <em><a href="https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled">ArduinoCore-avr-debug-enabled</a></em></h3>
+<p>The ATmega1280 and ATmega2560 are MCUs on the Arduino Mega boards and therefore supported by <em><a href="https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled">ArduinoCore-avr-debug-enabled</a></em>.</p>
 <ul>
 <li><u>ATmega64(A)</u>, <strong>ATmega128(A)</strong></li>
 <li>ATmega640, <strong>ATmega1280</strong>, <strong>ATmega2560</strong></li>
