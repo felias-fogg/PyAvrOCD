@@ -1,8 +1,6 @@
 # Supported MCUs
 
-
-
-This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.
+This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. However, not all cores have been extended yet to allow for debugging with the Arduino IDE 2. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.
 
 ## MCUs with debugWIRE interface
 
@@ -10,7 +8,7 @@ This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Howe
 
 - **ATtiny13**
 
-### ATtinys supported by the [*ATTinyCore-debug-enabled*](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
+### ATtinys supported by the [*ATTinyCore fork*](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
 * **ATtiny43U**
 * **ATtiny2313, ATtiny2313A, ATtiny4313**
@@ -53,7 +51,7 @@ The MCUs in the lists below are all supported by PyAvrOCD. However, the cores ha
 
 The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.
 
-### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore) & *[ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
+### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore) & *[ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
 
 The ATmega1280 and ATmega2560 are MCUs on the Arduino Mega boards and therefore supported by *[ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*.
 
@@ -73,7 +71,7 @@ means that you can use only four hardware breakpoints.
 
 * <u>ATmega162</u>
 
-### ATmega supporter by *[ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
+### ATmega supporter by *[ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
 
 - **ATmega32U4**
 

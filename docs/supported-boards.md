@@ -29,36 +29,36 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 
 
 - Arduino Yún: no core yet
-- **Arduino UNO R3**: Supported by [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled);  [the `RESET EN` solder bridge needs to be cut](https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target)
-- Arduino UNO Mini: Supported by [MiniCore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); remove capacitor `C3`
-- Arduino Duemilanove: Supported by [MiniCore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); `RESET EN` needs to be cut
-- Arduino Diecimila: Supported by [MiniCore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
-- **Arduino Nano:** Supported by [Minicore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); [only clones can be modified](https://mtech.dk/thomsen/electro/arduino.php)
-- **Arduino Mega**: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- **Arduino Mega 2560:** [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino Mega ADK: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- <u>Arduino Leonardo</u>: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino Leonardo ETH: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- <u>Arduino Micro</u>: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- **Arduino UNO R3**: Supported by [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled);  [the `RESET EN` solder bridge needs to be cut](https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target)
+- Arduino UNO Mini: Supported by [MiniCore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); remove capacitor `C3`
+- Arduino Duemilanove: Supported by [MiniCore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); `RESET EN` needs to be cut
+- Arduino Diecimila: Supported by [MiniCore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
+- **Arduino Nano:** Supported by [Minicore](https://github.com/MCUdude/MiniCore)& [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); [only clones can be modified](https://mtech.dk/thomsen/electro/arduino.php)
+- **Arduino Mega**: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- **Arduino Mega 2560:** [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino Mega ADK: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- <u>Arduino Leonardo</u>: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino Leonardo ETH: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- <u>Arduino Micro</u>: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
 - <s>Arduino Esplora</s>: JTAG pins are not accessible
-- Arduino Mini: Supported by [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
-- Arduino Ethernet (Rev1): [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
-- <u>Arduino Fio</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header and do not connect XBee
-- Arduino BT: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); remove capacitor `C1`
+- Arduino Mini: Supported by [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
+- Arduino Ethernet (Rev1): [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
+- <u>Arduino Fio</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header and do not connect XBee
+- Arduino BT: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); remove capacitor `C1`
 - <s>LilyPad Arduino USB</s>: JTAG pins are not accessible
-- <u>LilyPad Arduino</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
-- <u>Arduino Pro</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
-- <u>Arduino Pro Mini</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
-- Arduino NG (ATmega168): [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); no modifications necessary
+- <u>LilyPad Arduino</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
+- <u>Arduino Pro</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
+- <u>Arduino Pro Mini</u>: [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); do not connect DTR pin of FTDI header
+- Arduino NG (ATmega168): [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); no modifications necessary
 - <s>Arduino NG (ATmega8)</s>: no debugging interface
-- Arduino Robot Control: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino Robot Motor: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- <u>Arduino Gemma</u>: [ATTinyCore for](https://github.com/felias-fogg/ATTinyCore)k & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); RESET pad on backside
-- <u>Adafruit Circuit Playground 32u4</u>: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino Yún Mini: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino Industrial 101: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino Linino One: [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-- Arduino UNO WiFi (Rev 1): [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr-debug-enabled](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); cut `RESET EN` solder bridge
+- Arduino Robot Control: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino Robot Motor: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- <u>Arduino Gemma</u>: [ATTinyCore for](https://github.com/felias-fogg/ATTinyCore)k & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); RESET pad on backside
+- <u>Adafruit Circuit Playground 32u4</u>: [ArduinoCore fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino Yún Mini: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino Industrial 101: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino Linino One: [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+- Arduino UNO WiFi (Rev 1): [MiniCore](https://github.com/MCUdude/MiniCore) & [ArduinoCore-avr fork](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled); cut `RESET EN` solder bridge
 
 ## Supported Sparkfun boards
 
@@ -108,10 +108,10 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 
 ## Supported Azduino boards by Spence Konde
 
-- **ATtiny841 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore)
-- **ATtiny1634 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore)
-- **ATtiny88 breakout board (assembled)**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore)
-- **ATtiny828 breakout board (assembled)**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore)
+- **ATtiny841 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
+- **ATtiny1634 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
+- **ATtiny88 breakout board (assembled)**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
+- **ATtiny828 breakout board (assembled)**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
-- **ATtiny167 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore)
-- **ATtiny43 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore)
+- **ATtiny167 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
+- **ATtiny43 dev. board**: [ATTinyCore fork](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
