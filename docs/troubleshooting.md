@@ -7,6 +7,9 @@
 
 ## Debugging does not start:
 
+- Error message: Apple cannot check ...
+     - Use `xattr -d com.apple.quarantine FILE`
+
 - Address already in use
 - ISP programming failed
 - Wrong MCU: ...
@@ -26,4 +29,5 @@
      - SIGABRT - Fatal error before
 	 - SIGILL - BREAK instructions
 	 - SIGBUS - stackpointer too low
-	 - SIGSEGV - executable not yet flashed
+	 - SIGSEGV - executable not yet flashed#
+

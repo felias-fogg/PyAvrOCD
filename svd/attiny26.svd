@@ -290,6 +290,16 @@
         <size>0x2</size>
         <usage>registers</usage>
       </addressBlock>
+      <addressBlock>
+        <offset>0xC</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
+        <offset>0xE</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
       <interrupt>
         <name>RESET</name>
         <description>External Reset, Power-on Reset and Watchdog Reset</description>
@@ -488,6 +498,76 @@
             </field>
           </fields>
         </register>
+        <register>
+          <name>SP</name>
+          <description>Stack Pointer</description>
+          <addressOffset>0xC</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>255</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>SREG</name>
+          <description>Status Register</description>
+          <addressOffset>0xE</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>C</name>
+              <description>Carry Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>Z</name>
+              <description>Zero Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>N</name>
+              <description>Negative Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>V</name>
+              <description>Two's Complement Overflow Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>S</name>
+              <description>Sign Bit</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>H</name>
+              <description>Half Carry Flag</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T</name>
+              <description>Bit Copy Storage</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>I</name>
+              <description>Global Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
       </registers>
     </peripheral>
     <peripheral>
@@ -616,455 +696,6 @@
               <description>External Interrupt Request 0 Enable</description>
               <bitRange>[6:6]</bitRange>
               <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>FUSE</name>
-      <description>Fuses</description>
-      <baseAddress>0x00800000</baseAddress>
-      <addressBlock>
-        <offset>0x0</offset>
-        <size>0x2</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>HIGH</name>
-          <description>No Description.</description>
-          <addressOffset>0x1</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>BODEN</name>
-              <description>Brown-out detection enabled</description>
-              <bitRange>[0:0]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>BODLEVEL</name>
-              <description>Brownout detector trigger level</description>
-              <bitRange>[1:1]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>4V0</name>
-                  <description>Brown-out detection at VCC=4.0 V</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2V7</name>
-                  <description>Brown-out detection at VCC=2.7 V</description>
-                  <value>1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>EESAVE</name>
-              <description>Preserve EEPROM through the Chip Erase cycle</description>
-              <bitRange>[2:2]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>SPIEN</name>
-              <description>Serial program downloading (SPI) enabled</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>RSTDISBL</name>
-              <description>Reset Disabled (Enable PB7 as i/o pin)</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>LOW</name>
-          <description>No Description.</description>
-          <addressOffset>0x0</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>PLLCK_SUT_CKSEL</name>
-              <description>Select Clock Source</description>
-              <bitRange>[7:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>PLLCLK_1KCK_0MS</name>
-                  <description>PLL Clock; Start-up time: 1K CK + 0 ms</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_1KCK_4MS</name>
-                  <description>PLL Clock; Start-up time: 1K CK + 4 ms</description>
-                  <value>17</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_1KCK_64MS</name>
-                  <description>PLL Clock; Start-up time: 1K CK + 64 ms</description>
-                  <value>33</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_16KCK_64MS</name>
-                  <description>PLL Clock; Start-up time: 16K CK + 64 ms</description>
-                  <value>49</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_6CK_0MS</name>
-                  <description>Ext. Clock; Start-up time: 6 CK + 0 ms</description>
-                  <value>128</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_1MHZ_6CK_0MS</name>
-                  <description>Int. RC Osc. 1 MHz; Start-up time: 6 CK + 0 ms</description>
-                  <value>129</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_2MHZ_6CK_0MS</name>
-                  <description>Int. RC Osc. 2 MHz; Start-up time: 6 CK + 0 ms</description>
-                  <value>130</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_4MHZ_6CK_0MS</name>
-                  <description>Int. RC Osc. 4 MHz; Start-up time: 6 CK + 0 ms</description>
-                  <value>131</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_8MHZ_6CK_0MS</name>
-                  <description>Int. RC Osc. 8 MHz; Start-up time: 6 CK + 0 ms</description>
-                  <value>132</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_XX_0MHZ9_18CK_0MS</name>
-                  <description>Ext. RC Osc.         -  0.9 MHz; Start-up time: 18 CK + 0 ms</description>
-                  <value>133</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_0MHZ9_3MHZ_18CK_0MS</name>
-                  <description>Ext. RC Osc. 0.9 MHz -  3.0 MHz; Start-up time: 18 CK + 0 ms</description>
-                  <value>134</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_3MHZ_8MHZ_18CK_0MS</name>
-                  <description>Ext. RC Osc. 3.0 MHz -  8.0 MHz; Start-up time: 18 CK + 0 ms</description>
-                  <value>135</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_8MHZ_12MHZ_18CK_0MS</name>
-                  <description>Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 0 ms</description>
-                  <value>136</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTAL_1KCK_4MS</name>
-                  <description>Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4 ms</description>
-                  <value>137</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_258CK_4MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 4 ms</description>
-                  <value>138</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_1KCK_64MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 64 ms</description>
-                  <value>139</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_258CK_4MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 4 ms</description>
-                  <value>140</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_1KCK_64MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 64 ms</description>
-                  <value>141</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_258CK_4MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 4 ms</description>
-                  <value>142</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_1KCK_64MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 64 ms</description>
-                  <value>143</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_6CK_4MS</name>
-                  <description>Ext. Clock; Start-up time: 6 CK + 4 ms</description>
-                  <value>144</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_1MHZ_6CK_4MS</name>
-                  <description>Int. RC Osc. 1 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>145</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_2MHZ_6CK_4MS</name>
-                  <description>Int. RC Osc. 2 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>146</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_4MHZ_6CK_4MS</name>
-                  <description>Int. RC Osc. 4 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>147</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_8MHZ_6CK_4MS</name>
-                  <description>Int. RC Osc. 8 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>148</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_XX_0MHZ9_18CK_4MS</name>
-                  <description>Ext. RC Osc.         -  0.9 MHz; Start-up time: 18 CK + 4 ms</description>
-                  <value>149</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_0MHZ9_3MHZ_18CK_4MS</name>
-                  <description>Ext. RC Osc. 0.9 MHz -  3.0 MHz; Start-up time: 18 CK + 4 ms</description>
-                  <value>150</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_3MHZ_8MHZ_18CK_4MS</name>
-                  <description>Ext. RC Osc. 3.0 MHz -  8.0 MHz; Start-up time: 18 CK + 4 ms</description>
-                  <value>151</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_8MHZ_12MHZ_18CK_4MS</name>
-                  <description>Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 4 ms</description>
-                  <value>152</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTAL_1KCK_64MS</name>
-                  <description>Ext. Low-Freq. Crystal; Start-up time: 1K CK + 64 ms</description>
-                  <value>153</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_258CK_64MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 64 ms</description>
-                  <value>154</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_16KCK_0MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 0 ms</description>
-                  <value>155</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_258CK_64MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 64 ms</description>
-                  <value>156</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_16KCK_0MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 0 ms</description>
-                  <value>157</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_258CK_64MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 64 ms</description>
-                  <value>158</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_16KCK_0MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 0 ms</description>
-                  <value>159</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_6CK_64MS</name>
-                  <description>Ext. Clock; Start-up time: 6 CK + 64 ms</description>
-                  <value>160</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_1MHZ_6CK_64MS</name>
-                  <description>Int. RC Osc. 1 MHz; Start-up time: 6 CK + 64 ms</description>
-                  <value>161</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_2MHZ_6CK_64MS</name>
-                  <description>Int. RC Osc. 2 MHz; Start-up time: 6 CK + 64 ms</description>
-                  <value>162</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_4MHZ_6CK_64MS</name>
-                  <description>Int. RC Osc. 4 MHz; Start-up time: 6 CK + 64 ms</description>
-                  <value>163</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_8MHZ_6CK_64MS</name>
-                  <description>Int. RC Osc. 8 MHz; Start-up time: 6 CK + 64 ms</description>
-                  <value>164</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_XX_0MHZ9_18CK_64MS</name>
-                  <description>Ext. RC Osc.         -  0.9 MHz; Start-up time: 18 CK + 64 ms</description>
-                  <value>165</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_0MHZ9_3MHZ_18CK_64MS</name>
-                  <description>Ext. RC Osc. 0.9 MHz -  3.0 MHz; Start-up time: 18 CK + 64 ms</description>
-                  <value>166</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_3MHZ_8MHZ_18CK_64MS</name>
-                  <description>Ext. RC Osc. 3.0 MHz -  8.0 MHz; Start-up time: 18 CK + 64 ms</description>
-                  <value>167</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_8MHZ_12MHZ_18CK_64MS</name>
-                  <description>Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 64 ms</description>
-                  <value>168</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTAL_32KCK_64MS</name>
-                  <description>Ext. Low-Freq. Crystal; Start-up time: 32K CK + 64 ms</description>
-                  <value>169</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_1KCK_0MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 0 ms</description>
-                  <value>170</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_16KCK_4MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 4 ms</description>
-                  <value>171</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_1KCK_0MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 0 ms</description>
-                  <value>172</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_16KCK_4MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 4 ms</description>
-                  <value>173</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_1KCK_0MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 0 ms</description>
-                  <value>174</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_16KCK_4MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 4 ms</description>
-                  <value>175</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_XX_0MHZ9_6CK_4MS</name>
-                  <description>Ext. RC Osc.         -  0.9 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>181</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_0MHZ9_3MHZ_6CK_4MS</name>
-                  <description>Ext. RC Osc. 0.9 MHz -  3.0 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>182</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_3MHZ_8MHZ_6CK_4MS</name>
-                  <description>Ext. RC Osc. 3.0 MHz -  8.0 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>183</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTRCOSC_8MHZ_12MHZ_6CK_4MS</name>
-                  <description>Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 6 CK + 4 ms</description>
-                  <value>184</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_1KCK_4MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 4 ms</description>
-                  <value>186</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTLOFXTALRES_16KCK_64MS</name>
-                  <description>Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 64 ms</description>
-                  <value>187</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_1KCK_4MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 4 ms</description>
-                  <value>188</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTMEDFXTALRES_16KCK_64MS</name>
-                  <description>Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 64 ms</description>
-                  <value>189</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_1KCK_4MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 4 ms</description>
-                  <value>190</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTHIFXTALRES_16KCK_64MS</name>
-                  <description>Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms</description>
-                  <value>191</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CKOPT</name>
-              <description>CKOPT fuse (operation dependent of CKSEL fuses)</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>LOCKBIT</name>
-      <description>Lockbits</description>
-      <baseAddress>0x00800000</baseAddress>
-      <addressBlock>
-        <offset>0x0</offset>
-        <size>0x1</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>LOCKBIT</name>
-          <description>No Description.</description>
-          <addressOffset>0x0</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>LB</name>
-              <description>Memory Lock</description>
-              <bitRange>[1:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>PROG_VER_DISABLED</name>
-                  <description>Further programming and verification disabled</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PROG_DISABLED</name>
-                  <description>Further programming disabled</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>NO_LOCK</name>
-                  <description>No memory lock features enabled</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
             </field>
           </fields>
         </register>

@@ -423,6 +423,11 @@
         <size>0x1</size>
         <usage>registers</usage>
       </addressBlock>
+      <addressBlock>
+        <offset>0x19</offset>
+        <size>0x1</size>
+        <usage>registers</usage>
+      </addressBlock>
       <interrupt>
         <name>RESET</name>
         <description>External Reset, Power-on Reset and Watchdog Reset</description>
@@ -747,6 +752,63 @@
             </field>
           </fields>
         </register>
+        <register>
+          <name>SREG</name>
+          <description>Status Register</description>
+          <addressOffset>0x19</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>C</name>
+              <description>Carry Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>Z</name>
+              <description>Zero Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>N</name>
+              <description>Negative Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>V</name>
+              <description>Two's Complement Overflow Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>S</name>
+              <description>Sign Bit</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>H</name>
+              <description>Half Carry Flag</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T</name>
+              <description>Bit Copy Storage</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>I</name>
+              <description>Global Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
       </registers>
     </peripheral>
     <peripheral>
@@ -956,227 +1018,6 @@
               <maximum>255</maximum>
             </range>
           </writeConstraint>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>FUSE</name>
-      <description>Fuses</description>
-      <baseAddress>0x00800000</baseAddress>
-      <addressBlock>
-        <offset>0x0</offset>
-        <size>0x2</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>HIGH</name>
-          <description>No Description.</description>
-          <addressOffset>0x1</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>RSTDISBL</name>
-              <description>Reset Disabled (Enable PB5 as i/o pin)</description>
-              <bitRange>[0:0]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>BODLEVEL</name>
-              <description>Enable BOD and select level</description>
-              <bitRange>[2:1]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>4V3</name>
-                  <description>Brown-out detection at VCC=4.3 V</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2V7</name>
-                  <description>Brown-out detection at VCC=2.7 V</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1V8</name>
-                  <description>Brown-out detection at VCC=1.8 V</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DISABLED</name>
-                  <description>Brown-out detection disabled</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>DWEN</name>
-              <description>Debug Wire enable</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>SELFPRGEN</name>
-              <description>Self Programming enable</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>LOW</name>
-          <description>No Description.</description>
-          <addressOffset>0x0</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>SUT_CKSEL</name>
-              <description>Select Clock Source</description>
-              <bitRange>[3:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>EXTCLK_14CK_0MS</name>
-                  <description>Ext. Clock; Start-up time: 14 CK + 0 ms</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_4MHZ8_14CK_0MS</name>
-                  <description>Int. RC Osc. 4.8 MHz; Start-up time: 14 CK + 0 ms</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_9MHZ6_14CK_0MS</name>
-                  <description>Int. RC Osc. 9.6 MHz; Start-up time: 14 CK + 0 ms</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_128KHZ_14CK_0MS</name>
-                  <description>Int. RC Osc. 128 kHz; Start-up time: 14 CK + 0 ms</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_14CK_4MS</name>
-                  <description>Ext. Clock; Start-up time: 14 CK + 4 ms</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_4MHZ8_14CK_4MS</name>
-                  <description>Int. RC Osc. 4.8 MHz; Start-up time: 14 CK + 4 ms</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_9MHZ6_14CK_4MS</name>
-                  <description>Int. RC Osc. 9.6 MHz; Start-up time: 14 CK + 4 ms</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_128KHZ_14CK_4MS</name>
-                  <description>Int. RC Osc. 128 kHz; Start-up time: 14 CK + 4 ms</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_14CK_64MS</name>
-                  <description>Ext. Clock; Start-up time: 14 CK + 64 ms</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_4MHZ8_14CK_64MS</name>
-                  <description>Int. RC Osc. 4.8 MHz; Start-up time: 14 CK + 64 ms</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_9MHZ6_14CK_64MS</name>
-                  <description>Int. RC Osc. 9.6 MHz; Start-up time: 14 CK + 64 ms</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>INTRCOSC_128KHZ_14CK_64MS</name>
-                  <description>Int. RC Osc. 128 kHz; Start-up time: 14 CK + 64 ms</description>
-                  <value>11</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CKDIV8</name>
-              <description>Divide clock by 8 internally</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>WDTON</name>
-              <description>Watch-dog Timer always on</description>
-              <bitRange>[5:5]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>EESAVE</name>
-              <description>Preserve EEPROM through the Chip Erase cycle</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>SPIEN</name>
-              <description>Serial program downloading (SPI) enabled</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>LOCKBIT</name>
-      <description>Lockbits</description>
-      <baseAddress>0x00800000</baseAddress>
-      <addressBlock>
-        <offset>0x0</offset>
-        <size>0x1</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>LOCKBIT</name>
-          <description>No Description.</description>
-          <addressOffset>0x0</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>LB</name>
-              <description>Memory Lock</description>
-              <bitRange>[1:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>PROG_VER_DISABLED</name>
-                  <description>Further programming and verification disabled</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PROG_DISABLED</name>
-                  <description>Further programming disabled</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>NO_LOCK</name>
-                  <description>No memory lock features enabled</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-          </fields>
         </register>
       </registers>
     </peripheral>

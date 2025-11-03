@@ -846,6 +846,11 @@
         <usage>registers</usage>
       </addressBlock>
       <addressBlock>
+        <offset>0x24</offset>
+        <size>0x3</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <addressBlock>
         <offset>0x47</offset>
         <size>0x2</size>
         <usage>registers</usage>
@@ -1471,6 +1476,76 @@
             </field>
           </fields>
         </register>
+        <register>
+          <name>SP</name>
+          <description>Stack Pointer </description>
+          <addressOffset>0x24</addressOffset>
+          <size>0x10</size>
+          <access>read-write</access>
+          <writeConstraint>
+            <range>
+              <minimum>0</minimum>
+              <maximum>65535</maximum>
+            </range>
+          </writeConstraint>
+        </register>
+        <register>
+          <name>SREG</name>
+          <description>Status Register</description>
+          <addressOffset>0x26</addressOffset>
+          <size>0x8</size>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>C</name>
+              <description>Carry Flag</description>
+              <bitRange>[0:0]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>Z</name>
+              <description>Zero Flag</description>
+              <bitRange>[1:1]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>N</name>
+              <description>Negative Flag</description>
+              <bitRange>[2:2]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>V</name>
+              <description>Two's Complement Overflow Flag</description>
+              <bitRange>[3:3]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>S</name>
+              <description>Sign Bit</description>
+              <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>H</name>
+              <description>Half Carry Flag</description>
+              <bitRange>[5:5]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>T</name>
+              <description>Bit Copy Storage</description>
+              <bitRange>[6:6]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>I</name>
+              <description>Global Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+              <access>read-write</access>
+            </field>
+          </fields>
+        </register>
       </registers>
     </peripheral>
     <peripheral>
@@ -1856,600 +1931,6 @@
                   <maximum>7</maximum>
                 </range>
               </writeConstraint>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>FUSE</name>
-      <description>Fuses</description>
-      <baseAddress>0x00800000</baseAddress>
-      <addressBlock>
-        <offset>0x0</offset>
-        <size>0x3</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>EXTENDED</name>
-          <description>No Description.</description>
-          <addressOffset>0x2</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>BODLEVEL</name>
-              <description>Brown-out Detector Trigger Level</description>
-              <bitRange>[2:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2V0</name>
-                  <description>Brown-out detection at VCC=2.0 V</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1V9</name>
-                  <description>Brown-out detection at VCC=1.9 V</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2V2</name>
-                  <description>Brown-out detection at VCC=2.2 V</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2V3</name>
-                  <description>Brown-out detection at VCC=2.3 V</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4V3</name>
-                  <description>Brown-out detection at VCC=4.3 V</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2V7</name>
-                  <description>Brown-out detection at VCC=2.7 V</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1V8</name>
-                  <description>Brown-out detection at VCC=1.8 V</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DISABLED</name>
-                  <description>Brown-out detection disabled</description>
-                  <value>7</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>PSCINRB</name>
-              <description>PSC2 and PSC0 input Reset Behavior</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>PSCRV</name>
-              <description>PSC Reset Value</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>PSC0RB</name>
-              <description>PSC0 Reset Behavior</description>
-              <bitRange>[5:5]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>PSC2RBA</name>
-              <description>PSC2 Reset Behavior for 22 and 23</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>PSC2RB</name>
-              <description>PSC2 Reset Behavior</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>HIGH</name>
-          <description>No Description.</description>
-          <addressOffset>0x1</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>BOOTRST</name>
-              <description>Select Reset Vector</description>
-              <bitRange>[0:0]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>BOOTSZ</name>
-              <description>Select Boot Size</description>
-              <bitRange>[2:1]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>1024W_0C00</name>
-                  <description>Boot Flash size=1024 words Boot address=$0C00</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512W_0E00</name>
-                  <description>Boot Flash size=512 words Boot address=$0E00</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256W_0F00</name>
-                  <description>Boot Flash size=256 words Boot address=$0F00</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128W_0F80</name>
-                  <description>Boot Flash size=128 words Boot address=$0F80</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>EESAVE</name>
-              <description>Preserve EEPROM through the Chip Erase cycle</description>
-              <bitRange>[3:3]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>WDTON</name>
-              <description>Watch-dog Timer always on</description>
-              <bitRange>[4:4]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>SPIEN</name>
-              <description>Serial program downloading (SPI) enabled</description>
-              <bitRange>[5:5]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>DWEN</name>
-              <description>Debug Wire enable</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>RSTDISBL</name>
-              <description>Reset Disabled (Enable PE0 as I/O pin)</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>LOW</name>
-          <description>No Description.</description>
-          <addressOffset>0x0</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>SUT_CKSEL</name>
-              <description>Select Clock Source</description>
-              <bitRange>[5:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>EXTCLK_PLLIN_RC_8MHZ_6CK_14CK_0MS</name>
-                  <description>Ext. CK; PLLin: RC8; SUT: 6CK/14CK+0ms; [CKSEL=0000 SUT=00]</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_RC_8MHZ_1KCK_14CK_0MS</name>
-                  <description>PLL/4; PLLin: RC8; SUT: 1KCK/14CK+0 ms; [CKSEL=0001 SUT=00]</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RC_8MHZ_PLLIN_RC_8MHZ_6CK_14CK_0MS</name>
-                  <description>RC8 MHz; PLLin: RC8; SUT: 6CK/14CK+0ms; [CKSEL=0010 SUT=00]</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>WDOSC_128KHZ_1KCK_14CK_0MS</name>
-                  <description>WD128 KHz; SUT: 1KCK/14CK+0 ms; [CKSEL=0011 SUT=00]</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_XOSC_1KCK_14CK_0MS</name>
-                  <description>PLL/4; PLLin: XOSC; SUT: 1KCK/14CK+0 ms; [CKSEL=0100 SUT=00]</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_EXTCLK_16KCK_14CK_0MS</name>
-                  <description>PLL/4; PLLin: Ext. CK; SUT: 16KCK/14CK+0 ms; [CKSEL=0101 SUT=00]</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RC_1MHZ_1KCK_14CK_0MS</name>
-                  <description>RC 1 MHz; SUT: 1KCK/14CK+0 ms; [CKSEL=0110 SUT=00]</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_258CK_14CK_4MS1</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 258CK/14CK+4.1 ms; [CKSEL=1000 SUT=00]</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_1KCK_14CK_65MS</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 1KCK/14CK+65 ms; [CKSEL=1001 SUT=00]</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_258CK_14CK_4MS1</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 258CK/14CK+4.1 ms; [CKSEL=1010 SUT=00]</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_1KCK_14CK_65MS</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 1KCK/14CK+65 ms;  [CKSEL=1011 SUT=00]</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_258CK_14CK_4MS1</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 258CK/14CK+4.1 ms; [CKSEL=1100 SUT=00]</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_1KCK_14CK_65MS</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 1KCK/14CK+65 ms;  [CKSEL=1101 SUT=00</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_258CK_14CK_4MS1</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 258CK/14CK+4.1 ms; [CKSEL=1110 SUT=00]</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_1KCK_14CK_65MS</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 1KCK/14CK+65 ms; [CKSEL=1111 SUT=00]</description>
-                  <value>15</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_PLLIN_RC_8MHZ_6CK_14CK_4MS1</name>
-                  <description>Ext. CK; PLLin: RC8 MHz; SUT:6 CK/14CK+4.1 ms; [CKSEL=0000 SUT=01]</description>
-                  <value>16</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_RC_8MHZ_1KCK_14CK_4MS</name>
-                  <description>PLL/4; PLLin: RC8; SUT: 1KCK/14CK+4 ms;   [CKSEL=0001 SUT=01]</description>
-                  <value>17</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RC_8MHZ_PLLIN_RC_8MHZ_6CK_14CK_4MS1</name>
-                  <description>RC8 MHz; PLLin: RC8; SUT: 6CK/14CK+4.1 ms; [CKSEL=0010 SUT=01]</description>
-                  <value>18</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>WDOSC_128KHZ_1KCK_14CK_4MS1</name>
-                  <description>WD128 KHz; SUT: 1KCK/14CK+4.1 ms; [CKSEL=0011 SUT=01]</description>
-                  <value>19</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_XOSC_1KCK_14CK_4MS</name>
-                  <description>PLL/4; PLLin: XOSC; SUT: 1KCK/14CK+4 ms; [CKSEL=0100 SUT=01]</description>
-                  <value>20</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RC_1MHZ_1KCK_14CK_4MS1</name>
-                  <description>RC 1 MHz; SUT: 1KCK/14CK+4.1 ms; [CKSEL=0110 SUT=01]</description>
-                  <value>22</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_258CK_14CK_65MS</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 258CK/14CK+65 ms; [CKSEL=1000 SUT=01]</description>
-                  <value>24</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_16KCK_14CK_0MS</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 16KCK/14CK+0 ms; [CKSEL=1001 SUT=01]</description>
-                  <value>25</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_258CK_14CK_65MS</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 258CK/14CK+65 ms; [CKSEL=1010 SUT=01]</description>
-                  <value>26</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_16KCK_14CK_0MS</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 16KCK/14CK+0 ms; [CKSEL=1011 SUT=01]</description>
-                  <value>27</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_258CK_14CK_65MS</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 258CK/14CK+65 ms;  [CKSEL=1100 SUT=01]</description>
-                  <value>28</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_16KCK_14CK_0MS</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 16KCK/14CK+0 ms; [CKSEL=1101 SUT=01]</description>
-                  <value>29</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_258CK_14CK_65MS</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 258CK/14CK+65 ms;  [CKSEL=1110 SUT=01]</description>
-                  <value>30</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_16KCK_14CK_0MS</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 16KCK/14CK+0 ms; [CKSEL=1111 SUT=01]</description>
-                  <value>31</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>EXTCLK_PLLIN_RC_8MHZ_6CK_14CK_65MS</name>
-                  <description>Ext. CK; PLLin: RC8 MHz; SUT:6 CK/14CK+65 ms; [CKSEL=0000 SUT=10]</description>
-                  <value>32</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_RC_8MHZ_1KCK_14CK_64MS</name>
-                  <description>PLL/4; PLLin: RC8; SUT: 1KCK/14CK+64 ms;   [CKSEL=0001 SUT=10]</description>
-                  <value>33</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RC_8MHZ_PLLIN_RC_8MHZ_6CK_14CK_65MS</name>
-                  <description>RC8 MHz; PLLin: RC8; SUT: 6CK/14CK+65 ms;  [CKSEL=0010 SUT=10]</description>
-                  <value>34</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>WDOSC_128KHZ_1KCK_14CK_65MS</name>
-                  <description>WD128 KHz; SUT: 1KCK/14CK+65 ms; [CKSEL=0011 SUT=10]</description>
-                  <value>35</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_XOSC_1KCK_14CK_64MS</name>
-                  <description>PLL/4; PLLin: XOSC; SUT: 1KCK/14CK+64 ms; [CKSEL=0100 SUT=10]</description>
-                  <value>36</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_EXTCLK_16KCK_14CK_4MS</name>
-                  <description>PLL/4; PLLin: Ext. CK; SUT: 16KCK/14CK+4 ms; [CKSEL=0101 SUT=10]</description>
-                  <value>37</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RC_1MHZ_1KCK_14CK_65MS</name>
-                  <description>RC 1 MHz; SUT: 1KCK/14CK+65 ms;  [CKSEL=0110 SUT=10]</description>
-                  <value>38</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_1KCK_14CK_0MS</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 1KCK/14CK+0 ms; [CKSEL=1000 SUT=10]</description>
-                  <value>40</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_16KCK_14CK_4MS1</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 16KCK/14CK+4.1 ms; [CKSEL=1001 SUT=10]</description>
-                  <value>41</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_1KCK_14CK_0MS</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 1KCK/14CK+0 ms; [CKSEL=1010 SUT=10]</description>
-                  <value>42</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_16KCK_14CK_4MS1</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 16KCK/14CK+4.1 ms; [CKSEL=1011 SUT=10]</description>
-                  <value>43</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_1KCK_14CK_0MS</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 1KCK/14CK+0 ms; [CKSEL=1100 SUT=10]</description>
-                  <value>44</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_16KCK_14CK_4MS1</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 16KCK/14CK+4.1 ms; [CKSEL=1101 SUT=10]</description>
-                  <value>45</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_1KCK_14CK_0MS</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 1KCK/14CK+0 ms; [CKSEL=1110 SUT=10]</description>
-                  <value>46</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_16KCK_14CK_4MS1</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 16KCK/14CK+4.1 ms; [CKSEL=1111 SUT=10]</description>
-                  <value>47</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>WDOSC_128KHZ_16KCK_14CK_0MS</name>
-                  <description>WD128 KHz; SUT: 16KCK/14CK+0 ms; [CKSEL=0011 SUT=11]</description>
-                  <value>51</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_XOSC_16KCK_14CK_0MS</name>
-                  <description>PLL/4; PLLin: XOSC; SUT: 16KCK/14CK+0 ms; [CKSEL=0100 SUT=11]</description>
-                  <value>52</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PLLCLK_DIV4_PLLIN_EXTCLK_16KCK_14CK_64MS</name>
-                  <description>PLL/4; PLLin: Ext. CK; SUT: 16KCK/14CK+64 ms; [CKSEL=0101 SUT=11]</description>
-                  <value>53</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_1KCK_14CK_4MS1</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 1KCK/14CK+4.1 ms; [CKSEL=1000 SUT=11]</description>
-                  <value>56</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_PLLIN_RC_8MHZ_16KCK_14CK_65MS</name>
-                  <description>XOSC.9-3MHz; PLLin: RC8; SUT: 16KCK/14CK+65 ms;  [CKSEL=1001 SUT=11]</description>
-                  <value>57</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_1KCK_14CK_4MS1</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 1KCK/14CK+4.1 ms; [CKSEL=1010 SUT=11]</description>
-                  <value>58</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_RC_8MHZ_16KCK_14CK_65MS</name>
-                  <description>XOSC3-8MHz; PLLin: RC8; SUT: 16KCK/14CK+65 ms;  [CKSEL=1011 SUT=11]</description>
-                  <value>59</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_1KCK_14CK_4MS1</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 1KCK/14CK+4.1 ms; [CKSEL=1100 SUT=11]</description>
-                  <value>60</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_3MHZ_8MHZ_PLLIN_XOSC_16KCK_14CK_65MS</name>
-                  <description>XOSC3-8MHz; PLLin: XOSC; SUT: 16KCK/14CK+65 ms;  [CKSEL=1101 SUT=11]</description>
-                  <value>61</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_1KCK_14CK_4MS1</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 1KCK/14CK+4.1 ms; [CKSEL=1110 SUT=11]</description>
-                  <value>62</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>XOSC_8MHZ_16MHZ_PLLIN_RC_8MHZ_16KCK_14CK_65MS</name>
-                  <description>XOSC8-16MHz; PLLin: RC8; SUT: 16KCK/14CK+65 ms;  [CKSEL=1111 SUT=11]</description>
-                  <value>63</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CKOUT</name>
-              <description>Clock output on PORTD1</description>
-              <bitRange>[6:6]</bitRange>
-              <access>read-write</access>
-            </field>
-            <field>
-              <name>CKDIV8</name>
-              <description>Divide clock by 8 internally</description>
-              <bitRange>[7:7]</bitRange>
-              <access>read-write</access>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>LOCKBIT</name>
-      <description>Lockbits</description>
-      <baseAddress>0x00800000</baseAddress>
-      <addressBlock>
-        <offset>0x0</offset>
-        <size>0x1</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>LOCKBIT</name>
-          <description>No Description.</description>
-          <addressOffset>0x0</addressOffset>
-          <size>0x8</size>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>LB</name>
-              <description>Memory Lock</description>
-              <bitRange>[1:0]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>PROG_VER_DISABLED</name>
-                  <description>Further programming and verification disabled</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PROG_DISABLED</name>
-                  <description>Further programming disabled</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>NO_LOCK</name>
-                  <description>No memory lock features enabled</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>BLB0</name>
-              <description>Boot Loader Protection Mode</description>
-              <bitRange>[3:2]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>LPM_SPM_DISABLE</name>
-                  <description>LPM and SPM prohibited in Application Section</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>LPM_DISABLE</name>
-                  <description>LPM prohibited in Application Section</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>SPM_DISABLE</name>
-                  <description>SPM prohibited in Application Section</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>NO_LOCK</name>
-                  <description>No lock on SPM and LPM in Application Section</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>BLB1</name>
-              <description>Boot Loader Protection Mode</description>
-              <bitRange>[5:4]</bitRange>
-              <access>read-write</access>
-              <writeConstraint>
-                <useEnumeratedValues>true</useEnumeratedValues>
-              </writeConstraint>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>LPM_SPM_DISABLE</name>
-                  <description>LPM and SPM prohibited in Boot Section</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>LPM_DISABLE</name>
-                  <description>LPM prohibited in Boot Section</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>SPM_DISABLE</name>
-                  <description>SPM prohibited in Boot Section</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>NO_LOCK</name>
-                  <description>No lock on SPM and LPM in Boot Section</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
             </field>
           </fields>
         </register>

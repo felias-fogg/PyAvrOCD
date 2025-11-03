@@ -56,8 +56,8 @@ def main():
 
     if arguments.filename.endswith('.atdf'):
         extend_with_comments(arguments.filename)
-        result = subprocess.run(['/Users/nebel/.cargo/bin/atdf2svd',
-                                    '-a', 'add_unsafe_cpu_registers',
+        result = subprocess.run(['atdf2svd',
+                                    '-a', 'keep_unsafe_cpu_registers',
                                     '-a', 'remove_fuse_and_lockbit',
                                      os.path.basename(arguments.filename) + ".comments"],
                                     stdout = subprocess.PIPE,
@@ -72,7 +72,7 @@ def main():
             svdfile = os.path.splitext(file)[0].lower() + '.svd'
             print("Generating",svdfile,"...")
             extend_with_comments(arguments.filename + "/" + file)
-            result = subprocess.run(['atdf2svd', '-a', 'add_unsafe_cpu_registers',
+            result = subprocess.run(['atdf2svd', '-a', 'keep_unsafe_cpu_registers',
                                     '-a', 'remove_fuse_and_lockbit',
                                     file + ".comments"
                                     ],
