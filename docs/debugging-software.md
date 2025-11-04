@@ -30,7 +30,13 @@ If you are not a fan of a command-line interface, then an integrated development
 https://felias-fogg.github.io/package_debugging_index.json
 ```
 
-After that, you must install the respective platforms. In this case, it is `Arduino AVR Boards (Debug enabled)` and `ATTinyCore (Debug enabled)`. Then, you can choose from all the classic Arduino AVR Boards and the ATtinys. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
+After that, you must install the respective platform(s):
+
+- `Arduino AVR Boards (Debug enabled)`
+-  `ATTinyCore (Debug enabled)`, and/or
+- `Atmel AVR Xplained-minis (Debug enabled)`.
+
+You can then choose from all the classic Arduino AVR Boards and the ATtinys. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md), except for the last platform. The Xplained Mini boards already contain a debugger/programmer. So, you simply connect the board to a host, and can start uploading and debugging.
 
 There will be more `Board Manager URLs` in the future that will extend the range of debuggable MCUs. In particular, the cores by MCUdude covering all ATmegaX8s and all classic JTAG mega chips will have a debug option.
 

@@ -20,9 +20,9 @@ There are a number of interesting observations to make. First, there is never an
 
 The next table is about programming the flash memory of JTAG targets with the default setting of 1 MHz for programming. Here, the picture is entirely different.
 
-| MCU                              | SNAP                | PICkit4           | Atmel-ICE           | Power Debugger      | JTAGICE3          | XPLAINED Pro 324PB  |
-| -------------------------------- | ------------------- | ----------------- | ------------------- | ------------------- | ----------------- | ------------------- |
-| mega324PB<br>mega128<br>mega2560 | 6/3<br/>3/2<br/>7/7 | 5/2<br>2/2<br>5/5 | 8/5<br>5/3<br>10/10 | 8/5<br>5/3<br>10/10 | 7/4<br>4/3<br>9/9 | 8/5<br>5/3<br>10/10 |
-| mega32u4                         | 5/3<br>3/2<br>7/7   | 4/2<br>2/1<br>5/5 | 6/4<br>4/3<br>10/10 | 7/4<br>4/3<br>10/10 | 6/4<br>4/3<br>9/9 |                     |
+| MCU                                            | SNAP                | PICkit4           | Atmel-ICE           | Power Debugger      | JTAGICE3          | XPLAINED Pro (324PB) |
+| ---------------------------------------------- | ------------------- | ----------------- | ------------------- | ------------------- | ----------------- | -------------------- |
+| mega324PB,<br>mega128,<br>mega2560, and others | 6/3<br/>3/2<br/>7/7 | 5/2<br>2/2<br>5/5 | 8/5<br>5/3<br>10/10 | 8/5<br>5/3<br>10/10 | 7/4<br>4/3<br>9/9 | 8/5<br>5/3<br>10/10  |
+| mega32u4                                       | 5/3<br>3/2<br>7/7   | 4/2<br>2/1<br>5/5 | 6/4<br>4/3<br>10/10 | 7/4<br>4/3<br>10/10 | 6/4<br>4/3<br>9/9 |                      |
 
 First of all, one notices that there is no difference between the different MCU clocks. The reason is that the debug probe generates the programming clock signal. Second, one notes that in the JTAG case, reading has non-negligible costs. The verifying setting has roughly half the speed of the non-verifying setting, and read-before-write halves the speed as well. The identical numbers in the third row have a simple explanation. Since this is the best case for read-before-write, i.e., no page has to be programmed, one also does not need to verify the write operation.

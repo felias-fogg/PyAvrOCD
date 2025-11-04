@@ -1,6 +1,17 @@
 # Changelog
 
-### NEW:
+### New:
+
+- **Fixed:**
+     - The SVD files contained FUSEs and LOCKBITs, but not SP and SREG. For some reason, a wrong version of atdf2svd was invoked, and the option value was misspelled. Perhaps there should be a unit test here as well.
+- **Added:**
+     - Three debug-enabled cores:
+          - ArduinoCore-avr-debug-enabled: the usual classic Arduino boards,
+          - ATTinyCore-debug-enabled (2.0.0-dev): all classic ATtinys with the brand-new core
+          - avr-xminis-debug-enabled: Looks like a debug-enabled core of the ATmel Xplained core, but it is really MiniCore stripped down, making working with it very easy.
+     - A remark in the installation guide on how to make binaries on macOS executable when they have been downloaded with a browser.
+
+### 0.16.4:
 
 - **Fixed:**
      - On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.
@@ -16,11 +27,13 @@
      - Added timers script (used to be part of monitor script)
 
 - **Changed:**
+     - In the `platform.txt`  files, I changed from setting a temporary breakpoint in `setup` to breaking just after starting `main`. The main reason is that setup is not always defined, sometimes it is ambiguous, and when one tries to disambiguating by mentioning the source file, then it is again wrong when optimization for debug is disabled. Finally, when debugging on USB-MCUs, the enumeration times out. So, in summary, it seems more robust to stop in main, although the user may not have seen that before.
      - Refactored the integration tests. Now we have two modules and the test driver.  Everything is now in the `integration` folder below `tests`.
      - Changed monitor script so that it can now be used for non-Arduino targets as well.
-     - Changed 'hardware debugger' to 'debug probe', which seems to be the more common term.
+     - Changed 'hardware debugger' to 'debug probe' in the documentation, which seems to be the more common term.
+
 - **Removed:**
-     - Paragraph about "Single-stepping SLEEP instructions" in limitations doc
+     - Removed paragraph about "Single-stepping SLEEP instructions" in the limitations doc.
 
 
 
