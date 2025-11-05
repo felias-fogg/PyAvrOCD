@@ -21,7 +21,7 @@ monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwi
             'erasebeforeload' : ['cli', 'enable', [None, 'enable', 'disable']],
             'help'            : [None, None, [None]],
             'info'            : [None, None, [None]],
-            'load'            : ['cli', None, [None, 'readbeforewrite', 'writeonly']],
+            'load'            : ['cli', None, [None, 'readbeforewrite', 'writeonly', 'onlycache']],
             'onlywhenloaded'  : ['cli', 'enable', [None, 'enable', 'disable']],
             'rangestepping'   : ['cli', 'enable', [None, 'enable', 'disable']],
             'reset'           : [None, None, [None, '*']],
@@ -52,6 +52,7 @@ class MonitorCommand():
         self._onlyswbps = None # only software breakpoints permitted
         self._bpfixed = False # It is possible to change
         self._read_before_write = None # read before write
+        self._only_cache = None # do not flash while loading, but only load the cache (assuming a prior upload)
         self._leaveonexit = None # leave debugWIRE on exit
         self._cache = None # cache executable and use the cache instead of the MCU's flash
         self._safe = None # safe single-stepping
@@ -108,8 +109,9 @@ class MonitorCommand():
         self._onlyswbps = self._args.breakpoints[0] == 's'   # default all
         self._read_before_write = (self._iface == 'debugwire' and \
                                        (not self._args.load or self._args.load[0] != 'w')) or \
-                                       (self._args.load and self._args.load[0] == 'r')
+                                       (self._args.load and self._args.load[0] in ['r', 'o'])
                                        # default: readbeforewrite when debugWIRE, otherwise: writeonly
+        self._only_cache = self._args.load and self._args.load[0] == 'o' # 'only cache' only if explicitly requested
         self._cache = self._args.caching[0] != 'd'           # default: enable
         self._safe = self._args.singlestep[0] != 'i'         # default: safe
         self._verify = self._args.verify[0] != 'd'           # default: enable
@@ -126,6 +128,18 @@ class MonitorCommand():
             self._onlyhwbps = True
             self._onlyswbps = False
             self._bpfixed = True
+
+    def is_onlycache(self):
+        """
+        Returns value of self._only_cache
+        """
+        return self._only_cache
+
+    def disable_onlycache(self):
+        """
+        Disables only caching after first load
+        """
+        self._only_cache = False
 
     def is_leaveonexit(self):
         """
@@ -323,7 +337,7 @@ class MonitorCommand():
         return self._mon_unknown_arg(None)
 
     def _mon_debugwire(self, optix):
-        if not self._iface == "debugwire":
+        if self._iface != "debugwire":
             return("reset" if optix != 0 else "", "This is not a debugWIRE target")
         if optix == 0:
             if self._debugger_active:
@@ -378,10 +392,12 @@ monitor debugwire [enable|disable] - activate/deactivate debugWIRE mode,
 monitor erasebeforeload [enable|disable]
                                    - erase flash memory before load (default)
                                      except for debugWIRE
-monitor load [readbeforewrite|writeonly]
-                                   - optimize loading by first reading flash or
-                                     write without reading before (default only
-                                     for debugWIRE)
+monitor load [readbeforewrite|writeonly|onlycache]
+                                   - optimize loading by first reading flash
+                                     before writing (default only for
+                                     debugWIRE), write blindly, or fill only
+                                     cache at first load action, later
+                                     do read-before-write
 monitor onlywhenloaded [enable|disable]
                                    - execute only with loaded executable
 monitor singlestep [safe|interruptible]
@@ -403,7 +419,8 @@ Breakpoints:              """ + ("all types"
                                      ("only hardware bps"
                                           if self._onlyhwbps else "only software bps")) + """
 Execute only when loaded: """ + ("enabled" if not self._noload else "disabled") + """
-Load mode:                """ + ("read-before-write" if self._read_before_write else "write-only") + """
+Load mode:                """ + ("only-cache" if self._only_cache else
+                                     ("read-before-write" if self._read_before_write else "write-only")) + """
 Erase before load:        """ + ("enabled" if self._erase_before_load else "disabled") + """
 Verify after load:        """ + ("enabled" if self._verify else "disabled") + """
 Caching loaded binary:    """ + ("enabled" if self._cache else "disabled") + """
@@ -412,12 +429,16 @@ Single-stepping:          """ + ("safe" if self._safe else "interruptible")  + "
 Timers:                   """ + ("frozen when stopped"
                                      if self._timersfreeze else "run when stopped") + "{}")
 
-
     def _mon_load(self, optix):
+        if optix == 3 or (optix == 0 and self._only_cache is True):
+            self._only_cache = True
+            return("", "Only caching when loading")
         if optix == 1 or (optix == 0 and self._read_before_write is True):
+            self._only_cache = False
             self._read_before_write = True
             return("", "Reading before writing when loading")
         if optix == 2 or (optix == 0 and self._read_before_write is False):
+            self._only_cache = False
             self._read_before_write = False
             return("", "No reading before writing when loading")
         return self._mon_unknown_arg(None)

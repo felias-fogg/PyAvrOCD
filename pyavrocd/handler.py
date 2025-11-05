@@ -83,6 +83,7 @@ class GdbHandler():
             'X'           : self._set_binary_memory_handler,
             'z'           : self._remove_breakpoint_handler,
             'Z'           : self._add_breakpoint_handler,
+            None          : self._set_binary_memory_handler_finalize, # None is returned when timing out
             }
 
 
@@ -90,10 +91,6 @@ class GdbHandler():
         """
         Dispatches command to the right handler
         """
-        if cmd is None: # This is a timeout
-            if self.mem.lazy_loading: # while we were loading an executable
-                self._set_binary_memory_handler_finalize(None)
-            return
         try:
             handler = self.packettypes[cmd]
         except (KeyError, IndexError):
@@ -101,8 +98,10 @@ class GdbHandler():
             self.send_packet("")
             return
         try:
-            if cmd not in {'X', 'vFlashWrite'}: # no binary data in packet
+            if cmd not in {'X', 'vFlashWrite', None}: # no binary data in packet
                 packet = packet.decode('ascii')
+            if self.mem.lazy_loading and cmd != 'X': # new packet after a string of X-packets
+                self._set_binary_memory_handler_finalize(None)
             handler(packet)
         except (EndOfSession, KeyboardInterrupt):
             raise
@@ -562,7 +561,7 @@ class GdbHandler():
         self.logger.debug("RSP packet: vFlashDone")
         self._vflashdone = True
         try:
-            self.dbg.device.avr.switch_to_progmode()
+            self.dbg.switch_to_progmode()
             self.mem.programming_mode = True
             self.logger.info("Programming mode entered")
             self.mem.flash_pages()
@@ -571,9 +570,12 @@ class GdbHandler():
             self.send_packet("E11")
             raise
         finally:
-            self.dbg.device.avr.switch_to_debmode()
+            self.dbg.switch_to_debmode()
             self.mem.programming_mode = False
             self.logger.info("Programming mode stopped")
+            if self.mon.is_onlycache():
+                self.logger.info("Only cached, not flashed!")
+                self.mon.disable_onlycache() # after the first load operation, load physically again
         self.send_packet("OK")
 
     def _vflash_erase_handler(self, _):
@@ -696,12 +698,12 @@ class GdbHandler():
                 self.logger.info("Loading executable")
                 self.bp.cleanup_breakpoints() # cleanup breakpoints before load
                 self.mem.lazy_loading = True
-                self.dbg.device.avr.switch_to_progmode()
+                self.dbg.switch_to_progmode()
                 self.mem.programming_mode = True
                 self.logger.info("Switched to programming mode")
                 if self.mon.is_erase_before_load():
                     # If erase before load is requested, we do that here
-                    # otherwise it will done implicitly before each page is programmed
+                    # otherwise it will be done implicitly before each page is programmed
                     self.dbg.device.erase_chip(self.mem.programming_mode)
         try:
             reply = self.mem.writemem(addr, bytearray(data))
@@ -713,17 +715,23 @@ class GdbHandler():
 
     def _set_binary_memory_handler_finalize(self, _):
         """
-        This method is called when the server function times out after 1 second
-        while mem.lazy_loading = True, meaning there is an executable loaded using
-        the X-records.
+        This method is called when the server function times out after 1 second or
+        when mem.lazy_loading == True and a non-X record is received.
+        If in this case mem.lazy_loading == True, this means there is an executable
+        loaded using the X-records and everything has been read, so that we need to
+        flash the remaining bytes.
         """
+        if not self.mem.lazy_loading:
+            return
         self.logger.debug("Finalize binary programming")
         self.mem.lazy_loading = False
         self.mem.flash_pages() # program the remaining bytes
-        self.dbg.device.avr.switch_to_debmode()
+        self.dbg.switch_to_debmode()
         self.mem.programming_mode = False
         self.logger.info("Programming mode stopped")
-
+        if self.mon.is_onlycache():
+            self.logger.info("Only cached, not flashed!")
+            self.mon.disable_onlycache() # after the first load operation, load physically again
 
     def _remove_breakpoint_handler(self, packet):
         """

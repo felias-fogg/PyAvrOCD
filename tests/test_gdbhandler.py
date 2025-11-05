@@ -41,7 +41,9 @@ class TestGdbHandler(TestCase):
         self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p",
                                  options(['-f', 'foo', '-d', 'atmega328p']))
         self.gh.mon = create_autospec(MonitorCommand, specSet=True, instance=True)
+        self.gh.mon.is_onlycache.return_value = False
         self.gh.mem = create_autospec(Memory, specSet=True, instance=True)
+        self.gh.mem.lazy_loading = False
         self.gh.mem.programming_mode = False
         self.gh.bp = create_autospec(BreakAndExec, specSet=True, instance=True)
 
@@ -60,7 +62,8 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.mem.lazy_loading = True
         self.gh.dispatch(None,'')
-        self.gh._set_binary_memory_handler_finalize.assert_called_once() #pylint: disable=no-member
+        self.assertEqual(self.gh._set_binary_memory_handler_finalize.call_count, 2) #pylint: disable=no-member
+
 
     def test_exception_in_packet_handler(self):
         self.set_up()
@@ -76,6 +79,16 @@ class TestGdbHandler(TestCase):
         self.gh.dispatch('!', b'')
         self.assertTrue(self.gh._extended_remote_mode)
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
+
+    @patch('pyavrocd.handler.GdbHandler._set_binary_memory_handler_finalize',Mock())
+    def test_extended_remote_when_lazy_loading(self):
+        self.set_up()
+        self.gh.mem.lazy_loading = True
+        self.assertFalse(self.gh._extended_remote_mode)
+        self.gh.dispatch('!', b'')
+        self.assertTrue(self.gh._extended_remote_mode)
+        self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
+        self.assertEqual(self.gh._set_binary_memory_handler_finalize.call_count, 1) #pylint: disable=no-member
 
     def test_stop_reason_handler_none(self):
         self.set_up()
@@ -413,6 +426,15 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.dispatch('vFlashDone', b'')
         self.gh.mem.flash_pages.assert_called_once()
+        self.gh.mon.disable_onlycache.assert_not_called()
+        self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
+
+    def test_flashDoneHandler_onlycache(self):
+        self.set_up()
+        self.gh.mon.is_onlycache.return_value = True
+        self.gh.dispatch('vFlashDone', b'')
+        self.gh.mem.flash_pages.assert_called_once()
+        self.gh.mon.disable_onlycache.assert_called_once()
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_flashEraseHandler_impossible(self):
@@ -490,6 +512,22 @@ class TestGdbHandler(TestCase):
         self.gh.dispatch('X', b'800100,1:}]')
         self.gh.mem.writemem.assert_called_with("800100", bytearray([0x7D]))
         self.gh._comsocket.sendall.assert_called_with(rsp('OK'))
+
+    def test_set_binary_memory_handler_finalize_no_action(self):
+        self.set_up()
+        self.gh.mem.lazy_loading = False
+        self.assertEqual(self.gh.dispatch(None,None), None)
+        self.gh.mem.flash_pages.assert_not_called()
+        self.gh.mon.disable_onlycache.assert_not_called()
+
+    def test_set_binary_memory_handler_finalize_finish_action(self):
+        self.set_up()
+        self.gh.mon.is_onlycache.return_value = True
+        self.gh.mem.lazy_loading = True
+        self.assertEqual(self.gh.dispatch(None,None), None)
+        self.gh.mem.flash_pages.assert_called_once()
+        self.assertFalse(self.gh.mem.lazy_loading)
+        self.gh.mon.disable_onlycache.assert_called_once()
 
     def test_remove_breakpoint_handler_impossible(self):
         self.set_up()

@@ -141,12 +141,12 @@ class XAvrDebugger(AvrDebugger):
                 return False
             raise FatalError("Debug session not started: %s" % e) #pylint: disable=raise-missing-from
         self.device.avr.attach()
-        self.device.avr.switch_to_progmode()
+        self.switch_to_progmode()
         self.logger.info("Switched to programming mode")
         self._verify_target(dev_id)
         self._post_process_after_start()
         self.logger.info("Post processing finished")
-        self.device.avr.switch_to_debmode()
+        self.switch_to_debmode()
         self.logger.info("Switched to debugging mode")
         self._check_stuck_at_one_pc()
         self.logger.info("Checked for dirty PC")
@@ -161,7 +161,7 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("Terminating debugging session ...")
         try:
             # Switch to debugging mode
-            self.device.avr.switch_to_debmode()
+            self.switch_to_debmode()
             self.logger.info("Switched to debugging mode")
             # Halt the core
             self.device.avr.protocol.stop()
@@ -178,7 +178,7 @@ class XAvrDebugger(AvrDebugger):
         try:
             # Disable OCDEN
             if 'ocden_base' in self.device_info and 'ocden' in self.manage:
-                self.device.avr.switch_to_progmode()
+                self.switch_to_progmode()
                 self.logger.info("Switched to programming mode")
                 fuses = self.read_fuse(0, 3)
                 self.logger.debug("Fuses read: %X %X %X",fuses[0], fuses[1], fuses[2])
@@ -645,6 +645,18 @@ class XAvrDebugger(AvrDebugger):
         self.housekeeper.end_session()
         self.logger.info("Signed off from tool")
         self.logger.info("... disabling debugWIRE mode done")
+
+    def switch_to_debmode(self):
+        """
+        Switch to debugging mode
+        """
+        return self.device.avr.switch_to_debmode()
+
+    def switch_to_progmode(self):
+        """
+        Switch to programming mode
+        """
+        return self.device.avr.switch_to_progmode()
 
     def software_breakpoint_set(self, address):
         """

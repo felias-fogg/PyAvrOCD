@@ -159,11 +159,14 @@ class TestMonitorCommand(TestCase):
     def test_dispatch_load(self):
         self.set_up()
         self.assertTrue(self.mo._read_before_write)
+        self.assertFalse(self.mo._only_cache)
         self.assertEqual(self.mo.dispatch(['load']), ("", "Reading before writing when loading"))
         self.assertEqual(self.mo.dispatch(['load', 'writeonly']),  ("", "No reading before writing when loading"))
         self.assertFalse(self.mo._read_before_write)
         self.assertEqual(self.mo.dispatch(['load', 'read']),  ("", "Reading before writing when loading"))
         self.assertTrue(self.mo._read_before_write)
+        self.assertEqual(self.mo.dispatch(['load', 'onlycache']),  ("", "Only caching when loading"))
+        self.assertTrue(self.mo._only_cache)
 
     def test_dispatch_noload(self):
         self.set_up()

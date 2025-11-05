@@ -28,48 +28,48 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 ## Supported Arduino boards
 
 
-- Arduino Yún: Supported by `Arduino AVR Boards (debug enabled)`
-- **Arduino UNO R3**: Supported by `Arduino AVR Boards (debug enabled)`;  [the `RESET EN` solder bridge needs to be cut](https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target)
-- Arduino UNO Mini: Supported by `Arduino AVR Boards (debug enabled)`; remove capacitor `C3`
-- Arduino Duemilanove: Supported by `Arduino AVR Boards (debug enabled)`; `RESET EN` needs to be cut
-- Arduino Diecimila: Supported by `Arduino AVR Boards (debug enabled)`; [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
-- **Arduino Nano:** Supported by `Arduino AVR Boards (debug enabled)`; [only clones can be modified](https://mtech.dk/thomsen/electro/arduino.php)
-- **Arduino Mega**: Supported by `Arduino AVR Boards (debug enabled)`
-- **Arduino Mega 2560:** Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino Mega ADK: Supported by `Arduino AVR Boards (debug enabled)`
-- <u>Arduino Leonardo</u>: Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino Leonardo ETH: Supported by `Arduino AVR Boards (debug enabled)`
-- <u>Arduino Micro</u>: Supported by `Arduino AVR Boards (debug enabled)`
+- Arduino Yún: Supported by `Arduino AVR Boards (Debug enabled)`
+- **Arduino UNO R3**: Supported by `Arduino AVR Boards (Debug enabled)`;  [the `RESET EN` solder bridge needs to be cut](https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target)
+- Arduino UNO Mini: Supported by `Arduino AVR Boards (Debug enabled)`; remove capacitor `C3`
+- Arduino Duemilanove: Supported by `Arduino AVR Boards (Debug enabled)`; `RESET EN` needs to be cut
+- Arduino Diecimila: Supported by `Arduino AVR Boards (Debug enabled)`; [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
+- **Arduino Nano:** Supported by `Arduino AVR Boards (Debug enabled)`; [only clones can be modified](https://mtech.dk/thomsen/electro/arduino.php)
+- **Arduino Mega**: Supported by `Arduino AVR Boards (Debug enabled)`
+- **Arduino Mega 2560:** Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino Mega ADK: Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Arduino Leonardo</u>: Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino Leonardo ETH: Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Arduino Micro</u>: Supported by `Arduino AVR Boards (Debug enabled)`
 - <s>Arduino Esplora</s>: JTAG pins are not accessible
-- Arduino Mini: Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR pin of FTDI header
-- Arduino Ethernet (Rev1): Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR pin of FTDI header
-- <u>Arduino Fio</u>: Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR pin of FTDI header and do not connect XBee
-- Arduino BT: Supported by `Arduino AVR Boards (debug enabled)`; remove capacitor `C1`
+- Arduino Mini: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
+- Arduino Ethernet (Rev1): Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
+- <u>Arduino Fio</u>: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header and do not connect XBee
+- Arduino BT: Supported by `Arduino AVR Boards (Debug enabled)`; remove capacitor `C1`
 - <s>LilyPad Arduino USB</s>: JTAG pins are not accessible
-- <u>LilyPad Arduino</u>: Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR pin of FTDI header
-- <u>Arduino Pro</u>: Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR pin of FTDI header
-- <u>Arduino Pro Mini</u>: Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR pin of FTDI header
-- Arduino NG (ATmega168): Supported by `Arduino AVR Boards (debug enabled)`; no modifications necessary
+- <u>LilyPad Arduino</u>: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
+- <u>Arduino Pro</u>: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
+- <u>Arduino Pro Mini</u>: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
+- Arduino NG (ATmega168): Supported by `Arduino AVR Boards (Debug enabled)`; no modifications necessary
 - <s>Arduino NG (ATmega8)</s>: no debugging interface
-- Arduino Robot Control: Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino Robot Motor: Supported by `Arduino AVR Boards (debug enabled)`
-- <u>Arduino Gemma</u>: Supported by `Arduino AVR Boards (debug enabled)`; RESET pad on backside
-- <u>Adafruit Circuit Playground 32u4</u>: Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino Yún Mini: Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino Industrial 101: Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino Linino One: Supported by `Arduino AVR Boards (debug enabled)`
-- Arduino UNO WiFi (Rev 1): Supported by `Arduino AVR Boards (debug enabled)`; cut `RESET EN` solder bridge
+- Arduino Robot Control: Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino Robot Motor: Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Arduino Gemma</u>: Supported by `Arduino AVR Boards (Debug enabled)`; RESET pad on backside
+- <u>Adafruit Circuit Playground 32u4</u>: Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino Yún Mini: Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino Industrial 101: Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino Linino One: Supported by `Arduino AVR Boards (Debug enabled)`
+- Arduino UNO WiFi (Rev 1): Supported by `Arduino AVR Boards (Debug enabled)`; cut `RESET EN` solder bridge
 
 ## Supported Sparkfun boards
 
-- RedBoard (ATmega328P): Supported by `Arduino AVR Boards (debug enabled)`; remove `C8`
-- <u>Pro Micro 3.3V (ATmega32U4)</u>: Supported by `Arduino AVR Boards (debug enabled)`
-- <u>Pro Micro 5V (ATmega32U4)</u>: Supported by `Arduino AVR Boards (debug enabled)`
-- Qduino Mini (ATmega32U4): Supported by `Arduino AVR Boards (debug enabled)`
-- Mega Pro 3.3V/5V: Supported by `Arduino AVR Boards (debug enabled)`
-- RedBot (ATmega328P): Supported by `Arduino AVR Boards (debug enabled)`
+- RedBoard (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`; remove `C8`
+- <u>Pro Micro 3.3V (ATmega32U4)</u>: Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Pro Micro 5V (ATmega32U4)</u>: Supported by `Arduino AVR Boards (Debug enabled)`
+- Qduino Mini (ATmega32U4): Supported by `Arduino AVR Boards (Debug enabled)`
+- Mega Pro 3.3V/5V: Supported by `Arduino AVR Boards (Debug enabled)`
+- RedBot (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
 - ATmega128RFA1 Development board: no core yet
-- Serial-7-Segment-Display (ATmega328): Supported by `Arduino AVR Boards (debug enabled)`
+- Serial-7-Segment-Display (ATmega328): Supported by `Arduino AVR Boards (Debug enabled)`
 - LilyPad USB Plus: no core yet
 
 ## Supported Adafruit boards
@@ -78,16 +78,16 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 - Feather 32U4 Basic Proto: no core yet
 - Feather 32u4 Bluefruit LE: no core yet
 - Feather 32u4 FONA: no core yet
-- Feather 328P: Supported by `Arduino AVR Boards (debug enabled)`
+- Feather 328P: Supported by `Arduino AVR Boards (Debug enabled)`
 - <s>FLORA (ATmega32U4)</s>: JTAG pins are not accessible
 - ItsyBitsy 32u4 (3V/5V): no core yet
-- Metro (ATmega328P): Supported by `Arduino AVR Boards (debug enabled)`; cut `RESET EN` solder bridge
-- Metro Mini 328P V2: Supported by `Arduino AVR Boards (debug enabled)`; you have to figure out which cap to remove
+- Metro (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`; cut `RESET EN` solder bridge
+- Metro Mini 328P V2: Supported by `Arduino AVR Boards (Debug enabled)`; you have to figure out which cap to remove
 - Teensy 2.0 (ATmega32U4): no core yet
 - <u>Teensy++ (AT90USB1286)</u>: no core yet
 - Trinket - Mini Microcontroller 3.3V/5V Logic: Supported by `ATTinyCore (Debug enabled)`
-- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): Supported by `Arduino AVR Boards (debug enabled)`
-- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): Supported by `Arduino AVR Boards (debug enabled)`
+- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
+- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
 - Bluefruit Micro: no core yet
 
 ## Supported Olimex boards
@@ -101,10 +101,10 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 
 ## Supported Seeed Studio boards
 
-- <u>Seeeduino v4.2</u>: Supported by `Arduino AVR Boards (debug enabled)`; remove `C14` and RESET LED (next to RESET button)
-- <u>Stalker</u>: Supported by `Arduino AVR Boards (debug enabled)`; do not connect DTR
-- Seeeduino Lotus: Supported by `Arduino AVR Boards (debug enabled)`
-- Seeeduino Nano: Supported by `Arduino AVR Boards (debug enabled)`
+- <u>Seeeduino v4.2</u>: Supported by `Arduino AVR Boards (Debug enabled)`; remove `C14` and RESET LED (next to RESET button)
+- <u>Stalker</u>: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR
+- Seeeduino Lotus: Supported by `Arduino AVR Boards (Debug enabled)`
+- Seeeduino Nano: Supported by `Arduino AVR Boards (Debug enabled)`
 
 ## Supported Azduino boards by Spence Konde
 

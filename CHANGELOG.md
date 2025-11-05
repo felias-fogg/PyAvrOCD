@@ -1,15 +1,22 @@
 # Changelog
 
-### New:
+### 0.16.5
 
 - **Fixed:**
      - The SVD files contained FUSEs and LOCKBITs, but not SP and SREG. For some reason, a wrong version of atdf2svd was invoked, and the option value was misspelled. Perhaps there should be a unit test here as well.
+     - It could happen that when lazy loading (with X-records), another record is received before the timeout in the server loop calls for finalizing the load operation. Now, we catch that by checking whether a non-X record is received while lazy loading.
 - **Added:**
+     - `monitor load onlycache` will disable flashing when loading. It is useful when one can use ordinary programming for debugWIRE targets, e.g., when using the Xplained-Mini boards. This will disable flashing in the `flash_pages` method. The switch is disabled after the initial load and changed to read-before-write.
      - Three debug-enabled cores:
           - ArduinoCore-avr-debug-enabled: the usual classic Arduino boards,
           - ATTinyCore-debug-enabled (2.0.0-dev): all classic ATtinys with the brand-new core
           - avr-xminis-debug-enabled: Looks like a debug-enabled core of the ATmel Xplained core, but it is really MiniCore stripped down, making working with it very easy.
      - A remark in the installation guide on how to make binaries on macOS executable when they have been downloaded with a browser.
+
+- **Changed**:
+     - Handling of the 'timeout' record (`_set_binary_memory_finalize`) is now moved inside the try/except construct in order to be able to catch exceptions. In other words, it is now a 'normal' command.
+     - Added `switch_to_debmode` and `switch_to_progmode` to xavrdebug.py so that we now are not forced to call `self.dbg.device.avr.switch_to...`.
+
 
 ### 0.16.4:
 

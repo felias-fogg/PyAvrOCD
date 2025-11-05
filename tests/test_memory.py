@@ -17,6 +17,7 @@ class TestMemory(TestCase):
     def set_up(self):
         mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
         mock_mon = create_autospec(MonitorCommand, specSet=True, instance=True)
+        mock_mon.is_onlycache.return_value = False
         mock_dbg.memory_info = MagicMock()
         mock_dbg.device_info = MagicMock()
         mock_dbg.transport = MagicMock()
@@ -207,6 +208,19 @@ class TestMemory(TestCase):
         fmt = self.mem.dbg.device.avr.memtype_write_from_string('flash')
         self.mem.dbg.device.avr.write_memory_section.assert_called_with(fmt, 0, bytearray([0,1,2,3,0xFF,0xFF]),
                                                                             2, allow_blank_skip=False)
+
+    def test_no_flash_pages_write_only_cached(self):
+        self.set_up()
+        self.mem.mon.is_onlycache.return_value = True
+        self.mem.dbg.device.avr.write_memory_section = Mock()
+        self.mem._flash = bytearray(range(4))
+        self.mem.mon.is_read_before_write.return_value = True
+        self.mem.mon.is_erase_before_load.return_value = False
+        self.mem.dbg.flash_read.side_effect = [bytearray([0,0]), bytearray([2,3]), bytearray([0,0]),
+                                                   bytearray([0,1]), bytearray([2,3]), bytearray([0xFF,0xFF])]
+        self.mem.flash_pages()
+        self.assertEqual(self.mem.dbg.flash_read.call_count, 0)
+        self.mem.dbg.device.avr.write_memory_section.assert_not_called()
 
     def test_flash_pages_error(self):
         self.set_up()

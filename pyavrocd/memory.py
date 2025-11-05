@@ -245,10 +245,12 @@ class Memory():
         If mon.is_read_before_write() is true (read before write), the we will read a page
         before it is written.
         If it is nothing new, we skip. Otherwise, when "jtag", we check whether the page is blank.
-        If not, the we need to erase this page by temporarily leaving progmode.
+        If not, then we need to erase this page by temporarily leaving progmode.
         This out of the way, we program.
         Optionally, after writing, we check whether we were successful.
         """
+        if self.mon.is_onlycache(): # if loading is set to filling the cache only, we do not flash
+            return
         startaddr = (self._flashmem_start_prog // self._multi_page_size) * self._multi_page_size
         if self.lazy_loading:
             roundup = 0
