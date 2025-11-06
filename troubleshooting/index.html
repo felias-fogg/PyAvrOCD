@@ -49,7 +49,7 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
@@ -61,6 +61,14 @@
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Troubleshooting</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#debugging-does-not-start">Debugging does not start</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#problems-while-debugging">Problems while debugging</a>
+    </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Supported devices</span></p>
@@ -106,6 +114,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
       <li class="breadcrumb-item active">Troubleshooting</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/troubleshooting.md">Edit on PyAvrOCD</a>
@@ -117,47 +126,51 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="troubleshooting">Troubleshooting</h1>
-<h2 id="no-debug-probe-recognized">No debug probe recognized</h2>
-<ul>
-<li>No compatible tool discovered</li>
-<li>Too many connected tools</li>
-</ul>
-<h2 id="debugging-does-not-start">Debugging does not start:</h2>
+<p>Sometimes, things do not go according to plan, and it becomes necessary to debug the debugging setup. A first good step is to have a look at the logging output. If you spot a log entry marked <code>[CRITICAL]</code>, it may tell you already what went wrong. If you see, for example, the message</p>
+<pre><code>[CRITICAL] Target is not powered
+</code></pre>
+<p>then it is very likely that you forgot to power the target board, or you made a wiring error. </p>
+<p>In general, one can distinguish between problems that prohibit the start of the GDB server and problems appearing while debugging.</p>
+<h2 id="debugging-does-not-start">Debugging does not start</h2>
+<p>For most of the error messages, it should be obvious what to do. However, there are a few messages that look cryptic, and/or a solution is not apparent.</p>
 <ul>
 <li>
-<p>Error message: Apple cannot check ...</p>
-<ul>
-<li>Use <code>xattr -d com.apple.quarantine FILE</code></li>
-</ul>
+<p><code>Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</code>  This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file <code>FILE</code> as follows:</p>
+<p>```</p>
+<blockquote>
+<p>xattr -d com.apple.quarantine FILE
+ ```</p>
+</blockquote>
+<p>Afterward, macOS will start these executables without a hitch. </p>
 </li>
 <li>
-<p>Address already in use</p>
+<p><code>No compatible tool discovered</code>: This could mean that no debug tool is connected, but it also could mean that another process currently uses it, that the serial line the tool is attached to is busy, or that <a href="../install-link/">you have not yet installed the necessary udev rules under Linux</a>.</p>
 </li>
-<li>ISP programming failed</li>
-<li>Wrong MCU: ...</li>
-<li>Stuck-at-1-bit</li>
-<li>Debugging is impossible, because lockbits/OCDEN/DWEN cannot be programmed</li>
-<li>Target is not powered</li>
+<li>
+<p><code>Fatal Error: [Errno 48] Address already in use</code>: This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>
+</li>
+<li><code>ISP programming failed. Wrong connection or wrong MCU?</code> This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem. It could also mean that the MCU is not accessible anymore by ISP programming. In this case, <a href="debugwire-can-brick-mcus">only high-voltage programming</a> helps. </li>
+<li><code>Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</code> debugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a <a href="https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/">parasitic power supply</a> problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the <code>IOREF</code> pin instead of using the <code>5V</code>  or <code>3.3V</code> pin. </li>
 </ul>
 <h2 id="problems-while-debugging">Problems while debugging</h2>
 <ul>
-<li>debugging/loading is slow</li>
-<li>Does not stop at a line with a set breakpoint, but later</li>
-<li>variable cannot be accessed</li>
-<li>analogwrite (PWM) does not appear to work when execution is stopped</li>
-<li>single step leads to jump to interrupt dispatch table</li>
-<li>Cannot run/continue<ul>
-<li>SIGSYS - breakpoints</li>
-<li>SIGABRT - Fatal error before</li>
-<li>SIGILL - BREAK instructions</li>
-<li>SIGBUS - stackpointer too low</li>
-<li>SIGSEGV - executable not yet flashed#</li>
-</ul>
+<li>
+<p><strong>Loading code and/or debugging feels sluggish</strong>. When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <code>JTAG</code>, the situation is much better. Default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU. </p>
+</li>
+<li>
+<p><strong>The debugger does not stop at a line with a set breakpoint, but later</strong>. This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
+</li>
+<li>
+<p><strong>Variables cannot be accessed</strong>. Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable. </p>
 </li>
 </ul>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../restore-original-state/" class="btn btn-neutral float-left" title="Restoring the target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../supported-mcus/" class="btn btn-neutral float-right" title="MCUs">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -183,6 +196,10 @@
         </span>
     
     
+      <span><a href="../restore-original-state/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../supported-mcus/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
