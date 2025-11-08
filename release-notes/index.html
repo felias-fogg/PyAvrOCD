@@ -89,6 +89,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0165">Release v0.16.5</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0164">Release v0.16.4</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0163">Release v0.16.3</a>
@@ -134,6 +136,12 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v0165">Release v0.16.5</h2>
+<ul>
+<li>The SVD files have been re-generated in order to remove FUSEs and LOCKBITs and add SREG and SP (that was a regression).</li>
+<li>New option value for <code>monitor load</code>: <code>onlycache</code>. This is helpful when dealing with the Xplained Mini boards.</li>
+<li>Added three debug-enabled cores: ArduinoCore-avr (1.8.6), ATTinyCore (2.0.0), and Atmel Xplained Mini. </li>
+</ul>
 <h2 id="release-v0164">Release v0.16.4</h2>
 <ul>
 <li>On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.</li>
