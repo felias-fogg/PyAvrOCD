@@ -1,5 +1,13 @@
 # Changelog
 
+### New:
+
+- **Added:**
+     - Meaningful error message in `_activate_interface` when debugWIRE could not be entered despite seemingly successful power-cycling.
+
+- **Changed:**
+     - Increased sleep time after powering up from 0.1 to  0.2 secondes.
+
 ### 0.16.5
 
 - **Fixed:**
@@ -15,7 +23,7 @@
 
 - **Changed**:
      - Handling of the 'timeout' record (`_set_binary_memory_finalize`) is now moved inside the try/except construct in order to be able to catch exceptions. In other words, it is now a 'normal' command.
-     - Added `switch_to_debmode` and `switch_to_progmode` to xavrdebug.py so that we now are not forced to call `self.dbg.device.avr.switch_to...`.
+     - Added `switch_to_debmode` and `switch_to_progmode` to xavrdebug.py so that we are not forced to call `self.dbg.device.avr.switch_to...`.
 
 
 ### 0.16.4:

@@ -444,8 +444,8 @@ class GdbHandler():
             self.dbg.edbg_protocol.set_byte(EdbgProtocol.EDBG_CTXT_CONTROL,
                                                 EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
                                                 1)
-            time.sleep(0.1)
-            self.logger.info("Automatic power-cycling successful")
+            time.sleep(0.2)
+            self.logger.info("Automatic power-cycling finished")
             return True
         self.send_debug_message("*** Please power-cycle the target system ***")
         return False

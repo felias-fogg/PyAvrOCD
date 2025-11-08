@@ -131,7 +131,7 @@ class XAvrDebugger(AvrDebugger):
             self.logger.info("Session configuration communicated to tool")
             self.device.avr.setup_config(self.device_info)
             self.logger.info("Device configuration communicated to tool")
-            dev_id = self._activate_interface()
+            dev_id = self._activate_interface(graceful=warmstart)
             if self._iface == 'jtag' and dev_id & 0xFF != 0x3F:
                 raise FatalError("Not a Microchip JTAG target")
         except Exception as e:
@@ -335,7 +335,7 @@ class XAvrDebugger(AvrDebugger):
             raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
         self.reset()
 
-    def _activate_interface(self):
+    def _activate_interface(self, graceful=False):
         """
         Activate physical interface (perhaps trying twice)
 
@@ -353,6 +353,11 @@ class XAvrDebugger(AvrDebugger):
                 dev_id = self.device.avr.activate_physical()
                 dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
                 self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)
+            elif error.code == Avr8Protocol.AVR8_FAILURE_DW_PHY_ERROR:
+                if graceful:
+                    raise FatalError("debugWIRE could not be activated") from error
+                raise FatalError("debugWIRE not activated by power-cycling. Parasitic power supply?") \
+                  from error
             elif error.code == Avr8Protocol.AVR8_FAILURE_CLOCK_ERROR:
                 self.logger.warning("Communication clock failure. Retrying.")
                 dev_id = self.device.avr.activate_physical()

@@ -1,33 +1,39 @@
 # Troubleshooting
 
-## No debug probe recognized
+Sometimes, things do not go according to plan, and it becomes necessary to debug the debugging setup. A first good step is to have a look at the logging output. If you spot a log entry marked `[CRITICAL]`, it may tell you already what went wrong. If you see, for example, the message
 
-- No compatible tool discovered
-- Too many connected tools
+```text
+[CRITICAL] Target is not powered
+```
 
-## Debugging does not start:
+then it is very likely that you forgot to power the target board, or you made a wiring error.
 
-- Error message: Apple cannot check ...
-     - Use `xattr -d com.apple.quarantine FILE`
+In general, one can distinguish between problems that prohibit the start of the GDB server and problems appearing while debugging.
 
-- Address already in use
-- ISP programming failed
-- Wrong MCU: ...
-- Stuck-at-1-bit
-- Debugging is impossible, because lockbits/OCDEN/DWEN cannot be programmed
-- Target is not powered
+## Debugging does not start
+
+For most of the error messages, it should be obvious what to do. However, there are a few messages that look cryptic, and/or a solution is not apparent.
+
+* `Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.`  This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file `FILE` as follows. Afterward, macOS will start these executables without a hitch.
+
+
+```bash
+> xattr -d com.apple.quarantine FILE
+```
+
+* `No compatible tool discovered`: This could mean that no debug tool is connected, but it also could mean that another process currently uses it, that the serial line the tool is attached to is busy, or that [you have not yet installed the necessary udev rules under Linux](install-link.md).
+
+- `[Errno 48] Address already in use`: This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the `--port` option and tell GDB about the port when connecting with the `target remote` command. However, waiting a few minutes will also resolve the problem.
+- `ISP programming failed. Wrong connection or wrong MCU?` This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem. It could also mean that the MCU is not accessible anymore by ISP programming. In this case, [only high-voltage programming](limitations.md#debugwire-can-brick-mcus) helps.
+- `Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?` debugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a [parasitic power supply](https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/) problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the `IOREF` pin instead of using the `5V`  or `3.3V` pin.
 
 ## Problems while debugging
 
-- debugging/loading is slow
-- Does not stop at a line with a set breakpoint, but later
-- variable cannot be accessed
-- analogwrite (PWM) does not appear to work when execution is stopped
-- single step leads to jump to interrupt dispatch table
-- Cannot run/continue
-     - SIGSYS - breakpoints
-     - SIGABRT - Fatal error before
-	 - SIGILL - BREAK instructions
-	 - SIGBUS - stackpointer too low
-	 - SIGSEGV - executable not yet flashed#
+- **Loading code and/or debugging feels sluggish**. When using *debugWIRE*, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the `readbeforewrite` option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With *JTAG*, the situation is much better. Default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.
+
+- **The debugger does not stop at a line with a set breakpoint, but later**. This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch `Optimize for Debugging` in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the `-Og` compiler option.
+
+- **Variables cannot be accessed**. Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that [link time optimization](limitations.md#link-time-optimization) has optimized away your variable.
+
+
 

@@ -1,5 +1,11 @@
 # Release Notes
 
+## Release v0.16.5
+
+- The SVD files have been re-generated in order to remove FUSEs and LOCKBITs and add SREG and SP (that was a regression).
+- New option value for `monitor load`: `onlycache`. This is helpful when dealing with the Xplained Mini boards.
+- Added three debug-enabled cores: ArduinoCore-avr (1.8.6), ATTinyCore (2.0.0), and Atmel Xplained Mini.
+
 ## Release v0.16.4
 
 - On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.

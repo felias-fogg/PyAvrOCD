@@ -1,8 +1,19 @@
 # Supported MCUs
 
-This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. However, not all cores have been extended yet to allow for debugging with the Arduino IDE 2. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.
+This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Some of them are supported by more than one core. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.
 
 ## MCUs with debugWIRE interface
+
+### ATtinys and ATmegas supported by [*Arduino AVR Boards (Debug enabled)*](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
+
+- **ATiny85**
+- **ATmega168**
+- **ATmega328P**
+
+### ATmegas supported by [*Atmel AVR Xplained-minis (Debug enabled)*](https://github.com/felias-fogg/avr-xminis-debug-enabled)
+- **ATmega328P**
+- **ATmega168PB**
+- **ATmega328PB**
 
 ### ATtiny supported by [*MicroCore*](https://github.com/MCUdude/MicroCore) (soon)
 
@@ -42,7 +53,13 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 ## ATmegas with JTAG interface
 
-The MCUs in the lists below are all supported by PyAvrOCD. However, the cores have not been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.
+The MCUs in the lists below are all supported by PyAvrOCD. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.
+
+### ATmegas supported by *[Arduino AVR Boards (Debug enabled)](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
+
+- **ATmega1280**
+- **ATmega2560**
+- **ATmega32U4**
 
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore) (soon)
 
@@ -51,9 +68,7 @@ The MCUs in the lists below are all supported by PyAvrOCD. However, the cores ha
 
 The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.
 
-### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore) & *[Arduino AVR Boards (Debug enabled)](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
-
-The ATmega1280 and ATmega2560 are MCUs on the Arduino Mega boards and therefore supported by *[Arduino AVR Boards (Debug enabled)](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*.
+### ATmegas supported by [*MegaCore*](https://github.com/MCUdude/MegaCore) (soon)
 
 * <u>ATmega64(A)</u>, **ATmega128(A)**
 * ATmega640, **ATmega1280**, **ATmega2560**
@@ -64,16 +79,11 @@ The ATmega1280 and ATmega2560 are MCUs on the Arduino Mega boards and therefore 
 * <u>ATmega3290(P)(A)</u>, <u>ATmega6490A</u>
 * <u>AT90CAN32</u>, AT90CAN64, <u>AT90CAN128</u>
 
-The ATmega128(A) MCUs do not allow for software breakpoints. This
-means that you can use only four hardware breakpoints.
+The ATmega128(A) MCUs do not allow for software breakpoints. This means that you can use only four hardware breakpoints.
 
 ### ATmega supported by [*MajorCore*](https://github.com/MCUdude/MajorCore) (soon)
 
 * <u>ATmega162</u>
-
-### ATmega supporter by *[Arduino AVR Boards (Debug enabled)](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
-
-- **ATmega32U4**
 
 ### Other ATmegas
 

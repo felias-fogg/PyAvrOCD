@@ -9,7 +9,7 @@ Currently, there are only a few cores operational. In the near future, all of MC
 
 ## Supported Microchip boards
 
-The supported Microchip boards all have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.
+Most of the supported Microchip boards have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.
 
 - **ATmega328P** **Xplained Mini**:  Supported by `Atmel AVR Xplained-minis (Debug enabled)`; no physical modifications or fuse settings necessary
 
@@ -18,10 +18,10 @@ The supported Microchip boards all have an embedded debugger on board, which mak
 - **ATmega328PB** **Xplained Mini**: Supported by  `Atmel AVR Xplained-minis (Debug enabled)`; no physical modifications or fuse settings necessary
 
 - **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23. No physical modifications or fuse settings necessary
-- AT90USBKEY (AT90USB1287): no core yet
+- <u>AT90USBKEY2 (AT90USB1287)</u>: no core yet
 - <u>ATmega256RFR2 Xplained Pro</u>: no core yet. No physical modifications or fuse settings necessary.
-- <u>AVR Butterfly (ATmega169)</u>: no core yet. No physical modifications or fuse settings necessary.
-- <u>MEGA-1284P Xplained</u>: no core yet. No physical modifications or fuse settings necessary.
+- <u>AVR Butterfly (ATmega169)</u>: no core yet.
+- <u>MEGA-1284P Xplained</u>: no core yet.
 
 
 

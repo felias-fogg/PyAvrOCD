@@ -45,7 +45,7 @@ Since one also wants to change into and out of debugWIRE mode, change fuses, or 
 
 ### SPI programming header
 
-There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from [Wikipedia](https://commons.wikimedia.org/wiki/File:Isp_headers.svg), which provides a top view of the headers on a PCB.
+There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from [Wikipedia](https://commons.wikimedia.org/wiki/File:Isp_headers.svg)), which provides a top view of the headers on a PCB.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Isp_headers.svg.png" width="40%">

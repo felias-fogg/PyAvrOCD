@@ -23,6 +23,7 @@ nav:
   - Installation & Configuration:
     - PyAvrOCD: 'install-link.md'
     - Debugging software: 'debugging-software.md'
+    - Arduino cores: 'supporting-cores.md'
   - Usage:
     - Preparing the target: 'board-preparation.md'
     - Connecting to the target: 'connect-to-target.md'
@@ -30,6 +31,7 @@ nav:
     - Debugging on the target: 'debugging.md'
     - Monitor commands: 'monitor-commands.md'
     - Restoring the target: 'restore-original-state.md'
+    - Troubleshooting: 'troubleshooting.md'
   - Supported devices:
     - MCUs: 'supported-mcus.md'
     - Boards: 'supported-boards.md'
