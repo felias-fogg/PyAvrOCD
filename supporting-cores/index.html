@@ -150,14 +150,14 @@
 <p>This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. As above, you can install it after including the following URL:</p>
 <pre><code> https://felias-fogg.github.io/package_debugging_index.json
 </code></pre>
-<p>in the additional boards manager URLs. As mentioned in the notes, this core is considered to be a development version. However, this appears to apply mainly to the new bootloaders. </p>
+<p>in the additional boards manager URLs. As mentioned in the notes, this core is considered to be a development version. However, this appears to apply mainly to the new bootloaders.</p>
 <h3 id="atmel-avr-xplained-minis-debug-enabled"><a href="https://github.com/felias-fogg/avr-xminis-debug-enabled">Atmel AVR Xplained-minis (Debug enabled)</a></h3>
 <p>This is a debug-enabled Arduino core for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the similarly named core in the official Arduino distribution, which is already 10 years old and does not really work. The new core is a stripped-down and adapted version of MCUdude's MiniCore. The boards, together with PYAvrOCD, work very smoothly. It is just plug-and-play. The only thing one must be aware of is that one should power the application circuit attached to the board through the <code>IOREF</code> pin (pin 2 of J202 on the Xplained Mini board). Again, you can install this core through the boards manager URL:</p>
 <pre><code>https://felias-fogg.github.io/package_debugging_index.json
 </code></pre>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
 <p>This is a core for the ATtiny13(A). Currently, it is already debug-enabled through <a href="https://github.com/felias-fogg/dw-gdbserver">dw-gdbserver</a>. You can make it installable by adding the following URL to the Boards Manager URLs:</p>
-<pre><code>https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json 
+<pre><code>https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 </code></pre>
 <p>It will be upgraded to work with PyAvrOCD soon.</p>
 <h3 id="minicore"><a href="https://github.com/MCUdude/MiniCore">MiniCore</a></h3>
@@ -171,7 +171,7 @@
 <p>The extension of this core is not yet ready.</p>
 <h3 id="megacore"><a href="https://github.com/MCUdude/MegaCore">MegaCore</a></h3>
 <p>A core for most 64 and 100-pin AVRs. All of the listed MCUs are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. You can make the core installable by adding:</p>
-<pre><code>https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json 
+<pre><code>https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
 </code></pre>
 <p>The extension of this core is not yet ready.</p>
 <h3 id="majorcore"><a href="https://github.com/MCUdude/MajorCore">MajorCore</a></h3>
