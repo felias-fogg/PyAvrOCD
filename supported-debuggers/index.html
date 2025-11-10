@@ -126,7 +126,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-debug-probes">Supported debug probes</h1>
-<p>Except for <a href="https://github.com/felias-fogg/dw-link">dw-link</a>, this list is copied from the README file of <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>. Boldface means that I have tested the debuggers and they work with PyAvrOCD:</p>
+<p>Except for dw-link and microUPDI, this list is copied from the README file of <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>. Boldface means that I have tested the debuggers and they work with PyAvrOCD, underlined means that the debugger is waiting to be tested:</p>
 <ul>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164140">MPLAB PICkit 4 In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>)</li>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>)</li>
@@ -135,8 +135,8 @@
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/atjtagice3">JTAGICE3</a> (firmware version 3.0 or newer)</strong></li>
 <li><strong><a href="http://content.alexandria.atmel.com/webhelp/GUID-43D69EB5-28C5-4F23-97B7-43CD3961DC33-en-US-3/index.html?GUID-180AB3C3-775A-482F-961D-D9862473CD85">EDBG</a> - on-board debuggers on Xplained Pro/Ultra</strong></li>
 <li><strong><a href="https://onlinedocs.microchip.com/oxy/GUID-FC2A0384-AC9D-45B4-951E-5C0DEFE8B2E9-en-US-5/GUID-4063E88C-69CE-4393-ABBF-46E406D92BD3.html">mEDBG</a> - on-board debuggers on Xplained Mini/Nano</strong></li>
-<li><a href="https://github.com/MCUdude/microUPDI">microUPDI</a> - an mEDBG clone by MCUdude (only UPDI)</li>
-<li>nEDBG - on-board debuggers on Curiosity Nano</li>
+<li><u><a href="https://github.com/MCUdude/microUPDI">microUPDI</a></u> - an mEDBG clone by MCUdude (only UPDI)</li>
+<li><u><a href="https://www.microchipdirect.com/dev-tools/curiosityboards_curiositynanoboards?allDevTools=true">nEDBG</a></u> - on-board debuggers on Curiosity Nano</li>
 <li><strong><a href="https://github.com/felias-fogg/dw-link">dw-link</a></strong> - <strong>DIY debugger running on an Arduino UNO R3</strong> (only debugWIRE)</li>
 </ul>
 <p>My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.</p>
