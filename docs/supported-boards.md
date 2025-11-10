@@ -69,7 +69,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Mega Pro 3.3V/5V: Supported by `Arduino AVR Boards (Debug enabled)`
 - RedBot (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
 - ATmega128RFA1 Development board: no core yet
-- Serial-7-Segment-Display (ATmega328): Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Serial-7-Segment-Display</u> (ATmega328): Supported by `Arduino AVR Boards (Debug enabled)`
 - LilyPad USB Plus: no core yet
 
 ## Supported Adafruit boards
