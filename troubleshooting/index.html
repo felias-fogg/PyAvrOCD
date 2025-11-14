@@ -69,6 +69,16 @@
     <li class="toctree-l2"><a class="reference internal" href="#debugging-does-not-start">Debugging does not start</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#problems-while-debugging">Problems while debugging</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</a>
+    </li>
+        </ul>
     </li>
     </ul>
                   </li>
@@ -151,17 +161,14 @@
 <li><code>Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</code> debugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a <a href="https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/">parasitic power supply</a> problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the <code>IOREF</code> pin instead of using the <code>5V</code>  or <code>3.3V</code> pin.</li>
 </ul>
 <h2 id="problems-while-debugging">Problems while debugging</h2>
-<ul>
-<li>
-<p><strong>Loading code and/or debugging feels sluggish</strong>. When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <em>JTAG</em>, the situation is much better. Default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
-</li>
-<li>
-<p><strong>The debugger does not stop at a line with a set breakpoint, but later</strong>. This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
-</li>
-<li>
-<p><strong>Variables cannot be accessed</strong>. Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
-</li>
-</ul>
+<h3 id="loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</h3>
+<p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <em>JTAG</em>, the situation is much better. Default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
+<h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</h3>
+<p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
+<h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
+<p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
+<h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
+<p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a> The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file <code>platform.local.txt</code> into the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards">platform folder</a> of your core and write the line <code>compiler.path=/path/to/bin-folder/</code> into it. </p>
               
             </div>
           </div><footer>
