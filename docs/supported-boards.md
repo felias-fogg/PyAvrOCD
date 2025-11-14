@@ -42,7 +42,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - <u>Arduino Micro</u>: Supported by `Arduino AVR Boards (Debug enabled)`
 - <s>Arduino Esplora</s>: JTAG pins are not accessible
 - Arduino Mini: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
-- Arduino Ethernet (Rev1): Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
+- Arduino Ethernet: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header
 - <u>Arduino Fio</u>: Supported by `Arduino AVR Boards (Debug enabled)`; do not connect DTR pin of FTDI header and do not connect XBee
 - Arduino BT: Supported by `Arduino AVR Boards (Debug enabled)`; remove capacitor `C1`
 - <s>LilyPad Arduino USB</s>: JTAG pins are not accessible

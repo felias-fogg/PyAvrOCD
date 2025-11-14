@@ -30,8 +30,6 @@ This is a debug-enabled Arduino core for the Microchip development boards [ATmeg
 https://felias-fogg.github.io/package_debugging_index.json
 ```
 
-
-
 ### [MicroCore](https://github.com/MCUdude/MicroCore)
 
 This is a core for the ATtiny13(A). Currently, it is already debug-enabled through [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver). You can make it installable by adding the following URL to the Boards Manager URLs:

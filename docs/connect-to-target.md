@@ -165,7 +165,10 @@ For the Atmel debuggers, the setup appears as follows, where the JTAG pin corres
 | Pin 9 (TDI)    | 9                         | TDI        | A7       |
 | Pin 10 (GND)   | 0                         | GND&nbsp;  | GND      |
 
+<!--
+
 ## Connecting to UPDI and PDI
 
 Will be treated later when implemented.
 
+-->

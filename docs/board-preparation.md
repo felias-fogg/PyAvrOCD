@@ -121,6 +121,8 @@ Now, you should be able to connect to the OCD on the target MCU.
 
 After you have finished debugging, you should unprogram `OCDEN` because otherwise no lower-power operation is possible.
 
+<!--
+
 ## Preparing a PDI target
 
 ### Physical preparation
@@ -147,3 +149,4 @@ On the **Uno WIFI Rev2**, again the UPDI pin is not exposed. But on this board, 
 
 If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If this is not the case, then the pin might have been programmed to act as a GPIO or the RESET line. To enable debugging and programming over this pin again, you will need to use a [high-voltage UPDI programmer.](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) Here, you must ensure that the 12 V pulse does not damage any components on your board.
 
+-->
