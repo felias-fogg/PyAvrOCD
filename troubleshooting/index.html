@@ -111,6 +111,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
                   </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -168,7 +170,7 @@
 <h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
 <p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
 <h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
-<p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a> The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file <code>platform.local.txt</code> into the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards">platform folder</a> of your core and write the line <code>compiler.path=/path/to/bin-folder/</code> into it.</p>
+<p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file <code>platform.local.txt</code> into the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards">platform folder</a> of your core and write the line <code>compiler.path=/path/to/bin-folder/</code> into it.</p>
               
             </div>
           </div><footer>
