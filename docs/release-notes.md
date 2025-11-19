@@ -1,8 +1,8 @@
 # Release Notes
 
 ## Release v0.17.0
-- New option `-F` for specifying the CPU clock frequency (in the same way as when specifying it in the compilation process). Will be used to derive a default value for the JTAG programming frequency and to pass it on to `simavr` if used.
-- The use of the simulator `simavr` is now supported. If this program is specified with the `-s` option, then the simulator is started with the right options and no hardware probe will be connected. Note that the current version of simavr (1.7) will not work with GDB clients compiled with the expat library (i.e., understand XML). You can build simavr from source form the current repo, however, easy enough.
+- New option `-F` for specifying the CPU clock frequency (in the same way as when specifying it in the compilation process). It will be used to derive a default value for the JTAG debugging frequency and to pass it on to `simavr` if used.
+- The use of the simulator `simavr` is now supported. If this program is specified with the `-s` option, then the simulator is started with the right options, and no hardware probe will be connected. Note that the current version of simavr (1.7) will not work with GDB clients compiled with the expat library (i.e., understand XML). You can build simavr from source from the current repo, which is, however, easy enough.
 
 ## Release v0.16.5
 
