@@ -393,7 +393,9 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
         self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
         self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_PRG_CLK, clkprg)
+        self.logger_loc.info("Programming JTAG frequency: %d kHz", clkprg)
         self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_DBG_CLK, clkdeb)
+        self.logger_loc.info("Debugging JTAG frequency: %d kHz", clkdeb)
 
     # setup_config is done in the super class
     # However, it seems to be wrong. Instead of IO register addresses RAM addresses

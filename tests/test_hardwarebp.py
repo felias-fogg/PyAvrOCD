@@ -137,8 +137,24 @@ class TestHardwareBP(TestCase):
                 call('HWBP %d at addr 0x%X freed', 1, 20),
                 call('HWBP temp allocation cleared: %d HWBPs cleared', 2)])
 
+    def test_hwbp_borrow_empty(self):
+        self.set_up()
+        self.hbp.logger = Mock()
+        self.hbp._hwbplist = [ None, None, None ]
+        self.assertEqual(self.hbp.borrow_hwbp0(), None)
 
+    def test_hwbp_borrow_free_slot(self):
+        self.set_up()
+        self.hbp.logger = Mock()
+        self.hbp._hwbplist = [ 100, None, 200 ]
+        self.assertEqual(self.hbp.borrow_hwbp0(), None)
+        self.assertEqual(self.hbp._hwbplist, [ None, 100, 200 ])
 
-
+    def test_hwbp_borrow_no_free_slot(self):
+        self.set_up()
+        self.hbp.logger = Mock()
+        self.hbp._hwbplist = [ 100, 200, 300 ]
+        self.assertEqual(self.hbp.borrow_hwbp0(), 100)
+        self.assertEqual(self.hbp._hwbplist, [ None, 200, 300 ])
 
 

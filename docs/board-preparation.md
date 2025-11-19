@@ -1,14 +1,14 @@
 # Preparing a target board for debugging
 
-When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes necessary to enable the board for debugging:
+When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes required to enable debugging:
 
 - download the current fuse settings (using avrdude),
 - download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and
 - record necessary physical changes on the target board.
 
-With that, it will be easy to [restore the original](restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the `Burn Bootloader` function. However, you should record any physical changes.
+With that, it will be easy to [restore the original](restore-original-state.md) state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the `Burn Bootloader` function. However, you should nevertheless record any physical changes.
 
-You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue.
+You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue at all.
 
 ## General considerations
 
@@ -22,9 +22,9 @@ Sometimes it may be additionally necessary to change a few fuses before debuggin
 - `OCDEN`: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if PyAvrOCD has been instructed to manage this fuse.
 - `EESAVE`: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM.
 
-If you want to leave all the fuse management to pyavorcd, then just specify `--manage all`, which is the default with Arduino IDE2. If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
+If you want to leave all the fuse management to PyAvrOCD, then specify `--manage all`, which is the default with Arduino IDE2. If you want to play it safe, you can instead manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
 
-Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object.
+Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object, or you have to make sure that not the entire flash is erased by using the monitor command `monitor erasebeforeload disable`.
 
 ## Preparing a debugWIRE target
 
@@ -78,7 +78,7 @@ When you want complete control over the fuses, then make sure that the fuses are
 
 2. Clear the `lockbits` by erasing the entire chip. This is necessary because otherwise, debugging is impossible. It will erase any bootloader as well.
 
-3. Unprogram the `BOOTRST` fuse, if present and programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.
+3. Unprogram the `BOOTRST` fuse, if present and programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.
 
 4. Program the `DWEN` fuse. After that, power-cycle the target board.
 
@@ -112,7 +112,7 @@ When you want full control over the fuses, then make sure that the fuses are set
 
 1. You may want to program the `EESAVE` fuse before the next step in order to save the EEPROM content. If you intend to load executables that contain EEPROM contents, you definitely need to program the fuse!
 
-2. Clear the `lockbits` by erasing the entire chip. This is necessary because otherwise debugging is impossible. This will erase any bootloader as well.
+2. Clear the `lockbits` by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.
 3. Unprogram the `BOOTRST` fuse, if programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.
 
 4. Program the `OCDEN` fuse.
@@ -143,7 +143,7 @@ Ensure that there is no capacitive or resistive load or active component on the 
 
 On the **Nano Every**, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin.
 
-On the **Uno WIFI Rev2**, again the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.
+On the **Uno WIFI Rev2**, again, the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.
 
 ### Fuse settings
 

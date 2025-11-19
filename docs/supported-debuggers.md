@@ -1,6 +1,10 @@
 # Supported debug probes
 
-Except for dw-link and microUPDI, this list is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD, underlined means that the debugger is waiting to be tested:
+PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe [dw-link](https://github.com/felias-fogg/dw-link). And, as a service to Arduino users, it provides access to the software simulation tool [simavr](https://github.com/buserror/simavr) (see [below](#software-simulator)).
+
+## Hardware debug probes
+
+Except for dw-link and microUPDI, the list below is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD; underlined means that the debugger is waiting on my desk to be tested:
 
 
 * **[MPLAB PICkit 4 In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164140)** ([when in 'AVR mode'](#switching-to-avr-mode))
@@ -14,11 +18,11 @@ Except for dw-link and microUPDI, this list is copied from the README file of [p
 * <u>[nEDBG](https://www.microchipdirect.com/dev-tools/curiosityboards_curiositynanoboards?allDevTools=true)</u> - on-board debuggers on Curiosity Nano
 * **[dw-link](https://github.com/felias-fogg/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
 
-My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
+My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits error messages when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
 
-## Switching to AVR mode
+### Switching to AVR mode
 
-Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually be accomplished as follows by using avrdude (>= Version 7.3):
+Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (>= Version 7.3):
 
 ```
 avrdude -c snap_isp -Pusb -xmode=avr
@@ -30,5 +34,17 @@ With PICkit4, it is similar:
 avrdude -c pickit4_isp -Pusb -xmode=avr
 ```
 
-In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, you need to [flash new firmware first using MPLAB X](https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version).
+In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to [flash new firmware first using MPLAB X](https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version).
 
+## Software simulator
+
+In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install `simavr` first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work, because the `vFlash` command is not supported. However, building simavr from source works flawlessly. After that, you can force PyAvrOCD to use the simulator instead of a hardware debug probe.
+
+If you provide an argument to the `-s` or `--start` option that ends in `/simavr`, then the hardware debug probes are ignored, and all the arguments from the command line are passed on to simavr, which is invoked. Using the Arduino IDE 2, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
+
+```text
+--start
+/path/to/simavr-executable
+```
+
+Note that the list of chips supported by `simavr` is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, all in all, the simulator solution might sometimes be the more preferable option.

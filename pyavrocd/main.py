@@ -60,9 +60,8 @@ def options(cmd):
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
             fromfile_prefix_chars='@',
             #formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog='''Use @file to insert options from file in command line.
-@pyavrocd.options will be inserted as last argument in command line.
-You can also use monitor command options, e.g., --timer=freeze.
+            epilog='''You can also use monitor command options, e.g., --timer=freeze.
+Use @file to splice arguments from 'file' into command line.
 ''',
             description='GDB server for debugWIRE and JTAG AVR MCUs'
                                          )
@@ -82,8 +81,14 @@ You can also use monitor command options, e.g., --timer=freeze.
                             metavar="CD",
                             dest='clkdeb',
                             type=int,
-                            default=200,
                             help="JTAG clock frequency for debugging (kHz) (def.: 200)")
+
+    parser.add_argument("-f", type=str, help=argparse.SUPPRESS)
+
+    parser.add_argument("-F", "--F_CPU",
+                            type=str,
+                            default="1000000",
+                            help="CPU clock frequency in Hz (default 1000000)")
 
     interface_choices = ['debugwire', 'jtag', 'pdi', 'updi']
     parser.add_argument("-i", "--interface",
@@ -114,7 +119,7 @@ You can also use monitor command options, e.g., --timer=freeze.
                             help="JTAG clock frequency for programming (kHz) (d.: 1000)")
 
     parser.add_argument('-s', '--start',  dest='prg',
-                            help='Start specified program or "noop"')
+                            help='Start specified program')
 
     tool_choices = ['atmelice', 'dwlink', 'edbg', 'jtagice3', 'medbg', 'nedbg',
                         'pickit4', 'powerdebugger', 'snap']
@@ -139,8 +144,6 @@ You can also use monitor command options, e.g., --timer=freeze.
     parser.add_argument("-V", "--version",
                             help="Print PyAvrOCD version number and exit",
                             action="store_true")
-
-    parser.add_argument("-f", type=str, help=argparse.SUPPRESS)
 
     if platform.system() == 'Linux':
         parser.add_argument("--install-udev-rules",
@@ -283,6 +286,8 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     - device name
     - interface string
     """
+    args.F_CPU = int(args.F_CPU.rstrip('UL'))
+
     if args.cmd:
         portcmd = [c for c in args.cmd if 'gdb_port' in c]
         if portcmd:
@@ -307,6 +312,9 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
         else:
             manage.append(f)
     args.manage = manage
+
+    if args.clkdeb is None:
+        args.clkdeb = min(2000, args.F_CPU//5000)
 
     if args.clkprg < 0 or args.clkdeb < 0:
         print("Negative frequency values are discouraged")
@@ -346,13 +354,33 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     intf = intf[0]
     return None, device, intf
 
+def handle_simavr(args, device):
+    """
+    Checks whether simavr shall be started, and if so, will prepare the the start and exit
+    when simavr returns.
+    """
+    if not args.prg:
+        return False
+    cmd = shlex.split(args.prg)
+    if os.path.basename(cmd[0]) != 'simavr':
+        return False
+    prg = shutil.which(cmd[0])
+    if not prg:
+        print("Could not find program '%s'" % cmd[0])
+        return True
+    print("Simavr will be started ...", flush=True)
+    cmd += [ '-g', str(args.port), '-m', device, '-f', str(args.F_CPU)]
+    print("Listening on port %d for gdb connection" % args.port, flush=True)
+    sim = subprocess.Popen(cmd, bufsize=0)
+    sim.wait()
+    return True
+
 def startup_helper_prog(args, logger):
     """
     Starts program requested by user, e.g., a debugger GUI
     """
-    if args.prg and args.prg != "noop":
+    if args.prg and args.prg != "nop":
         args.prg = args.prg.strip()
-        logger.info("Starting %s", args.prg)
         cmd = shlex.split(args.prg)
         prg = cmd[0]
         cmd[0] = shutil.which(cmd[0])
@@ -396,12 +424,16 @@ def startup(command_line, logger):
     # set up logging
     setup_logging(args, log_rsp)
 
-    #process arguments
+    # process arguments
     result, device, intf = process_arguments(args, logger)
     if result is not None:
         return result
 
-    #now report startup
+    # check whether simavr should be started, and if so, do that exclusively
+    if handle_simavr(args, device):
+        return 0
+
+    # now report startup
     logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
 
     if args.tool == "dwlink":

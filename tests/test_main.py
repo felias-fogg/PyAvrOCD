@@ -11,7 +11,7 @@ import sys
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, \
-     process_arguments, startup_helper_prog, run_server, startup
+     process_arguments, startup_helper_prog, run_server, startup, handle_simavr
 
 class TestMain(TestCase):
 
@@ -43,7 +43,7 @@ class TestMain(TestCase):
         args = options([])
         self.assertEqual(args.cmd, None)
         self.assertEqual(args.dev, None)
-        self.assertEqual(args.clkdeb, 200)
+        self.assertEqual(args.clkdeb, None)
         self.assertEqual(args.interface, None)
         self.assertEqual(args.manage, [])
         self.assertEqual(args.port, 2000)
@@ -53,16 +53,17 @@ class TestMain(TestCase):
         self.assertEqual(args.verbose, 'info')
         self.assertEqual(args.version, False)
         self.assertEqual(args.f, None)
+        self.assertEqual(args.F_CPU, '1000000')
         self.assertEqual(args.atexit, 'stayindebugwire')
         self.assertEqual(args.breakpoints, 'all')
         self.assertEqual(args.caching, 'enable')
         self.assertEqual(args.erasebeforeload, 'enable')
+        self.assertEqual(args.load, None)
         self.assertEqual(args.onlywhenloaded, 'enable')
         self.assertEqual(args.rangestepping, 'enable')
         self.assertEqual(args.singlestep, 'safe')
         self.assertEqual(args.timers, 'run')
         self.assertEqual(args.verify, 'enable')
-        self.assertEqual(args.load, None)
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
     @patch('pyavrocd.main.sys.exit', MagicMock())
@@ -138,24 +139,40 @@ class TestMain(TestCase):
         args.cmd = None
         args.tool = None
         args.manage = ['all', 'nobootrst', 'nodwen']
+        args.F_CPU = '1000000L'
         args.clkprg = 1000
         args.clkdeb = 200
         self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
         self.assertEqual(args.manage, ['ocden', 'lockbits', 'eesave'])
 
-    def test_process_arguments_gdb_manage_none(self):
+    def test_process_arguments_gdb_manage_none_port(self):
         args = SimpleNamespace()
         args.dev = 'atmega328p'
         args.interface = 'debugwire'
         args.version = None
         args.cmd = [ 'tcl_port 56', 'gdb_port 9999' ]
         args.tool = None
+        args.F_CPU = '1000000L'
         args.manage = ['all', 'nobootrst', 'nodwen', 'none', 'eesave' ]
         args.clkprg = 1000
         args.clkdeb = 200
         self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
         self.assertEqual(args.manage, ['eesave'])
         self.assertEqual(args.port, 9999)
+
+    def test_process_arguments_default_clkdeb(self):
+        args = SimpleNamespace()
+        args.cmd = None
+        args.manage = []
+        args.dev = 'atmega328p'
+        args.interface = 'debugwire'
+        args.version = None
+        args.tool = None
+        args.F_CPU = '2000000L'
+        args.clkprg = 1000
+        args.clkdeb = None
+        self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
+        self.assertEqual(args.clkdeb, 400)
 
     @patch('builtins.print')
     def test_process_arguments_neg_freq(self, mocked_print):
@@ -167,7 +184,8 @@ class TestMain(TestCase):
         args.tool = None
         args.manage = []
         args.clkprg = -10
-        args.clkdeb = 200
+        args.clkdeb = None
+        args.F_CPU = '1000000L'
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Negative frequency values are discouraged")])
 
@@ -181,7 +199,8 @@ class TestMain(TestCase):
         args.tool = None
         args.manage = []
         args.clkprg = 1000
-        args.clkdeb = 200
+        args.clkdeb = None
+        args.F_CPU = '1000000L'
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Please specify target MCU with -d option")])
 
@@ -195,7 +214,8 @@ class TestMain(TestCase):
         args.tool = None
         args.manage = ['all', 'nobootrst', 'nodwen']
         args.clkprg = 1000
-        args.clkdeb = 200
+        args.clkdeb = None
+        args.F_CPU = '1000000L'
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Device 'atmega328p' does not have the interface 'jtag'")])
 
@@ -209,14 +229,15 @@ class TestMain(TestCase):
         args.tool = None
         args.manage = ['all', 'nobootrst', 'nodwen']
         args.clkprg = 1000
-        args.clkdeb = 200
+        args.clkdeb = None
+        args.F_CPU = '1000000L'
         self.assertEqual(process_arguments(args, MagicMock()), (1, None, None))
         mocked_print.assert_has_calls([call("Device 'atmega31' is not supported by PyAvrOCD")])
 
     @patch('pyavrocd.main.subprocess.Popen')
-    def test_startup_helper_prog_noop(self, mocked_popen):
+    def test_startup_helper_prog_nop(self, mocked_popen):
         args = SimpleNamespace()
-        args.prg = 'noop'
+        args.prg = 'nop'
         startup_helper_prog(args, MagicMock())
         mocked_popen.assert_not_called()
 
@@ -241,6 +262,42 @@ class TestMain(TestCase):
         startup_helper_prog(args, MagicMock())
         mocked_popen.assert_not_called()
         mocked_exit.assert_called_once()
+
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_handle_simavr_empty(self, mocked_popen):
+        args = SimpleNamespace()
+        args.prg = None
+        self.assertFalse(handle_simavr(args, 'atmega328p'))
+        mocked_popen.assert_not_called()
+
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_handle_simavr_nop(self, mocked_popen):
+        args = SimpleNamespace()
+        args.prg = 'nop'
+        self.assertFalse(handle_simavr(args, 'atmega328p'))
+        mocked_popen.assert_not_called()
+
+    @patch('pyavrocd.main.shutil.which')
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_handle_simavr_not_called(self, mocked_popen, mocked_which):
+        args = SimpleNamespace()
+        args.prg = '/usr/bin/simavr'
+        mocked_which.return_value = None
+        self.assertTrue(handle_simavr(args, 'atmega328p'))
+        mocked_popen.assert_not_called()
+
+    @patch('pyavrocd.main.sys.exit')
+    @patch('pyavrocd.main.shutil.which')
+    @patch('pyavrocd.main.subprocess.Popen')
+    def test_handle_simavr_called(self, mocked_popen, mocked_which, mocked_exit):
+        args = SimpleNamespace()
+        args.prg = 'simavr'
+        args.port = 2000
+        args.F_CPU = '16000000UL'
+        mocked_which.return_value =  '/usr/bin/simavr'
+        self.assertTrue(handle_simavr(args, 'atmega328p'))
+        mocked_popen.assert_called_once()
+        mocked_exit.assert_not_called()
 
     def test_run_server_success(self):
         mock_server = MagicMock()

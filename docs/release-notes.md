@@ -3,7 +3,7 @@
 ## Release v0.16.5
 
 - The SVD files have been re-generated in order to remove FUSEs and LOCKBITs and add SREG and SP (that was a regression).
-- New option value for `monitor load`: `onlycache`. This is helpful when dealing with the Xplained Mini boards.
+- New option value for `monitor load`: `onlycache`. This is helpful when dealing with the Xplained Mini boards. It will load the GDB server cache only instead of flashing the MCU memory. Of course, this only makes sense if you are sure that the program has already been loaded into flash memory. It is not a default setting. You have to activate it by supplying a `pyavrocd.option` file.
 - Added three debug-enabled cores: ArduinoCore-avr (1.8.6), ATTinyCore (2.0.0), and Atmel Xplained Mini.
 
 ## Release v0.16.4

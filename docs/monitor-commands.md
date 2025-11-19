@@ -6,8 +6,8 @@ PyAvrOCD implements several `monitor` commands. These can be used to control imp
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `monitor` `atexit` [`stayindebugwire` \| `leavedebugwire`]   | When specifying `leavedebugwire`, then debugWIRE mode will be left when exiting the debugger. This is useful when dealing with embedded debuggers such as the Xplained Mini boards. The default is `stayindebugwire`, i.e., debugWIREmode will not be left when exiting the debugger. **(+)** |
 | `monitor` `breakpoints` [`all` \| `software` \| `hardware`]  | Restricts the kind of breakpoints that can be used. Either `all` types are permitted, only `software` breakpoints are allowed, or only `hardware` breakpoints can be used. Using `all` kinds is the default. |
-| `monitor` `caching` [`enable` \| `disable`]                  | The loaded executable is cached in the gdbserver when `enabled`, which is the default setting. **(+)** |
-| `monitor` `debugwire` [`enable` \| `disable`]                | DebugWIRE mode will be `enable`d or `disable`d. When enabling it, the MCU will be reset, and you may be asked to power-cycle the target. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming.<br> |
+| `monitor` `caching` [`enable` \| `disable`]                  | The loaded executable is cached in the gdbserver when `enable`d, which is the default setting. **(+)** |
+| `monitor` `debugwire` [`enable` \| `disable`]                | DebugWIRE mode will be `enable`d or `disable`d. When enabling it, the MCU will be reset, and you may be asked to power-cycle the target. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming. |
 | `monitor`  `erasebeforeload` [`enable` \| `disable`]         | This monitor option controls whether the flash is erased before an executable is loaded, which is the default for all targets, except for debugWIRE targets, which do not have a chip erase command in debug mode. **(+)** |
 | `monitor` `help`                                             | Display help text.                                           |
 | `monitor` `info`                                             | Display information about the target and the state of the debugger. |
@@ -17,7 +17,7 @@ PyAvrOCD implements several `monitor` commands. These can be used to control imp
 | `monitor` `reset`                                            | Resets the MCU.                                              |
 | `monitor` `singlestep` [`safe` \| `interruptible`]           | Single-stepping can be performed in a `safe` way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The `safe` option is the default. |
 | `monitor` `speed` [`low` \| `high`]                          | Set the communication speed limit to the target to `low` (=150kbps) (default) or to `high` (=300kbps); without an argument, the current communication speed and speed limit are printed.**(*)** |
-| `monitor` `timer` [`run` \| `freeze`]                        | Timers can either be `frozen` when execution is stopped, or they can `run` freely. The latter option is helpful when PWM output is crucial and is the default. |
+| `monitor` `timer` [`run` \| `freeze`]                        | Timers can either be `frozen` when execution is stopped, or they can `run` freely. The latter option is helpful when PWM output is crucial, and it is the default. |
 | `monitor` `verify` [`enable `\|` disable`]                   | Verify flash after loading each flash page. The default setting is for this option to be `enable`d. |
 | `monitor` `version`                                          | Show version of the gdbserver.                               |
 
