@@ -89,6 +89,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0170">Release v0.17.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0165">Release v0.16.5</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0164">Release v0.16.4</a>
@@ -138,6 +140,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v0170">Release v0.17.0</h2>
+<ul>
+<li>New option <code>-F</code> for specifying the CPU clock frequency (in the same way as when specifying it in the compilation process). It will be used to derive a default value for the JTAG debugging frequency and to pass it on to <code>simavr</code> if used.</li>
+<li>The use of the simulator <code>simavr</code> is now supported. If this program is specified with the <code>-s</code> option, then the simulator is started with the right options, and no hardware probe will be connected. Note that the current version of simavr (1.7) will not work with GDB clients compiled with the expat library (i.e., understand XML). You can build simavr from source from the current repo, which is, however, easy enough.</li>
+</ul>
 <h2 id="release-v0165">Release v0.16.5</h2>
 <ul>
 <li>The SVD files have been re-generated in order to remove FUSEs and LOCKBITs and add SREG and SP (that was a regression).</li>
