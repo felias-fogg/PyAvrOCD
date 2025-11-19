@@ -1,12 +1,12 @@
 # Changelog
 
-### New:
+### 0.17.0
 
 - **Added:**
-     - Meaningful error message in `_activate_interface` when debugWIRE could not be entered despite seemingly successful power-cycling.
      - Support for `simavr` (needs to be built from source) and an explanation of how to use it in the documentation: Simply use the `-s` option with `simavr` as the program name. In this case, no connection to a hardware debug probe is made, and simavr is invoked. After termination of simavr, PyAvrOCD is also immediately terminated.
      - New option `-F` for the F_CPU value. Needed for simavr and as a default value for `-D`.
      - New unit tests: Borrow HWBP0 and -F option
+     - Meaningful error message in `_activate_interface` when debugWIRE could not be entered despite seemingly successful power-cycling.
 - **Changed:**
      - Increased sleep time after powering up from 0.1 to  0.2 seconds.
      - Changed name for no program in `-s` option from `noop` to `nop`.
