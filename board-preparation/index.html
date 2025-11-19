@@ -148,14 +148,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="preparing-a-target-board-for-debugging">Preparing a target board for debugging</h1>
-<p>When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes necessary to enable the board for debugging:</p>
+<p>When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes required to enable debugging:</p>
 <ul>
 <li>download the current fuse settings (using avrdude),</li>
 <li>download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and</li>
 <li>record necessary physical changes on the target board.</li>
 </ul>
-<p>With that, it will be easy to <a href="../restore-original-state/">restore the original</a> state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the <code>Burn Bootloader</code> function. However, you should record any physical changes.</p>
-<p>You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue.</p>
+<p>With that, it will be easy to <a href="../restore-original-state/">restore the original</a> state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the <code>Burn Bootloader</code> function. However, you should nevertheless record any physical changes.</p>
+<p>You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue at all.</p>
 <h2 id="general-considerations">General considerations</h2>
 <p>Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.</p>
 <p>Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage dwen</code>, when <a href="../command-line-options/">invoking the GDB server</a>:</p>
@@ -166,8 +166,8 @@
 <li><code>OCDEN</code>: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than <code>DWEN</code>,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if PyAvrOCD has been instructed to manage this fuse.</li>
 <li><code>EESAVE</code>: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM.</li>
 </ul>
-<p>If you want to leave all the fuse management to pyavorcd, then just specify <code>--manage all</code>, which is the default with Arduino IDE2. If you want to play it safe, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.</p>
-<p>Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object.</p>
+<p>If you want to leave all the fuse management to PyAvrOCD, then specify <code>--manage all</code>, which is the default with Arduino IDE2. If you want to play it safe, you can instead manage these fuses and the lockbits manually using a fuse setting program such as avrdude.</p>
+<p>Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object, or you have to make sure that not the entire flash is erased by using the monitor command <code>monitor erasebeforeload disable</code>.</p>
 <h2 id="preparing-a-debugwire-target">Preparing a debugWIRE target</h2>
 <h3 id="physical-preparations">Physical preparations</h3>
 <p>Since the RESET line is used for communication between the MCU and the debug probe, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
@@ -207,7 +207,7 @@
 <p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise, debugging is impossible. It will erase any bootloader as well.</p>
 </li>
 <li>
-<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.</p>
+<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.</p>
 </li>
 <li>
 <p>Program the <code>DWEN</code> fuse. After that, power-cycle the target board.</p>
@@ -234,7 +234,7 @@
 <p>You may want to program the <code>EESAVE</code> fuse before the next step in order to save the EEPROM content. If you intend to load executables that contain EEPROM contents, you definitely need to program the fuse!</p>
 </li>
 <li>
-<p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise debugging is impossible. This will erase any bootloader as well.</p>
+<p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.</p>
 </li>
 <li>
 <p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.</p>
@@ -267,7 +267,7 @@ Ensure that there is no capacitive or resistive load or active component on the 
 
 On the **Nano Every**, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin.
 
-On the **Uno WIFI Rev2**, again the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.
+On the **Uno WIFI Rev2**, again, the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.
 
 ### Fuse settings
 

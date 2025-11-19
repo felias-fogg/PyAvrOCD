@@ -75,7 +75,13 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Debug probes</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#switching-to-avr-mode">Switching to AVR mode</a>
+    <li class="toctree-l2"><a class="reference internal" href="#hardware-debug-probes">Hardware debug probes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#switching-to-avr-mode">Switching to AVR mode</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#software-simulator">Software simulator</a>
     </li>
     </ul>
                   </li>
@@ -128,7 +134,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-debug-probes">Supported debug probes</h1>
-<p>Except for dw-link and microUPDI, this list is copied from the README file of <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>. Boldface means that I have tested the debuggers and they work with PyAvrOCD, underlined means that the debugger is waiting to be tested:</p>
+<p>PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe <a href="https://github.com/felias-fogg/dw-link">dw-link</a>. And, as a service to Arduino users, it provides access to the software simulation tool <a href="https://github.com/buserror/simavr">simavr</a> (see <a href="#software-simulator">below</a>).</p>
+<h2 id="hardware-debug-probes">Hardware debug probes</h2>
+<p>Except for dw-link and microUPDI, the list below is copied from the README file of <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>. Boldface means that I have tested the debuggers and they work with PyAvrOCD; underlined means that the debugger is waiting on my desk to be tested:</p>
 <ul>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164140">MPLAB PICkit 4 In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>)</li>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>)</li>
@@ -141,15 +149,22 @@
 <li><u><a href="https://www.microchipdirect.com/dev-tools/curiosityboards_curiositynanoboards?allDevTools=true">nEDBG</a></u> - on-board debuggers on Curiosity Nano</li>
 <li><strong><a href="https://github.com/felias-fogg/dw-link">dw-link</a></strong> - <strong>DIY debugger running on an Arduino UNO R3</strong> (only debugWIRE)</li>
 </ul>
-<p>My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits errors when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.</p>
-<h2 id="switching-to-avr-mode">Switching to AVR mode</h2>
-<p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can usually be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
+<p>My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits error messages when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.</p>
+<h3 id="switching-to-avr-mode">Switching to AVR mode</h3>
+<p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
 <pre><code>avrdude -c snap_isp -Pusb -xmode=avr
 </code></pre>
 <p>With PICkit4, it is similar:</p>
 <pre><code>avrdude -c pickit4_isp -Pusb -xmode=avr
 </code></pre>
-<p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
+<p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
+<h2 id="software-simulator">Software simulator</h2>
+<p>In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install <code>simavr</code> first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work, because the <code>vFlash</code> command is not supported. However, building simavr from source works flawlessly. After that, you can force PyAvrOCD to use the simulator instead of a hardware debug probe.</p>
+<p>If you provide an argument to the <code>-s</code> or <code>--start</code> option that ends in <code>/simavr</code>, then the hardware debug probes are ignored, and all the arguments from the command line are passed on to simavr, which is invoked. Using the Arduino IDE 2, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
+<pre><code class="language-text">--start
+/path/to/simavr-executable
+</code></pre>
+<p>Note that the list of chips supported by <code>simavr</code> is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, all in all, the simulator solution might sometimes be the more preferable option.</p>
               
             </div>
           </div><footer>

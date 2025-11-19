@@ -126,11 +126,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="invoking-pyavrocd">Invoking PyAvrOCD</h1>
-<p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using an option file (see below).</p>
 <p>In a terminal window, you invoke PyAvrOCD as follows:</p>
 <pre><code>&gt; pyavrocd [options]
 </code></pre>
-<p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the following command-line options.</p>
+<p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.</p>
+<p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a <a href="../install-link/#configuration">configuration file</a>.</p>
 <table>
 <thead>
 <tr>
@@ -139,6 +139,10 @@
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>--help</code><br/> <code>-h</code></td>
+<td>Gives help text and exits.</td>
+</tr>
 <tr>
 <td><code>--command</code><br><code>-c</code></td>
 <td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2. This is an alternative to the <code>--port</code> option.</td>
@@ -149,11 +153,11 @@
 </tr>
 <tr>
 <td><code>--debug-clock</code><br><code>-D</code></td>
-<td>JTAG clock frequency for debugging (kHz). This value should be less than a quarter of the MCU clock frequency. The default is (a conservative) 200 kHz.</td>
+<td>JTAG clock frequency for debugging in kHz. This value should be less than a quarter of the MCU clock frequency. The default is min(2000, <code>F_CPU</code>/5000) in kHz.</td>
 </tr>
 <tr>
-<td><code>--help</code><br> <code>-h</code></td>
-<td>Gives help text and exits.</td>
+<td><code>--F_CPU</code><br><code>-F</code></td>
+<td>Frequency of CPU clock (Hz). It is used to determine the default value for <code>--debug-clock</code> and will be passed to <code>simavr</code> if called. The default is 1,000,000 Hz.</td>
 </tr>
 <tr>
 <td><code>--interface</code><br><code>-i</code></td>
@@ -173,7 +177,7 @@
 </tr>
 <tr>
 <td><code>--start</code> <br><code>-s</code></td>
-<td>Program to start or the string <code>noop</code>, when no program should be started</td>
+<td>Program to start in the background, e.g., a debugging GUI, such as <code>gede</code>. If the program name is <code>nop</code>, then no program is started. If the program name is <code>simavr</code>, then instead of connecting to a debug probe, <code>simavr</code> is started with the specified port (<code>-p</code>), MCU (<code>-d</code>), and CPU frequency (<code>-F</code>).</td>
 </tr>
 <tr>
 <td><code>--tool</code><br><code>-t</code></td>
@@ -197,9 +201,9 @@
 </tr>
 </tbody>
 </table>
-<p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options in order to set debugger values already at startup. For example, you may specify <code>--timers freeze,</code> which has the same effect as issuing the command <code>monitor timers freeze</code> in the debugger at startup. You can also use one-character abbreviations for such option values and the usual abbreviation rules for options, shortening it to <code>--ti f</code> .</p>
+<p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options in order to set debugger values already at startup. For example, you may specify <code>--timers freeze,</code> which has the same effect as issuing the command <code>monitor timers freeze</code> in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--ti f</code> .</p>
 <p>In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.</p>
-<p>The argument <code>@pyavrocd.options</code> is always added to the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will override the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.</p>
+<p>The argument <code>@pyavrocd.options</code> is always added to the end of the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will have precedence over the arguments on the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.</p>
               
             </div>
           </div><footer>
