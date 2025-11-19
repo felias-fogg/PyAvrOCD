@@ -1,6 +1,6 @@
 # PyAvrOCD installation & configuration
 
-Both, installation and configuration of PyAvrOCD are straightforward.
+Both the installation and configuration of PyAvrOCD are straightforward.
 
 ## Installation
 {!../INSTALL.md!lines=2-999}
