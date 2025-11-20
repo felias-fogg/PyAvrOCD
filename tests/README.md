@@ -9,7 +9,7 @@
 Run pylint in the root folder:
 
 ```shell
-poetry run ./run-pylint.sh
+poetry run pylint pyavrocd/
 ```
 
 
@@ -20,6 +20,12 @@ Run unit tests in the root folder using:
 
 ```shell
 poetry run pytest
+```
+
+With the following command, you generate a coverage report in the folder `cov/`
+
+```bash
+ poetry run pytest --cov-report=html:cov --cov=pyavrocd/
 ```
 
 
@@ -111,7 +117,7 @@ The following table provides an alphabetical list of all ARM GDB commands copied
 | Debugger command                                             | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | ~~add-symbol-file~~                                          | ~~Loads additional debug information into the debugger.~~    |
-| *advance*                                                    | Sets a temporary breakpoint at the specified address and calls the debugger `continue`command.<br> *When used after a reset tries to set a breakpoint in an area outside the the memory limits. No idea why.* |
+| ***advance***                                                | Sets a temporary breakpoint at the specified address and calls the debugger `continue`command.<br> *When used after a reset tries to set a breakpoint in an area outside the the memory limits. No idea why.* |
 | ~~append~~                                                   | ~~Reads data from memory or the result of an expression and appends it to an existing file.~~ |
 | ~~awatch~~                                                   | ~~Sets a watchpoint for a data symbol.~~                     |
 | **backtrace**                                                | Displays a numbered list of the calling stack frames including the function names and source line numbers. |
