@@ -22,8 +22,6 @@ Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), select the lat
 
 Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
 
-
-
 **Apple Users:** On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command
 
 ```bash
@@ -34,7 +32,7 @@ in order to remove the extended attribute `com.apple.quarantine` from the binary
 
 ## PyPI
 
-I assume you already installed a recent Python version (>=3.10).
+I assume you already installed a recent Python version (>=3.10). Then [PyPI](https://pypi.org/project/pyavrocd/) will bring you the most recent version of PyAvrOCD to your computer.
 
 It is possible to install PyAvrOCD using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/). However, it is recommended to use [pipx](https://pipx.pypa.io/) instead. Pipx installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the [pipx website](https://pipx.pypa.io/stable/installation/). Then proceed as follows.
 
@@ -47,7 +45,7 @@ After restarting the shell, you should be able to start the GDB server. The bina
 
 ## GitHub
 
-Alternatively, you can download or clone the GitHub repository. Additionally, you need to install a Python package manager, for instance, [Poetry](https://python-poetry.org):
+Alternatively, you can download or clone the [GitHub repository](https://github.com/felias-fogg/PyAvrOCD). Additionally, you need to install a Python package manager, for instance, [Poetry](https://python-poetry.org):
 
 ```bash
 > pipx install poetry
