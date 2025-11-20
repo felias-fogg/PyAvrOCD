@@ -159,12 +159,17 @@
 </code></pre>
 <p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
 <h2 id="software-simulator">Software simulator</h2>
-<p>In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install <code>simavr</code> first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work, because the <code>vFlash</code> command is not supported. However, building simavr from source works flawlessly. After that, you can force PyAvrOCD to use the simulator instead of a hardware debug probe.</p>
-<p>If you provide an argument to the <code>-s</code> or <code>--start</code> option that ends in <code>/simavr</code>, then the hardware debug probes are ignored, and all the arguments from the command line are passed on to simavr, which is invoked. Using the Arduino IDE 2, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
+<p>In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install <code>simavr</code> first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work. You need to <a href="../debugging-software/#a-software-simulator-simavr">build <code>simavr</code> from source</a>.</p>
+<p>If you provide a path argument to the <code>-s</code> or <code>--start</code> option that has as its last part <code>simavr</code>, then the hardware debug probes are ignored, and all the relevant arguments (CPU clock frequency, MCU type, and port number) from the command line are passed on to <code>simavr</code>, which is invoked. Using the Arduino IDE 2, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
 <pre><code class="language-text">--start
 /path/to/simavr-executable
 </code></pre>
-<p>Note that the list of chips supported by <code>simavr</code> is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, all in all, the simulator solution might sometimes be the more preferable option.</p>
+<p>Note that the list of chips supported by <code>simavr</code> is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, the simulator solution may sometimes be the more preferable option.</p>
+<p>If you are adventurous, you may want to try out a few other things with <code>simavr</code>. It is possible to pass arguments to <code>simavr</code>, for instance, that you want to trace the changes of a particular memory location, e.g., PORTB, where the built-in LED is usually controlled by:</p>
+<pre><code class="language-text">--start
+/path/to/simavr-executable --add-trace LED=trace@0x0025/0xff
+</code></pre>
+<p>After terminating the debug session (and waiting some time), a <a href="https://en.wikipedia.org/wiki/Value_change_dump">VCD</a> trace will show up in the project folder. This can be visualized, for instance, with <a href="https://gtkwave.sourceforge.net">gtkwave</a> or <a href="https://sigrok.org/wiki/Downloads">pulseview</a>. It is also possible to provide VCD files as input. This is all sketched in a <a href="https://github.com/gatk555/simavr#using">simavr usage note</a>.</p>
               
             </div>
           </div><footer>
