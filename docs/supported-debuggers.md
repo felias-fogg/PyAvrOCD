@@ -38,13 +38,23 @@ In both cases, you can check whether you were successful by typing the same comm
 
 ## Software simulator
 
-In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install `simavr` first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work, because the `vFlash` command is not supported. However, building simavr from source works flawlessly. After that, you can force PyAvrOCD to use the simulator instead of a hardware debug probe.
+In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install `simavr` first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work. You need to [build `simavr` from source](debugging-software.md#a-software-simulator-simavr).
 
-If you provide an argument to the `-s` or `--start` option that ends in `/simavr`, then the hardware debug probes are ignored, and all the arguments from the command line are passed on to simavr, which is invoked. Using the Arduino IDE 2, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
+If you provide a path argument to the `-s` or `--start` option that has as its last part `simavr`, then the hardware debug probes are ignored, and all the relevant arguments (CPU clock frequency, MCU type, and port number) from the command line are passed on to `simavr`, which is invoked. Using the Arduino IDE 2, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
 
 ```text
 --start
 /path/to/simavr-executable
 ```
 
-Note that the list of chips supported by `simavr` is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, all in all, the simulator solution might sometimes be the more preferable option.
+Note that the list of chips supported by `simavr` is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, the simulator solution may sometimes be the more preferable option.
+
+If you are adventurous, you may want to try out a few other things with `simavr`. It is possible to pass arguments to `simavr`, for instance, that you want to trace the changes of a particular memory location, e.g., PORTB, where the built-in LED is usually controlled by:
+
+```text
+--start
+/path/to/simavr-executable --add-trace LED=trace@0x0025/0xff
+```
+
+After terminating the debug session (and waiting some time), a [VCD](https://en.wikipedia.org/wiki/Value_change_dump) trace will show up in the project folder. This can be visualized, for instance, with [gtkwave](https://gtkwave.sourceforge.net) or [pulseview](https://sigrok.org/wiki/Downloads). It is also possible to provide VCD files as input. This is all sketched in a [simavr usage note](https://github.com/gatk555/simavr#using).
+

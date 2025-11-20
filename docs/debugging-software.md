@@ -30,7 +30,7 @@ If you are not a fan of a command-line interface, then an integrated development
 https://felias-fogg.github.io/package_debugging_index.json
 ```
 
-After that, you can install one of the platforms referred to in the index file, e.g., `Arduino AVR Boards (Debug enabled)`, which is a fork of the official Arduino AVR Boards platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
+After that, you can install one of the platforms referred to in the index file, e.g., `Arduino AVR Boards (Debug enabled)`, which is a fork of the official `Arduino AVR Boards` platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
 
 The set of available cores is covered in the [section on Arduino cores](supporting-cores.md).
 
@@ -81,17 +81,29 @@ Recently, PyAvrOCD has been extended to [deal with *System View Description* fil
 debug_svd_path = atmega328p.svd
 ```
 
-Instead of copying the SVD file into your project folder, you can also access it in the `pyavrocd-util` folder. The SVD files are all stored in the directory `pyavrocd-util/svd`.
+Instead of copying the SVD file into your project folder, you can also access it in the `pyavrocd-util` folder, which is stored alongside `pyavrocd`. The SVD files are all stored in the directory `pyavrocd-util/svd`.
 
 I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
 
-## Gede
+## Other IDEs
 
-[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option `--start gede` when invoking PyAvrOCD. Configuring Gede is done when you [start the GUI](debugging.md#debugging-using-gede).
-
-## Other options
-
-There are a few other possible options. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
+There are a few other possible options for IDEs. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
 
 If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.
+
+## A debug GUI: Gede
+
+[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an AVR-GDB client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option `--start gede` when invoking PyAvrOCD. Configuring Gede is done when you [start the GUI](debugging.md#debugging-using-gede).
+
+## A software simulator: simavr
+
+If you want to make use of the software simulator `simavr`, you need to install it. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with recent versions of GDB. The reason is that this release provides a memory map in XML format to GDB, but refuses to handle the vFlash packages. And it does not accept a port number argument. So, you could use it standalone if you upload the firmware through `simavr` and use the standard port number 1234. If you want to use it through PyAvrOCD (e.g., as part of the Arduino IDE 2), however, you have to jump through some hoops.
+
+The master branch of the simavr GitHub has corrected the above-mentioned bug and has also added the possibility to add a port number. Long story short: Build `simavr` from sources. Clone or download the [simavr Github repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
+
+```bash
+make install DESTDIR=~/.local/
+```
+
+This works under macOS and Linux. The instructions in the repo provided for Windows appear to be outdated.
 
