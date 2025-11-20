@@ -145,7 +145,7 @@ class GdbHandler():
             if "debugwire" == self.dbg.get_iface():
                 self.send_debug_message("Enable debugWIRE first: 'monitor debugwire enable'")
             elif "jtag" in self.dbg.get_iface():
-                self.send_debug_message("JTAG pins are not enabled.")
+                self.send_debug_message("JTAG pins are not enabled")
             else:
                 self.send_debug_message("No connection to OCD. Enable debugging first")
             self.send_signal(SIGHUP)
@@ -536,11 +536,16 @@ class GdbHandler():
         'vCont': eversything about execution
         """
         self.logger.debug("RSP packet: vCont")
-        if packet == '?': # asks for capabilities
+        if packet == '':
+            self.send_packet("") # unknown
+        elif packet == '?': # asks for capabilities
             self.logger.debug("Tell GDB about vCont capabilities: c, C, s, S, r")
             self.send_packet("vCont;c;C;s;S;r")
+            return
         elif packet[0] == ';':
-            if packet[1] in ['c', 'C']:
+            if packet[1:] == '':
+                self.send_packet("") # unknown
+            elif packet[1] in ['c', 'C']:
                 self._continue_handler("")
             elif packet[1] in ['s', 'S']:
                 self._step_handler("")
