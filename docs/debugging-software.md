@@ -2,7 +2,9 @@
 
 The GDB server PyAvrOCD provides an interface to the debug probe on one side and to the symbolic debugger on the host on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you want more than that.
 
-Below, we will cover a number of cases ranging from CLI to IDEs. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software. A bit more space is dedicated to configuring the software.
+Below, we will cover a number of cases ranging from CLI to IDEs. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software.
+
+In addition to IDEs, we will also cover the [installation of a software simulator](#a-software-simulator-simavr).
 
 ## CLI debugging
 
@@ -97,9 +99,9 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 
 ## A software simulator: simavr
 
-If you want to make use of the software simulator `simavr`, you need to install it. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with recent versions of GDB. The reason is that this release provides a memory map in XML format to GDB, but refuses to handle the vFlash packages. And it does not accept a port number argument. So, you could use it standalone if you upload the firmware through `simavr` and use the standard port number 1234. If you want to use it through PyAvrOCD (e.g., as part of the Arduino IDE 2), however, you have to jump through some hoops.
+If you want to make use of the software simulator `simavr`, you need to install it first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from some [fork (created to support PlatformIO)](https://github.com/maxgerhardt/simavr) or you can build it from source.
 
-The master branch of the simavr GitHub has corrected the above-mentioned bug and has also added the possibility to add a port number. Long story short: Build `simavr` from sources. Clone or download the [simavr Github repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
+If you want to build simavr from source, clone or download the [simavr GitHub repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
 
 ```bash
 make install DESTDIR=~/.local/
