@@ -66,7 +66,7 @@ For other boards with ATmega168 and ATmega328 chips, the situation is similar. F
 
 ### Fuse settings when PyAvrOCD manages the fuse
 
-In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the `RSTDSBL` fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using high-voltage programming. The same holds when `SPIEN` (enabling SPI programming) is unprogrammed.
+In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the `RSTDSBL` fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using [high-voltage programming](limitations.md#high-voltage-programming). The same holds when `SPIEN` (enabling SPI programming) is unprogrammed.
 
 The `DWEN`, `BOOTRST`, and `EESAVE` fuses and the `lockbits` will be taken care of by PyAvrOCD, if this is permitted (see above).
 
