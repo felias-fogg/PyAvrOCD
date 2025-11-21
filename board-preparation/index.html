@@ -225,7 +225,7 @@
 </p>
 
 <p>From then on, you can connect to the board using the JTAG connector.</p>
-<p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.</p>
+<p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, <a href="../limitations/#high-voltage-programming">high-voltage programming</a> is necessary.</p>
 <p>The <code>OCDEN</code>, <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD (see above).</p>
 <h3 id="fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</h3>
 <p>When you want full control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger. Make sure that the JTAG pins are enabled (see above). Afterward, use avrdude and an SPI programmer as follows:</p>
