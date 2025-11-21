@@ -102,7 +102,7 @@ Access to the JTAG pins could be disabled. This is, for example, the case for th
 
 From then on, you can connect to the board using the JTAG connector.
 
-As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, high voltage programming is necessary.
+As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, [high-voltage programming](limitations.md#high-voltage-programming) is necessary.
 
 The `OCDEN`, `BOOTRST`, and `EESAVE` fuses and the `lockbits` will be taken care of by PyAvrOCD (see above).
 
