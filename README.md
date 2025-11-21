@@ -18,7 +18,7 @@
 
 
 
-PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)). It can communicate with Microchip's debug probes, such as MPLAB Snap, and it provides a pass-through service for the UNO-based debug probe [dw-link](https://github.com/felias-fogg/dw-link) and the simulation tool [simavr](https://github.com/buserror/simavr) (see [list of supported debug probes](https://felias-fogg.github.io/PyAvrOCD/supported-debuggers/)).
+PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)). It can communicate with Microchip's debug probes, such as the very affordable [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100), and it provides a pass-through service for the UNO-based debug probe [dw-link](https://github.com/felias-fogg/dw-link) and the simulation tool [simavr](https://github.com/buserror/simavr) (see [list of supported debug probes](https://felias-fogg.github.io/PyAvrOCD/supported-debuggers/)).
 
 So, why another open-source GDB server for AVR MCUs? The main intention is to provide a *cross-platform* AVR GDB server. In other words, it is ***the missing AVR debugging solution*** for [PlatformIO](https://platformio.org) and the [Arduino IDE 2](https://www.arduino.cc/en/software/). And it excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
