@@ -123,6 +123,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#debugwire-can-brick-mcus">DebugWIRE can brick MCUs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#scenarios">Scenarios</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#high-voltage-programming">High-voltage programming</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#flash-wear">Flash Wear</a>
         <ul>
@@ -264,7 +270,7 @@ Single-stepping means that a single instruction is executed and then control is 
 <h2 id="debugwire-can-brick-mcus">DebugWIRE can brick MCUs</h2>
 <p>DebugWIRE can be dangerous to the health of your MCU.</p>
 <p>While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for debugging, it can be harmful to the MCU. Once the MCU has been brought into debugWIRE mode (using, for example, the <code>monitor debugwire enable</code> command), the RESET line can no longer be used to reset the chip, and it is impossible to use SPI programming to change fuses, particularly the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chip?</p>
-<p>There are essentially five different scenarios:</p>
+<h3 id="scenarios">Scenarios</h3>
 <ol>
 <li>The classical problem is a capacitor on the RESET line, either for noise suppression or as a means to implement auto-reset on an Arduino board such as the Uno. Similarly, a resistor that is too strong or a dedicated reset circuit could pose a problem. In these cases, one can change the DWEN fuse using SPI programming, but communication over the debugWIRE line (the RESET line) is impossible.
    The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via PyAvrOCD).</li>
@@ -273,8 +279,8 @@ Single-stepping means that a single instruction is executed and then control is 
 <li>It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed <code>SPIEN</code> (Serial program downloading) and/or programmed <code>RSTDSBL</code>, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.</li>
 <li>There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).</li>
 </ol>
+<h3 id="high-voltage-programming">High-voltage programming</h3>
 <p>If none of the above-mentioned recovery methods work, the last resort is <em>high-voltage programming</em>. This means that 12 volts are applied to the RESET line, and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a <a href="https://github.com/felias-fogg/RescueAVR">breadboard high-voltage programmer</a> or a specially designed <a href="https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/">"HV fuse programmer"</a>. For MCUs with an SMD footprint, you would need to buy a breadboard adapter.</p>
-<p>Having said all that, my experience is that if you take care of the potential problems mentioned in points 1-4, it is unlikely that your MCU will get bricked. But it doesn't mean that it is impossible either. JTAG and UPDI are definitely the more robust debugging interfaces.</p>
 <h2 id="flash-wear">Flash Wear</h2>
 <p>Setting and clearing (software) breakpoints can wear down flash memory.</p>
 <p>When setting a breakpoint in a program, one usually does not think about the underlying mechanism that stops the program at the particular point where the breakpoint has been set. Technically, this can be done by <em>hardware breakpoints</em> or <em>software breakpoints</em>. A hardware breakpoint is implemented as a register that is compared to the actual program counter. If the PC is equal to the register value, execution is stopped. Usually, only a few such hardware breakpoints are available. On a debugWIRE device, there is just one. On AVR JTAG ATmegas, we have four; on UPDI MCUs, there are two. Software breakpoints are implemented by placing a particular trap instruction into the machine code. On AVRs, this is the <code>BREAK</code> instruction.</p>
