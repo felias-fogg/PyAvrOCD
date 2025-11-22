@@ -3,7 +3,7 @@ This module deals with breakpoints and execution.
 """
 
 # args, logging
-from logging import getLogger
+import logging
 
 # Errors
 from pyavrocd.errors import FatalError
@@ -40,7 +40,7 @@ class BreakAndExec():
     def __init__(self, mon, dbg, read_flash_word):
         self.mon = mon
         self.dbg = dbg
-        self.logger = getLogger('pyavrocd.breakexec')
+        self.logger = logging.getLogger('pyavrocd.breakexec')
         self.hwbp = HardwareBP(dbg)
         self._read_flash_word = read_flash_word
         self._bp = {}

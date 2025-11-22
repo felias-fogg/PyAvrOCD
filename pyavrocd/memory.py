@@ -3,7 +3,7 @@ Memory module for the AVR GDB server
 """
 
 # args, logging
-from logging import getLogger
+import logging
 
 # debugger modules
 from pyavrocd.errors import  FatalError
@@ -24,7 +24,7 @@ class Memory():
     """
 
     def __init__(self, dbg, mon):
-        self.logger = getLogger('pyavrocd.memory')
+        self.logger = logging.getLogger('pyavrocd.memory')
         self.dbg = dbg
         self.mon = mon
         self._flash = bytearray() # bytearray starting at 0x0000
@@ -242,12 +242,13 @@ class Memory():
         Write pages to flash memory, starting at _flashmem_start_prog up to len(self._flash)-1.
         Since programming takes place in chunks of size self._multi_page_size, beginning and end
         needs to be adjusted. At the end, we may add some 0xFFs.
-        If mon.is_read_before_write() is true (read before write), the we will read a page
-        before it is written.
-        If it is nothing new, we skip. Otherwise, when "jtag", we check whether the page is blank.
+        If mon.is_read_before_write() is true (read before write), then we will read a page
+        before it is written. If it is nothing new, we skip.
+
+        Otherwise, when "jtag", we check whether the page is blank.
         If not, then we need to erase this page by temporarily leaving progmode.
-        This out of the way, we program.
-        Optionally, after writing, we check whether we were successful.
+        This out of the way, we program. Optionally, after writing, we check whether
+        we were successful.
         """
         if self.mon.is_onlycache(): # if loading is set to filling the cache only, we do not flash
             return

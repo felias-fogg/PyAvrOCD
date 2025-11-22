@@ -89,7 +89,7 @@ class MonitorCommand():
             'Target'          : self._mon_target,
             'LiveTests'       : self._mon_live_tests,
             }.items():
-            self.moncmds[key] = [value] + monopts[key]
+            self.moncmds[key] = [value] + monopts.get(key,[])
             if len(self.moncmds[key]) != 4:
                 raise FatalError("Inconsistencies in the monitor command tables")
         if len(self.moncmds) != len(monopts):
@@ -274,12 +274,11 @@ class MonitorCommand():
         # Now we parse the arguments
         optix = 0
         if opts and len(tokens) > 1:
+            optix = -1 # unknown argument
             self.logger.debug("opts=%s", opts)
             for i, poss in enumerate(opts):
                 if poss and poss.startswith(tokens[1]) or poss == '*':
                     optix = i
-            if optix == 0: # no match found
-                handler = self._mon_unknown_arg
         # call the determined handler with option index
         self.logger.debug("optix=%s", optix)
         return handler(optix)
@@ -337,7 +336,7 @@ class MonitorCommand():
         return self._mon_unknown_arg(None)
 
     def _mon_debugwire(self, optix):
-        if self._iface != "debugwire":
+        if self._iface != "debugwire" and 0 <= optix <= 2:
             return("reset" if optix != 0 else "", "This is not a debugWIRE target")
         if optix == 0:
             if self._debugger_active:

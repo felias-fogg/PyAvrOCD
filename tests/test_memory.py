@@ -2,7 +2,7 @@
 The test suit for the Memory class
 """
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-from unittest.mock import Mock, MagicMock, call, create_autospec
+from unittest.mock import Mock, MagicMock, call, create_autospec, patch
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.errors import FatalError
@@ -25,7 +25,7 @@ class TestMemory(TestCase):
         mock_dbg.device.avr = Mock()
         mock_dbg.get_iface.return_value = "debugwire"
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
-        # setting up the GbdHandler instance we want to test
+        # setting up the instance we want to test
         self.mem = Memory(mock_dbg, mock_mon)
         self.mem._flash_start = 0
         self.mem._flash_page_size = 2
@@ -41,6 +41,8 @@ class TestMemory(TestCase):
 
     def test_init_flash_True(self):
         self.set_up()
+        self.mem._flash = bytearray(5)
+        self.mem.init_flash()
         self.assertEqual(self.mem._flash,bytearray())
         self.assertEqual(self.mem._flashmem_start_prog,0)
 
@@ -113,7 +115,12 @@ class TestMemory(TestCase):
         self.set_up()
         self.assertEqual(self.mem.readmem("890000", "1"),bytearray([0xFF]))
 
-    # flash_read has been tested above already
+    @patch('pyavrocd.memory.logging.getLogger', MagicMock())
+    def test_flash_read_impossible(self):
+        self.set_up()
+        self.mem.mon.is_debugger_active.return_value = False
+        self.assertEqual(self.mem.flash_read(0x100,2), bytearray([0xFF, 0xFF]))
+        self.mem.logger.error("Cannot read from memory when OCD is disabled")
 
     def test_flash_read_word(self):
         self.set_up()
@@ -128,7 +135,7 @@ class TestMemory(TestCase):
 
     def test_writemem_sram_ronly_register_bytearray(self):
         self.set_up()
-        self.mem._ronly_registers = [15, 1, 6]
+        self.mem._ronly_registers = [15, 1, 6, 0]
         self.assertEqual(self.mem.writemem("800001", bytearray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])), "OK")
         self.mem.dbg.sram_write.assert_has_calls([call(2,bytearray([0x02, 0x03, 0x04, 0x05])), call(7,bytearray([0x07]))])
         self.assertEqual(self.mem.dbg.sram_write.call_count, 2)
@@ -171,6 +178,15 @@ class TestMemory(TestCase):
         self.set_up()
         self.mem.programming_mode = True
         self.assertEqual(self.mem.writemem("100", bytearray(1)), "OK")
+
+    def test_writemem_flash_new_start(self):
+        self.set_up()
+        self.mem.programming_mode = True
+        self.mem.writemem("300", bytearray(20))
+        self.assertEqual(len(self.mem._flash), 0x300+20)
+        self.mem.writemem("100", bytearray(20))
+        self.assertEqual(len(self.mem._flash), 0x100+20)
+
 
     def test_store_to_cache_error(self):
         self.set_up()
@@ -239,3 +255,73 @@ class TestMemory(TestCase):
                              '<memory type="flash" start="0x0" length="0xC">' + \
                              '<property name="blocksize">0x6</property>' + \
                              '</memory></memory-map>')
+
+    def test_fuse_read_ok(self):
+        self.set_up()
+        self.mem.dbg.read_fuse.return_value = bytearray([0x12])
+        self.assertEqual(self.mem.fuse_read(0x01,1), bytearray([0x12]))
+
+    def test_fuse_read_fail(self):
+        self.set_up()
+        self.mem.dbg.read_fuse.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.fuse_read(0x01,1), bytearray([0xFF]))
+
+    def test_lock_read_ok(self):
+        self.set_up()
+        self.mem.dbg.read_lock.return_value = bytearray([0x12])
+        self.assertEqual(self.mem.lock_read(0x00,1), bytearray([0x12]))
+
+    def test_lock_read_fail(self):
+        self.set_up()
+        self.mem.dbg.read_lock.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.lock_read(0x00,1), bytearray([0xFF]))
+
+    def test_sig_read_ok(self):
+        self.set_up()
+        self.mem.dbg.read_sig.return_value = bytearray([0x12])
+        self.assertEqual(self.mem.sig_read(0x00,1), bytearray([0x12]))
+
+    def test_sig_read_fail(self):
+        self.set_up()
+        self.mem.dbg.read_sig.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.sig_read(0x00,1), bytearray([0xFF]))
+
+    def test_usig_read_ok(self):
+        self.set_up()
+        self.mem.dbg.read_usig.return_value = bytearray([0x12])
+        self.assertEqual(self.mem.usig_read(0x00,1), bytearray([0x12]))
+
+    def test_usig_read_fail(self):
+        self.set_up()
+        self.mem.dbg.read_usig.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.usig_read(0x00,1), bytearray([0xFF]))
+
+    def test_fuse_write_ok(self):
+        self.set_up()
+        self.mem.dbg.write_fuse.return_value = None
+        self.assertEqual(self.mem.fuse_write(0x00, bytearray([0x12, 0x34])), None)
+
+    def test_fuse_write_fail(self):
+        self.set_up()
+        self.mem.dbg.write_fuse.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.fuse_write(0x00, bytearray([0x12, 0x34])), 'E13')
+
+    def test_lock_write_ok(self):
+        self.set_up()
+        self.mem.dbg.write_lock.return_value = None
+        self.assertEqual(self.mem.lock_write(0x00, bytearray([0x12, 0x34])), None)
+
+    def test_lock_write_fail(self):
+        self.set_up()
+        self.mem.dbg.write_lock.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.lock_write(0x00, bytearray([0x12, 0x34])), 'E13')
+
+    def test_usig_write_ok(self):
+        self.set_up()
+        self.mem.dbg.write_usig.return_value = None
+        self.assertEqual(self.mem.usig_write(0x00, bytearray([0x12, 0x34])), None)
+
+    def test_usig_write_fail(self):
+        self.set_up()
+        self.mem.dbg.write_usig.side_effect = FatalError("fail")
+        self.assertEqual(self.mem.usig_write(0x00, bytearray([0x12, 0x34])), 'E13')

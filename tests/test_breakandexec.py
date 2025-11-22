@@ -2,7 +2,7 @@
 The test suit for the BreakAndExec class
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-from unittest.mock import Mock, call, create_autospec
+from unittest.mock import Mock, call, create_autospec, patch, MagicMock
 from unittest import TestCase
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.monitor import MonitorCommand
@@ -61,11 +61,39 @@ class TestBreakAndExec(TestCase):
                                        200:  { 'active': True, 'allocated' : None,
                                     'opcode': 0x2222, 'secondword' : 0x3333, 'timestamp' : 2 }})
 
+    @patch('pyavrocd.breakexec.logging.getLogger', MagicMock())
+    def test_insert_breakpoints_existing(self):
+        self.set_up()
+        self.bp.mon.is_onlyhwbps.return_value = False
+        self.bp._read_flash_word.side_effect = [ BREAKCODE, 0x1111, 0x2222, 0x3333 ]
+        self.bp._bp = {100: { 'active': False, 'allocated' : None,
+                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 }}
+        self.bp.insert_breakpoint(100)
+        self.bp.insert_breakpoint(200)
+        self.bp.insert_breakpoint(200)
+        self.bp.logger.debug.assert_has_calls(
+            [call("Already existing BP at 0x%X will be re-activated", 100),
+             call('Set BP at 0x%X to active', 100),
+             call('New BP at 0x%X', 200),
+             call('New BP at 0x%X: %s', 200, {'active': True, 'allocated': None, 'opcode': 38296, 'secondword': 4369, 'timestamp': 1}),
+             call('Now %d active BPs', 2),
+             call('Already existing BP at 0x%X will be re-activated', 200),
+             call("There is already an active BP at 0x%X", 200)])
+        self.assertTrue(self.bp._bp[100]['active'])
+        self.assertTrue(self.bp._bp[200]['active'])
+
+
     def test_remove_breakpoint_old_exec(self):
         self.set_up()
         self.bp.mon.is_old_exec.return_value = True
         self.bp.remove_breakpoint(2)
         self.bp.dbg.software_breakpoint_clear.assert_called_with(2)
+
+    @patch('pyavrocd.breakexec.logging.getLogger', MagicMock())
+    def test_remove_breakpoints_odd(self):
+        self.set_up()
+        self.bp.remove_breakpoint(3)
+        self.bp.logger.error.assert_called_with("Breakpoint at odd address: 0x%X", 3)
 
     def test_remove_breakpoints_regular_idempotent(self):
         self.set_up()
@@ -103,6 +131,14 @@ class TestBreakAndExec(TestCase):
                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 2 }}
         self.assertEqual(self.bp._read_filtered_flash_word(100), BREAKCODE)
         self.bp._read_flash_word.assert_not_called()
+
+    @patch('pyavrocd.breakexec.HardwareBP.temp_allocated', MagicMock())
+    @patch('pyavrocd.breakexec.HardwareBP.clear_temp', MagicMock())
+    def test_update_breakpoints_allocated(self):
+        self.set_up()
+        self.bp.hwbp.temp_allocated.return_value = True
+        self.bp._update_breakpoints(None, release_temp=True)
+        self.bp.hwbp.clear_temp.assert_called_once() #pylint: disable=no-member
 
     def test_update_breakpoints_remove_sethwbp(self):
         self.set_up()
@@ -182,6 +218,56 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.software_breakpoint_set.assert_has_calls([call(100), call(400)], any_order=True)
         self.assertEqual(self.bp._bpactive, 3)
 
+    def test_remove_inactive_and_deallocate_forbidden_swbps(self):
+        self.set_up()
+        self.bp.mon.is_onlyhwbps.return_value = True
+        self.bp.mon.is_onlyswbps.return_value = False
+        self.bp._bstamp = 6
+        self.bp._bpactive = 3
+        self.bp.hwbp._hwbplist = [ 100 ]
+        self.bp._bp = {100: { 'active': True, 'allocated' : HWBP, # will have to give up hwbp
+                                 'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 },
+                       200:  { 'active': False, 'allocated' : SWBP, # will remove swbp
+                                  'opcode': 0x2221, 'secondword' : 0x3331, 'timestamp' : 2 },
+                       300:  { 'active': False, 'allocated': SWBP, # will remove swbp
+                                  'opcode': 0x2222, 'secondword' : 0x3332, 'timestamp' : 3 },
+                       400:  { 'active': True, 'allocated' : None, # will become swbp
+                                  'opcode': 0x2223, 'secondword' : 0x3333, 'timestamp' : 4 },
+                       500:  { 'active': True, 'allocated' : None, # gets hwbp
+                                  'opcode': 0x2224, 'secondword' : 0x3334, 'timestamp' : 5 }}
+        self.bp._remove_inactive_and_deallocate_forbidden_bps(200)
+        self.assertTrue(100 in self.bp._bp)
+        self.assertTrue(200 not in self.bp._bp)
+        self.assertTrue(300 not in self.bp._bp)
+        self.assertTrue(400 in self.bp._bp)
+        self.assertTrue(500 in self.bp._bp)
+
+    def test_remove_inactive_and_deallocate_forbidden_hwbps(self):
+        self.set_up()
+        self.bp.mon.is_onlyhwbps.return_value = False
+        self.bp.mon.is_onlyswbps.return_value = True
+        self.bp._bstamp = 6
+        self.bp._bpactive = 3
+        self.bp.hwbp._hwbplist = [ 100 ]
+        self.bp._bp = {100: { 'active': True, 'allocated' : HWBP, # will have to give up hwbp
+                                 'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 },
+                       200:  { 'active': False, 'allocated' : SWBP, # will remove swbp
+                                  'opcode': 0x2221, 'secondword' : 0x3331, 'timestamp' : 2 },
+                       300:  { 'active': False, 'allocated': SWBP, # will remove swbp
+                                  'opcode': 0x2222, 'secondword' : 0x3332, 'timestamp' : 3 },
+                       400:  { 'active': True, 'allocated' : None, # will become swbp
+                                  'opcode': 0x2223, 'secondword' : 0x3333, 'timestamp' : 4 },
+                       500:  { 'active': True, 'allocated' : None, # gets hwbp
+                                  'opcode': 0x2224, 'secondword' : 0x3334, 'timestamp' : 5 }}
+        self.bp._remove_inactive_and_deallocate_forbidden_bps(200)
+        self.assertTrue(100 in self.bp._bp)
+        self.assertTrue(self.bp._bp[100]['allocated'] is None)
+        self.assertTrue(200 in self.bp._bp)
+        self.assertTrue(300 not in self.bp._bp)
+        self.assertTrue(400 in self.bp._bp)
+        self.assertTrue(500 in self.bp._bp)
+
+
     def test_cleanup_breakpoints(self):
         self.set_up()
         self.bp.hwbp._hwbplist = [ 1 ]
@@ -259,6 +345,12 @@ class TestBreakAndExec(TestCase):
         self.bp.resume_execution(2224)
         self.bp.dbg.run_to.assert_called_with(100)
         self.assertFalse(2224 in self.bp._bp)
+
+    @patch('pyavrocd.breakexec.BreakAndExec._update_breakpoints',Mock())
+    def test_resume_execution_with_update_fails(self):
+        self.set_up()
+        self.bp._update_breakpoints.return_value = False
+        self.assertEqual(self.bp.resume_execution(None), SIGSYS)
 
     def test_single_step_old_exec(self):
         self.set_up()
@@ -402,6 +494,38 @@ class TestBreakAndExec(TestCase):
         self.bp._read_flash_word.return_value = 0x920F # PUSH r0
         self.assertEqual(self.bp.single_step(None, fresh= True), SIGBUS)
 
+    @patch('pyavrocd.breakexec.BreakAndExec._update_breakpoints',Mock())
+    def test_single_step_no_hwbp(self):
+        self.set_up()
+        self.bp._read_flash_word.return_value = 0x0F0F
+        self.bp._update_breakpoints.return_value = False
+        self.assertEqual(self.bp.single_step(None), SIGSYS)
+
+
+    @patch('pyavrocd.breakexec.HardwareBP.borrow_hwbp0', MagicMock())
+    @patch('pyavrocd.breakexec.logging.getLogger', MagicMock())
+    def test_sleep_walk_only_hwbps(self):
+        self.set_up()
+        self.bp.mon.is_onlyhwbps.return_value = True
+        self.bp._bp = {100: { 'active': True, 'allocated' : None,
+                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 }}
+        self.bp.hwbp.borrow_hwbp0.return_value = 100
+        self.assertEqual(self.bp._sleep_walk(2), SIGSYS)
+        self.bp.logger.error.assert_called_with("Not enough hardware breakpoints to do single-stepping over SLEEP")
+
+    @patch('pyavrocd.breakexec.HardwareBP.borrow_hwbp0', MagicMock())
+    @patch('pyavrocd.breakexec.logging.getLogger', MagicMock())
+    def test_sleep_walk_swbp_alloc_fails(self):
+        self.set_up()
+        self.bp.mon.is_onlyhwbps.return_value = False
+        self.bp._bp = {100: { 'active': True, 'allocated' : HWBP,
+                                  'opcode': BREAKCODE, 'secondword' : 0x1111, 'timestamp' : 1 }}
+        self.bp.hwbp.borrow_hwbp0.return_value = 100
+        self.bp.dbg.software_breakpoint_set.return_value = False
+        self.assertEqual(self.bp._sleep_walk(2), SIGSYS)
+        self.bp.logger.debug.assert_called_with("Could not allocate SWBP for 0x%X", 100)
+
+
     def test_stack_pointer_legal_pop(self):
         self.set_up()
         self.bp.dbg.stack_pointer_read.return_value = bytearray([ 0x5E, 0x00 ])
@@ -453,6 +577,13 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.program_counter_read.assert_called_once()
         self.bp._read_flash_word.assert_called_with(20)
         self.bp.dbg.step.assert_called_with()
+
+    @patch('pyavrocd.breakexec.BreakAndExec.single_step', Mock(return_value=SIGTRAP))
+    @patch('pyavrocd.breakexec.logging.getLogger', MagicMock())
+    def test_range_step_equal_bounds(self):
+        self.set_up()
+        self.bp.range_step(100, 100)
+        self.bp.logger.debug.assert_called_with("Empty range: Simply single step")
 
     def test_range_step_possible_onlyhwbp0(self):
         self.set_up()
