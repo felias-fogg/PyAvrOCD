@@ -2,9 +2,9 @@
 
 ## Debugging with a command-line interface
 
-After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When calling the compiler, you should provide the following two options: `-Og` and `-ggdb3`. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.
+After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When invoking the compiler, you should provide the following two options: `-Og` and `-ggdb3`. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.
 
-When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Preparing a target board](board-preparation.md#general-considerations)):
+When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Preparing the target board](board-preparation.md#general-considerations)):
 
 ```log
 > pyavrocd -d atmega328p -m all

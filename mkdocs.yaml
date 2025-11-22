@@ -18,8 +18,16 @@ markdown_extensions:
   - markdown_include.include:
         base_path: docs
         inheritHeadingDepth: True
+  - admonition
 
 nav:
+  - Arduino Quickstart Guides:
+    - ATmega328P Xplained Mini: 'quick_xmini.md'
+    - Arduino UNO R3 & simavr: 'quick_uno+simavr.md'
+#    - Arduino UNO R3 & Atmel-ICE: 'quick_uno+atmelice.md'
+#    - ATtiny85 & dw-link: 'quick_uno+dwlink.md'
+#    - Arduino Leonardo & MPLAB Snap: 'quick_leonardo+snap.md'
+#    - Arduino Mega 2560 + MPLAP PICkit4: 'quick_mega+pickit4.md'
   - Installation & Configuration:
     - PyAvrOCD: 'install-link.md'
     - Debugging software: 'debugging-software.md'
