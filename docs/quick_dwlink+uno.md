@@ -148,7 +148,7 @@ Now it is time to start debugging by clicking the `Debug` button (bug in front o
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0.png" width="80%"></p>
 
-Then the IDE tries to discover a debug probe. If it finds one, it will connect and check whether the target is already in the debugWIRE mode. If this is not the case, the IDE requests a power cycle, i.e., disconnecting power from the target board and then reconnecting power. The debug probe dw-link will start to flash eveery second.
+Then the IDE tries to discover a debug probe. If it finds one, it will connect and check whether the target is already in the debugWIRE mode. If this is not the case, the IDE requests a power cycle, i.e., disconnecting power from the target board and then reconnecting power. The debug probe dw-link will start to flash every second.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0a.png" width="80%"></p>
 
@@ -174,11 +174,11 @@ This will bring up the sketch file. Scroll down to line 75 and set a breakpoint 
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2.png" width="80%"></p>
 
-Sketch execution will be immediately stopped in line 75. Now we want to examine the values of some of the variables. If you hover with the mouse over a variable, its value will be shown. If we want to always track the value of the variable, we can use the watch window. Move with the mouse to the right part of the `WATCH` bar. Then a plus sign will appear. Clicking on it allows you to enter "watch" expressions.
+Sketch execution will be immediately stopped in line 75. Now we want to examine the values of some of the variables. If you hover the mouse over a variable, its value will be shown. If we wish always to track the value of the variable, we can use the watch window. Move with the mouse to the correct part of the `WATCH` bar. Then a plus sign will appear. Clicking on it allows you to enter "watch" expressions.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2a.png" width="80%"></p>
 
-If we add `buttonState` and `ledState` to the `WATCH` pane, we see that they are both currently 1. If we now click the `Continue` button, `ledState` variable will be toggled (i.e., the LED will go dark) and the sketch will run and wait for a change of the button state.
+If we add `buttonState` and `ledState` to the `WATCH` pane, we see that they are both currently 1. If we now click the `Continue` button, the `ledState` variable will be toggled (i.e., the LED will go dark) and the sketch will run and wait for a change of the button state.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-3.png" width="80%"></p>
 
@@ -188,9 +188,9 @@ Pressing the button changes the level and will stop again in line 75, as shown b
 
 ## Step 10: Start over or terminate the debugging session
 
-You now can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.
+You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you can call it day and end debugging. In this case, you perhaps will switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
+Instead of starting a new edit/compile/debug cycle, you can call it a day and end debugging. In this case, you will perhaps switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="80%"></p>
 
@@ -200,7 +200,7 @@ If you scroll down in the `Debug Console`, you will see that the command was suc
 
 It may also be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger codes next time you compile a sketch.
 
-If you want to restore your UNO to its original state, you also need to burn the bootloader again. For this purpose choose the serial line connected to dw-link.
+If you want to restore your UNO to its original state, you also need to burn the bootloader again. For this purpose, choose the serial line connected to dw-link.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/choose-serial-uno.png" width="50%"></p>
 
@@ -210,15 +210,15 @@ Select as the programmer `Arduino as ISP`.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/choose-programmer-uno.png" width="40%"></p>
 
-The select the Burn Bootloader entry in the tools menu.
+Then select the Burn Bootloader entry in the tools menu.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/choose-burn-bootloader.png" width="25%"></p>
 
 The debug probe should then be able to handle the rest.
 
-As a final measure you may want to restore the solder bridge `RESET EN` or reinsert a removed capacitor. If possible, you can also try to fit onto the board some pins that can be shortened with a jumper.
+As a final measure, you may want to restore the solder bridge `RESET EN` or reinsert a removed capacitor. If possible, you can also try to fit onto the board some pins that can be shortened with a jumper.
 
 ## Potential problems
 
-There is always the chance that something goes south, either debugging does not start at all or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the [PyAvrOCD manual](https://felias-fogg.github.io/PyAvrOCD/).
+There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the [PyAvrOCD manual](https://felias-fogg.github.io/PyAvrOCD/).
 
