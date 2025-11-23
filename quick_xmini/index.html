@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>ATmega328P Xplained Mini - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "ATmega328P Xplained Mini";
+        var mkdocs_page_input_path = "quick_xmini.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../pics/logo-tiny.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Arduino Quickstart Guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">ATmega328P Xplained Mini</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#step-1-extend-the-list-of-boards-manager-urls">Step 1: Extend the list of boards manager URLs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-2-install-a-debug-enabled-core">Step 2: Install a debug-enabled core</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-3-connect-the-board-and-select-the-board-type-and-port-in-the-boards-manager">Step 3: Connect the board and select the board type and port in the boards manager</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-4-edit-and-compile-a-sketch">Step 4: Edit and compile a sketch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-5-debug-the-sketch">Step 5: Debug the sketch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-6-start-over-or-terminate-the-debugging-session">Step 6: Start over or terminate the debugging session</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#potential-problems">Potential problems</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Arduino Quickstart Guides</li>
+      <li class="breadcrumb-item active">ATmega328P Xplained Mini</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/quick_xmini.md">Edit on PyAvrOCD</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quickstart-guide-atmega328p-xplained-mini">Quickstart guide: ATmega328P Xplained Mini</h1>
+<p>This quickstart guide explains how to set up the <a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> so that you can use its debugging feature on an <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">Atmega328P Xplained Mini</a> board. This development board is ideal for making a first experience with embedded debugging because it already contains an onboard debugger.  This means you do not have to bother with preparing the board for debugging, connecting the debug probe to the board, choosing a programmer/debugger, and setting the proper fuses. It is simply plug-and-play.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/xplained.png" width="35%">
+</p>
+
+<p>In addition, this development board has an Arduino UNO R3 footprint. If you solder headers (at the right place) on the board, then it is possible to plug ordinary Uno shields into the headers. And if you need more I/O power, there is also an Xplained Mini board with the ATmega328<strong>PB</strong> for the same price. By the way, these boards are not overly expensive.</p>
+<h2 id="step-1-extend-the-list-of-boards-manager-urls">Step 1: Extend the list of boards manager URLs</h2>
+<p>Assuming that you have already installed the Arduino IDE 2, you first have to extend the list of <code>Additional boards manager URLs</code>. Start the <code>Preferences</code> dialog, which you find, depending on your operating system,  either in the <code>Arduino IDE</code> or the <code>File</code> menu.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+
+<p>Now select the field with the additional board manager URLs.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+
+<p>Type the following URL into a new line:</p>
+<pre><code>https://felias-fogg.github.io/package_debugging_index.json
+</code></pre>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls.png" width="50%">
+</p>
+
+<p>You close the dialog by clicking on two <code>OK</code> buttons in succession.</p>
+<h2 id="step-2-install-a-debug-enabled-core">Step 2: Install a debug-enabled core</h2>
+<p>Now you need to activate the <code>boards manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Atmel AVR Xplained-minis (Debug enabled)" (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager.png" width="80%"></p>
+
+<p>Loading the core and all the necessary tools might take a while.</p>
+<h2 id="step-3-connect-the-board-and-select-the-board-type-and-port-in-the-boards-manager">Step 3: Connect the board and select the board type and port in the boards manager</h2>
+<p>In our case, connecting the target board to the host consists simply of plugging the USB cable into the board. After that, you have to select the right board and serial line in the IDE. First, click on <code>Select Board</code> in the top bar and choose <code>Select other board and port ...</code>.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-board.png" width="20%"></p>
+
+<p>Then type "328" in the search field (1), select the right board (2), the correct port (3), and finally click the <code>OK</code> button.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-other.png" width="50%"></p>
+
+<p>The debugging icon in the top row is no longer greyed out. In other words, you have unleashed the power of the Arduino debugger at this point.</p>
+<h2 id="step-4-edit-and-compile-a-sketch">Step 4: Edit and compile a sketch</h2>
+<p>Let us choose a simple sketch that is a little bit more challenging than the <code>Blink</code> example. The <code>Debounce</code> example will do. Let us load it and modify it for our needs.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/debounce-example.png" width="80%"></p>
+
+<p>This sketch will toggle the LED state (on pin 13) when a button is pressed. The program logic contains a basic form of debouncing so that noise induced by the button contact opening and closing is ignored. The button in this sketch is supposed to be at digital input line 2. The xmini, however, has such a button at digital input line 21. For this reason, we have to change line 31 of the sketch as follows:</p>
+<pre><code class="language-C++">const int buttonPin = 21;  // the number of the pushbutton pin
+</code></pre>
+<p>Before compiling and uploading the sketch, you should set the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu. This flag will make sure that the produced machine code resembles the program flow in the source code in order to make debugging easier.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
+
+<p>Now it is time to compile the sketch. Click the <code>Verify</code> button (a check mark symbol) in the top bar, which will compile the sketch. Loading the compiled code will then be done when the debugger is started. Instead, you can click on the <code>Upload</code> button (the right arrow symbol), which will compile and upload the code. In the case of the Xmini development board, this is the preferred way because it results in an overall faster upload time.</p>
+<h2 id="step-5-debug-the-sketch">Step 5: Debug the sketch</h2>
+<p>Now it is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top row.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-0.png" width="80%"></p>
+
+<p>This will trigger a lot of actions. First, the debug pane to the left of the sketch editor pane will be opened. Second, below the sketch editor pane, first a <code>gdb-server</code> console will appear, then the <code>Debug Console</code>. While this is happening, the sketch is loaded and execution is started.</p>
+<p>The execution will always stop in the first line of the <code>main</code> function in <code>main.cpp</code>, which is an Arduino internal function. The line where execution has been stopped is marked yellow (perhaps with an additional yellow triangle) (A). Since this line is in a file different from the main sketch, it is loaded into the editor, and the loaded files are all shown in the top bar of the editor (B). The central debugging control is located in the debugging pane at the top (C). The buttons have the following meanings, from left to right:</p>
+<ul>
+<li><em>Reset</em>ting the device</li>
+<li><em>Continue</em> execution or <em>pause</em></li>
+<li><em>Step over</em>: execute one source line</li>
+<li><em>Step into</em>: execute stepping into the function, if in this line one is called</li>
+<li><em>Step out</em>: finish the current function and stop after the line where it was called</li>
+<li><em>Restart</em>: Same as Reset</li>
+<li><em>Stop</em>: Terminate debugging</li>
+</ul>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-1.png" width="80%"></p>
+
+<p>Pressing the <code>Continue</code> button in the situation depicted in the picture above would start execution. However, before we do this, let us set a breakpoint. For this purpose, we first select the original sketch file <code>Debounce.ino</code> at the top row of the editor pane.</p>
+<p>This will bring up the sketch file. Scroll down to line 75 and set a breakpoint by clicking to the left of the line number (1). A red dot will mark the breakpoint. Now press the <code>Continue</code> button (2).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-2.png" width="80%"></p>
+
+<p>Sketch execution will be immediately stopped in line 75. Now we want to examine the values of some of the variables. If you hover with the mouse over a variable, its value will be shown. If we want to always track the value of the variable, we can use the watch window. Move with the mouse to the right part of the <code>WATCH</code> bar. Then a plus sign will appear. Clicking on it allows you to enter "watch" expressions.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-2a.png" width="80%"></p>
+
+<p>If we add buttonState and ledState to the <code>WATCH</code> pane, we see that they are both currently 1. If we now click the <code>Continue</code> button, <code>ledState</code> variable will be toggled (i.e., the LED will go dark) and the sketch will wait for a change of the button state.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-3.png" width="80%"></p>
+
+<p>Pressing the button changes the level and will stop again in line 75, as shown below. The value of both variables is now 0. From here on, you can explore the debugger on your own. Hovering the mouse over symbols and names will bring up a short explanation. In this tutorial, we will now stop and press the exit symbol (red square).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-4.png" width="80%"></p>
+
+<h2 id="step-6-start-over-or-terminate-the-debugging-session">Step 6: Start over or terminate the debugging session</h2>
+<p>You now can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to sketch are effective. In fact, changing the source text while yore are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you can call it day and end debugging. In this case, it may be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu, because not doing so will result in larger codes next time you compile a sketch.</p>
+<h2 id="potential-problems">Potential problems</h2>
+<p>There is always the chance that something goes south, either debugging does not start at all or something funny happens while debugging. If so, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
+<div class="admonition danger">
+<p class="admonition-title">Warning: Do not source attached circuits through the 5V or 3V pin. Use IOREF!</p>
+<p>If you have any attached circuitry, be it on a bread board or a shield, use the <code>IOREF</code> pin to power it.</p>
+<p>The reason for this is that the <code>IOREF</code> pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be connected to GND and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode.</p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../install-link/" class="btn btn-neutral float-right" title="PyAvrOCD">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-code-fork" style="color: #fcfcfc"> PyAvrOCD</a>
+        </span>
+    
+    
+    
+      <span><a href="../install-link/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
