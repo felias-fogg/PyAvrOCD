@@ -39,7 +39,7 @@ You close the dialog by clicking on two `OK` buttons in succession.
 
 ## Step 2: Install a debug-enabled core
 
-Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Atmel AVR Xplained-minis (Debug enabled)" (3). Install this core by clicking on `Install` (4).
+Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Atmel AVR Xplained-minis (Debug enabled)." Install this core by clicking on `Install` (3).
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager.png" width="80%"></p>
 
