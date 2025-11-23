@@ -231,13 +231,13 @@
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-4.png" width="80%"></p>
 
 <h2 id="step-6-start-over-or-terminate-the-debugging-session">Step 6: Start over or terminate the debugging session</h2>
-<p>You now can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to sketch are effective. In fact, changing the source text while yore are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.</p>
-<p>Instead of starting a new edit/compile/debug cycle, you can call it day and end debugging. In this case, it may be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu, because not doing so will result in larger codes next time you compile a sketch.</p>
+<p>You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you can call it a day and end debugging. In this case, it may be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu, because not doing so will result in larger code next time you compile a sketch.</p>
 <h2 id="potential-problems">Potential problems</h2>
-<p>There is always the chance that something goes south, either debugging does not start at all or something funny happens while debugging. If so, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
 <div class="admonition danger">
 <p class="admonition-title">Warning: Do not source attached circuits through the 5V or 3V pin. Use IOREF!</p>
-<p>If you have any attached circuitry, be it on a bread board or a shield, use the <code>IOREF</code> pin to power it.</p>
+<p>If you have any attached circuitry, be it on a breadboard or a shield, use the <code>IOREF</code> pin to power it.</p>
 <p>The reason for this is that the <code>IOREF</code> pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be connected to GND and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode.</p>
 </div>
               
