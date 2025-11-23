@@ -120,16 +120,16 @@ Pressing the button changes the level and will stop again in line 75, as shown b
 
 ## Step 6: Start over or terminate the debugging session
 
-You now can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to sketch are effective. In fact, changing the source text while yore are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.
+You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you can call it day and end debugging. In this case, it may be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger codes next time you compile a sketch.
+Instead of starting a new edit/compile/debug cycle, you can call it a day and end debugging. In this case, it may be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger code next time you compile a sketch.
 
 ## Potential problems
 
-There is always the chance that something goes south, either debugging does not start at all or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the PyAvrOCD manual.
+There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the PyAvrOCD manual.
 
 !!! danger "Warning: Do not source attached circuits through the 5V or 3V pin. Use IOREF!"
-    If you have any attached circuitry, be it on a bread board or a shield, use the `IOREF` pin to power it.
+    If you have any attached circuitry, be it on a breadboard or a shield, use the `IOREF` pin to power it.
 
 
     The reason for this is that the `IOREF` pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be connected to GND and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode.
