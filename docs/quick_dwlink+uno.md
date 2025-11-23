@@ -70,9 +70,6 @@ Now you need to activate the `boards manager` by clicking on the board symbol in
 
 Loading the core and all the necessary tools might take a while.
 
-!!! info "Linux systems"
-    After installing the first debug-enabled core, users of Linux systems will need to add `udev` rules (see [this note for Linux users](install-link.md#a-note-for-linux-users))
-
 ## Step 4: Prepare the target board for debugging
 
 If you are going to debug an Arduino with an ATmega328P or similar, you have to alter the board physically in most cases before debugging is possible. The reason is a capacitor that is connected to the RESET line of the MCU, which is responsible for issuing a RESET when a connection to the board is established. On an original UNO board, you need to cut a solder bridge labeled `RESET EN`.
