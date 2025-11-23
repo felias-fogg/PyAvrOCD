@@ -21,7 +21,7 @@ markdown_extensions:
   - admonition
 
 nav:
-  - Arduino Quickstart Guides:
+  - Arduino IDE 2 Quickstart Guides:
     - ATmega328P Xplained Mini: 'quick_xmini.md'
 #    - ATtiny85 & dw-link: 'quick_uno+dwlink.md'
 #    - Arduino UNO R3 & Atmel-ICE: 'quick_uno+atmelice.md'

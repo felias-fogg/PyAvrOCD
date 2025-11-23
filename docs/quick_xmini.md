@@ -45,6 +45,9 @@ Now you need to activate the `boards manager` by clicking on the board symbol in
 
 Loading the core and all the necessary tools might take a while.
 
+!!! info "Linux systems"
+    After installing the first debug-enabled core, users of Linux systems will need to add `udev` rules (see [this note for Linux users](install-link.md#a-note-for-linux-users))
+
 ## Step 3: Connect the board and select the board type and port in the boards manager
 
 In our case, connecting the target board to the host consists simply of plugging the USB cable into the board. After that, you have to select the right board and serial line in the IDE. First, click on `Select Board` in the top bar and choose `Select other board and port ...`.
