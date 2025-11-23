@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>dw-link & Arduino UNO R3 - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "dw-link \u0026 Arduino UNO R3";
+        var mkdocs_page_input_path = "quick_dwlink+uno.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../pics/logo-tiny.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">dw-link & Arduino UNO R3</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#step-1-turning-an-uno-into-a-debug-probe">Step 1: Turning an UNO into a debug probe</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-2-extend-the-list-of-boards-manager-urls">Step 2: Extend the list of boards manager URLs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-3-install-the-debug-enabled-arduino-avr-boards-core">Step 3: Install the debug-enabled Arduino AVR Boards core</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-4-prepare-the-target-board-for-debugging">Step 4: Prepare the target board for debugging</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-5-connect-the-target-board-with-the-debug-probe">Step 5: Connect the target board with the debug probe</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-6-select-the-board-type">Step 6: Select the board type</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-7-edit-and-compile-a-sketch">Step 7: Edit and compile a sketch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-8-start-debugging">Step 8: Start debugging</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-9-debug-the-sketch">Step 9: Debug the sketch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#step-10-start-over-or-terminate-the-debugging-session">Step 10: Start over or terminate the debugging session</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#potential-problems">Potential problems</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Arduino IDE 2 Quickstart Guides</li>
+      <li class="breadcrumb-item active">dw-link & Arduino UNO R3</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/quick_dwlink+uno.md">Edit on PyAvrOCD</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quickstart-guide-dw-link-arduino-uno-r3">Quickstart guide: dw-link &amp; Arduino UNO R3</h1>
+<p>This quickstart guide shows how to try out embedded debugging as offered by the Arduino IDE 2 without requiring you to invest in a debug probe. It explains</p>
+<ul>
+<li>how to turn an Arduino UNO R3 into a <a href="https://debugwire.de/">debugWIRE</a> debug probe using the <a href="https://github.com/felias-fogg/dw-link/">dw-link</a> firmware,</li>
+<li>how to set up the <a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> so that you can use its debugging feature,  and</li>
+<li>how to use this combo in order to do embedded debugging on another Arduino UNO R3 (or Pro Mini or other ATmega 328P board).</li>
+</ul>
+<p>This means that you need two UNO boards to try out debugging. In addition, you need:</p>
+<ul>
+<li>a pushbutton,</li>
+<li>6 jumper wires (male-male),</li>
+<li>a 10 µF electrolyte capacitor (optionally), and</li>
+<li>an LED with a 200 Ω resistor soldered to one leg (optionally).</li>
+</ul>
+<h2 id="step-1-turning-an-uno-into-a-debug-probe">Step 1: Turning an UNO into a debug probe</h2>
+<p>Download the <a href="https://github.com/felias-fogg/dw-link/releases/latest">latest release of dw-link</a> from GitHub. Then uncompress the archive and start the Arduino IDE 2. Open the sketch <code>dw-link-X.Y.Z/dw-link/dw-link.ino</code> and upload it to the UNO that you want to use as the debug probe.</p>
+<p>From now on, you can use this board as a debug probe. In order to make it easier to use, plug the (optional) electrolyte capacitor into the RESET and GND header (the negative pin goes into GND). This will make sure that the board does not go into RESET when the debug probe is started. In addition, put the LED with the soldered-on resistor into the header 6 and 7, 6 being used as GND. The LED tells you the internal state of the debug probe:</p>
+<ol>
+<li>debugWIRE mode disabled (LED is off),</li>
+<li>waiting for power-cycling the target (LED flashes every second for 0.1 sec)</li>
+<li>debugWIRE mode enabled (LED is on),</li>
+<li>ISP programming (LED is blinking slowly),</li>
+<li>error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).</li>
+</ol>
+<p>The completed board setup may then look as follows.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/dw-link.png" width="50%">
+</p>
+
+<h2 id="step-2-extend-the-list-of-boards-manager-urls">Step 2: Extend the list of boards manager URLs</h2>
+<p>You first have to extend the list of <code>Additional boards manager URLs</code>. Start the <code>Preferences</code> dialog, which you find, depending on your operating system,  either in the <code>Arduino IDE</code> or the <code>File</code> menu.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+
+<p>Now select the field with the additional board manager URLs.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+
+<p>Type the following URL into a new line:</p>
+<pre><code>https://felias-fogg.github.io/package_debugging_index.json
+</code></pre>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls.png" width="50%">
+</p>
+
+<p>You close the dialog by clicking on two <code>OK</code> buttons in succession.</p>
+<h2 id="step-3-install-the-debug-enabled-arduino-avr-boards-core">Step 3: Install the debug-enabled Arduino AVR Boards core</h2>
+<p>Now you need to activate the <code>boards manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Arduino AVR Boards (Debug enabled)". This is a fork of the official Arduino AVR core, containing all the changes to make debugging possible. Install this core by clicking on <code>Install</code> (3). For the expert: You can also employ <a href="https://github.com/MCUdude/MiniCore">MiniCore</a>, which has support for the 328P and built-in debug support.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino.png" width="80%"></p>
+
+<p>Loading the core and all the necessary tools might take a while.</p>
+<div class="admonition info">
+<p class="admonition-title">Linux systems</p>
+<p>After installing the first debug-enabled core, users of Linux systems will need to add <code>udev</code> rules (see <a href="../install-link/#a-note-for-linux-users">this note for Linux users</a>)</p>
+</div>
+<h2 id="step-4-prepare-the-target-board-for-debugging">Step 4: Prepare the target board for debugging</h2>
+<p>If you are going to debug an Arduino with an ATmega328P or similar, you have to alter the board physically in most cases before debugging is possible. The reason is a capacitor that is connected to the RESET line of the MCU, which is responsible for issuing a RESET when a connection to the board is established. On an original UNO board, you need to cut a solder bridge labeled <code>RESET EN</code>.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg" width="60%">
+</p>
+<p>On other boards, <a href="https://debugwire.de/board-modifications/">similar modifications are most likely necessary</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Not disconnecting the capacitor (or other loads) from the RESET line of the MCU may lead to the situation that debugWIRE mode is activated on a MCU, but it is impossible to communicate with the MCU. In particular, one cannot leave debugWIRE mode anymore.</p>
+</div>
+<p>In addition to these physical modifications, we also want to add a pushbutton, with one pin going into digital header slot 2 of the board. The other pin needs to be connected to GND. In my case, I use the header slot 4, which then has to be an output, which is <code>LOW</code>.</p>
+<h2 id="step-5-connect-the-target-board-with-the-debug-probe">Step 5: Connect the target board with the debug probe</h2>
+<p>Connecting the target and debug probe boards is not entirely straightforward. You have to connect all ISP connections, except for the RESET line. This goes into the header slot 8 on the debug probe. A Fritzing sketch looks as follows.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Uno-debug-new.png" width="70%">
+</p>
+
+<p>The USB connector must be plugged into the hardware debugger. In reality, this could look like the following.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/uno+dwlink.JPG" width="60%">
+</p>
+
+<h2 id="step-6-select-the-board-type">Step 6: Select the board type</h2>
+<p>After having set up the hardware, you have to select the right board. First, click on <code>Select Board</code> in the top bar and choose <code>Select other board and port ...</code>.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-board.png" width="20%"></p>
+
+<p>Then type "Uno" in the search field (1), select the right board (2), and finally click the <code>OK</code> button. We do not care much about the serial port. However, we might as well select the serial that is connected with our debug probe.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-other.png" width="50%"></p>
+
+<h2 id="step-7-edit-and-compile-a-sketch">Step 7: Edit and compile a sketch</h2>
+<p>Let us choose a simple sketch that is a little bit more challenging than the <code>Blink</code> example. The <code>Debounce</code> example will do. Let us load it and modify it for our needs.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/debounce-example.png" width="80%"></p>
+
+<p>This sketch will toggle the LED state (on pin 13) when a button is pressed. The program logic contains a basic form of debouncing so that noise induced by the button contact opening and closing is ignored. The button in this sketch is supposed to be at digital input line 2. As mentioned above, the GND pin shall be the header slot 4. For this reason, we replace the empty line 32 in the <code>Debounce.ino</code> sketch with the following line</p>
+<pre><code class="language-C++">const int buttonGND = 4;  // the number of the pushbutton GND pin
+</code></pre>
+<p>Further, we need to replace  line 45 with</p>
+<pre><code class="language-C++">   pinMode(buttonPin, INPUT_PULLUP);
+</code></pre>
+<p>and the empty line 47 with</p>
+<pre><code class="language-C++">   pinMode(buttonGND, OUTPUT);
+</code></pre>
+<p>Before compiling and uploading the sketch, you should set the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu. This flag will make sure that the produced machine code resembles the program flow in the source code in order to make debugging easier.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
+
+<p>Now it is time to compile the sketch. Click the <code>Verify</code> button (a check mark symbol) in the top bar, which will compile the sketch. Loading the compiled code will then be done when the debugger is started.</p>
+<h2 id="step-8-start-debugging">Step 8: Start debugging</h2>
+<p>Now it is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top row.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0.png" width="80%"></p>
+
+<p>Then the IDE tries to discover a debug probe. If it finds one, it will connect and check whether the target is already in the debugWIRE mode. If this is not the case, the IDE requests a power cycle, i.e., disconnecting power from the target board and then reconnecting power. The debug probe dw-link will start to flash eveery second.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0a.png" width="80%"></p>
+
+<p>Power-cycling is something you have to do manually by removing the jumper cable and reinserting it. Sometimes, this does not work out according to plan, and an error message is issued. Usually, at a second attempt, it works out with the MCU already being in debugWIRE mode.</p>
+<h2 id="step-9-debug-the-sketch">Step 9: Debug the sketch</h2>
+<p>If the debugger has successfully started and the binary has been loaded into flash, execution will begin. It will always stop in the first line of the <code>main</code> function in <code>main.cpp</code>, which is an Arduino internal function. The line where execution has been stopped is marked yellow (perhaps with an additional yellow triangle) (A). Since this line is in a file different from the user sketch, it is loaded into the editor, and the loaded files are all shown in the top bar of the editor (B). The central debugging control is located in the debugging pane at the top (C). The buttons have the following meanings, from left to right:</p>
+<ul>
+<li><em>Reset</em>ting the device</li>
+<li><em>Continue</em> execution or <em>pause</em></li>
+<li><em>Step over</em>: execute one source line</li>
+<li><em>Step into</em>: execute stepping into the function, if in this line one is called</li>
+<li><em>Step out</em>: finish the current function and stop after the line where it was called</li>
+<li><em>Restart</em>: Same as Reset</li>
+<li><em>Stop</em>: Terminate debugging</li>
+</ul>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-1.png" width="80%"></p>
+
+<p>Pressing the <code>Continue</code> button in the situation depicted in the picture above would start execution. However, before we do this, let us set a breakpoint. For this purpose, we first select the original sketch file <code>Debounce.ino</code> at the top row of the editor pane.</p>
+<p>This will bring up the sketch file. Scroll down to line 75 and set a breakpoint by clicking to the left of the line number (1). A red dot will mark the breakpoint. Now press the <code>Continue</code> button (2).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2.png" width="80%"></p>
+
+<p>Sketch execution will be immediately stopped in line 75. Now we want to examine the values of some of the variables. If you hover with the mouse over a variable, its value will be shown. If we want to always track the value of the variable, we can use the watch window. Move with the mouse to the right part of the <code>WATCH</code> bar. Then a plus sign will appear. Clicking on it allows you to enter "watch" expressions.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2a.png" width="80%"></p>
+
+<p>If we add <code>buttonState</code> and <code>ledState</code> to the <code>WATCH</code> pane, we see that they are both currently 1. If we now click the <code>Continue</code> button, <code>ledState</code> variable will be toggled (i.e., the LED will go dark) and the sketch will run and wait for a change of the button state.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-3.png" width="80%"></p>
+
+<p>Pressing the button changes the level and will stop again in line 75, as shown below. The value of both variables is now 0. From here on, you can explore the debugger on your own. Hovering the mouse over symbols and names will bring up a short explanation. In this tutorial, we will now stop and press the exit symbol (red square).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-4.png" width="80%"></p>
+
+<h2 id="step-10-start-over-or-terminate-the-debugging-session">Step 10: Start over or terminate the debugging session</h2>
+<p>You now can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you can call it day and end debugging. In this case, you perhaps will switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the debug session.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="80%"></p>
+
+<p>If you scroll down in the <code>Debug Console</code>, you will see that the command was successful. Now you can definitely leave the debugger.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-6.png" width="80%"></p>
+
+<p>It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu, because not doing so will result in larger codes next time you compile a sketch.</p>
+<p>If you want to restore your UNO to its original state, you also need to burn the bootloader again. For this purpose choose the serial line connected to dw-link.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/choose-serial-uno.png" width="50%"></p>
+
+<p>Select as the programmer <code>Arduino as ISP</code>.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/choose-programmer-uno.png" width="40%"></p>
+
+<p>The select the Burn Bootloader entry in the tools menu.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/choose-burn-bootloader.png" width="25%"></p>
+
+<p>The debug probe should then be able to handle the rest.</p>
+<p>As a final measure you may want to restore the solder bridge <code>RESET EN</code> or reinsert a removed capacitor. If possible, you can also try to fit onto the board some pins that can be shortened with a jumper.</p>
+<h2 id="potential-problems">Potential problems</h2>
+<p>There is always the chance that something goes south, either debugging does not start at all or something funny happens while debugging. If so, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the <a href="https://felias-fogg.github.io/PyAvrOCD/">PyAvrOCD manual</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../quick_xmini/" class="btn btn-neutral float-left" title="ATmega328P Xplained Mini"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../install-link/" class="btn btn-neutral float-right" title="PyAvrOCD">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-code-fork" style="color: #fcfcfc"> PyAvrOCD</a>
+        </span>
+    
+    
+      <span><a href="../quick_xmini/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../install-link/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
