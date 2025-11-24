@@ -81,7 +81,7 @@ jobs:
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Upload artifact (macOS Intel = macos-15-intel)
-        if: matrix.os == 'macos-14-intel'
+        if: matrix.os == 'macos-15-intel'
         uses: actions/upload-artifact@v4
         with:
           name: x86_64-apple-darwin
