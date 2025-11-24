@@ -45,7 +45,7 @@ jobs:
              REL_NAME=$VERSTRING
              echo "Adapted GitHub release name to system version string"
           fi
-          if [ "x$VERSTRING" != "x$TAG_NAME" ]; then
+          if [ "x$VERSTRING" != "x$REL_NAME" ]; then
              echo "Release version does not match system version"
              exit 1
           fi
