@@ -18,4 +18,4 @@ Furthermore, you can distinguish the support on whether you can install the pack
 | Windows 11, Intel 64-bit          | **yes**      | **yes**                |
 | Windows 11, Intel 32-bit          | yes          | no                     |
 
-As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it. 
+As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.
