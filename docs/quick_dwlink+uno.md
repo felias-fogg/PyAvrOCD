@@ -4,9 +4,9 @@ This quickstart guide shows how to try out embedded debugging as offered by the 
 
 - how to turn an Arduino UNO R3 into a [debugWIRE](https://debugwire.de/) debug probe using the [dw-link](https://github.com/felias-fogg/dw-link/) firmware,
 - how to set up the [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) so that you can use its debugging feature,  and
-- how to use this combo in order to do embedded debugging on another Arduino UNO R3 (or Pro Mini or other ATmega 328P board).
+- how to use this combo in order to do embedded debugging on another Arduino UNO R3.
 
-This means that you need two UNO boards to try out debugging. In addition, you need:
+This means that you need two UNO boards to try out debugging. Of course, any other ATmega328P boards will do, as long as on one of them you can remove or disconnect the `RESET ENABLE` capacitor (see below). In addition, you need:
 
 - a pushbutton,
 - 6 jumper wires (male-male),
@@ -17,7 +17,7 @@ This means that you need two UNO boards to try out debugging. In addition, you n
 
 Download the [latest release of dw-link](https://github.com/felias-fogg/dw-link/releases/latest) from GitHub. Then uncompress the archive and start the Arduino IDE 2. Open the sketch `dw-link-X.Y.Z/dw-link/dw-link.ino` and upload it to the UNO that you want to use as the debug probe.
 
-From now on, you can use this board as a debug probe. In order to make it easier to use, plug the (optional) electrolyte capacitor into the RESET and GND header (the negative pin goes into GND). This will make sure that the board does not go into RESET when the debug probe is started. In addition, put the LED with the soldered-on resistor into the header 6 and 7, 6 being used as GND. The LED tells you the internal state of the debug probe:
+From now on, you can use this board as a debug probe. In order to make it easier to use, plug the (optional) electrolyte capacitor into the RESET and GND header (the negative pin goes into GND). This will make sure that the board does not go into RESET when the host contacts the debug probe. In addition, put the LED with the soldered-on resistor into the header 6 and 7, 6 being used as GND. The LED tells you the internal state of the debug probe:
 
 1. debugWIRE mode disabled (LED is off),
 2. waiting for power-cycling the target (LED flashes every second for 0.1 sec)
@@ -70,6 +70,10 @@ Now you need to activate the `boards manager` by clicking on the board symbol in
 
 Loading the core and all the necessary tools might take a while.
 
+In order to avoid confusion, it is a good idea to remove the original core. Otherwise, you have boards that are named identically in two different cores. So activate the boards manager again and remove the core Named `Arduino AVR Boards by Arduino` (it is the first one in the list when you open the boards manager). Removing this core is not a problem since the debug-enabled core has the same functionality when no debugging is selected. And you can install the original core at any point in time anyway.
+
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino-1.png" width="80%"></p>
+
 ## Step 4: Prepare the target board for debugging
 
 If you are going to debug an Arduino with an ATmega328P or similar, you have to alter the board physically in most cases before debugging is possible. The reason is a capacitor that is connected to the RESET line of the MCU, which is responsible for issuing a RESET when a connection to the board is established. On an original UNO board, you need to cut a solder bridge labeled `RESET EN`.
@@ -108,7 +112,7 @@ After having set up the hardware, you have to select the right board. First, cli
 
 Then type "Uno" in the search field (1), select the right board (2), and finally click the `OK` button. We do not care much about the serial port. However, we might as well select the serial that is connected with our debug probe.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-other.png" width="50%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-other-uno.png" width="50%"></p>
 
 
 
@@ -188,9 +192,9 @@ Pressing the button changes the level and will stop again in line 75, as shown b
 
 ## Step 10: Start over or terminate the debugging session
 
-You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and rthe source code will be lost.
+You can now edit the sketch and start again at step 7. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you can call it a day and end debugging. In this case, you will perhaps switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
+Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you want perhaps switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="80%"></p>
 
@@ -198,7 +202,7 @@ If you scroll down in the `Debug Console`, you will see that the command was suc
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-6.png" width="80%"></p>
 
-It may also be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger codes next time you compile a sketch.
+It may also be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger flash code next time you compile a sketch.
 
 If you want to restore your UNO to its original state, you also need to burn the bootloader again. For this purpose, choose the serial line connected to dw-link.
 
@@ -216,7 +220,7 @@ Then select the Burn Bootloader entry in the tools menu.
 
 The debug probe should then be able to handle the rest.
 
-As a final measure, you may want to restore the solder bridge `RESET EN` or reinsert a removed capacitor. If possible, you can also try to fit onto the board some pins that can be shortened with a jumper.
+As a final measure, you may want to restore the solder bridge `RESET EN` or reinsert a removed capacitor. If possible, you can also try to fit onto the board some pins that can be shortened with a jumper instead.
 
 ## Potential problems
 
