@@ -57,10 +57,9 @@ jobs:
 
   build-binaries:
     needs: check
-    strategy:
       matrix:
       # If you change something in the list of OSs, you also have to do it further down!
-       os: [ "ubuntu-22.04", "macos-13", "windows-2022",  "ubuntu-22.04-arm",  "macos-14" ]
+       os: [ "ubuntu-22.04", "macos-15-intel", "windows-2022",  "windows-2025", "ubuntu-22.04-arm",  "macos-15" ]
     defaults:
       run:
         shell: bash
@@ -69,10 +68,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python-64-bit
+        if: matrix.os != 'windows-2022'
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+
+      - name: Set up Python-32-bit
+        if: matrix.os == 'windows-2022'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          architecture: 'x86'
 
       - name: Install dependencies
         run: |
@@ -83,8 +90,8 @@ jobs:
         run: |
           pyinstaller -y pyavrocd.spec
 
-      - name: Upload as artifact (macOS ARM = macos-14)
-        if: matrix.os == 'macos-14'
+      - name: Upload as artifact (macOS ARM = macos-15)
+        if: matrix.os == 'macos-15'
         uses: actions/upload-artifact@v4
         with:
           name: arm64-apple-darwin
@@ -103,8 +110,8 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-      - name: Upload artifact (Windows Intel = windows-2022)
-        if: matrix.os == 'windows-2022'
+      - name: Upload artifact (Windows Intel (64-bit) = windows-2025)
+        if: matrix.os == 'windows-2025'
         uses: actions/upload-artifact@v4
         with:
           name: x86_64-mingw32
@@ -113,8 +120,18 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-      - name: Upload artifact (macOS Intel = macos-13)
-        if: matrix.os == 'macos-13'
+      - name: Upload artifact (Windows Intel (32-bit) = windows-2022)
+        if: matrix.os == 'windows-2022'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i686-mingw32
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
+      - name: Upload artifact (macOS Intel = macos-15-intel)
+        if: matrix.os == 'macos-14-intel'
         uses: actions/upload-artifact@v4
         with:
           name: x86_64-apple-darwin
@@ -157,6 +174,12 @@ jobs:
           name: x86_64-mingw32
           path: extras/binaries/x86_64-mingw32
 
+      - name: Download i686-mingw32
+        uses: actions/download-artifact@v5
+        with:
+          name: i686-mingw32
+          path: extras/binaries/i686-mingw32
+
       - name: Download x86_64-apple-darwin
         uses: actions/download-artifact@v5
         with:
@@ -189,7 +212,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#    - run: exit 1
+    - run: exit 1
 
     - uses: actions/checkout@v4
       with:
