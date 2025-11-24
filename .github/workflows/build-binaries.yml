@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
       # If you change something in the list of OSs, you also have to do it further down!
-       os: [ "ubuntu-22.04", "macos-14-intel", "windows-2022",  "windows-2025", "ubuntu-22.04-arm",  "macos-14" ]
+       os: [ "ubuntu-22.04", "macos-15-intel", "windows-2022",  "windows-2025", "ubuntu-22.04-arm",  "macos-15" ]
     defaults:
       run:
         shell: bash
