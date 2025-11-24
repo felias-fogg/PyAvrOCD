@@ -37,7 +37,7 @@ jobs:
         run: |
           VER=$(python pyavrocd/main.py -V)
           VERSTRING=v${VER#*version }
-          VERSTRING=${VERSTRING%rc0}
+          VERSTRING=${VERSTRING%rc*}
           REL_NAME=${{ github.event.release.name }}
           echo "System version string: $VERSTRING"
           echo "Github release name: $REL_NAME"
@@ -133,7 +133,7 @@ jobs:
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
       - name: Upload artifact (macOS Intel = macos-15-intel)
-        if: matrix.os == 'macos-14-intel'
+        if: matrix.os == 'macos-15-intel'
         uses: actions/upload-artifact@v4
         with:
           name: x86_64-apple-darwin
