@@ -37,12 +37,12 @@ jobs:
         run: |
           VER=$(python pyavrocd/main.py -V)
           VERSTRING=v${VER#*version }
-          TAG_NAME=${{ github.event.release.tag_name }}
+          REL_NAME=${{ github.event.release.name }}
           echo "System version string: $VERSTRING"
-          echo "Github tag: $TAG_NAME"
-          if [ "x$TAG_NAME" == "x" ]; then
-             TAG_NAME=$VERSTRING
-             echo "Adapted GitHub tag name to system version string"
+          echo "Github release name: $REL_NAME"
+          if [ "x$REL_NAME" == "x" ]; then
+             REL_NAME=$VERSTRING
+             echo "Adapted GitHub release name to system version string"
           fi
           if [ "x$VERSTRING" != "x$TAG_NAME" ]; then
              echo "Release version does not match system version"
