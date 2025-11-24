@@ -66,13 +66,13 @@ You close the dialog by clicking on two `OK` buttons in succession.
 
 Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Arduino AVR Boards (Debug enabled)". This is a fork of the official Arduino AVR core, containing all the changes to make debugging possible. Install this core by clicking on `Install` (3). For the expert: You can also employ [MiniCore](https://github.com/MCUdude/MiniCore), which has support for the 328P and built-in debug support.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino.png" width="90%"></p>
 
 Loading the core and all the necessary tools might take a while.
 
 In order to avoid confusion, it is a good idea to remove the original core. Otherwise, you have boards that are named identically in two different cores. So activate the boards manager again and remove the core Named `Arduino AVR Boards by Arduino` (it is the first one in the list when you open the boards manager). Removing this core is not a problem since the debug-enabled core has the same functionality when no debugging is selected. And you can install the original core at any point in time anyway.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino-1.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino-1.png" width="90%"></p>
 
 ## Step 4: Prepare the target board for debugging
 
@@ -110,7 +110,7 @@ After having set up the hardware, you have to select the right board. First, cli
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-board.png" width="20%"></p>
 
-Then type "Uno" in the search field (1), select the right board (2), and finally click the `OK` button. We do not care much about the serial port. However, we might as well select the serial that is connected with our debug probe.
+Then type "uno" in the search field (1), select the right board (2), and finally click the `OK` button. We do not care much about the serial port. However, we might as well select the serial that is connected with our debug probe.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-other-uno.png" width="50%"></p>
 
@@ -150,11 +150,11 @@ Now it is time to compile the sketch. Click the `Verify` button (a check mark sy
 
 Now it is time to start debugging by clicking the `Debug` button (bug in front of a triangle) in the top row.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0.png" width="90%"></p>
 
 Then the IDE tries to discover a debug probe. If it finds one, it will connect and check whether the target is already in the debugWIRE mode. If this is not the case, the IDE requests a power cycle, i.e., disconnecting power from the target board and then reconnecting power. The debug probe dw-link will start to flash every second.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0a.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-0a.png" width="90%"></p>
 
 Power-cycling is something you have to do manually by removing the jumper cable and reinserting it. Sometimes, this does not work out according to plan, and an error message is issued. Usually, at a second attempt, it works out with the MCU already being in debugWIRE mode.
 
@@ -170,25 +170,25 @@ If the debugger has successfully started and the binary has been loaded into fla
 - *Restart*: Same as Reset
 - *Stop*: Terminate debugging
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-1.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-1.png" width="90%"></p>
 
 Pressing the `Continue` button in the situation depicted in the picture above would start execution. However, before we do this, let us set a breakpoint. For this purpose, we first select the original sketch file `Debounce.ino` at the top row of the editor pane.
 
 This will bring up the sketch file. Scroll down to line 75 and set a breakpoint by clicking to the left of the line number (1). A red dot will mark the breakpoint. Now press the `Continue` button (2).
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2.png" width="90%"></p>
 
 Sketch execution will be immediately stopped in line 75. Now we want to examine the values of some of the variables. If you hover the mouse over a variable, its value will be shown. If we wish always to track the value of the variable, we can use the watch window. Move with the mouse to the correct part of the `WATCH` bar. Then a plus sign will appear. Clicking on it allows you to enter "watch" expressions.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2a.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-2a.png" width="90%"></p>
 
 If we add `buttonState` and `ledState` to the `WATCH` pane, we see that they are both currently 1. If we now click the `Continue` button, the `ledState` variable will be toggled (i.e., the LED will go dark) and the sketch will run and wait for a change of the button state.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-3.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-3.png" width="90%"></p>
 
 Pressing the button changes the level and will stop again in line 75, as shown below. The value of both variables is now 0. From here on, you can explore the debugger on your own. Hovering the mouse over symbols and names will bring up a short explanation. In this tutorial, we will now stop and press the exit symbol (red square).
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-4.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-4.png" width="90%"></p>
 
 ## Step 10: Start over or terminate the debugging session
 
@@ -196,11 +196,11 @@ You can now edit the sketch and start again at step 7. Note that you always have
 
 Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you want perhaps switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="90%"></p>
 
 If you scroll down in the `Debug Console`, you will see that the command was successful. Now you can definitely leave the debugger.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-6.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-6.png" width="90%"></p>
 
 It may also be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger flash code next time you compile a sketch.
 

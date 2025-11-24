@@ -41,7 +41,7 @@ You close the dialog by clicking on two `OK` buttons in succession.
 
 Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Atmel AVR Xplained-minis (Debug enabled)." Install this core by clicking on `Install` (3).
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager.png" width="90%"></p>
 
 Loading the core and all the necessary tools might take a while.
 
@@ -84,7 +84,7 @@ Now it is time to compile the sketch. Click the `Verify` button (a check mark sy
 
 Now it is time to start debugging by clicking the `Debug` button (bug in front of a triangle) in the top row.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-0.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-0.png" width="90%"></p>
 
 This will trigger a lot of actions. First, the debug pane to the left of the sketch editor pane will be opened. Second, below the sketch editor pane, first a `gdb-server` console will appear, then the `Debug Console`. While this is happening, the sketch is loaded and execution is started.
 
@@ -98,25 +98,25 @@ The execution will always stop in the first line of the `main` function in `main
 - *Restart*: Same as Reset
 - *Stop*: Terminate debugging
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-1.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-1.png" width="90%"></p>
 
 Pressing the `Continue` button in the situation depicted in the picture above would start execution. However, before we do this, let us set a breakpoint. For this purpose, we first select the original sketch file `Debounce.ino` at the top row of the editor pane.
 
 This will bring up the sketch file. Scroll down to line 75 and set a breakpoint by clicking to the left of the line number (1). A red dot will mark the breakpoint. Now press the `Continue` button (2).
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-2.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-2.png" width="90%"></p>
 
 Sketch execution will be immediately stopped in line 75. Now we want to examine the values of some of the variables. If you hover with the mouse over a variable, its value will be shown. If we want to always track the value of the variable, we can use the watch window. Move with the mouse to the right part of the `WATCH` bar. Then a plus sign will appear. Clicking on it allows you to enter "watch" expressions.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-2a.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-2a.png" width="90%"></p>
 
 If we add buttonState and ledState to the `WATCH` pane, we see that they are both currently 1. If we now click the `Continue` button, `ledState` variable will be toggled (i.e., the LED will go dark) and the sketch will wait for a change of the button state.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-3.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-3.png" width="90%"></p>
 
 Pressing the button changes the level and will stop again in line 75, as shown below. The value of both variables is now 0. From here on, you can explore the debugger on your own. Hovering the mouse over symbols and names will bring up a short explanation. In this tutorial, we will now stop and press the exit symbol (red square).
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-4.png" width="80%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-4.png" width="90%"></p>
 
 ## Step 6: Start over or terminate the debugging session
 
