@@ -37,7 +37,7 @@ jobs:
         run: |
           VER=$(python pyavrocd/main.py -V)
           VERSTRING=v${VER#*version }
-          VERSTRING={VERSTRING%rc0}
+          VERSTRING=${VERSTRING%rc0}
           REL_NAME=${{ github.event.release.name }}
           echo "System version string: $VERSTRING"
           echo "Github release name: $REL_NAME"
