@@ -40,8 +40,8 @@ jobs:
         run: |
           pyinstaller -y pyavrocd.spec
 
-      - name: Upload as artifact (macOS ARM = macos-14)
-        if: matrix.os == 'macos-14'
+      - name: Upload as artifact (macOS ARM = macos-15)
+        if: matrix.os == 'macos-15'
         uses: actions/upload-artifact@v4
         with:
           name: arm64-apple-darwin
@@ -80,7 +80,7 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-      - name: Upload artifact (macOS Intel = macos-14-intel)
+      - name: Upload artifact (macOS Intel = macos-15-intel)
         if: matrix.os == 'macos-14-intel'
         uses: actions/upload-artifact@v4
         with:
