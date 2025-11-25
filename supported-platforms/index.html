@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Supported platforms - PyAvrOCD</title>
+    <title>Platforms - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Supported platforms";
+        var mkdocs_page_name = "Platforms";
         var mkdocs_page_input_path = "supported-platforms.md";
         var mkdocs_page_url = null;
       </script>
@@ -74,13 +74,17 @@
                   <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Supported devices</span></p>
-              <ul>
+              <p class="caption"><span class="caption-text">Supported devices & platforms</span></p>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Platforms</a>
+    <ul class="current">
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
@@ -119,7 +123,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Supported platforms</li>
+          <li class="breadcrumb-item">Supported devices & platforms</li>
+      <li class="breadcrumb-item active">Platforms</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/supported-platforms.md">Edit on PyAvrOCD</a>
     </li>
@@ -130,9 +135,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-platforms">Supported platforms</h1>
-<p>As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-independent. Of course, you need a Python interpreter on board (&gt;=3.10, and currently &lt;= 3.13), provided you download the source code. When you install an Arduino core, which includes PyAvrOCD as a binary tool, even the Python interpreter is included.</p>
-<p>A further critical dependence is the <a href="https://github.com/libusb/hidapi/">HIDAPI library</a> and the <a href="https://pypi.org/project/hidapi/">Python interface</a> to it. This works apparently for Linux, FreeBSD, macOS, and Windows. For other platforms, you have to build it from sources.</p>
-<p>Furthermore, you can distinguish the support on whether you can install the package via PyPI using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing">pip</a>, or even better <a href="https://pipx.pypa.io/stable/">pipx</a>, or whether there is also Arduino IDE 2 support, meaning that you install an Arduino core and you get all tools and configurations with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.</p>
+<p>As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-independent. Of course, you need a Python interpreter on board (&gt;=3.10, and currently &lt;= 3.13) when you download the PyAvrOCD from PyPI using pip or pipx. When you install an Arduino core that includes PyAvrOCD as a binary tool, even the Python interpreter is already included.</p>
+<p>A critical dependence is the <a href="https://github.com/libusb/hidapi/">HIDAPI library</a> and the <a href="https://pypi.org/project/hidapi/">Python interface</a> to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms. </p>
+<p>One can distinguish the support based on whether one can install the package via PyPI using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing">pip</a>, or even better <a href="https://pipx.pypa.io/stable/">pipx</a>, or whether there is also Arduino IDE 2 support, meaning that you install an Arduino core and you get all tools and configurations with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.</p>
 <table>
 <thead>
 <tr>
@@ -145,7 +150,7 @@
 <tr>
 <td>macOS 15, Apple Silicon 64-bit</td>
 <td><strong>yes</strong></td>
-<td><strong>yes</strong> <strong>(native)</strong></td>
+<td><strong>yes</strong></td>
 </tr>
 <tr>
 <td>macOS 15, Intel 64-bit</td>
@@ -158,41 +163,53 @@
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux, Ubuntu 22.02, ARM 32-bit</td>
-<td>yes</td>
-<td>no</td>
-</tr>
-<tr>
 <td>Linux, Ubuntu 22.02, Intel 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux, Ubuntu 22.02, Intel 32-bit</td>
-<td>yes</td>
-<td>no</td>
+<td>Linux Debian 13 (Trixie)/Raspi OS 6.0 ARM 32-bit</td>
+<td><strong>yes</strong><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
+<td><strong>no</strong></td>
 </tr>
 <tr>
-<td>Windows 11, ARM 64-bit</td>
+<td>Linux  Intel 32-bit</td>
+<td>yes</td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Windows 10, ARM 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong> <strong>(emulated)</strong></td>
 </tr>
 <tr>
-<td>Windows 11, Intel 64-bit</td>
+<td>Windows 10, Intel 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Windows 11, Intel 32-bit</td>
-<td>yes</td>
-<td>no</td>
+<td>Windows 10, Intel 32-bit</td>
+<td><strong>yes</strong></td>
+<td><strong>yes</strong></td>
 </tr>
 </tbody>
 </table>
 <p>As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:*">
+<p>You need to install the two packages <code>libusb-dev</code> and <code>libudev-dev</code> so that the hidapi package can be built.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../supported-debuggers/" class="btn btn-neutral float-left" title="Debug probes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../disclaimer/" class="btn btn-neutral float-right" title="Disclaimer">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -218,6 +235,10 @@
         </span>
     
     
+      <span><a href="../supported-debuggers/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../disclaimer/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
