@@ -57,4 +57,7 @@ for dir in binaries/*; do
 done
 cd ..
 
+echo "Packing SVDs"
+tar -zcv --exclude "*DS_Store" --exclude="*/._*" -f extras/assets/svd.tar.gz svd/
+
 
