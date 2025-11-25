@@ -122,7 +122,7 @@ Pressing the button changes the level and will stop again in line 75, as shown b
 
 You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you can call it a day and end debugging. In this case, it may be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger code next time you compile a sketch.
+Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, it may be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger code next time you compile a sketch.
 
 ## Potential problems
 

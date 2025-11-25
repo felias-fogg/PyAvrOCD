@@ -18,8 +18,6 @@ One can distinguish the support of PyAvrOCD based on whether one can install the
 
 As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.
 
-------
-
 
 
 [^*]: You need to install the two packages `libusb-dev` and `libudev-dev` so that the HIDAPI package can be built.

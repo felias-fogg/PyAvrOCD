@@ -66,6 +66,4 @@ Furthermore, you can create a binary standalone package as follows:
 
 As a result, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the directory `dist/pyavrocd/` together with the folder `pyavrocd-util`. You can copy those two to a place in your `PATH`.
 
-------
-
 [^*]: Currently, it is not possible to get a list of releases by clicking on the `Releases` title. However, clicking on the Tag number or the `Latest` label works.

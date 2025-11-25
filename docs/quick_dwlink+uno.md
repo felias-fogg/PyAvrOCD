@@ -194,7 +194,7 @@ Pressing the button changes the level and will stop again in line 75, as shown b
 
 You can now edit the sketch and start again at step 7. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you want perhaps switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
+Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you want perhaps to switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type `monitor debugwire disable` into the prompt line of the `Debug Console` before ending the debug session.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="90%"></p>
 
@@ -220,7 +220,7 @@ Then select the Burn Bootloader entry in the tools menu.
 
 The debug probe should then be able to handle the rest.
 
-As a final measure, you may want to restore the solder bridge `RESET EN` or reinsert a removed capacitor. If possible, you can also try to fit onto the board some pins that can be shortened with a jumper instead.
+As a final measure, you may want to restore the solder bridge `RESET EN` or reinsert a removed capacitor. If possible, you can instead try to fit onto the board some pins that can be shortened with a jumper instead.
 
 ## Potential problems
 
