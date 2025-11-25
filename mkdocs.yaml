@@ -7,7 +7,8 @@ theme:
   locale: en
   logo: pics/logo-tiny.png
   include_homepage_in_sidebar: True
-
+  features:
+    - content.footnote.tooltips
 extra_css:
   - style.css
 
@@ -19,6 +20,7 @@ markdown_extensions:
         base_path: docs
         inheritHeadingDepth: True
   - admonition
+  - footnotes
 
 nav:
   - Arduino IDE 2 Quickstart Guides:
@@ -38,10 +40,11 @@ nav:
     - Monitor commands: 'monitor-commands.md'
     - Restoring the target: 'restore-original-state.md'
     - Troubleshooting: 'troubleshooting.md'
-  - Supported devices:
+  - Supported devices & platforms:
     - MCUs: 'supported-mcus.md'
     - Boards: 'supported-boards.md'
     - Debug probes: 'supported-debuggers.md'
+    - Platforms: 'supported-platforms.md'
   - Caveats:
     - Disclaimer: 'disclaimer.md'
     - Limitations: 'limitations.md'
