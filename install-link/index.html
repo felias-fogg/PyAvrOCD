@@ -151,7 +151,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="pyavrocd-installation-configuration">PyAvrOCD installation &amp; configuration</h1>
-<p>Both the installation and configuration of PyAvrOCD are straightforward.</p>
+<p>Both the installation and configuration of PyAvrOCD are straightforward on Windows, macOS, and Linux machines (see <a href="../supported-platforms/">supported platforms</a>).</p>
 <h2 id="installation">Installation</h2>
 <h4 id="a-note-for-linux-users">A note for Linux users</h4>
 <p>Note that Linux users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. This can be accomplished by invoking PyAvrOCD once as root with the option <code>--install-udev-rules</code> (assuming that <code>pyavrocd</code> has been stored somewhere on the <code>PATH</code>):</p>
@@ -163,7 +163,7 @@
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
 <h4 id="downloading-binaries">Downloading binaries</h4>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
-<p>Since the binaries were generated on very recent versions of the respective operating systems (Windows 11, macOS 15.4, Ubuntu 24.04), it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
+<p>Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <p><strong>Apple Users:</strong> On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command</p>
 <pre><code class="language-bash">xattr -d com.apple.quarantine FILE
 </code></pre>
@@ -186,7 +186,7 @@
 <p>Furthermore, you can create a binary standalone package as follows:</p>
 <pre><code class="language-bash">&gt; poetry run pyinstaller pyavrocd.spec
 </code></pre>
-<p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those to a place in your <code>PATH</code>.</p>
+<p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those two to a place in your <code>PATH</code>.</p>
 <h2 id="configuration">Configuration</h2>
 <p>It is not necessary to set up any configuration file before you can use PyAvrOCD.</p>
 <p>However, sometimes, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
