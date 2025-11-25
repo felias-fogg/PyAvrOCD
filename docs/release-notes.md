@@ -1,5 +1,9 @@
 # Release Notes
 
+## Release v0.17.1
+
+- From now on, releases will also contain a working 32-bit package for Windows.
+
 ## Release v0.17.0
 
 - The use of the simulator `simavr` is now supported. If this program is specified with the `-s` option, then the simulator is started with the right options, and no hardware probe will be used. Note that the current version of simavr (1.7) will not work. You can build simavr from source from the main branch of the current repo, however.
