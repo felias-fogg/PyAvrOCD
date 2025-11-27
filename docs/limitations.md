@@ -140,7 +140,7 @@ MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not
 - ATmega16, and
 - Atmega16A.
 
-These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips have the same chip signature as their cousins with an A-suffix, it takes some effort to identify and reject them.
+These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips additionally suffer from the Hotel California syndrome (you can always check in, but never check out), and they have the same chip signature as their cousins with an A-suffix, PyAvrOCD goes to some length to recognize those chips and reject them before they get "bricked" by switching them into debugWIRE mode.
 
 Finally, we have the ATmega128(A), which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the `BREAK` instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to `software_breakpoint_set` throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode.
 
@@ -175,7 +175,7 @@ PyAvrOCD will make use of hardware breakpoints whenever possible and use softwar
 
 ### The flash wear problem
 
-So, how severe is the flash wear problem? The data sheets state that for classic AVR MCUs, the guaranteed flash endurance is 10,000 write/erase cycles. For the more recent MCUs with the UPDI interface, it is only 1000 cycles! These are probably quite conservative numbers guaranteeing endurance even when the chips are operated close to the limits of their specification (e.g., at 50° C). So, one hopes that the endurance in practice is much higher.
+So, how severe is the flash wear problem? The data sheets state that for classic AVR MCUs, the guaranteed flash endurance is 10,000 write/erase cycles. For the more recent MCUs with the UPDI interface, it is only 1000 cycles! These are probably quite conservative numbers guaranteeing endurance even when the chips are operated at the limits of their specification (e.g., at +85° C or -40° C). So, one hopes that the endurance in practice is much higher.
 
 Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. This means ten flash-page-reprogramming operations. That will probably result on average in 3 additional reprogramming operations on an individual page, leading together with reprogramming flash memory to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This, however, holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so.
 

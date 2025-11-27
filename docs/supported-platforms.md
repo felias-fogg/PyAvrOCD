@@ -6,15 +6,16 @@ One can distinguish the support of PyAvrOCD based on whether one can install the
 
 | Platform                          | PyPI        | Arduino IDE 2 |
 | --------------------------------- | ----------- | ------------- |
-| macOS 15, Apple Silicon 64-bit    | **yes**     | **yes**       |
 | macOS 15, Intel 64-bit            | **yes**     | **yes**       |
-| Linux, Ubuntu 22.02, ARM 64-bit   | **yes**     | **yes**       |
+| macOS 15, Apple Silicon 64-bit    | **yes**     | **yes**       |
 | Linux, Ubuntu 22.02, Intel 64-bit | **yes**     | **yes**       |
-| Linux Raspi OS 6.0, ARM 32-bit    | **yes**[^*] | **no**        |
+| Linux, Ubuntu 22.02, ARM 64-bit   | **yes**     | **yes**       |
 | Linux,  Intel 32-bit              | yes         | **no**        |
-| Windows 10, ARM 64-bit            | **yes**     | **yes**       |
+| Linux Raspi OS 6.0, ARM 32-bit    | **yes**[^*] | **no**        |
 | Windows 10, Intel 64-bit          | **yes**     | **yes**       |
+| Windows 11, ARM 64-bit<br> (emulated)       | **yes**     | **yes**       |
 | Windows 10, Intel 32-bit          | **yes**     | **yes**       |
+
 
 As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.
 

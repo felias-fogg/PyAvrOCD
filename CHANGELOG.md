@@ -1,16 +1,16 @@
 # Changelog
 
-### 0.17.1
-
-- **Added:*
-      - More unit tests
-      - 32-bit Windows version (meaning, we do not have to explain that one
-        has to re-install when working on a 64-bit Windows system, sigh!)
-
-### 0.17.0
+### 0.17.1 (24-Nov-2025)
 
 - **Added:**
-     - Support for `simavr` (needs to be built from source) and an explanation of how to use it in the documentation: Simply use the `-s` option with `simavr` as the program name. In this case, no connection to a hardware debug probe is made, and simavr is invoked. After termination of simavr, PyAvrOCD is also immediately terminated.
+     - More unit tests
+      - 32-bit Windows version (meaning, we do not have to explain that one
+          has to re-install when working on a 64-bit Windows system, sigh!)
+
+### 0.17.0 (20-Nov-2025)
+
+- **Added:**
+     - Support for `simavr` (needs to be built from source or downloaded from PIO repo) and an explanation of how to use it in the documentation: Simply use the `-s` option with `simavr` as the program name. In this case, no connection to a hardware debug probe is made, and simavr is invoked. After termination of simavr, PyAvrOCD is also immediately terminated.
      - New option `-F` for the F_CPU value. Needed for simavr and as a default value for `-D`.
      - New unit tests: Borrow HWBP0 and -F option
      - Meaningful error message in `_activate_interface` when debugWIRE could not be entered despite seemingly successful power-cycling.
@@ -18,7 +18,7 @@
      - Increased sleep time after powering up from 0.1 to  0.2 seconds.
      - Changed name for no program in `-s` option from `noop` to `nop`.
 
-### 0.16.5
+### 0.16.5 (05-Nov-2025)
 
 - **Fixed:**
      - The SVD files contained FUSEs and LOCKBITs, but not SP and SREG. For some reason, a wrong version of atdf2svd was invoked, and the option value was misspelled. Perhaps there should be a unit test here as well.
@@ -36,7 +36,7 @@
      - Added `switch_to_debmode` and `switch_to_progmode` to xavrdebug.py so that we are not forced to call `self.dbg.device.avr.switch_to...`.
 
 
-### 0.16.4:
+### 0.16.4 (02-Nov-2025)
 
 - **Fixed:**
      - On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.
@@ -62,7 +62,7 @@
 
 
 
-### 0.16.3
+### 0.16.3 (15-Oct-2025)
 
 - **Fixed:**
    - SVD and device files freshly generated, now with read-only registers
@@ -70,7 +70,7 @@
 - **Changed:**
    - The `svd` folder is now located in pyavrocd-util.
 
-### 0.16.2
+### 0.16.2 (13-Oct-2025)
 
 - **Fixed:**
   - In livetests.py:
@@ -90,21 +90,21 @@
 - **Changed**:
   - The release assets now contain the PyAvrOCD version number.
 
-### 0.16.1:
+### 0.16.1 (07-Oct-2025)
 
 - **Fixed:**
   - The folders pyavrocd-util were empty and therefore not included in commits. For this reason, the packer script ignored them and the dummy 32-bit archives were not produced. Now these folders contain a copy of the read.me file and are uploaded as well.
 
-### 0.16.0:
+### 0.16.0 (07-Oct-2025)
 
 - **Changed:**
   - It turned out that the binary files are too big for the gh-pages. At least, they disappeared after a while. For this reason, the binary executables are now all distributed using GitHub's release mechanism, which permits arbitrarily large files. This means that the archives in the releases have to respect the structure of being in the `tools` directory. And it also implies that the 'stub' archives for the 32-bit architectures should be included. The workflow has been adapted.
 
-### 0.15.0:
+### 0.15.0 (06-Oct-2025)
 
 - This is the first 'official' pre-release with a somewhat working CI/CD workflow.
 
-### 0.14.3:
+### 0.14.3 (04-Oct-2025)
 
 - **Added:**
   - New tests:
@@ -113,7 +113,7 @@
 - **Removed**:
   - `start`/`stop` have been removed from the xmvm* modules because this is handled by xavrdebugger in `start_debugging` and `stop_debugging,` and was not used anyway.
 
-### 0.14.2:
+### 0.14.2 (02-Oct-2025)
 
 - **Added:**
   - New tests:
@@ -124,7 +124,7 @@
   - All console output of dwlink now goes to `stdout`. Before, there was a mix of `stdout` and `stderr`. With that, all console output of pyavrocd is now going to `stdout`.
   - Moved a few files and the `atdf` folder into extras and integrated `pytest.ini` and `.pylintrc` into `pyproject.toml`.
 
-### 0.14.1 (30-Aug-2025)
+### 0.14.1 (30-Sep-2025)
 
 - **Added:**
   - Tests for HardwareBP
@@ -136,7 +136,7 @@
   - Signal changed for not enough breakpoints: SIGABRT -> SIGSYS. This means SIGABRT is now only used for Fatal Error.
   - Signal changed for "executable not loaded": SIGILL -> SIGSEGV. This means that SIGILL is now used exclusively for instructions, from which we cannot continue.
 
-### 0.14.0 (28-09-2025)
+### 0.14.0 (28-Sep-2025)
 
 - **Fixed:**
   - Using the temporary HWBP for safe single-stepping had the problem that one might miss a BP in an interrupt routine. Accounting for that by reassigning the HWBP to a SWBP had the implication that one increases flash wear and makes safe single-stepping impossible when running with HWBP-only under dW. For this reason, filter_safe_instructions has been introduced (see below), and single-stepping using the HWBP has been removed (see below).
@@ -247,7 +247,7 @@
      - The `-M/--monitor` option has been removed because now all state-changing monitor commands can be used as command-line options.
 
 
-### 0.12.0 (26-August-2025)
+### 0.12.0 (26-Aug-2025)
 
 - **Added:**
   - `-M`/`--monitor` command line option can now be used to set monitor default option in the command line, e.g., `-M v:e` will enable verification after load.

@@ -23,11 +23,12 @@ markdown_extensions:
   - footnotes
 
 nav:
-  - Arduino IDE 2 Quickstart Guides:
-    - ATmega328P Xplained Mini: 'quick_xmini.md'
-    - dw-link & Arduino UNO R3: 'quick_dwlink+uno.md'
-#    - Arduino Leonardo & MPLAB Snap: 'quick_leonardo+snap.md'
-#    - Arduino UNO R3 & Atmel-ICE: 'quick_uno+atmelice.md'
+  - Quickstart Guides:
+    - Arduino IDE 2:
+      - ATmega328P Xplained Mini: 'quick_xmini.md'
+      - dw-link & Arduino UNO R3: 'quick_dwlink+uno.md'
+    - PlatformIO:
+      - Atmel-ICE & ATmega1284: 'quick_atmega1284_pio.md'
   - Installation & Configuration:
     - PyAvrOCD: 'install-link.md'
     - Debugging software: 'debugging-software.md'

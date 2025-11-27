@@ -18,7 +18,13 @@ If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to i
 
 ## Downloading binaries
 
-Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases`[^*] (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`, and additionally `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips. Store `pyavrocd` (or `pyavrocd.exe`) and `pyavrocd-util` somewhere in the same folder and include this folder in your `PATH` variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
+Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases`[^*] (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder `tools`, which in turn contains the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`, and additionally `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips. Store all of it somewhere in the same folder and preferably include this folder in your `PATH` variable. My preference for such a folder is `~/.local/bin` , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):
+
+```sh
+mv tools/* ~/.local/bin
+```
+
+The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
 
 Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
 

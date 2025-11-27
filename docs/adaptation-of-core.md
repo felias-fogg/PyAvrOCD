@@ -41,14 +41,16 @@ Extending a core to enable it for debugging (using PyAvrOCD) is almost always th
      debug.cortex-debug.custom.overrideGDBServerStartedRegex=Listening on port \d+ for gdb connection
      debug.cortex-debug.custom.objdumpPath={runtime.tools.avr-gcc.path}/bin/avr-objdump
      debug.cortex-debug.custom.serverArgs.0=-s
-     debug.cortex-debug.custom.serverArgs.1=noop
+     debug.cortex-debug.custom.serverArgs.1=nop
      debug.cortex-debug.custom.serverArgs.2=-d
      debug.cortex-debug.custom.serverArgs.3={build.mcu}
      debug.cortex-debug.custom.serverArgs.4=--manage
      debug.cortex-debug.custom.serverArgs.5=all
+     debug.cortex-debug.custom.serverArgs.6=--F_CPU
+     debug.cortex-debug.custom.serverArgs.7={build.f_cpu}
      # The next two lines are for boards with auto-power-cycle capabilities
-     #debug.cortex-debug.custom.serverArgs.6=--atexit
-     #debug.cortex-debug.custom.serverArgs.7=leavedebugwire
+     #debug.cortex-debug.custom.serverArgs.8=--atexit
+     #debug.cortex-debug.custom.serverArgs.9=leavedebugwire
      debug.cortex-debug.custom.preLaunchCommands.0=monitor debugwire enable
      debug.cortex-debug.custom.runToEntryPoint=main
      debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd
@@ -57,10 +59,10 @@ Extending a core to enable it for debugging (using PyAvrOCD) is almost always th
 6. If JTAG boards are debugged and there are no individual clock settings in `board.txt`, then you may want to add (depending on the lowest possible CPU clock):
 
      ```
-     debug.cortex-debug.custom.serverArgs.6=-D
-     debug.cortex-debug.custom.serverArgs.7=200
-     debug.cortex-debug.custom.serverArgs.8=-P
-     debug.cortex-debug.custom.serverArgs.9=3000
+     debug.cortex-debug.custom.serverArgs.8=-D
+     debug.cortex-debug.custom.serverArgs.9=200
+     debug.cortex-debug.custom.serverArgs.10=-P
+     debug.cortex-debug.custom.serverArgs.11=3000
      ```
 
 ## `boards.txt`
