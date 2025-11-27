@@ -1,6 +1,6 @@
 # Quickstart guide: Atmel-ICE & ATmega1284
 
-This quickstart guide shows you how to set up a PlatformIO project so that you can debug an ATmega1284 (or any other [AVR JTAG Mega](supported-mcus.md#atmegas-with-jtag-interface)) using the Microchip debug probe Atmel-ICE (or any other [EDBG-based debug probe](supported-debuggers.md)). We will use the [DIP-40 Arduino-compatible development board](https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/) to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.
+This quickstart guide shows you how to set up a PlatformIO project so that you can debug an ATmega1284 (or any other [AVR JTAG Mega](supported-mcus.md#atmegas-with-jtag-interface)) using the debug probe Atmel-ICE (or any other [EDBG-based debug probe](supported-debuggers.md)). We will use the [DIP-40 Arduino-compatible development board](https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/) to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Mighty.png" width="30%">
@@ -12,7 +12,7 @@ In the following, I will assume that PlatformIO, as an extension of VSCode, has 
 
 ## Step 3: Set up the example project
 
-Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file `platformio.ini`, too long to present here. You can clone a small project containing this file, together with a small program, from
+Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file `platformio.ini`, too long to present here. You can clone a project containing this file, together with a small program, from
 
 ```
 https://github.com/felias-fogg/pio-atmega1284p-example
@@ -67,12 +67,12 @@ If you have not activated the `debug` environment, now is the time to do it (as 
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
 </p>
 
-This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will start. As requested by the configuration in `platformio.ini`, a first temporary stop is made in the `setup` function. The yellow triangle and the highlighted line signify this. The most important control panel is now the one shown on the right side at the top. It enables you (from left to right) to
+This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. As requested by the configuration in `platformio.ini`, a first temporary stop is made in the `setup` function. The yellow triangle and the highlighted line signify this. The most important control panel is now the one shown on the right side at the top. It enables you (from left to right) to
 
 - *continuing/suspending* execution,
 - *stepping-over*, i.e., making a step to the beginning of the next source line in the same function,
-- *stepping-in*, that is making a step to the next source line (entering perhaps a new function),
-- *stepping-out*, that is executing the current function until it returns to the calling function,
+- *stepping-in*, that is, making a step to the next source line (entering perhaps a new function),
+- *stepping-out*, that is, executing the current function until it returns to the calling function,
 - *resetting* the MCU, and
 - *terminating* the debugging session.
 
@@ -86,7 +86,7 @@ Before we click the `Continue` button, let us make some amendments. Place a brea
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-3.png" width="90%">
 </p>
 
-After a short while, execution will stop in line 19. As one can see on left, a local variable `local_ontime` came to life and has a value now. Similarly, all the global variables have values now. And one can see that bit 0 of PORTB, which is the port bit controlling the LED, is now also 1. Unfortunately, not all register values that should be displayed are actually displayed. This seems to be an error of the IDE.
+After a short while, execution will stop in line 19. As one can see on the left, a local variable `local_ontime` came to life and has a value now. Similarly, all the global variables have values now. And one can see that bit 0 of PORTB, which is the port bit controlling the LED, is now also 1. Unfortunately, not all register values that should be displayed are actually displayed. This seems to be an error of the IDE.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-4.png" width="90%">
@@ -96,12 +96,12 @@ I believe that from here on, you will be able to use the debugger productively.
 
 ## Step 6: Start over or terminate the debugging session
 
-You can now edit the sketch and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
+You can now edit the program and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may want perhaps to disable the JTAG pins again. Fort this purpose, you first need to switch back to the ISP connection. Switch then to `release` environment and click `set Fuses` again. Perhaps, you even want to restore the bootloader, which was deleted when starting the debugger. Then you need to click `Burn Bootloader`.
+Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to disable the JTAG pins, perhaps. For this purpose, you first need to switch back to the ISP connection. Then switch to the `release` environment and click `Set Fuses` again. Possibly, you even want to restore the bootloader, which was deleted when starting the debugger. In this case, you need to click `Burn Bootloader`.
 
 ## Potential Problems
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `DEBUG CONSOLE`. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the PyAvrOCD manual.
 
-One common problem is forgetting to change from ISP to JTAG or back. In this case the debugger complains that there is no device.
+One common problem is forgetting to change from ISP to JTAG or back. In this case, the debug probe complains that there is no device.
