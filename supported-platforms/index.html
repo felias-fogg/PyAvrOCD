@@ -41,11 +41,21 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                  <li class="toctree-l1"><a class="reference internal" >Arduino IDE 2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -135,30 +145,24 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-platforms">Supported platforms</h1>
-<p>As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-independent. Of course, you need a Python interpreter on board (&gt;=3.10, and currently &lt;= 3.13) when you download the PyAvrOCD from PyPI using pip or pipx. When you install an Arduino core that includes PyAvrOCD as a binary tool, even the Python interpreter is already included.</p>
-<p>A critical dependence is the <a href="https://github.com/libusb/hidapi/">HIDAPI library</a> and the <a href="https://pypi.org/project/hidapi/">Python interface</a> to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms.</p>
-<p>One can distinguish the support based on whether one can install the package via PyPI using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing">pip</a>, or even better <a href="https://pipx.pypa.io/stable/">pipx</a>, or whether there is also Arduino IDE 2 support, meaning that you install an Arduino core and you get all tools and configurations with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.</p>
+<p>As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-independent. A critical dependence is the <a href="https://github.com/libusb/hidapi/">HIDAPI library</a> and the <a href="https://pypi.org/project/hidapi/">Python interface</a> to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms.</p>
+<p>One can distinguish the support of PyAvrOCD based on whether one can install the package via PyPI using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing">pip</a>, or even better <a href="https://pipx.pypa.io/stable/">pipx</a>, or whether there is additionally Arduino IDE 2 support, meaning that you install an Arduino core and you get all tools and configurations with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.</p>
 <table>
 <thead>
 <tr>
 <th>Platform</th>
-<th>PyPI support</th>
-<th>Arduino IDE 2 support</th>
+<th>PyPI</th>
+<th>Arduino IDE 2</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>macOS 15, Apple Silicon 64-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
-</tr>
 <tr>
 <td>macOS 15, Intel 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux, Ubuntu 22.02, ARM 64-bit</td>
+<td>macOS 15, Apple Silicon 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
@@ -168,9 +172,9 @@
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux Debian 13 (Trixie)/Raspi OS 6.0, ARM 32-bit</td>
-<td><strong>yes</strong><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
-<td><strong>no</strong></td>
+<td>Linux, Ubuntu 22.02, ARM 64-bit</td>
+<td><strong>yes</strong></td>
+<td><strong>yes</strong></td>
 </tr>
 <tr>
 <td>Linux,  Intel 32-bit</td>
@@ -178,12 +182,17 @@
 <td><strong>no</strong></td>
 </tr>
 <tr>
-<td>Windows 10, ARM 64-bit</td>
+<td>Linux Raspi OS 6.0, ARM 32-bit</td>
+<td><strong>yes</strong><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
+<td><strong>no</strong></td>
+</tr>
+<tr>
+<td>Windows 10, Intel 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Windows 10, Intel 64-bit</td>
+<td>Windows 11, ARM 64-bit<br> (emulated)</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>

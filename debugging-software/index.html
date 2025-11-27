@@ -41,11 +41,21 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                  <li class="toctree-l1"><a class="reference internal" >Arduino IDE 2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -187,6 +197,7 @@ debug_tool = custom
 debug_server = /path/to/pyavrocd  ;; &lt;-- specify path to gdbserver
     --port=3333
     --device=${env:debug.board}
+    --manage=all
 debug_init_cmds =
     define pio_reset_halt_target
          monitor reset
@@ -202,12 +213,10 @@ debug_init_cmds =
 debug_build_flags =
     -Og
     -ggdb3
+debug_svd_path = /path/to/svd-file ;; &lt;-- specify path to SVD file
 </code></pre>
 <p>Note that the debug environment should be the default one. It should be the first if no default environment has been declared.</p>
-<p>Recently, PyAvrOCD has been extended to <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">deal with <em>System View Description</em> files</a>, which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to copy the right SVD file from the <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/svd">SVD folder of the GitHub repo</a> to the PlatformIO project folder. In addition, the following entry needs to be added to the <code>platformio.ini</code> file (using again the example of the ATmega328P):</p>
-<pre><code class="language-ini">debug_svd_path = atmega328p.svd
-</code></pre>
-<p>Instead of copying the SVD file into your project folder, you can also access it in the <code>pyavrocd-util</code> folder, which is stored alongside <code>pyavrocd</code>. The SVD files are all stored in the directory <code>pyavrocd-util/svd</code>.</p>
+<p>Recently, PyAvrOCD has been extended to <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">deal with <em>System View Description</em> files</a>, which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to copy the right SVD file from the <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/svd">SVD folder of the GitHub repo</a> to the PlatformIO project folder, or you can also access it in the <code>pyavrocd-util</code> folder, which is stored alongside <code>pyavrocd</code>. The SVD files are all stored in the directory <code>pyavrocd-util/svd</code>.</p>
 <p>I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is <code>~/.platformio/packages/toolchain-atmelavr/</code>, where the tilde symbol signifies the home directory of the user.</p>
 <h2 id="other-ides">Other IDEs</h2>
 <p>There are a few other possible options for IDEs. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  <a href="https://www.jetbrains.com/clion/"><strong>CLion</strong></a> and <a href="https://eclipseide.org/projects/"><strong>Eclipse</strong></a>. How to integrate an AVR GDB server into CLion is, for example, described <a href="https://bloom.oscillate.io/docs/clion-debugging-setup">here</a>. Integration into <a href="https://code.visualstudio.com"><strong>Visual Studio Code</strong></a> and <strong><a href="https://theia-ide.org">Eclipse Theia</a></strong> should be straightforward because one could make use of the Visual Studio Code extension <a href="https://github.com/Marus/cortex-debug">cortex-debug</a> that is also used in the Arduino IDE 2.</p>

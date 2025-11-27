@@ -41,11 +41,21 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                  <li class="toctree-l1"><a class="reference internal" >Arduino IDE 2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -169,14 +179,16 @@
  debug.cortex-debug.custom.overrideGDBServerStartedRegex=Listening on port \d+ for gdb connection
  debug.cortex-debug.custom.objdumpPath={runtime.tools.avr-gcc.path}/bin/avr-objdump
  debug.cortex-debug.custom.serverArgs.0=-s
- debug.cortex-debug.custom.serverArgs.1=noop
+ debug.cortex-debug.custom.serverArgs.1=nop
  debug.cortex-debug.custom.serverArgs.2=-d
  debug.cortex-debug.custom.serverArgs.3={build.mcu}
  debug.cortex-debug.custom.serverArgs.4=--manage
  debug.cortex-debug.custom.serverArgs.5=all
+ debug.cortex-debug.custom.serverArgs.6=--F_CPU
+ debug.cortex-debug.custom.serverArgs.7={build.f_cpu}
  # The next two lines are for boards with auto-power-cycle capabilities
- #debug.cortex-debug.custom.serverArgs.6=--atexit
- #debug.cortex-debug.custom.serverArgs.7=leavedebugwire
+ #debug.cortex-debug.custom.serverArgs.8=--atexit
+ #debug.cortex-debug.custom.serverArgs.9=leavedebugwire
  debug.cortex-debug.custom.preLaunchCommands.0=monitor debugwire enable
  debug.cortex-debug.custom.runToEntryPoint=main
  debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd
@@ -184,10 +196,10 @@
 </li>
 <li>
 <p>If JTAG boards are debugged and there are no individual clock settings in <code>board.txt</code>, then you may want to add (depending on the lowest possible CPU clock):</p>
-<p><code>debug.cortex-debug.custom.serverArgs.6=-D
- debug.cortex-debug.custom.serverArgs.7=200
- debug.cortex-debug.custom.serverArgs.8=-P
- debug.cortex-debug.custom.serverArgs.9=3000</code></p>
+<p><code>debug.cortex-debug.custom.serverArgs.8=-D
+ debug.cortex-debug.custom.serverArgs.9=200
+ debug.cortex-debug.custom.serverArgs.10=-P
+ debug.cortex-debug.custom.serverArgs.11=3000</code></p>
 </li>
 </ol>
 <h2 id="boardstxt"><code>boards.txt</code></h2>

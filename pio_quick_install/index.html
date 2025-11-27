@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Configuration - PyAvrOCD</title>
+    <title>Step 1: Installing PyAvrOCD - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Configuration";
-        var mkdocs_page_input_path = "configuration.md";
+        var mkdocs_page_name = "Step 1: Installing PyAvrOCD";
+        var mkdocs_page_input_path = "pio_quick_install.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -131,9 +131,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Configuration</li>
+      <li class="breadcrumb-item active">Step 1: Installing PyAvrOCD</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/configuration.md">Edit on PyAvrOCD</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/pio_quick_install.md">Edit on PyAvrOCD</a>
     </li>
   </ul>
   <hr/>
@@ -141,24 +141,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="configuration">Configuration</h1>
-<p>It is not necessary to set up any configuration file before you can use PyAvrOCD.</p>
-<p>However, sometimes, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
-<p>Let us assume, <code>file.ext</code> contains the following lines:</p>
-<pre><code>--manage
-eesave
---prog=3000
---to
-atmelice
---veri=e
+                <h1 id="step-1-installing-pyavrocd">Step 1: Installing PyAvrOCD</h1>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD/">PyAvrOCD GitHub repo</a> and click on the <code>Latest</code> button below <strong>Releases</strong> on the right side of the page.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/repo.png" width="55%">
+</p>
+
+<p>This will open the latest release page with all its assets.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/release.png" width="55%">
+</p>
+
+<p>Here you can download the debug server executables for your platform. If there is nothing for you, there is an alternative way to install PyAvrOCD described <a href="step-1a:-alternative-way-of-installing-pyavrocd">below</a>. After downloading the archive, extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):</p>
+<pre><code class="language-sh">&gt; tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz
 </code></pre>
-<p>When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>, then this is expanded into</p>
-<pre><code>pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e
+<p>Once you have downloaded the archive and uncompressed it, you need to decide where to place the files contained in it. I prefer the folder <code>~/.local/bin/</code> (where <code>~</code> signifies the user folder). Move the three items that you find in the <code>tools</code> folder of the uncompressed archive to this folder (or any other place you have chosen):</p>
+<ul>
+<li><code>pyavrocd</code>[<code>.exe</code>] - the debug server executable,</li>
+<li><code>pyavrocd-util</code> - a folder with auxiliary code and data that should always be stored alongside the executable, and</li>
+<li><code>avr-gdb</code>[<code>.exe</code>] - a current version (16.3) of the GDB debugger for AVR chips with a minimal amount of dependencies on dynamic libraries.</li>
+</ul>
+<pre><code class="language-shell">&gt; mkdir ~/.local
+&gt; mkdir ~/.local/bin
+&gt; rm -rf ~/.local/bin/pyavrocd-util
+&gt; mv tools/* ~/.local/bin/
 </code></pre>
-<p>With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to</p>
-<pre><code>pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
+<div class="admonition info">
+<p class="admonition-title">Windows</p>
+<p>On Windows, use <code>rmdir</code> instead of <code>rm -rf</code> above.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">macOS</p>
+<p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in order to remove the extended attribute com.apple.quarantine from the binary executable FILE.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Linux</p>
+<p>Under Linux, you need to install <code>udev</code> rules so that the debug probes can communicate with the host. Either execute <code>sudo pyavrocd --install-udev-rules</code> once or install these rules manually (see <a href="https://github.com/microchip-pic-avr-tools/pyedbglib#notes-for-linux-systems">pyedbglib README</a>).</p>
+</div>
+<h1 id="step-1a-an-alternative-way-of-installing-pyavrocd">Step 1a: An alternative way of installing PyAvrOCD</h1>
+<p>When you are not happy with the choices provided to you above, when the PyAvrOCD binaries will not start because of incompatibilities, or when you have a compatible Python installation that you do not want to duplicate, it is also possible to install PyAvrOCD from <a href="https://pypi.org">PyPI, the Python Package Index</a>. The preferred way of doing that is using <a href="https://pipx.pypa.io/stable/">pipx</a>, which will install an executable in the folder <code>~/.local/bin/</code> and a virtual Python environment with all the required modules in <code>~/.local/pipx/</code>. Although this is, in theory, platform agnostic, you may encounter problems when USB and HIDAPI libraries have to be built from source. Note that Linux users need to install <code>udev</code> rules (see above).</p>
+<p>Assuming that you have been successful in installing PyAvrOCD using pipx, we also want to download SVD files that we will need during our IDE debugging sessions. Create the folder <code>pyavrocd-util</code> in the folder <code>~/.local/bin</code> , download the SVD archive into it, and extract the folder:</p>
+<pre><code class="language-sh">&gt; cd ~/.local/bin
+&gt; mkdir pyavrocd-util
+&gt; cd pyavrocd-util
+&gt; wget https://github.com/felias-fogg/PyAvrOCD/releases/latest/download/svd.tar.gz -O svd.tar.gz
+&gt; tar xvzf svd.tar.gz
 </code></pre>
-<p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
+<h1 id="step-2-replace-the-outdated-avr-gdb-client">Step 2: Replace the outdated avr-gdb client</h1>
+<p>The avr-gdb client in the AVR toolchain, as delivered by PlatformIO, is seriously outdated (version 7.8 from 2014). Even worse, under recent versions of macOS and Ubuntu, it will not start because of incompatibilities. For this reason, it makes sense to employ a more recent version of avr-gdb. Either use the one obtainable from your OS or make use of the binary downloaded in <a href="#step-1-installing-pyavrocd">Step 1</a>. The folder you need to copy the client to is <code>~/.platformio/packages/toolchain-atmelavr/bin</code>:</p>
+<pre><code class="language-sh">cp ~/.local/bin/avr-gdb .platformio/packages/toolchain-atmelavr/bin/
+</code></pre>
               
             </div>
           </div><footer>

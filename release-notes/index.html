@@ -41,11 +41,21 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                  <li class="toctree-l1"><a class="reference internal" >Arduino IDE 2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -98,6 +108,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0171">Release v0.17.1</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0170">Release v0.17.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0165">Release v0.16.5</a>
@@ -149,6 +161,10 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v0171">Release v0.17.1</h2>
+<ul>
+<li>From now on, releases will also contain a working 32-bit package for Windows.</li>
+</ul>
 <h2 id="release-v0170">Release v0.17.0</h2>
 <ul>
 <li>The use of the simulator <code>simavr</code> is now supported. If this program is specified with the <code>-s</code> option, then the simulator is started with the right options, and no hardware probe will be used. Note that the current version of simavr (1.7) will not work. You can build simavr from source from the main branch of the current repo, however.</li>

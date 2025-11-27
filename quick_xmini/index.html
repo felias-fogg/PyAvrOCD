@@ -41,27 +41,37 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">ATmega328P Xplained Mini</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Arduino IDE 2</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#step-1-extend-the-list-of-boards-manager-urls">Step 1: Extend the list of boards manager URLs</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">ATmega328P Xplained Mini</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-extend-the-list-of-boards-manager-urls">Step 1: Extend the list of boards manager URLs</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-2-install-a-debug-enabled-core">Step 2: Install a debug-enabled core</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-install-a-debug-enabled-core">Step 2: Install a debug-enabled core</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-3-connect-the-board-and-select-the-board-type-and-port-in-the-boards-manager">Step 3: Connect the board and select the board type and port in the boards manager</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-connect-the-board-and-select-the-board-type-and-port-in-the-boards-manager">Step 3: Connect the board and select the board type and port in the boards manager</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-4-edit-and-compile-a-sketch">Step 4: Edit and compile a sketch</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-edit-and-compile-a-sketch">Step 4: Edit and compile a sketch</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-5-debug-the-sketch">Step 5: Debug the sketch</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-5-debug-the-sketch">Step 5: Debug the sketch</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#step-6-start-over-or-terminate-the-debugging-session">Step 6: Start over or terminate the debugging session</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-6-start-over-or-terminate-the-debugging-session">Step 6: Start over or terminate the debugging session</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#potential-problems">Potential problems</a>
+    <li class="toctree-l3"><a class="reference internal" href="#potential-problems">Potential problems</a>
     </li>
     </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -137,7 +147,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Arduino IDE 2 Quickstart Guides</li>
+          <li class="breadcrumb-item">Quickstart Guides</li>
+          <li class="breadcrumb-item">Arduino IDE 2</li>
       <li class="breadcrumb-item active">ATmega328P Xplained Mini</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/quick_xmini.md">Edit on PyAvrOCD</a>
@@ -234,7 +245,7 @@
 
 <h2 id="step-6-start-over-or-terminate-the-debugging-session">Step 6: Start over or terminate the debugging session</h2>
 <p>You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
-<p>Instead of starting a new edit/compile/debug cycle, you can call it a day and end debugging. In this case, it may be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu, because not doing so will result in larger code next time you compile a sketch.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, it may be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu, because not doing so will result in larger code next time you compile a sketch.</p>
 <h2 id="potential-problems">Potential problems</h2>
 <p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
 <div class="admonition danger">

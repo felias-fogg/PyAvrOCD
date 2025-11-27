@@ -41,11 +41,21 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Arduino IDE 2 Quickstart Guides</span></p>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                  <li class="toctree-l1"><a class="reference internal" >Arduino IDE 2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -162,7 +172,10 @@
 <p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="https://felias-fogg.github.io/PyAvrOCD/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules as described above.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
 <h4 id="downloading-binaries">Downloading binaries</h4>
-<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, select the latest release (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) and <code>pyavrocd-util</code> somewhere in the same folder and include this folder in your <code>PATH</code> variable. The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, click on the label <code>Latest</code> below the section title <code>Releases</code><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder <code>tools</code>, which in turn contains the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store all of it somewhere in the same folder and preferably include this folder in your <code>PATH</code> variable. My preference for such a folder is <code>~/.local/bin</code> , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):</p>
+<pre><code class="language-sh">mv tools/* ~/.local/bin
+</code></pre>
+<p>The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <p><strong>Apple Users:</strong> On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command</p>
 <pre><code class="language-bash">xattr -d com.apple.quarantine FILE
@@ -205,11 +218,19 @@ atmelice
 <pre><code>pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
 </code></pre>
 <p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:*">
+<p>Currently, it is not possible to get a list of releases by clicking on the <code>Releases</code> title. However, clicking on the Tag number or the <code>Latest</code> label works.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../quick_dwlink%2Buno/" class="btn btn-neutral float-left" title="dw-link & Arduino UNO R3"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../quick_atmega1284_pio/" class="btn btn-neutral float-left" title="Atmel-ICE & ATmega1284"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../debugging-software/" class="btn btn-neutral float-right" title="Debugging software">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -237,7 +258,7 @@ atmelice
         </span>
     
     
-      <span><a href="../quick_dwlink%2Buno/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../quick_atmega1284_pio/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../debugging-software/" style="color: #fcfcfc">Next &raquo;</a></span>
