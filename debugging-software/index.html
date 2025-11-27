@@ -179,7 +179,7 @@ set logging overwrite 1
 <p>After that, you can install one of the platforms referred to in the index file, e.g., <code>Arduino AVR Boards (Debug enabled)</code>, which is a fork of the official <code>Arduino AVR Boards</code> platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably <a href="../board-preparation/">modify the target board</a>, and you need to <a href="../connect-to-target/">connect the debug probe to the target board</a>.</p>
 <p>The set of available cores is covered in the <a href="../supporting-cores/">section on Arduino cores</a>.</p>
 <h2 id="platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</h2>
-<p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the <code>platformio.ini</code> file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the <code>platformio.ini</code> file could look as follows (see also the <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/examples"><code>examples</code> folder</a>)</p>
+<p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the <code>platformio.ini</code> file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the <code>platformio.ini</code> file could look as follows. A more elaborate example can be found at <a href="https://github.com/felias-fogg/pio-atmega1284p-example">https://github.com/felias-fogg/pio-atmega1284p-example</a>.</p>
 <pre><code class="language-ini">[platformio]
 default_envs = debug
 
@@ -187,8 +187,10 @@ default_envs = debug
 platform = atmelavr
 framework = arduino
 board = ATmega328P
+board_build.mcu = atmega328p
 board_build.f_cpu = 16000000L
 board_hardware.oscillator = external
+build_unflags = -flto              ;; this makes sure we can watch the global vars
 
 [env:debug]
 extends = env:atmega328p          ;; &lt;--- substitute the right board here
@@ -196,7 +198,7 @@ build_type = debug
 debug_tool = custom
 debug_server = /path/to/pyavrocd  ;; &lt;-- specify path to gdbserver
     --port=3333
-    --device=${env:debug.board}
+    --device=${this.board_build.mcu}
     --manage=all
 debug_init_cmds =
     define pio_reset_halt_target
@@ -204,7 +206,7 @@ debug_init_cmds =
     end
     define pio_reset_run_target
          monitor reset
-         continue
+         disconnect
     end
     target remote $DEBUG_PORT
     monitor debugwire enable
@@ -213,9 +215,10 @@ debug_init_cmds =
 debug_build_flags =
     -Og
     -ggdb3
+    -DDEBUG
 debug_svd_path = /path/to/svd-file ;; &lt;-- specify path to SVD file
 </code></pre>
-<p>Note that the debug environment should be the default one. It should be the first if no default environment has been declared.</p>
+<p>Note that debugging in the IDE can only start when the debug environment is made the current environment.</p>
 <p>Recently, PyAvrOCD has been extended to <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">deal with <em>System View Description</em> files</a>, which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to copy the right SVD file from the <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/svd">SVD folder of the GitHub repo</a> to the PlatformIO project folder, or you can also access it in the <code>pyavrocd-util</code> folder, which is stored alongside <code>pyavrocd</code>. The SVD files are all stored in the directory <code>pyavrocd-util/svd</code>.</p>
 <p>I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is <code>~/.platformio/packages/toolchain-atmelavr/</code>, where the tilde symbol signifies the home directory of the user.</p>
 <h2 id="other-ides">Other IDEs</h2>

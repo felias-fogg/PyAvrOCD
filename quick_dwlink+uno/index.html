@@ -220,7 +220,11 @@
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino.png" width="90%"></p>
 
 <p>Loading the core and all the necessary tools might take a while.</p>
-<p>In order to avoid confusion, it is a good idea to remove the original core. Otherwise, you have boards that are named identically in two different cores. So activate the boards manager again and remove the core Named <code>Arduino AVR Boards by Arduino</code> (it is the first one in the list when you open the boards manager). Removing this core is not a problem since the debug-enabled core has the same functionality when no debugging is selected. And you can install the original core at any point in time anyway.</p>
+<div class="admonition info">
+<p class="admonition-title">Linux systems</p>
+<p>After the installation, users of Linux systems will need to add <code>udev</code> rules, which can be done <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems">manually</a>. Alternatively, when the IDE does not find a debug probe, it will tell you what to do in order to install the rules using <code>pyavrocd</code>.</p>
+</div>
+<p>In order to avoid confusion, it is a good idea to remove the original core. Otherwise, you have boards that are named identically in two different cores. So activate the boards manager again and remove the core named <code>Arduino AVR Boards by Arduino</code> (it is the first one in the list when you open the boards manager). Removing this core is not a problem since the debug-enabled core has the same functionality when no debugging is selected. And you can install the original core at any point in time anyway.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino-1.png" width="90%"></p>
 
 <h2 id="step-4-prepare-the-target-board-for-debugging">Step 4: Prepare the target board for debugging</h2>
