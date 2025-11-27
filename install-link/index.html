@@ -64,8 +64,6 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#a-note-for-linux-users">A note for Linux users</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#downloading-binaries">Downloading binaries</a>
@@ -161,15 +159,18 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="pyavrocd-installation-configuration">PyAvrOCD installation &amp; configuration</h1>
-<p>Both the installation and configuration of PyAvrOCD are straightforward on Windows, macOS, and Linux machines (see <a href="../supported-platforms/">supported platforms</a>).</p>
+<p>Both the installation and configuration of PyAvrOCD are straightforward on Windows, macOS, and Linux machines (see <a href="../supported-platforms/">supported platforms</a>). Mac and Linux users should be aware of some idiosyncrasies, however.</p>
+<div class="admonition info">
+<p class="admonition-title">Linux</p>
+<p>On a Linux installation, users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. One can add these udev rules manually, following the instructions in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems">pyedbglib README</a>. Alternatively, wait until PyAvrOCD is started and cannot find a debug probe. Then it will tell you what to do.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">macOS</p>
+<p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in order to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE.</p>
+</div>
 <h2 id="installation">Installation</h2>
-<h4 id="a-note-for-linux-users">A note for Linux users</h4>
-<p>Note that Linux users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. This can be accomplished by invoking PyAvrOCD once as root with the option <code>--install-udev-rules</code> (assuming that <code>pyavrocd</code> has been stored somewhere on the <code>PATH</code>):</p>
-<pre><code>&gt; sudo pyavrocd --install-udev-rules
-</code></pre>
-<p>Alternatively, one can add the <code>udev</code> rules manually, following the instructions in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems">pyedbglib README</a>.</p>
 <h4 id="arduino-ide-2">Arduino IDE 2</h4>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="https://felias-fogg.github.io/PyAvrOCD/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core. As a Linux user, you very likely also need to set some permissions and provide udev rules as described above. Unfortunately, the executable is stored somewhere deep down in some Arduino tools folder. However, the first time the IDE starts pyavrocd, it will tell you where it is stored and what to do.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="https://felias-fogg.github.io/PyAvrOCD/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
 <h4 id="downloading-binaries">Downloading binaries</h4>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, click on the label <code>Latest</code> below the section title <code>Releases</code><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder <code>tools</code>, which in turn contains the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store all of it somewhere in the same folder and preferably include this folder in your <code>PATH</code> variable. My preference for such a folder is <code>~/.local/bin</code> , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):</p>
@@ -177,10 +178,6 @@
 </code></pre>
 <p>The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
-<p><strong>Apple Users:</strong> On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command</p>
-<pre><code class="language-bash">xattr -d com.apple.quarantine FILE
-</code></pre>
-<p>in order to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE.</p>
 <h4 id="pypi">PyPI</h4>
 <p>I assume you already installed a recent Python version (&gt;=3.10). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a> will bring you the most recent version of PyAvrOCD to your computer.</p>
 <p>It is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>. However, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a> instead. Pipx installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
