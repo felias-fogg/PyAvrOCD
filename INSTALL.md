@@ -1,7 +1,5 @@
 # PyAvrOCD Installation
 
-
-
 ## Arduino IDE 2
 
 If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" ](https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2) and [install the respective core](https://felias-fogg.github.io/PyAvrOCD/supporting-cores/). It will then be installed as a tool for this core.
