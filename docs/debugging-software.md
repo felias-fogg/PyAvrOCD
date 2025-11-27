@@ -38,7 +38,7 @@ The set of available cores is covered in the [section on Arduino cores](supporti
 
 ## PlatformIO and Visual Studio Code
 
-[PlatformIO](https://platformio.org) is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the `platformio.ini` file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the `platformio.ini` file could look as follows (see also the [`examples` folder](https://github.com/felias-fogg/PyAvrOCD/tree/main/examples))
+[PlatformIO](https://platformio.org) is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the `platformio.ini` file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the `platformio.ini` file could look as follows. A more elaborate example can be found at [https://github.com/felias-fogg/pio-atmega1284p-example](https://github.com/felias-fogg/pio-atmega1284p-example).
 
 ```ini
 [platformio]
@@ -48,8 +48,10 @@ default_envs = debug
 platform = atmelavr
 framework = arduino
 board = ATmega328P
+board_build.mcu = atmega328p
 board_build.f_cpu = 16000000L
 board_hardware.oscillator = external
+build_unflags = -flto              ;; this makes sure we can watch the global vars
 
 [env:debug]
 extends = env:atmega328p          ;; <--- substitute the right board here
@@ -57,7 +59,7 @@ build_type = debug
 debug_tool = custom
 debug_server = /path/to/pyavrocd  ;; <-- specify path to gdbserver
     --port=3333
-    --device=${env:debug.board}
+    --device=${this.board_build.mcu}
     --manage=all
 debug_init_cmds =
     define pio_reset_halt_target
@@ -65,7 +67,7 @@ debug_init_cmds =
     end
     define pio_reset_run_target
          monitor reset
-         continue
+         disconnect
     end
     target remote $DEBUG_PORT
     monitor debugwire enable
@@ -74,10 +76,11 @@ debug_init_cmds =
 debug_build_flags =
     -Og
     -ggdb3
+    -DDEBUG
 debug_svd_path = /path/to/svd-file ;; <-- specify path to SVD file
 ```
 
-Note that the debug environment should be the default one. It should be the first if no default environment has been declared.
+Note that debugging in the IDE can only start when the debug environment is made the current environment.
 
 Recently, PyAvrOCD has been extended to [deal with *System View Description* files](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/), which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to copy the right SVD file from the [SVD folder of the GitHub repo](https://github.com/felias-fogg/PyAvrOCD/tree/main/svd) to the PlatformIO project folder, or you can also access it in the `pyavrocd-util` folder, which is stored alongside `pyavrocd`. The SVD files are all stored in the directory `pyavrocd-util/svd`.
 

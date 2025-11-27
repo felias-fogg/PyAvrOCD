@@ -46,7 +46,7 @@ Now you need to activate the `boards manager` by clicking on the board symbol in
 Loading the core and all the necessary tools might take a while.
 
 !!! info "Linux systems"
-    After installing the first debug-enabled core, users of Linux systems will need to add `udev` rules (see [this note for Linux users](install-link.md#a-note-for-linux-users))
+    After the installation, users of Linux systems will need to add `udev` rules, which can be done [manually](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Alternatively, when the IDE does not find a debug probe, it will tell you what to do in order to install the rules using `pyavrocd`.
 
 ## Step 3: Connect the board and select the board type and port in the boards manager
 

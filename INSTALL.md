@@ -1,18 +1,10 @@
 # PyAvrOCD Installation
 
-## A note for Linux users
 
-Note that Linux users may need to add a few `udev` rules after having installed PyAvrOCD. This can be accomplished by invoking PyAvrOCD once as root with the option `--install-udev-rules` (assuming that `pyavrocd` has been stored somewhere on the `PATH`):
-
-```
-> sudo pyavrocd --install-udev-rules
-```
-
-Alternatively, one can add the `udev` rules manually, following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems).
 
 ## Arduino IDE 2
 
-If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" ](https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2) and [install the respective core](https://felias-fogg.github.io/PyAvrOCD/supporting-cores/). It will then be installed as a tool for this core. As a Linux user, you may also need to set some permissions and provide udev rules as described above.
+If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" ](https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2) and [install the respective core](https://felias-fogg.github.io/PyAvrOCD/supporting-cores/). It will then be installed as a tool for this core.
 
 If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.
 
@@ -27,14 +19,6 @@ mv tools/* ~/.local/bin
 The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
 
 Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
-
-**Apple Users:** On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command
-
-```bash
-xattr -d com.apple.quarantine FILE
-```
-
-in order to remove the extended attribute `com.apple.quarantine` from the binary executable FILE.
 
 ## PyPI
 
@@ -71,5 +55,23 @@ Furthermore, you can create a binary standalone package as follows:
 ```
 
 As a result, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the directory `dist/pyavrocd/` together with the folder `pyavrocd-util`. You can copy those two to a place in your `PATH`.
+
+## Some OS idiosyncrasies
+
+**Linux**: On a Linux installation, users may need to add a few `udev` rules after having installed PyAvrOCD. One can add these `udev` rules manually, following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Instead, this can also be accomplished by invoking PyAvrOCD once as root with the option `--install-udev-rules` (assuming that `pyavrocd` has been stored somewhere on the `PATH`):
+
+```
+> sudo pyavrocd --install-udev-rules
+```
+
+Alternatively, wait until PyAvrOCD is started and cannot find a debug probe. Then it will tell you what to do.
+
+**Mac**: On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command
+
+```bash
+xattr -d com.apple.quarantine FILE
+```
+
+in order to remove the extended attribute `com.apple.quarantine` from the binary executable FILE.
 
 [^*]: Currently, it is not possible to get a list of releases by clicking on the `Releases` title. However, clicking on the Tag number or the `Latest` label works.
