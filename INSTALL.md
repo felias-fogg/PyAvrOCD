@@ -75,5 +75,3 @@ xattr -d com.apple.quarantine FILE
 ```
 
 in order to remove the extended attribute `com.apple.quarantine` from the binary executable FILE.
-
-[^*]: Currently, it is not possible to get a list of releases by clicking on the `Releases` title. However, clicking on the Tag number or the `Latest` label works.
