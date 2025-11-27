@@ -20,6 +20,8 @@ The avr-gdb debugger has version 16.3, which is relatively recent, and has been 
 
 Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
 
+[^*]: Currently, it is not possible to get a list of releases by clicking on the `Releases` title. However, clicking on the Tag number or the `Latest` label works.
+
 ## PyPI
 
 I assume you already installed a recent Python version (>=3.10). Then [PyPI](https://pypi.org/project/pyavrocd/) will bring you the most recent version of PyAvrOCD to your computer.
