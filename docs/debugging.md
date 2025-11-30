@@ -59,6 +59,10 @@ You must load the sketch into the editor and select a board as usual. Before you
 
 Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
 
+### Simulating or connecting to a target
+
+As mentioned, instead of connecting to a target, it is also possible to run a simulator (for some MCU types). This is done by choosing `Simulator (simavr)` as the `Programmer` in the `Tools` menu. If you have done that, you cannot use the `Upload Using Programmer` command anymore. However, when you request to start debugging (see below), then the simulator is chosen instead of making a connection to the target board.
+
 ### Starting the debugger
 
 After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.
