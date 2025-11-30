@@ -55,6 +55,8 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
                 </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_attiny_pio/">dw-link & ATtiny85</a>
+                </li>
     </ul>
                   </li>
               </ul>
@@ -169,23 +171,24 @@
 <p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in order to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE.</p>
 </div>
 <h2 id="installation">Installation</h2>
-<h4 id="arduino-ide-2">Arduino IDE 2</h4>
+<h3 id="arduino-ide-2">Arduino IDE 2</h3>
 <p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="https://felias-fogg.github.io/PyAvrOCD/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
-<h4 id="downloading-binaries">Downloading binaries</h4>
+<h3 id="downloading-binaries">Downloading binaries</h3>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, click on the label <code>Latest</code> below the section title <code>Releases</code><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder <code>tools</code>, which in turn contains the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>, and additionally <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips. Store all of it somewhere in the same folder and preferably include this folder in your <code>PATH</code> variable. My preference for such a folder is <code>~/.local/bin</code> , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):</p>
 <pre><code class="language-sh">mv tools/* ~/.local/bin
 </code></pre>
 <p>The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
-<h4 id="pypi">PyPI</h4>
+<h3 id="pypi">PyPI</h3>
 <p>I assume you already installed a recent Python version (&gt;=3.10). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a> will bring you the most recent version of PyAvrOCD to your computer.</p>
 <p>It is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>. However, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a> instead. Pipx installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
 <pre><code class="language-bash">&gt; pipx install pyavrocd
 &gt; pipx ensurepath
 </code></pre>
 <p>After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code>.</p>
-<h4 id="github">GitHub</h4>
+<p>Not that the folder with SVD files is not part of the PyPI installation. If you want to download this folder, it has to be downloaded separately from the GitHub repo. It is a release asset called <code>svd.tar.gz</code>.</p>
+<h3 id="github">GitHub</h3>
 <p>Alternatively, you can download or clone the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub repository</a>. Additionally, you need to install a Python package manager, for instance, <a href="https://python-poetry.org">Poetry</a>:</p>
 <pre><code class="language-bash">&gt; pipx install poetry
 </code></pre>
@@ -227,7 +230,7 @@ atmelice
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../quick_atmega1284_pio/" class="btn btn-neutral float-left" title="Atmel-ICE & ATmega1284"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../quick_attiny_pio/" class="btn btn-neutral float-left" title="dw-link & ATtiny85"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../debugging-software/" class="btn btn-neutral float-right" title="Debugging software">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -255,7 +258,7 @@ atmelice
         </span>
     
     
-      <span><a href="../quick_atmega1284_pio/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../quick_attiny_pio/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../debugging-software/" style="color: #fcfcfc">Next &raquo;</a></span>

@@ -49,6 +49,8 @@
                 </li>
                 <li class="toctree-l2 current"><a class="reference internal current" href="#">dw-link & Arduino UNO R3</a>
     <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#required-hardware">Required hardware</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-1-turning-an-uno-into-a-debug-probe">Step 1: Turning an UNO into a debug probe</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-2-extend-the-list-of-boards-manager-urls">Step 2: Extend the list of boards manager URLs</a>
@@ -78,6 +80,8 @@
                   <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_attiny_pio/">dw-link & ATtiny85</a>
                 </li>
     </ul>
                   </li>
@@ -174,8 +178,11 @@
 <li>how to set up the <a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> so that you can use its debugging feature,  and</li>
 <li>how to use this combo in order to do embedded debugging on another Arduino UNO R3.</li>
 </ul>
-<p>This means that you need two UNO boards to try out debugging. Of course, any other ATmega328P boards will do, as long as on one of them you can remove or disconnect the <code>RESET ENABLE</code> capacitor (see below). In addition, you need:</p>
+<p>This means that you need two UNO boards to try out debugging. Of course, any other ATmega328P boards will do, as long as on one of them you can remove or disconnect the <code>RESET ENABLE</code> capacitor (see below).</p>
+<h2 id="required-hardware">Required hardware</h2>
 <ul>
+<li>Two Arduino UNO R3,</li>
+<li>one USB cable (for the connection to the host),</li>
 <li>a pushbutton,</li>
 <li>6 jumper wires (male-male),</li>
 <li>a 10 µF electrolyte capacitor (optionally), and</li>
