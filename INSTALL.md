@@ -33,6 +33,8 @@ It is possible to install PyAvrOCD using [pip](https://packaging.python.org/en/l
 
 After restarting the shell, you should be able to start the GDB server. The binary is stored under `~/.local/bin/`.
 
+Not that the folder with SVD files is not part of the PyPI installation. If you want to download this folder, it has to be downloaded separately from the GitHub repo. It is a release asset called `svd.tar.gz`.
+
 ## GitHub
 
 Alternatively, you can download or clone the [GitHub repository](https://github.com/felias-fogg/PyAvrOCD). Additionally, you need to install a Python package manager, for instance, [Poetry](https://python-poetry.org):

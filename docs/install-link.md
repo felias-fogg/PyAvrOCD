@@ -9,7 +9,7 @@ Both the installation and configuration of PyAvrOCD are straightforward on Windo
     On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command `xattr -d com.apple.quarantine FILE` in order to remove the extended attribute `com.apple.quarantine` from the binary executable FILE.
 
 ## Installation
-{!../INSTALL.md!lines=2-58}
+{!../INSTALL.md!lines=2-60}
 
 ## Configuration
 

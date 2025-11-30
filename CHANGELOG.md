@@ -4,7 +4,7 @@
 
 - **Added:**
      - More unit tests
-      - 32-bit Windows version (meaning, we do not have to explain that one
+     - 32-bit Windows version (meaning, we do not have to explain that one
           has to re-install when working on a 64-bit Windows system, sigh!)
 
 ### 0.17.0 (20-Nov-2025)

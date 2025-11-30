@@ -36,11 +36,13 @@ Once you have downloaded the archive and uncompressed it, you need to decide whe
 !!! info "Windows"
     On Windows, use `rmdir` instead of `rm -rf` above.
 
-!!! warning "macOS"
-    On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command `xattr -d com.apple.quarantine FILE` in order to remove the extended attribute com.apple.quarantine from the binary executable FILE.
-
-!!! warning "Linux"
+!!! info "Linux"
     Under Linux, you need to install `udev` rules so that the debug probes can communicate with the host. Either execute `sudo pyavrocd --install-udev-rules` once or install these rules manually (see [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib#notes-for-linux-systems)).
+
+!!! warning "macOS"
+    On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command `xattr -d com.apple.quarantine FILE` in order to remove the extended attribute `com.apple.quarantine` from the binary executable FILE.
+
+
 
 # Step 1a: An alternative way of installing PyAvrOCD
 
