@@ -1,12 +1,12 @@
 # PyAvrOCD Installation
 
-## Arduino IDE 2
+### Arduino IDE 2
 
 If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" ](https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2) and [install the respective core](https://felias-fogg.github.io/PyAvrOCD/supporting-cores/). It will then be installed as a tool for this core.
 
 If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.
 
-## Downloading binaries
+### Downloading binaries
 
 Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases`[^*] (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder `tools`, which in turn contains the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`, and additionally `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips. Store all of it somewhere in the same folder and preferably include this folder in your `PATH` variable. My preference for such a folder is `~/.local/bin` , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):
 
@@ -20,7 +20,7 @@ Since the binaries were generated on very recent versions of the respective oper
 
 [^*]: Currently, it is not possible to get a list of releases by clicking on the `Releases` title. However, clicking on the Tag number or the `Latest` label works.
 
-## PyPI
+### PyPI
 
 I assume you already installed a recent Python version (>=3.10). Then [PyPI](https://pypi.org/project/pyavrocd/) will bring you the most recent version of PyAvrOCD to your computer.
 
@@ -35,7 +35,7 @@ After restarting the shell, you should be able to start the GDB server. The bina
 
 Not that the folder with SVD files is not part of the PyPI installation. If you want to download this folder, it has to be downloaded separately from the GitHub repo. It is a release asset called `svd.tar.gz`.
 
-## GitHub
+### GitHub
 
 Alternatively, you can download or clone the [GitHub repository](https://github.com/felias-fogg/PyAvrOCD). Additionally, you need to install a Python package manager, for instance, [Poetry](https://python-poetry.org):
 
@@ -58,7 +58,7 @@ Furthermore, you can create a binary standalone package as follows:
 
 As a result, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the directory `dist/pyavrocd/` together with the folder `pyavrocd-util`. You can copy those two to a place in your `PATH`.
 
-## Some OS idiosyncrasies
+### Some OS idiosyncrasies
 
 **Linux**: On a Linux installation, users may need to add a few `udev` rules after having installed PyAvrOCD. One can add these `udev` rules manually, following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Instead, this can also be accomplished by invoking PyAvrOCD once as root with the option `--install-udev-rules` (assuming that `pyavrocd` has been stored somewhere on the `PATH`):
 

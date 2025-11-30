@@ -1,4 +1,4 @@
-# Step 1: Installing PyAvrOCD
+## Step 1: Installing PyAvrOCD
 
 Go to the [PyAvrOCD GitHub repo](https://github.com/felias-fogg/PyAvrOCD/) and click on the `Latest` button below **Releases** on the right side of the page.
 
@@ -44,7 +44,7 @@ Once you have downloaded the archive and uncompressed it, you need to decide whe
 
 
 
-# Step 1a: An alternative way of installing PyAvrOCD
+## Step 1a: An alternative way of installing PyAvrOCD
 
 When you are not happy with the choices provided to you above, when the PyAvrOCD binaries will not start because of incompatibilities, or when you have a compatible Python installation that you do not want to duplicate, it is also possible to install PyAvrOCD from [PyPI, the Python Package Index](https://pypi.org). The preferred way of doing that is using [pipx](https://pipx.pypa.io/stable/), which will install an executable in the folder `~/.local/bin/` and a virtual Python environment with all the required modules in `~/.local/pipx/`. Although this is, in theory, platform agnostic, you may encounter problems when USB and HIDAPI libraries have to be built from source. Note that Linux users need to install `udev` rules (see above).
 
@@ -58,7 +58,7 @@ Assuming that you have been successful in installing PyAvrOCD using pipx, we als
 > tar xvzf svd.tar.gz
 ```
 
-# Step 2: Replace the outdated avr-gdb client
+## Step 2: Replace the outdated avr-gdb client
 
 The avr-gdb client in the AVR toolchain, as delivered by PlatformIO, is seriously outdated (version 7.8 from 2014). Even worse, under recent versions of macOS and Ubuntu, it will not start because of incompatibilities. For this reason, it makes sense to employ a more recent version of avr-gdb. Either use the one obtainable from your OS or make use of the binary downloaded in [Step 1](#step-1-installing-pyavrocd). The folder you need to copy the client to is `~/.platformio/packages/toolchain-atmelavr/bin`:
 

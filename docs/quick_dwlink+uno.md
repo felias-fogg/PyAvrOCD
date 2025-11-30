@@ -6,8 +6,12 @@ This quickstart guide shows how to try out embedded debugging as offered by the 
 - how to set up the [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) so that you can use its debugging feature,  and
 - how to use this combo in order to do embedded debugging on another Arduino UNO R3.
 
-This means that you need two UNO boards to try out debugging. Of course, any other ATmega328P boards will do, as long as on one of them you can remove or disconnect the `RESET ENABLE` capacitor (see below). In addition, you need:
+This means that you need two UNO boards to try out debugging. Of course, any other ATmega328P boards will do, as long as on one of them you can remove or disconnect the `RESET ENABLE` capacitor (see below).
 
+## Required hardware
+
+- Two Arduino UNO R3,
+- one USB cable (for the connection to the host),
 - a pushbutton,
 - 6 jumper wires (male-male),
 - a 10 µF electrolyte capacitor (optionally), and

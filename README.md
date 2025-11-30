@@ -20,7 +20,7 @@
 
 PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)). It can communicate with Microchip's debug probes, such as the very affordable [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100), and it provides a pass-through service for the UNO-based debug probe [dw-link](https://github.com/felias-fogg/dw-link) and the simulation tool [simavr](https://github.com/buserror/simavr) (see [list of supported debug probes](https://felias-fogg.github.io/PyAvrOCD/supported-debuggers/)).
 
-So, why another open-source GDB server for AVR MCUs? The main intention is to provide a *cross-platform* AVR GDB server. In other words, it is ***the missing AVR debugging solution*** for [PlatformIO](https://platformio.org) and the [Arduino IDE 2](https://www.arduino.cc/en/software/). And it excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
+So, why another open-source GDB server for AVR MCUs? The main intention is to provide a *cross-platform* AVR GDB server. In other words, it is *the missing AVR debugging solution* for [PlatformIO](https://platformio.org) and the [Arduino IDE 2](https://www.arduino.cc/en/software/). And it excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png" width="70%">
@@ -34,6 +34,6 @@ When you want to install PyAvrOCD, you can [install it as part of an Arduino cor
 
 ## What has been done so far, and what to expect in the future
 
-When moving from the earlier version of the GDBserver, called [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), to PyAvrOCD, support for JTAG Mega chips has been added. This was more work than anticipated. And the current release is not yet fit for serious work. A number of JTAG MCUs still need to be tested, and more unit and integration tests are called for.  If you would nevertheless like to give PyAvrOCD a try, you are welcome. The integration into Arduino IDE 2 is already done (for ATtiny chips and the Arduino AVR Boards). Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
+When moving from the earlier version of the GDBserver, called [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), to PyAvrOCD, support for JTAG Mega chips has been added. This was more work than anticipated. A number of JTAG MCUs still need to be tested, but then I would consider the implementation as more or less stable.  If you would like to give PyAvrOCD a try, you are welcome. The integration into Arduino IDE 2 is already done (for ATtiny chips and the Arduino AVR Boards). Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
 
 UPDI MCUs will follow next. I am unsure about Xmegas.
