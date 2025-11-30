@@ -29,6 +29,7 @@ nav:
       - dw-link & Arduino UNO R3: 'quick_dwlink+uno.md'
     - PlatformIO:
       - Atmel-ICE & ATmega1284: 'quick_atmega1284_pio.md'
+      - dw-link & ATtiny85: 'quick_attiny_pio.md'
   - Installation & Configuration:
     - PyAvrOCD: 'install-link.md'
     - Debugging software: 'debugging-software.md'
