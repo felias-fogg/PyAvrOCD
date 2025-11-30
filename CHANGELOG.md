@@ -1,5 +1,10 @@
 # Changelog
 
+0.18.0 (30-Nov-2025)
+
+- Added:
+     - `simavr` has been added to the binary tools. With that, one can now start the simulator by using the "virtual programmer" simavr when starting the debugging process. This looks a bit strange but it appeared to be the only straightforward way of starting simavr without using `pyavrcod.options`. Using `pyavrocd.options` still works and can be used to start simavr with extra arguments.
+
 ### 0.17.1 (24-Nov-2025)
 
 - **Added:**

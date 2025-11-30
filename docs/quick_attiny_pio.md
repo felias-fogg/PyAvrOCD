@@ -80,8 +80,9 @@ You need to set up the hardware on a breadboard and use six wires to connect the
 In reality, this could be like in the following photo.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny85-debug-new.png" width="70%">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny-breadboard.jpg" width="30%">
 </p>
+
 
 Here is a table of all the connections so that you can check that you have made all the connections.
 
