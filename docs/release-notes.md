@@ -1,5 +1,9 @@
 # Release Notes
 
+## Release v0.18.0
+
+- `simavr` has been added to the binary tools. With that, one can now start the simulator by using the "virtual programmer" simavr when starting the debugging process.
+
 ## Release v0.17.1
 
 - From now on, releases will also contain a working 32-bit package for Windows.

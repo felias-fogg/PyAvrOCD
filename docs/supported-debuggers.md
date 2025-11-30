@@ -38,9 +38,15 @@ In both cases, you can check whether you were successful by typing the same comm
 
 ## Software simulator
 
-In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install `simavr` first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work. However, there are [other means to get hold of a version that works with PyAvrOCD](debugging-software.md#a-software-simulator-simavr).
+In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service mainly aimed at Arduino IDE 2 users. If you use this IDE, then the way to start the simulator is as follows:
 
-If you provide a path argument to the `--start` option that has as its last part `simavr`, then the hardware debug probes are ignored, and all the relevant arguments (CPU clock frequency, MCU type, and port number) from the command line are passed on to `simavr`. Using the Arduino IDE 2, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
+1. Verify/compile your sketch.
+2. Choose as the `Programmer` in the `Tools` menu `Simulator (simavr)`.
+3. Click on the Debugger icon at the top of the window.
+
+In this case, the simulator will be started instead of making a connection to a hardware probe. As you will notice, this fake programmer cannot be used to program a chip. It is only used to signal that the simulator should be started when debugging is requested.
+
+An alternative way to start `simavr` is to provide a path argument to the `--start` option that has as its last part `simavr`. Using the Arduino IDE 2 (or other IDEs), you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
 
 ```text
 --start
