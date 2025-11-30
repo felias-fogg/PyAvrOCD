@@ -85,6 +85,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#compiling-the-sketch">Compiling the sketch</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#simulating-or-connecting-to-a-target">Simulating or connecting to a target</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#starting-the-debugger">Starting the debugger</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#debugging">Debugging</a>
@@ -208,6 +210,8 @@ Note: automatically using hardware breakpoints for read-only addresses.
 <p>You must load the sketch into the editor and select a board as usual. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).</p>
 <p><img alt="ide2-1" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png" /></p>
 <p>Before clicking the <code>Verify</code> button in the upper left corner, choose <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.</p>
+<h3 id="simulating-or-connecting-to-a-target">Simulating or connecting to a target</h3>
+<p>As mentioned, instead of connecting to a target, it is also possible to run a simulator (for some MCU types). This is done by choosing <code>Simulator (simavr)</code> as the <code>Programmer</code> in the <code>Tools</code> menu. If you have done that, you cannot use the <code>Upload Using Programmer</code> command anymore. However, when you request to start debugging (see below), then the simulator is chosen instead of making a connection to the target board.</p>
 <h3 id="starting-the-debugger">Starting the debugger</h3>
 <p>After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the debug server.</p>
 <p>Instead of the message shown in the following screenshot, a warning "No debug probe discovered" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="../install-link/#installation">installation instructions</a>). Or maybe you forgot to connect a debug probe altogether.</p>
