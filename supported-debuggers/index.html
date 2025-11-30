@@ -180,8 +180,14 @@
 </code></pre>
 <p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
 <h2 id="software-simulator">Software simulator</h2>
-<p>In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. You need to install <code>simavr</code> first. Be aware that the current simavr version (1.7) that you can get through package managers under Linux or macOS will probably not work. However, there are <a href="../debugging-software/#a-software-simulator-simavr">other means to get hold of a version that works with PyAvrOCD</a>.</p>
-<p>If you provide a path argument to the <code>--start</code> option that has as its last part <code>simavr</code>, then the hardware debug probes are ignored, and all the relevant arguments (CPU clock frequency, MCU type, and port number) from the command line are passed on to <code>simavr</code>. Using the Arduino IDE 2, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
+<p>In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. If you use this IDE, then the way to start the simulator is as follows:</p>
+<ol>
+<li>Verify/compile your sketch.</li>
+<li>Choose as the <code>Programmer</code> in the <code>Tools</code> menu <code>Simulator (simavr)</code>.</li>
+<li>Click on the Debugger icon at the top of the window.</li>
+</ol>
+<p>In this case, the simulator will be started instead of making a connection to a hardware probe. As you will notice, this fake programmer cannot be used to program a chip. It is only used to signal that the simulator should be started when debugging is requested.</p>
+<p>An alternative way to start <code>simavr</code> is to provide a path argument to the <code>--start</code> option that has as its last part <code>simavr</code>. Using the Arduino IDE 2 (or other IDEs), you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
 <pre><code class="language-text">--start
 /path/to/simavr-executable
 </code></pre>
