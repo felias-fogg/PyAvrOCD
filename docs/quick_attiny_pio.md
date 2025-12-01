@@ -121,17 +121,17 @@ And then we are ready to go into business seriously. First, click the debug symb
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-2.png" width="90%">
 </p>
 
-This will start the debugging process and open the `TERMINAL` window below the editor window. Click on the `DEBUG CONSOLE` label, so that this console will be opened. There you will probably see that you should power cycle the target.
+This will start the debugging process and open the `TERMINAL` window below the editor window. Click on the `DEBUG CONSOLE` label, so that this console will be opened. There, you will probably see that you should power cycle the target.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-3.png" width="90%">
 </p>
 
-After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and after that execiution is started. As required, execution will stopped in the `setup` function, which is signifyed by the yellow triangle and the highlighted line (A). The most important control panel (B) is now the one shown on the right side at the top. It enables you (from left to right) to
+After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and after that, execution is started. As required, execution will stop in the setup function, which is signified by the yellow triangle and the highlighted line (A). The most crucial control panel (B) is now the one shown on the right side at the top. It enables you (from left to right) to
 
 - *continuing/suspending* execution,
-- *stepping-over*, i.e., making a step to the beginning of the next source line in the same function,
-- *stepping-in*, that is, making a step to the next source line (entering perhaps a new function),
+- *stepping-over*, i.e., making a step to the beginning of the following source line in the same function,
+- *stepping-in*, that is, making a step to the following source line (entering perhaps a new function),
 - *stepping-out*, that is, executing the current function until it returns to the calling function,
 - *resetting* the MCU, and
 - *terminating* the debugging session.
@@ -143,7 +143,7 @@ From here on, I believe, you know your way around. Otherwise, consult, e.g., the
 
 ## Step 7: Start over or terminate the debugging session
 
-You can now edit the program and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
+If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
 Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command `monitor debugwire disable` into the input line of the `DEBUG CONSOLE` window (1) just before terminating the debugger (2).
 

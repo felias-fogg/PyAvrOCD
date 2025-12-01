@@ -81,7 +81,7 @@ menu.lto=Compiler LTO
 Depending on the debugging interface, the following programmers should be added:
 
 ```
-#### ISP programmer
+#### ISP programmer / debugger
 
 atmel_ice_isp.name=Atmel-ICE (AVR) ISP
 atmel_ice_isp.communication=usb
@@ -118,14 +118,14 @@ snap_isp.program.protocol=snap_isp
 snap_isp.program.tool=avrdude
 snap_isp.program.extra_params=
 
-medbg_isp.name=Xplained Mini (mEDBG) UPDI
+medbg_isp.name=Xplained Mini (mEDBG) ISP
 medbg_isp.communication=usb
 medbg_isp.protocol=xplainedmini_isp
 medbg_isp.program.protocol=xplainedmini_isp
 medbg_isp.program.tool=avrdude
 medbg_isp.program.extra_params=
 
-### JTAG programmer
+### JTAG programmer / debugger
 
 atmel_ice_jtag.name=Atmel-ICE (AVR) JTAG
 atmel_ice_jtag.communication=usb
@@ -163,14 +163,14 @@ snap_jtag.program.protocol=snap_jtag
 snap_jtag.program.tool=avrdude
 snap_jtag.program.extra_params=
 
-edbg_jtag.name=Xplained Pro (EDBG) UPDI
+edbg_jtag.name=Xplained Pro (EDBG) JTAG
 edbg_jtag.communication=usb
 edbg_jtag.protocol=xplainedpro_jtag
 edbg_jtag.program.protocol=xplainedpro_jtag
 edbg_jtag.program.tool=avrdude
 edbg_jtag.program.extra_params=
 
-### UPDI programmer
+### UPDI programmer / debugger
 
 atmel_ice_updi.name=Atmel-ICE (AVR) UPDI
 atmel_ice_updi.communication=usb
