@@ -98,7 +98,7 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 
 ## A software simulator: simavr
 
-The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from some [fork (created to support PlatformIO)](https://github.com/maxgerhardt/simavr) or you can build it from source.
+The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from the latest [Github Actions CI](https://github.com/buserror/simavr/actions) or you can build it from source.
 
 If you want to build simavr from source, clone or download the [simavr GitHub repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
 
