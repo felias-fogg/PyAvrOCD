@@ -368,10 +368,11 @@ def handle_simavr(args, device):
     args.prg = args.prg.strip()
     if os.path.basename(args.prg) != 'simavr':
         return False
-    prg = os.path.abspath(shutil.which(args.prg))
+    prg = shutil.which(args.prg)
     if not prg:
         print("Could not find program '%s'" % args.prg)
         return True
+    prg = os.path.abspath(prg)
     prg += " -g " + str(args.port) + " -f " + str(args.F_CPU) + " -m " + device
     if args.xargs:
         prg += " " + args.xargs
@@ -387,8 +388,9 @@ def startup_helper_prog(args, logger):
     """
     if args.prg and args.prg != "nop":
         args.prg = args.prg.strip()
-        prg = os.path.abspath(shutil.which(args.prg))
+        prg = shutil.which(args.prg)
         if prg:
+            prg = os.path.abspath(prg)
             logger.info("Starting %s", prg)
             subprocess.Popen(prg)
         else:
