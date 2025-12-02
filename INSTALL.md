@@ -8,7 +8,9 @@ If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to i
 
 ### Downloading binaries
 
-Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases`[^*] (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder `tools`, which in turn contains the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`, and additionally `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips. Store all of it somewhere in the same folder and preferably include this folder in your `PATH` variable. My preference for such a folder is `~/.local/bin` , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):
+Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases`[^*] (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder `tools`, which in turn contains the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`,  `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips, and additionally `simavr` (or `simavr.exe`), a software simulator of some of the AVR chips.
+
+Store all of it somewhere in the same folder and preferably include this folder in your `PATH` variable. My preference for such a folder is `~/.local/bin` , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):
 
 ```sh
 mv tools/* ~/.local/bin

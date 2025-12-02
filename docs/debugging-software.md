@@ -88,7 +88,7 @@ I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated a
 
 ## Other IDEs
 
-There are a few other possible options for IDEs. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
+There are a few other possible options for IDEs. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR-GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
 
 If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.
 
@@ -98,13 +98,18 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 
 ## A software simulator: simavr
 
-The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from some [fork (created to support PlatformIO)](https://github.com/maxgerhardt/simavr) or you can build it from source.
+The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can download a binary from a [fork (created to support PlatformIO)](https://github.com/maxgerhardt/simavr) for your architecture (check out the Release). Note, however, that the asset named Mac.OS.Intel.64-bit.zip is, in fact, an ARM64 executable.
 
-If you want to build simavr from source, clone or download the [simavr GitHub repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
+If you want or need to build simavr from source, clone or download the [simavr GitHub repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
 
 ```bash
 make install DESTDIR=~/.local/
 ```
 
-This works under macOS and Linux. The instructions in the repo provided for Windows appear to be outdated.
+This works under macOS and Linux. The instructions in the repo provided for Windows appear to be outdated. For the Mac, one could alternatively build from source by using the following commands:
+
+```
+brew tap osx-cross/avr
+brew install --HEAD simavr
+```
 

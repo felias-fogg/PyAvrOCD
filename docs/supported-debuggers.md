@@ -18,7 +18,9 @@ Except for dw-link and microUPDI, the list below is copied from the README file 
 * <u>[nEDBG](https://www.microchipdirect.com/dev-tools/curiosityboards_curiositynanoboards?allDevTools=true)</u> - on-board debuggers on Curiosity Nano
 * **[dw-link](https://github.com/felias-fogg/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
 
-My JTAGICE3, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits error messages when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
+My **JTAGICE3**, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits error messages when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
+
+The **dw-link** debugger, being a reverse-engineered hobby project, is a bit limited in some respects. It does not accept all of the possible PyAvrOCD options and, in particular, does not implement range-stepping. This implies that debugging ATtiny13s using MicroCore is not possible because delays are implemented using the _delay_ms macros.
 
 ### Switching to AVR mode
 
