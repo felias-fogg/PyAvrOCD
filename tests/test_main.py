@@ -246,10 +246,10 @@ class TestMain(TestCase):
     @patch('pyavrocd.main.subprocess.Popen')
     def test_startup_helper_prog_call(self, mocked_popen, mocked_which, mocked_exit):
         args = SimpleNamespace()
-        args.prg = 'prog -c'
+        args.prg = 'prog'
         mocked_which.return_value = '/bin/prog'
         startup_helper_prog(args, MagicMock())
-        mocked_popen.assert_called_with(['/bin/prog', '-c'])
+        mocked_popen.assert_called_with('/bin/prog')
         mocked_exit.assert_not_called()
 
     @patch('pyavrocd.main.sys.exit')
@@ -257,7 +257,7 @@ class TestMain(TestCase):
     @patch('pyavrocd.main.subprocess.Popen')
     def test_startup_helper_prog_none(self, mocked_popen, mocked_which, mocked_exit):
         args = SimpleNamespace()
-        args.prg = 'prog -c'
+        args.prg = 'prog'
         mocked_which.return_value = None
         startup_helper_prog(args, MagicMock())
         mocked_popen.assert_not_called()
@@ -294,6 +294,7 @@ class TestMain(TestCase):
         args.prg = 'simavr'
         args.port = 2000
         args.F_CPU = '16000000UL'
+        args.xargs = '-o out.log --add-trace LED=trace@0x0038/0xff'
         mocked_which.return_value =  '/usr/bin/simavr'
         self.assertTrue(handle_simavr(args, 'atmega328p'))
         mocked_popen.assert_called_once()
@@ -312,10 +313,10 @@ class TestMain(TestCase):
 
     @patch('pyavrocd.main.sys.stderr.write')
     def test_startup_wrong_args(self, mock_print):
-        self.assertRaises(SystemExit,startup, ['-x'], Mock)
+        self.assertRaises(SystemExit,startup, ['-z'], Mock)
         caller = os.path.basename(sys.argv[0])
         mock_print.assert_has_calls([call('usage: ' + caller + ' [options]\n'),
-                                     call(caller + ': error: unrecognized arguments: -x\n')])
+                                     call(caller + ': error: unrecognized arguments: -z\n')])
 
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.dwlink.main')

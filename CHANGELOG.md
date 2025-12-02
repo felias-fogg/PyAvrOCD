@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.18.1 (NEW)
+
+- **Fixed:**
+     - Unfortunately, Windows command lines cannot be parsed with the Python module`shlex`, which led to the problem that `simavr` could not be started under Windows. Now, the `-s` option expects the path to a program (without any arguments). If extra arguments to `simavr` are necessary, one should use the new `-x` option.
+
 ### 0.18.0 (30-Nov-2025)
 
 - **Added:**
