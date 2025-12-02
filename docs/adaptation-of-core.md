@@ -88,6 +88,8 @@ be added:
 simavr.name=Simulator (simavr)
 simavr.debug.cortex-debug.custom.serverArgs.1={debug.toolchain.path}/bin/simavr
 simavr.protocol=This_is_not_a_programmer_but_only_a_signal_to_use_the_simulator_when_debugging
+simavr.upload.protocol=This_is_not_a_programmer_but_only_a_flag_to_use_the_simulator_when_debugging
+simavr.program.protocol=This_is_not_a_programmer_but_only_a_flag_to_use_the_simulator_when_debugging
 simavr.program.tool=avrdude
 simavr.program.extra_params=
 
