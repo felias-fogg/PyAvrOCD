@@ -149,20 +149,14 @@
                 <h1 id="restoring-a-target-to-its-original-state-after-debugging">Restoring a target to its original state after debugging</h1>
 <p>If, after debugging, you want to restore a target board to its original state, a few things have to be done:</p>
 <ol>
-<li>
-<p>If your target is a debugWIRE MCU, then you need to disable debugWIRE mode. This can be done by entering the debugger and then issuing the <code>monitor debugwire disable</code> command.</p>
-</li>
-<li>
-<p>You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for <strong>debug use</strong> only.  In this case, you can also ignore step 3.</p>
-</li>
-<li>
-<p>You may need to reflash the bootloader and likely need to set the correct fuses.</p>
-</li>
-<li>
-<p>In the Arduino IDE, you can do this by using the <code>Burn Bootloader</code> command in the <code>Tools</code> menu. This will set the correct fuses and reinstall the bootloader.</p>
+<li>If your target is a debugWIRE MCU, then you need to disable debugWIRE mode. This can be done by entering the debugger and then issuing the <code>monitor debugwire disable</code> command.</li>
+<li>You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for <strong>debug use</strong> only.  In this case, you can also ignore step 3.</li>
+<li>You may need to reflash the bootloader and likely need to set the correct fuses. <ul>
+<li>To restore the board to its exact original state before debugging, you must download the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using an SPI programmer.</li>
+<li>In the Arduino IDE, you can do this by using the <code>Burn Bootloader</code> command in the <code>Tools</code> menu. This will set the correct fuses and reinstall the bootloader. </li>
+</ul>
 </li>
 </ol>
-<p>To restore the board to its exact original state before debugging, you must download the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using an SPI programmer.</p>
               
             </div>
           </div><footer>
