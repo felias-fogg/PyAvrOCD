@@ -171,7 +171,7 @@
 <li><strong><a href="https://github.com/felias-fogg/dw-link">dw-link</a></strong> - <strong>DIY debugger running on an Arduino UNO R3</strong> (only debugWIRE)</li>
 </ul>
 <p>My <strong>JTAGICE3</strong>, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits error messages when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.</p>
-<p>The <strong>dw-link</strong> debugger, being a reverse-engineered hobby project, is a bit limited in some respects. It does not accept all of the possible PyAvrOCD options and, in particular, does not implement range-stepping. This implies that debugging ATtiny13s using MicroCore is not possible because delays are implemented using the _delay_ms macros.</p>
+<p>The <strong>dw-link</strong> debugger, being a reverse-engineered hobby project, is limited in some respects. It does not accept all of the possible PyAvrOCD options and, in particular, does not implement range-stepping. This implies that debugging ATtiny13s using MicroCore is not possible because delays are implemented using the _delay_ms macros.</p>
 <h3 id="switching-to-avr-mode">Switching to AVR mode</h3>
 <p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
 <pre><code>avrdude -c snap_isp -Pusb -xmode=avr
@@ -181,21 +181,21 @@
 </code></pre>
 <p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
 <h2 id="software-simulator">Software simulator</h2>
-<p>In addition to the above-mentioned hardware debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. If you use this IDE, then the way to start the simulator is as follows:</p>
+<p>In addition to the above-mentioned debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. If you use this IDE, then the way to start the simulator is as follows:</p>
 <ol>
 <li>Verify/compile your sketch.</li>
 <li>Choose as the <code>Programmer</code> in the <code>Tools</code> menu <code>Simulator (simavr)</code>.</li>
 <li>Click on the Debugger icon at the top of the window.</li>
 </ol>
 <p>In this case, the simulator will be started instead of making a connection to a hardware probe. As you will notice, this fake programmer cannot be used to program a chip. It is only used to signal that the simulator should be started when debugging is requested.</p>
-<p>An alternative way to start <code>simavr</code> is to provide a path argument to the <code>--start</code> option that has as its last part <code>simavr</code>. Using the Arduino IDE 2 (or other IDEs), you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
+<p>An alternative way to start <code>simavr</code> is to provide a path argument to the <code>--start</code> option that has as its last part <code>simavr</code>. If you use another IDE other than the Arduino IDE 2, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
 <pre><code class="language-text">--start
 /path/to/simavr-executable
 </code></pre>
 <p>Note that the list of chips supported by <code>simavr</code> is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, the simulator solution may sometimes be the more preferable option.</p>
-<p>If you are adventurous, you may want to try out a few other things with <code>simavr</code>. It is possible to pass arguments to <code>simavr</code>. For instance, you can trace the changes of a particular memory location, e.g., PORTB, where the built-in LED is usually controlled by:</p>
-<pre><code class="language-text">--start
-/path/to/simavr-executable --add-trace LED=trace@0x0025/0xff
+<p>If you are adventurous, try out a few other things with <code>simavr</code>. It is possible to pass arguments to <code>simavr</code> using the option <code>--xargs</code>. For instance, you can trace the changes of a particular memory location, e.g., PORTB on an ATmega328P, where the built-in LED is usually controlled.  Add the following two lines in the file <code>pyavrocd.options</code>:</p>
+<pre><code class="language-text">--xargs
+--add-trace LED=trace@0x0025/0xff
 </code></pre>
 <p>After terminating the debug session (and waiting some time), a <a href="https://en.wikipedia.org/wiki/Value_change_dump">VCD</a> trace will show up in the project folder. This can be visualized, for instance, with <a href="https://gtkwave.sourceforge.net">gtkwave</a> or <a href="https://sigrok.org/wiki/Downloads">pulseview</a>. It is also possible to provide VCD files as input. This is all sketched in a <a href="https://github.com/gatk555/simavr#using">simavr usage note</a>.</p>
               
