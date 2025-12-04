@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Signals and errors - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Signals and errors";
+        var mkdocs_page_input_path = "signals_and_errors.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../pics/logo-tiny.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" >Arduino IDE 2</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../quick_attiny_pio/">dw-link & ATtiny85</a>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices & platforms</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Signals and errors</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/edit/master/docs/signals_and_errors.md">Edit on PyAvrOCD</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
+<table>
+<thead>
+<tr>
+<th>Signal or error code</th>
+<th>Error message</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SIGHUP</code></td>
+<td><em>Enable debugWIRE first: 'monitor debugwire enable</em><br>or<br><em>JTAG pins are not enabled</em><br>or something similar</td>
+<td>If the debugger receives this signal, it means that there is no connection to the target's OCD. You need to enable debugging by setting a fuse or something similar, perhaps by issuing <code>monitor debugwire enable</code>.</td>
+</tr>
+<tr>
+<td><code>SIGINT</code></td>
+<td></td>
+<td>This is not an error signal. It rather signals that execution has been stopped by a keyboard interrupt (or something equivalent).</td>
+</tr>
+<tr>
+<td><code>SIGILL</code></td>
+<td><em>Cannot execute because of  BREAK instruction</em></td>
+<td>The debugger receives this signal when one tries to single-step or continue executing at a location where the user has placed a BREAK instruction. Alternatively, the BREAK instruction might be a leftover from a previously interrupted debugging session.</td>
+</tr>
+<tr>
+<td><code>SIGTRAP</code></td>
+<td></td>
+<td>This is not an error signal. Instead, it is issued when execution stops at a place where a breakpoint has been set.</td>
+</tr>
+<tr>
+<td><code>SIGABRT</code></td>
+<td>See debug server log</td>
+<td>This signal is raised after an unrecoverable internal error or when execution shall be continued after such an error. Use the <code>monitor info</code> to get more information about the error.</td>
+</tr>
+<tr>
+<td><code>SIGBUS</code></td>
+<td><em>Cannot execute because stack pointer is too low</em></td>
+<td>This signal is raised if the stack threatens to overwrite I/O registers when execution is about to start.</td>
+</tr>
+<tr>
+<td><code>SIGSEGV</code></td>
+<td><em>No program loaded; cannot start execution</em></td>
+<td>This signal is raised when execution is about to start, but there is no prior <code>load</code> command.  If this is done intentionally (because it is known that the flash memory has been programmed), one can  disable the check by using the command <code>monitor onlywhenloaded disable</code>.</td>
+</tr>
+<tr>
+<td><code>SISGSYS</code></td>
+<td><em>Too many breakpoints set</em></td>
+<td>Execution cannot continue because too many breakpoints have been set. You need to delete some in order to continue execution.</td>
+</tr>
+<tr>
+<td><code>E01</code></td>
+<td></td>
+<td>Error code returned when attempting to read or write memory contents while there is no connection to the OCD.</td>
+</tr>
+<tr>
+<td><code>E04</code></td>
+<td></td>
+<td>Error signaling that GDB requested a packet longer than the communicated maximal size.</td>
+</tr>
+<tr>
+<td><code>E11</code></td>
+<td></td>
+<td>Error code returned when writing to flash memory was unsuccessful.</td>
+</tr>
+<tr>
+<td><code>E13</code></td>
+<td></td>
+<td>Error code when writing to memory failed.</td>
+</tr>
+<tr>
+<td><code>E14</code></td>
+<td></td>
+<td>Error code for a read memory failure.</td>
+</tr>
+<tr>
+<td><code>E15</code></td>
+<td></td>
+<td>Error code when GDB sent a data package with the wrong size.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-code-fork" style="color: #fcfcfc"> PyAvrOCD</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

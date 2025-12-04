@@ -99,6 +99,10 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#signals-and-error-messages">Signals and error messages</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#internal-and-fatal-dw-link-errors">Internal and fatal dw-link errors</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -192,6 +196,248 @@
 <p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
 <h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
 <p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file <code>platform.local.txt</code> into the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards">platform folder</a> of your core and write the line <code>compiler.path=/path/to/bin-folder/</code> into it.</p>
+<h2 id="signals-and-error-messages">Signals and error messages</h2>
+<p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
+<table>
+<thead>
+<tr>
+<th>Signal or error code</th>
+<th>Error message</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SIGHUP</code></td>
+<td><em>Enable debugWIRE first: 'monitor debugwire enable</em><br>or<br><em>JTAG pins are not enabled</em><br>or something similar</td>
+<td>If the debugger receives this signal, it means that there is no connection to the target's OCD. You need to enable debugging by setting a fuse or something similar, perhaps by issuing <code>monitor debugwire enable</code>.</td>
+</tr>
+<tr>
+<td><code>SIGINT</code></td>
+<td></td>
+<td>This is not an error signal. It rather signals that execution has been stopped by a keyboard interrupt (or something equivalent).</td>
+</tr>
+<tr>
+<td><code>SIGILL</code></td>
+<td><em>Cannot execute because of  BREAK instruction</em></td>
+<td>The debugger receives this signal when one tries to single-step or continue executing at a location where the user has placed a BREAK instruction. Alternatively, the BREAK instruction might be a leftover from a previously interrupted debugging session.</td>
+</tr>
+<tr>
+<td><code>SIGTRAP</code></td>
+<td></td>
+<td>This is not an error signal. Instead, it is issued when execution stops at a place where a breakpoint has been set.</td>
+</tr>
+<tr>
+<td><code>SIGABRT</code></td>
+<td>See debug server log</td>
+<td>This signal is raised after an unrecoverable internal error or when execution shall be continued after such an error. Use the <code>monitor info</code> to get more information about the error.</td>
+</tr>
+<tr>
+<td><code>SIGBUS</code></td>
+<td><em>Cannot execute because stack pointer is too low</em></td>
+<td>This signal is raised if the stack threatens to overwrite I/O registers when execution is about to start.</td>
+</tr>
+<tr>
+<td><code>SIGSEGV</code></td>
+<td><em>No program loaded; cannot start execution</em></td>
+<td>This signal is raised when execution is about to start, but there is no prior <code>load</code> command.  If this is done intentionally (because it is known that the flash memory has been programmed), one can  disable the check by using the command <code>monitor onlywhenloaded disable</code>.</td>
+</tr>
+<tr>
+<td><code>SISGSYS</code></td>
+<td><em>Too many breakpoints set</em></td>
+<td>Execution cannot continue because too many breakpoints have been set. You need to delete some in order to continue execution.</td>
+</tr>
+<tr>
+<td><code>E01</code></td>
+<td></td>
+<td>Error code returned when attempting to read or write memory contents while there is no connection to the OCD.</td>
+</tr>
+<tr>
+<td><code>E04</code></td>
+<td></td>
+<td>Error signaling that GDB requested a packet longer than the communicated maximal size.</td>
+</tr>
+<tr>
+<td><code>E11</code></td>
+<td></td>
+<td>Error code returned when writing to flash memory was unsuccessful.</td>
+</tr>
+<tr>
+<td><code>E13</code></td>
+<td></td>
+<td>Error code when writing to memory failed.</td>
+</tr>
+<tr>
+<td><code>E14</code></td>
+<td></td>
+<td>Error code for a read memory failure.</td>
+</tr>
+<tr>
+<td><code>E15</code></td>
+<td></td>
+<td>Error code when GDB sent a data package with the wrong size.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="internal-and-fatal-dw-link-errors">Internal and fatal dw-link errors</h2>
+<p>When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware. </p>
+<p>If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error. This might not be immediately reported by GDB, but one can get information about the specific error by using the <code>monitor info</code> command. The errors are only reported by number. If the error number is less than 100, then it is a connection error. Errors above 100 are serious internal debugger errors. </p>
+<p>If you have encountered an internal debugger error, then please try to reproduce the problem and tell me how it happened. </p>
+<p>After a reset or a power cycle of the hardware debugger, everything usually works again. If not, you need to unplug everything and put it together again.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Error #</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>Connection error: Could not communicate by ISP; check wiring</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Connection error: Could not activate debugWIRE</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>Connection error: MCU type is not supported</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>Connection error: Lock bits or BOOTRST could not be cleared</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Connection error: MCU has PC with stuck-at-one bits</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>Connection error: RESET line has a capacitive load</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>Connection error: Target not powered or RESET shortened to GND</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>MCU type does not match</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td>Unknown connection error</td>
+</tr>
+<tr>
+<td style="text-align: right;">101</td>
+<td>No free slot in breakpoint table</td>
+</tr>
+<tr>
+<td style="text-align: right;">102</td>
+<td>Packet length too large</td>
+</tr>
+<tr>
+<td style="text-align: right;">103</td>
+<td>Wrong memory type</td>
+</tr>
+<tr>
+<td style="text-align: right;">104</td>
+<td>Packet length is negative</td>
+</tr>
+<tr>
+<td style="text-align: right;">105</td>
+<td>Reset operation failed</td>
+</tr>
+<tr>
+<td style="text-align: right;">106</td>
+<td>Memory address in flash read operation does not point to page start</td>
+</tr>
+<tr>
+<td style="text-align: right;">107</td>
+<td>Could not complete flash read operation</td>
+</tr>
+<tr>
+<td style="text-align: right;">108</td>
+<td>Could not complete RAM read operation</td>
+</tr>
+<tr>
+<td style="text-align: right;">109</td>
+<td>Memory address in flash write operation does not point to page start</td>
+</tr>
+<tr>
+<td style="text-align: right;">110</td>
+<td>Could not complete flash page erase operation</td>
+</tr>
+<tr>
+<td style="text-align: right;">111</td>
+<td>Could not load data into the flash buffer for writing</td>
+</tr>
+<tr>
+<td style="text-align: right;">112</td>
+<td>Error when programming flash page from buffer</td>
+</tr>
+<tr>
+<td style="text-align: right;">113</td>
+<td>Error verifying flashed page while loading program</td>
+</tr>
+<tr>
+<td style="text-align: right;">114</td>
+<td>Assignment of hardware breakpoint is inconsistent</td>
+</tr>
+<tr>
+<td style="text-align: right;">115</td>
+<td>BREAK inserted by debugger at a point where a step or execute operation is required</td>
+</tr>
+<tr>
+<td style="text-align: right;">116</td>
+<td>Trying to read flash word at an uneven address</td>
+</tr>
+<tr>
+<td style="text-align: right;">117</td>
+<td>Error when single-stepping</td>
+</tr>
+<tr>
+<td style="text-align: right;">118</td>
+<td>A relevant breakpoint has disappeared</td>
+</tr>
+<tr>
+<td style="text-align: right;">119</td>
+<td>Input buffer overflow</td>
+</tr>
+<tr>
+<td style="text-align: right;">120</td>
+<td>Wrong fuse</td>
+</tr>
+<tr>
+<td style="text-align: right;">121</td>
+<td>Breakpoint update while flash programming is active</td>
+</tr>
+<tr>
+<td style="text-align: right;">122</td>
+<td>Timeout while reading from debugWIRE line</td>
+</tr>
+<tr>
+<td style="text-align: right;">123</td>
+<td>Timeout while reading general register</td>
+</tr>
+<tr>
+<td style="text-align: right;">124</td>
+<td>Timeout while reading IO register</td>
+</tr>
+<tr>
+<td style="text-align: right;">125</td>
+<td>Could not reenable RWW</td>
+</tr>
+<tr>
+<td style="text-align: right;">126</td>
+<td>Failure while reading from EEPROM</td>
+</tr>
+<tr>
+<td style="text-align: right;">127</td>
+<td>Bad interrupt</td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>
