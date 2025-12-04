@@ -19,7 +19,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 - **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23. No physical modifications or fuse settings necessary
 - <u>AT90USBKEY2 (AT90USB1287)</u>: no core yet
-- <u>ATmega256RFR2 Xplained Pro</u>: no core yet. No physical modifications or fuse settings necessary.
+- <u>ATmega256RFR2 Xplained Pro</u>: no core yet. 
 - <u>AVR Butterfly (ATmega169)</u>: no core yet.
 - <u>MEGA-1284P Xplained</u>: no core yet.
 
@@ -63,32 +63,36 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 ## Supported Sparkfun boards
 
 - RedBoard (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`; remove `C8`
-- <u>Pro Micro 3.3V (ATmega32U4)</u>: Supported by `Arduino AVR Boards (Debug enabled)`
-- <u>Pro Micro 5V (ATmega32U4)</u>: Supported by `Arduino AVR Boards (Debug enabled)`
-- Qduino Mini (ATmega32U4): Supported by `Arduino AVR Boards (Debug enabled)`
-- Mega Pro 3.3V/5V: Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Pro Micro 3.3V (ATmega32U4)</u>: 
+- <u>Pro Micro 5V (ATmega32U4)</u>: 
+- Qduino Mini (ATmega32U4): 
+- Mega Pro 3.3V/5V: 
 - RedBot (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
 - ATmega128RFA1 Development board: no core yet
-- <u>Serial-7-Segment-Display</u> (ATmega328): Supported by `Arduino AVR Boards (Debug enabled)`
+- <u>Serial-7-Segment-Display</u> (ATmega328P): no core yet
 - LilyPad USB Plus: no core yet
+- Digital Sandbox (ATmega328P)
+- Microview (ATmega328P)
 
 ## Supported Adafruit boards
 
 - ATmega32u4 Breakout Board: no core yet
+- Circuit Playground Classic (ATmega32U4):  `Arduino AVR Boards (Debug enabled)`
 - Feather 32U4 Basic Proto: no core yet
 - Feather 32u4 Bluefruit LE: no core yet
 - Feather 32u4 FONA: no core yet
 - Feather 328P: Supported by `Arduino AVR Boards (Debug enabled)`
 - <s>FLORA (ATmega32U4)</s>: JTAG pins are not accessible
+- Gemma (ATtiny85):  `ATTinyCore (Debug enabled)`, `Arduino AVR Boards (Debug enabled)`
 - ItsyBitsy 32u4 (3V/5V): no core yet
 - Metro (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`; cut `RESET EN` solder bridge
 - Metro Mini 328P V2: Supported by `Arduino AVR Boards (Debug enabled)`; you have to figure out which cap to remove
 - Teensy 2.0 (ATmega32U4): no core yet
 - <u>Teensy++ (AT90USB1286)</u>: no core yet
 - Trinket - Mini Microcontroller 3.3V/5V Logic: Supported by `ATTinyCore (Debug enabled)`
-- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
-- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
-- Bluefruit Micro: no core yet
+- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): 
+- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): 
+- Bluefruit Micro (ATmega32U4): no core yet
 
 ## Supported Olimex boards
 
