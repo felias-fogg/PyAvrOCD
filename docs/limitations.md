@@ -199,7 +199,7 @@ You can enforce the use of *only* hardware breakpoints by employing the followin
 monitor breakpoint hardware
 ```
 
-After this command, you always get an error when more than the number of available hardware breakpoints is requested. One must be aware, though, that there might be slight problems when single-stepping and when continuing from a breakpoint.
+After using this command, you always get an error when more than the number of available hardware breakpoints is requested. One must be aware, though, that there might be slight problems when single-stepping and when continuing from a breakpoint.
 
 A GDB step-over operation uses a temporary breakpoint, which can lead to the situation where, after starting a step-over operation with a single step on the GDB server level, it is discovered that too many breakpoints are necessary to complete the step-over operation. In this case, the initial single step is done, but then execution is stopped (in the middle of the step-over operation).
 
