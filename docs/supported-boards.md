@@ -19,7 +19,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 - **ATmega324PB Xplained Pro:** No core yet. Serial I/O is routed via `Serial1` instead of `Serial`. The LED is connected to digital pin 23. No physical modifications or fuse settings necessary
 - <u>AT90USBKEY2 (AT90USB1287)</u>: no core yet
-- <u>ATmega256RFR2 Xplained Pro</u>: no core yet. 
+- <u>ATmega256RFR2 Xplained Pro</u>: no core yet.
 - <u>AVR Butterfly (ATmega169)</u>: no core yet.
 - <u>MEGA-1284P Xplained</u>: no core yet.
 
@@ -29,7 +29,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 
 - Arduino Yún: Supported by `Arduino AVR Boards (Debug enabled)`
-- **Arduino UNO R3**: Supported by `Arduino AVR Boards (Debug enabled)`;  [the `RESET EN` solder bridge needs to be cut](https://felias-fogg.github.io/PyAvrOCD/board-preparation/#preparing-a-debugwire-target)
+- **Arduino UNO R3**: Supported by `Arduino AVR Boards (Debug enabled)`;  [the `RESET EN` solder bridge needs to be cut](board-preparation.md#preparing-a-debugwire-target)
 - Arduino UNO Mini: Supported by `Arduino AVR Boards (Debug enabled)`; remove capacitor `C3`
 - Arduino Duemilanove: Supported by `Arduino AVR Boards (Debug enabled)`; `RESET EN` needs to be cut
 - Arduino Diecimila: Supported by `Arduino AVR Boards (Debug enabled)`; [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
@@ -63,10 +63,10 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 ## Supported Sparkfun boards
 
 - RedBoard (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`; remove `C8`
-- <u>Pro Micro 3.3V (ATmega32U4)</u>: 
-- <u>Pro Micro 5V (ATmega32U4)</u>: 
-- Qduino Mini (ATmega32U4): 
-- Mega Pro 3.3V/5V: 
+- <u>Pro Micro 3.3V (ATmega32U4)</u>:
+- <u>Pro Micro 5V (ATmega32U4)</u>:
+- Qduino Mini (ATmega32U4):
+- Mega Pro 3.3V/5V:
 - RedBot (ATmega328P): Supported by `Arduino AVR Boards (Debug enabled)`
 - ATmega128RFA1 Development board: no core yet
 - <u>Serial-7-Segment-Display</u> (ATmega328P): no core yet
@@ -90,8 +90,8 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Teensy 2.0 (ATmega32U4): no core yet
 - <u>Teensy++ (AT90USB1286)</u>: no core yet
 - Trinket - Mini Microcontroller 3.3V/5V Logic: Supported by `ATTinyCore (Debug enabled)`
-- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): 
-- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P): 
+- Pro Trinket - 5V 16MHz/ 3.3V 12 MHz (ATmega328P):
+- Pro Trinket FTDI - 5V 16MHz/ 3.3V 12 MHz (ATmega328P):
 - Bluefruit Micro (ATmega32U4): no core yet
 
 ## Supported Olimex boards
