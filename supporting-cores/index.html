@@ -169,17 +169,17 @@
 <p>If you want to install a core, in most cases, you first have to add a <em>package index json</em> URL to the list of <code>Additional boards manager URLs</code>, which you find in the <code>Preferences</code> dialog. Once this has been done, you can search in the <code>Boards Manager</code> (accessible through the <code>Tools</code> menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.</p>
 <h3 id="arduino-avr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled">Arduino AVR Boards (Debug enabled)</a></h3>
 <p>This is a fork of the official Arduino AVR core 1.8.6, which, among other things, contains the Arduino UNO R3, the Arduino Leonardo, and the Arduino Mega 2560. You get it as an installable core by adding the following URL:</p>
-<pre><code> https://felias-fogg.github.io/package_debugging_index.json
+<pre><code> https://downloads.pyavrocd.io/package_debug_enabled_index.json
 </code></pre>
 <p>After you have installed this core, you can safely remove the original core <code>Arduino AVR Boards</code> in order to avoid confusion. However, you do not have to.</p>
 <h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore-debug-enabled">ATTinyCore (Debug enabled)</a></h3>
 <p>This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. As above, you can install it after including the following URL</p>
-<pre><code> https://felias-fogg.github.io/package_debugging_index.json
+<pre><code> https://downloads.pyavrocd.io/package_debug_enabled_index.json
 </code></pre>
 <p>in the additional boards manager URLs. As mentioned in the notes, this core is considered to be a development version. However, this appears to apply mainly to the new bootloaders.</p>
 <h3 id="atmel-avr-xplained-minis-debug-enabled"><a href="https://github.com/felias-fogg/avr-xminis-debug-enabled">Atmel AVR Xplained-minis (Debug enabled)</a></h3>
 <p>This is a debug-enabled Arduino core for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the similarly named core in the official Arduino distribution, which is already 10 years old and does not really work. The new core is a stripped-down and adapted version of MCUdude's MiniCore. The boards, together with PyAvrOCD, work very smoothly. It is just plug-and-play. The only thing one must be aware of is that one should power the application circuit attached to the board through the <code>IOREF</code> pin (pin 2 of J202 on the Xplained Mini board). Otherwise, the automatic power-cycle feature might not work. Again, you can install this core through the boards manager URL:</p>
-<pre><code>https://felias-fogg.github.io/package_debugging_index.json
+<pre><code>https://downloads.pyavrocd.io/package_debug_enabled_index.json
 </code></pre>
 <p>If you had installed the original core <code>Atmel AVR Xplained-minis</code>, you should definitely remove it.</p>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
