@@ -56,7 +56,7 @@ Now select the field with the additional board manager URLs.
 Type the following URL into a new line:
 
 ```
-https://felias-fogg.github.io/package_debugging_index.json
+https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
 <p align="center">
