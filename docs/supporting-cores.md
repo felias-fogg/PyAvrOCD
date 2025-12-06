@@ -9,7 +9,7 @@ If you want to install a core, in most cases, you first have to add a *package i
 This is a fork of the official Arduino AVR core 1.8.6, which, among other things, contains the Arduino UNO R3, the Arduino Leonardo, and the Arduino Mega 2560. You get it as an installable core by adding the following URL:
 
 ```
- https://felias-fogg.github.io/package_debugging_index.json
+ https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
 After you have installed this core, you can safely remove the original core `Arduino AVR Boards` in order to avoid confusion. However, you do not have to.
@@ -19,7 +19,7 @@ After you have installed this core, you can safely remove the original core `Ard
 This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. As above, you can install it after including the following URL
 
 ```
- https://felias-fogg.github.io/package_debugging_index.json
+ https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
 in the additional boards manager URLs. As mentioned in the notes, this core is considered to be a development version. However, this appears to apply mainly to the new bootloaders.
@@ -29,7 +29,7 @@ in the additional boards manager URLs. As mentioned in the notes, this core is c
 This is a debug-enabled Arduino core for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the similarly named core in the official Arduino distribution, which is already 10 years old and does not really work. The new core is a stripped-down and adapted version of MCUdude's MiniCore. The boards, together with PyAvrOCD, work very smoothly. It is just plug-and-play. The only thing one must be aware of is that one should power the application circuit attached to the board through the `IOREF` pin (pin 2 of J202 on the Xplained Mini board). Otherwise, the automatic power-cycle feature might not work. Again, you can install this core through the boards manager URL:
 
 ```
-https://felias-fogg.github.io/package_debugging_index.json
+https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
 If you had installed the original core `Atmel AVR Xplained-minis`, you should definitely remove it.

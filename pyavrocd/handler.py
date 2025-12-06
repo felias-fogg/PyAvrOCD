@@ -260,7 +260,7 @@ class GdbHandler():
         """
         if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: memory read, but not connected")
-            self.send_packet("E01")
+            self.send_packet('E01')
             return
         addr = packet.split(",")[0]
         size = packet.split(",")[1]
@@ -269,6 +269,9 @@ class GdbHandler():
         if isize == 0:
             self.send_packet("OK")
             return
+        if isize*2 > self.packet_size:
+            self.send_packet('E04')
+            return
         data = self.mem.readmem(addr, size)
         if data:
             data_string = (binascii.hexlify(data)).decode('ascii')
@@ -276,7 +279,7 @@ class GdbHandler():
             self.send_packet(data_string)
         else:
             self.logger.error("Cannot access memory for address 0x%s", addr)
-            self.send_packet("E14")
+            self.send_packet('E14')
 
     def _set_memory_handler(self, packet):
         """
@@ -284,7 +287,7 @@ class GdbHandler():
         """
         if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: Memory write, but not connected")
-            self.send_packet("E01")
+            self.send_packet('E01')
             return
         addr = packet.split(",")[0]
         size = (packet.split(",")[1]).split(":")[0]
@@ -293,7 +296,7 @@ class GdbHandler():
         data = binascii.unhexlify(data)
         if len(data) != int(size,16):
             self.logger.error("Size of data packet does not fit: %s", packet)
-            self.send_packet("E15")
+            self.send_packet('E15')
             return
         reply = self.mem.writemem(addr, data)
         self.send_packet(reply)
@@ -306,7 +309,7 @@ class GdbHandler():
         """
         if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: read register command, but not connected")
-            self.send_packet("E01")
+            self.send_packet('E01')
             return
         if packet == "22":
             # GDB defines PC register for AVR to be REG34(0x22)
@@ -335,7 +338,7 @@ class GdbHandler():
         """
         if not self.mon.is_debugger_active():
             self.logger.debug("RSP packet: write register command, but not connected")
-            self.send_packet("E01")
+            self.send_packet('E01')
             return
         if packet[0:3] == "22=": # PC
             pc = int(binascii.hexlify(bytearray(reversed(binascii.unhexlify(packet[3:])))),16)
@@ -572,7 +575,7 @@ class GdbHandler():
             self.mem.flash_pages()
         except:
             self.logger.error("Flashing was unsuccessful")
-            self.send_packet("E11")
+            self.send_packet('E11')
             raise
         finally:
             self.dbg.switch_to_debmode()
@@ -602,7 +605,7 @@ class GdbHandler():
             self.send_packet("OK")
         else:
             self.logger.error("Cannot load executable because debugger is not active")
-            self.send_packet("E01")
+            self.send_packet('E01')
 
     def _vflash_write_handler(self, packet):
         """
@@ -691,12 +694,12 @@ class GdbHandler():
         self.logger.debug("RSP packet: X, addr=0x%s, length=%d, data=%s", addr, size, data)
         if not self.mon.is_debugger_active() and size > 0:
             self.logger.debug("RSP packet: Memory write, but not connected")
-            self.send_packet("E01")
+            self.send_packet('E01')
             return
         if len(data) != size:
             self.logger.error("Size of data packet %d does not fit data length %d",size,len(data))
             self.logger.error("Data: %s", data)
-            self.send_packet("E15")
+            self.send_packet('E15')
             return
         if int(addr,16) < 0x80000: # writing to flash
             if not self.mem.lazy_loading:
@@ -714,7 +717,7 @@ class GdbHandler():
             reply = self.mem.writemem(addr, bytearray(data))
         except:
             self.logger.error("Loading binary data was unsuccessful")
-            self.send_packet("E11")
+            self.send_packet('E11')
             raise
         self.send_packet(reply)
 

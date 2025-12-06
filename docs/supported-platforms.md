@@ -1,6 +1,6 @@
 # Supported platforms
 
-As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-independent. A critical dependence is the [HIDAPI library](https://github.com/libusb/hidapi/) and the [Python interface](https://pypi.org/project/hidapi/) to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms.
+As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-agnostic. A critical dependence is the [HIDAPI library](https://github.com/libusb/hidapi/) and the [Python interface](https://pypi.org/project/hidapi/) to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms.
 
 One can distinguish the support of PyAvrOCD based on whether one can install the package via PyPI using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing), or even better [pipx](https://pipx.pypa.io/stable/), or whether there is additionally Arduino IDE 2 support, meaning that you install an Arduino core and you get all tools and configurations with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.
 

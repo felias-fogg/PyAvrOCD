@@ -10,7 +10,6 @@ import os
 import argparse
 import logging
 import shutil
-import shlex
 import subprocess
 import contextlib
 from logging import getLogger
@@ -119,7 +118,7 @@ Use @file to splice arguments from 'file' into command line.
                             help="JTAG clock frequency for programming (kHz) (d.: 1000)")
 
     parser.add_argument('-s', '--start',  dest='prg',
-                            help='Start specified program')
+                            help='Start specified program (e.g., simavr)')
 
     tool_choices = ['atmelice', 'dwlink', 'edbg', 'jtagice3', 'medbg', 'nedbg',
                         'pickit4', 'powerdebugger', 'snap']
@@ -144,6 +143,11 @@ Use @file to splice arguments from 'file' into command line.
     parser.add_argument("-V", "--version",
                             help="Print PyAvrOCD version number and exit",
                             action="store_true")
+
+    parser.add_argument("-x", "--xargs",
+                            metavar="XARGS",
+                            type=str,
+                            help="Extra arguments for simavr")
 
     if platform.system() == 'Linux':
         parser.add_argument("--install-udev-rules",
@@ -361,17 +365,20 @@ def handle_simavr(args, device):
     """
     if not args.prg:
         return False
-    cmd = shlex.split(args.prg)
-    if os.path.basename(cmd[0]) != 'simavr':
+    args.prg = args.prg.strip()
+    if os.path.basename(args.prg) != 'simavr':
         return False
-    prg = shutil.which(cmd[0])
+    prg = shutil.which(args.prg)
     if not prg:
-        print("Could not find program '%s'" % cmd[0])
+        print("Could not find program '%s'" % args.prg)
         return True
-    print("Simavr will be started ...", flush=True)
-    cmd += [ '-g', str(args.port), '-m', device, '-f', str(args.F_CPU)]
+    prg = os.path.abspath(prg)
+    prg += " -g " + str(args.port) + " -f " + str(args.F_CPU) + " -m " + device
+    if args.xargs:
+        prg += " " + args.xargs
+    print("Simavr will be started: %s" % prg, flush=True)
     print("Listening on port %d for gdb connection" % args.port, flush=True)
-    sim = subprocess.Popen(cmd, bufsize=0)
+    sim = subprocess.Popen(prg, bufsize=0, shell=True)
     sim.wait()
     return True
 
@@ -381,14 +388,13 @@ def startup_helper_prog(args, logger):
     """
     if args.prg and args.prg != "nop":
         args.prg = args.prg.strip()
-        cmd = shlex.split(args.prg)
-        prg = cmd[0]
-        cmd[0] = shutil.which(cmd[0])
-        if cmd[0]:
-            logger.info("Starting %s", args.prg)
-            subprocess.Popen(cmd)
+        prg = shutil.which(args.prg)
+        if prg:
+            prg = os.path.abspath(prg)
+            logger.info("Starting %s", prg)
+            subprocess.Popen(prg)
         else:
-            logger.critical("Could not find program '%s'", prg)
+            logger.critical("Could not find program '%s'", args.prg)
             sys.exit(1)
 
 def run_server(server, logger):

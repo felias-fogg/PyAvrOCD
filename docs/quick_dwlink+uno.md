@@ -56,7 +56,7 @@ Now select the field with the additional board manager URLs.
 Type the following URL into a new line:
 
 ```
-https://felias-fogg.github.io/package_debugging_index.json
+https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
 <p align="center">
@@ -231,5 +231,6 @@ As a final measure, you may want to restore the solder bridge `RESET EN` or rein
 
 ## Potential problems
 
-There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the [PyAvrOCD manual](https://felias-fogg.github.io/PyAvrOCD/).
+There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If the status LED of dw-link starts to blink furiously, then the hardware debugger has hit an unrecoverable error. Typing `monitor info` into the input field of the GDB debugger can then help you to find out about the error number, which is decoded in the [Troubleshooting](troubleshooting.md#internal-and-fatal-dw-link-errors) section.
+It may also be a good idea to consult the  and the [Limitations](limitations.md) section.
 

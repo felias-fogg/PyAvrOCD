@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.18.1 (02-12-2025)
+
+- **Fixed:**
+     - Unfortunately, Windows command lines cannot be parsed with the Python module`shlex`, which led to the problem that `simavr` could not be started under Windows. Now, the `-s` option expects the path to a program (without any arguments). If extra arguments to `simavr` are necessary, one has use the new `-x` option.
+     - On Linux, the simavr executables use dynamic libraries. They have now been added. This also means that the path to access the executable had to be adapted.
+     - Not `simavr.protocol` but `simavr.upload.protocol` needs to be set to a strange name to signal the user that `Simulator (simavr)` is not a regular programmer.
+
 ### 0.18.0 (30-Nov-2025)
 
 - **Added:**

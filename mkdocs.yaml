@@ -1,6 +1,8 @@
 site_name: PyAvrOCD
 repo_url: https://github.com/felias-fogg/PyAvrOCD
-repo_name: PyAvrOCD
+site_url: https://pyavrocd.io/
+repo_name: GitHub
+edit_uri: blob/main/docs/
 
 theme:
   name: readthedocs
@@ -56,6 +58,7 @@ nav:
     - Contributing: 'contributing.md'
     - Credits: 'credits-link.md'
     - Code of conduct: 'code_of_conduct-link.md'
+    - Privacy policy: 'privacy.md'
     - GitHub repo: https://github.com/felias-fogg/PyAvrOCD
 not_in_nav:
   generate-new-version.md

@@ -278,8 +278,8 @@ class TestGdbHandler(TestCase):
         self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.readmem.return_value = b'\x01\x02\x03\x04'
         self.gh.dispatch('m',b'800101,4')
-        self.gh.mem.readmem.assert_called_with("800101", "4")
         self.gh._comsocket.sendall.assert_called_with(rsp("01020304"))
+        self.gh.mem.readmem.assert_called_with("800101", "4")
 
     def test_get_memory_handler_empty_request(self):
         self.set_up()
@@ -294,8 +294,8 @@ class TestGdbHandler(TestCase):
         self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.readmem.return_value = b''
         self.gh.dispatch('m',b'800101,4')
-        self.gh.mem.readmem.assert_called_with("800101", "4")
         self.gh._comsocket.sendall.assert_called_with(rsp("E14"))
+        self.gh.mem.readmem.assert_called_with("800101", "4")
 
     def test_set_memory_handler_impossible(self):
         self.set_up()

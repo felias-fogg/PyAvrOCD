@@ -45,5 +45,12 @@ Again, this might be because you forgot to activate the optimization option for 
 
 This [happened to me recently](https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9). The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file `platform.local.txt` into the [platform folder](https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards) of your core and write the line `compiler.path=/path/to/bin-folder/` into it.
 
+## Signals and error messages 
 
+{!signals_and_errors.md!}
 
+## Internal and fatal dw-link errors
+
+When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware. 
+
+If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error. This might not be immediately reported by GDB, but one can get information about the specific error by using the `monitor info` command. The errors are only reported by number. {!../../dw-link/docs/internal_errors.md!}

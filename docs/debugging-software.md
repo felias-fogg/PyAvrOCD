@@ -29,7 +29,7 @@ If you are not a fan of a command-line interface, then an integrated development
 [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) is probably the most straightforward option. After having installed it, you can extend the IDE's capabilities by [adding third-party platforms](https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE). This is done by adding [additional Board Manager URLs](https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE) in the preferences dialog, installing a platform, and selecting a board in the Board Manager. For example, you can add the following `Board Manager URL` :
 
 ```
-https://felias-fogg.github.io/package_debugging_index.json
+https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
 After that, you can install one of the platforms referred to in the index file, e.g., `Arduino AVR Boards (Debug enabled)`, which is a fork of the official `Arduino AVR Boards` platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
@@ -88,7 +88,7 @@ I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated a
 
 ## Other IDEs
 
-There are a few other possible options for IDEs. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
+There are a few other possible options for IDEs. The most crucial point is that remote debugging and the specification of alternative debuggers are supported. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR-GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
 
 If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.
 
@@ -100,11 +100,16 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 
 The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from the latest [Github Actions CI](https://github.com/buserror/simavr/actions) or you can build it from source.
 
-If you want to build simavr from source, clone or download the [simavr GitHub repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
+If you want or need to build simavr from source, clone or download the [simavr GitHub repo](https://github.com/buserror/simavr) and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call `make`, perhaps with the DESTDIR argument:
 
 ```bash
 make install DESTDIR=~/.local/
 ```
 
-This works under macOS and Linux. The instructions in the repo provided for Windows appear to be outdated.
+This works under macOS and Linux. The instructions in the repo provided for Windows appear to be outdated. For the Mac, one could alternatively build from source by using the following commands:
+
+```
+brew tap osx-cross/avr
+brew install --HEAD simavr
+```
 

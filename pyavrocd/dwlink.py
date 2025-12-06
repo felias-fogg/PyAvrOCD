@@ -91,7 +91,7 @@ def discover(args):
                 sys.stdout.write("[DEBUG] Check: {}\n".format(s.device))
                 sys.stdout.flush()
             try:
-                for sp in (115200, ):
+                for sp in (115200, 74880):
                     with serial.Serial(s.device, sp, timeout=0.1,
                                            write_timeout=0.1, exclusive=True) as ser:
                         time.sleep(delay)

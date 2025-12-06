@@ -26,6 +26,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--usbsn` <br>`-u`                                           | USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer. |
 | `--verbose` <br>`-v`                                         | Specify verbosity level. Possible values are `all`, `debug`, `info`, `warning`, `error`, or `critical`. The option value `all` means that, in addition to the `debug` output, all communication with GDB is logged. The default is `info`. |
 | `--version` <br>`-V`                                         | Print PyAvrOCD version number and exit.                      |
+| `--xargs`<br> `-x`                                           | Extra arguments for `simavr`.                                |
 | `--install-udev-rules`                                       | Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with `sudo` and is only present under Linux. |
 
 You can also use the [monitor command options](monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--timers freeze,` which has the same effect as issuing the command `monitor timers freeze` in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--ti f` .
