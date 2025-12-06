@@ -231,6 +231,6 @@ As a final measure, you may want to restore the solder bridge `RESET EN` or rein
 
 ## Potential problems
 
-There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If the status LED of dw-link starts to blink furiously, then the hardware debugger has hit an unrecoverable error. Typing `monitor info` into the input field of the GDB debugger can then help you to find out about the error number, which is decoded in the [Troubleshooting](troubleshooting.md#internal-and-fatal-dw-link-errors) section.
-It may also be a good idea to consult the  and the [Limitations](limitations.md) section.
+There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If the status LED of dw-link starts to blink furiously, then the hardware debugger has hit an unrecoverable error. Typing `monitor info` into the input field of the GDB debugger can then help you find out about the error number, which is decoded in the [Troubleshooting](troubleshooting.md#internal-and-fatal-dw-link-errors) section.
+It may also be a good idea to consult the [Limitations](limitations.md) section.
 

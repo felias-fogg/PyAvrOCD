@@ -76,6 +76,12 @@ Using conditional breakpoints can slow down execution significantly.
 
 One can attach conditions to breakpoints using the GDB command `condition` or by right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command `ignore`, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop can take 100 milliseconds or more, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.
 
+## Watchdog timer
+
+Stopping execution while the watchdog timer is active will disable the WDT  in order to avoid RESETS.
+
+The watchdog timer will always be stopped when execution is stopped, be it by a breakpoint or a user interrupt. This is usually the most reasonable thing to do, because it does not make sense to reset the MCU only because the user has stopped execution in order to inspect the internal state. However, when one uses the WDT to time sleeping periods, this leads to the problem that one sleeps forever, because the WDT will not continue after execution is continued. Similarly, if the WDT is intended to recognize dead loops, it will not fire after such a stop.
+
 ## Single-stepping
 
 Single-stepping is not the same as executing the instruction in its usual context.
@@ -95,7 +101,7 @@ On the other hand, often instructions need to be executed closely together. Sinc
 
 ### Single-stepping BREAK instructions
 
-`BREAK` instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a `BREAK` instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from [a previous debugging session that has been ended abruptly](#unsafe-exits-from-debugging) (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user.
+`BREAK` instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a `BREAK` instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from [a previous debugging session that has been ended abruptly](#unsafe-exits-from-debugging). In any case, it does not make sense to continue executing the code, which is reported back to the user.
 
 <!--
 
