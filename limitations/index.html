@@ -127,6 +127,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#watchdog-timer">Watchdog timer</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#single-stepping">Single-stepping</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#single-stepping-throws-off-timing">Single-stepping throws off timing</a>
@@ -245,6 +247,9 @@
 <h2 id="conditional-breakpoints">Conditional breakpoints</h2>
 <p>Using conditional breakpoints can slow down execution significantly.</p>
 <p>One can attach conditions to breakpoints using the GDB command <code>condition</code> or by right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command <code>ignore</code>, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop can take 100 milliseconds or more, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.</p>
+<h2 id="watchdog-timer">Watchdog timer</h2>
+<p>Stopping execution while the watchdog timer is active will disable the WDT  in order to avoid RESETS.</p>
+<p>The watchdog timer will always be stopped when execution is stopped, be it by a breakpoint or a user interrupt. This is usually the most reasonable thing to do, because it does not make sense to reset the MCU only because the user has stopped execution in order to inspect the internal state. However, when one uses the WDT to time sleeping periods, this leads to the problem that one sleeps forever, because the WDT will not continue after execution is continued. Similarly, if the WDT is intended to recognize dead loops, it will not fire after such a stop.</p>
 <h2 id="single-stepping">Single-stepping</h2>
 <p>Single-stepping is not the same as executing the instruction in its usual context.</p>
 <h3 id="single-stepping-throws-off-timing">Single-stepping throws off timing</h3>
@@ -255,7 +260,7 @@ IN R2, PINB
 <p>When running this code normally, the value 0x66 would not read back to the  R2 register. However, when single-stepping this code, there is enough time for the new value to settle and be readable. In order to make 0x66 readable under normal execution, a <code>NOP</code> is necessary between <code>OUT</code> and <code>IN</code>.</p>
 <p>On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed.</p>
 <h3 id="single-stepping-break-instructions">Single-stepping BREAK instructions</h3>
-<p><code>BREAK</code> instructions are used to implement software breakpoints. However, it can happen that the debugger is asked to single-step over a <code>BREAK</code> instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code (for unknown reasons), or this instruction is there from <a href="#unsafe-exits-from-debugging">a previous debugging session that has been ended abruptly</a> (more likely). In any case, it does not make sense to continue executing the code, which is reported back to the user.</p>
+<p><code>BREAK</code> instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a <code>BREAK</code> instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from <a href="#unsafe-exits-from-debugging">a previous debugging session that has been ended abruptly</a>. In any case, it does not make sense to continue executing the code, which is reported back to the user.</p>
 <!--
 
 ### Single-stepping SLEEP instructions
