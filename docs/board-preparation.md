@@ -51,10 +51,17 @@ On clone boards with a CH340 serial converter chip, you may have to remove the c
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png" width="80%">
 </p>
+Things are a bit more complicated with **Arduino Nano** boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. The following picture shows the bottom side of an Arduino Nano V3.3. The capacitor to be removed has been marked by a red ellipse, the 1kΩ resistor by a cyan one. Since this resistor is part of a resistor array, one needs to cut the trace instead. If you manage to cut the trace at the point marked by the green line, everything is fine. If you are not able to accomplish that, cutting at the point marked by the blue line is also OK. In this case, the power LED will also be cut off. In any case, after this modification, this board will probably only be usable for debugging purposes.
 
-Things are a bit more complicated with **Arduino Nano** boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. This is impossible for the original boards because the resistor is part of a resistor array. You may try to cut the trace from Vcc to the resistor, but I doubt this can be done without damaging other parts of the board.
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-cut.png" width="80%">
+</p>
 
-For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor, [as described by denMike](https://mtech.dk/thomsen/electro/arduino.php).
+For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor marked in the following picture, [as described by denMike](https://mtech.dk/thomsen/electro/arduino.php).
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-clone.png" width="80%">
+</p>
 
 The **Arduino Pro Mini** is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.
 
