@@ -282,7 +282,7 @@
 </tbody>
 </table>
 <h2 id="internal-and-fatal-dw-link-errors">Internal and fatal dw-link errors</h2>
-<p>When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware. </p>
+<p>When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware.</p>
 <p>If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error. This might not be immediately reported by GDB, but one can get information about the specific error by using the <code>monitor info</code> command. The errors are only reported by number. If the error number is less than 100, then it is a connection error. Errors above 100 are serious internal debugger errors. </p>
 <p>If you have encountered an internal debugger error, then please try to reproduce the problem and tell me how it happened. </p>
 <p>After a reset or a power cycle of the hardware debugger, everything usually works again. If not, you need to unplug everything and put it together again.</p>

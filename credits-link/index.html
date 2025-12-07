@@ -167,28 +167,34 @@
                 <h1 id="credits">Credits</h1>
 <p>This project owes its success to the following people and organizations:</p>
 <h2 id="contributors">Contributors</h2>
-<p>While there are no direct contributors (except myself) yet, I built PyAvrOCD on top of two earlier implementations of AVR GDB servers:</p>
 <ul>
-<li><a href="https://github.com/stemnic/pyAVRdbg">pyAVRdbg</a> by <a href="https://github.com/stemnic">@stemic</a></li>
-<li><a href="https://github.com/mraardvark/pyavrdebug">pyavrdebug</a> by <a href="https://github.com/mraardvark">@mraadvark</a></li>
+<li><a href="https://github.com/maxgerhardt">@maxgerhard</a></li>
 </ul>
-<p>Both of them worked as an inspiration and as a first scaffold for setting up my server.</p>
 <h2 id="third-party-libraries">Third-party libraries</h2>
 <ul>
 <li><a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>: The low-level implementation of the EDBG protocol, which is the essential component to establish communication with EDBG debuggers.</li>
 <li><a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a>: This package provides the base for the GDB server. Without it, I probably would have never started to write PyAvrOCD. Great job by Microchip to publish these two packages!</li>
 <li><a href="https://github.com/pyusb/pyusb">PyUSB</a>: The essential library for communicating over USB.</li>
 <li><a href="https://github.com/pyinstaller/pyinstaller">PyInstaller</a>: The package that can create executables from Python packages.</li>
-<li><a href="https://github.com/mkdocs/mkdocs">MkDocs</a>: Generates georgeous online documentation.</li>
+<li><a href="https://github.com/buserror/simavr">simavr</a>: The AVR simulation package.</li>
+<li><a href="https://github.com/mkdocs/mkdocs">MkDocs</a>: Generates gorgeous online documentation.</li>
 </ul>
 <h2 id="financial-support">Financial support</h2>
 <p>This project did not receive any financial support. And, currently, there is no need for it. If you want to support it, please consider donating MCUs or boards that have not been tested yet (see <a href="https://felias-fogg.github.io/PyAvrOCD/supported-mcus/">supported MCUs</a> and <a href="https://felias-fogg.github.io/PyAvrOCD/supported-boards/">boards</a>).</p>
 <h2 id="special-thanks">Special thanks</h2>
+<p>Without the effort of the Arduino community, I would not have started to work on the GDB server. So thanks go to:</p>
 <ul>
 <li>The <a href="https://www.arduino.cc"><strong>Arduino</strong></a> project: for obvious reasons.</li>
 <li><a href="https://github.com/MCUdude">@MCUdude</a>: For creating the cool additional cores for ATmegas, and for incorporating PyAvrOCD into it.</li>
 <li><a href="https://github.com/SpenceKonde">@SpenceKonde</a> (aka Dr. Azzy): For creating the great additional cores for ATtinys and the awesome DxCore.</li>
+<li>And many more ...</li>
 </ul>
+<p>I built PyAvrOCD on top of two earlier implementations of Python AVR GDB servers:</p>
+<ul>
+<li><a href="https://github.com/stemnic/pyAVRdbg">pyAVRdbg</a> by <a href="https://github.com/stemnic">@stemic</a></li>
+<li><a href="https://github.com/mraardvark/pyavrdebug">pyavrdebug</a> by <a href="https://github.com/mraardvark">@mraadvark</a></li>
+</ul>
+<p>Both of them worked as an inspiration and as a first scaffold for setting up my server.</p>
 <h2 id="license">License</h2>
 <p>This project is licensed under the <a href="https://felias-fogg.github.io/PyAvrOCD/license-link/">MIT license</a>.</p>
 <h2 id="acknowledgments">Acknowledgments</h2>
