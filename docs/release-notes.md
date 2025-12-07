@@ -1,5 +1,9 @@
 # Release Notes
 
+## Release v0.18.1
+
+- Fixed a few `simavr` integration problems.
+
 ## Release v0.18.0
 
 - `simavr` has been added to the binary tools. With that, one can now start the simulator by using the "virtual programmer" simavr when starting the debugging process.

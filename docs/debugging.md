@@ -57,7 +57,11 @@ You must load the sketch into the editor and select a board as usual. Before you
 
 ![ide2-1](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png)
 
-Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu. This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
+Before clicking the `Verify` button in the upper left corner, choose `Optimize for Debugging` in the `Sketch` menu.
+
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
+
+This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.
 
 ### Simulating or connecting to a target
 
@@ -113,7 +117,7 @@ If everything now works out, you may consider calling it a day and stopping work
 
 Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners.
 
-In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  `platform.ini`  that can be used to integrate PyAvrOCD and to start the debugger is provided [here](debugging-software.md#platformio-and-visual-studio-code) and in the `examples` folder of the GitHub repo.
+In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  `platform.ini`  that can be used to integrate PyAvrOCD and to start the debugger is provided [here](debugging-software.md#platformio-and-visual-studio-code). In addition, examples are provided in the PlatformIO quickstart guides about debugging an [ATmega1284P using Atmel-ICE](quick_atmega1284_pio.md) and an [ATtiny85 using dw-link](quick_attiny_pio.md).
 
 ## Debugging using Gede
 

@@ -21,10 +21,10 @@ For most of the error messages, it should be obvious what to do. However, there 
 > xattr -d com.apple.quarantine FILE
 ```
 
-* `No compatible tool discovered`: This could mean that no debug tool is connected, but it also could mean that another process currently uses it, that the serial line the tool is attached to is busy, or that [you have not yet installed the necessary udev rules under Linux](install-link.md).
+* `No compatible tool discovered`: This could mean that no debug tool is connected, that you specified an incompatible debug probe using the `--tool` option, that another process currently uses it, that the serial line the tool is attached to is busy, or that [you have not yet installed the necessary udev rules under Linux](install-link.md).
 
 - `[Errno 48] Address already in use`: This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the `--port` option and tell GDB about the port when connecting with the `target remote` command. However, waiting a few minutes will also resolve the problem.
-- `ISP programming failed. Wrong connection or wrong MCU?` This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem. It could also mean that the MCU is not accessible anymore by ISP programming. In this case, [only high-voltage programming](limitations.md#high-voltage-programming) helps.
+- `ISP programming failed. Wrong connection or wrong MCU?` This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. It could also mean that the MCU is not accessible anymore by ISP programming. One can try to [forcefully exit debugWIRE mode](limitations.md#exit-debugwire-mode). Otherwise, [high-voltage programming](limitations.md#high-voltage-programming) might be the last resort.
 - `Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?` debugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a [parasitic power supply](https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/) problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the `IOREF` pin instead of using the `5V`  or `3.3V` pin.
 
 ## Problems while debugging
@@ -45,12 +45,12 @@ Again, this might be because you forgot to activate the optimization option for 
 
 This [happened to me recently](https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9). The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file `platform.local.txt` into the [platform folder](https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards) of your core and write the line `compiler.path=/path/to/bin-folder/` into it.
 
-## Signals and error messages 
+## Signals and error messages
 
 {!signals_and_errors.md!}
 
 ## Internal and fatal dw-link errors
 
-When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware. 
+When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware.
 
 If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error. This might not be immediately reported by GDB, but one can get information about the specific error by using the `monitor info` command. The errors are only reported by number. {!../../dw-link/docs/internal_errors.md!}

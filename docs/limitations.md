@@ -78,7 +78,7 @@ One can attach conditions to breakpoints using the GDB command `condition` or by
 
 ## Watchdog timer
 
-Stopping execution while the watchdog timer is active will disable the WDT  in order to avoid RESETS.
+Stopping execution while the watchdog timer is active will disable the WDT  in order to avoid a RESET.
 
 The watchdog timer will always be stopped when execution is stopped, be it by a breakpoint or a user interrupt. This is usually the most reasonable thing to do, because it does not make sense to reset the MCU only because the user has stopped execution in order to inspect the internal state. However, when one uses the WDT to time sleeping periods, this leads to the problem that one sleeps forever, because the WDT will not continue after execution is continued. Similarly, if the WDT is intended to recognize dead loops, it will not fire after such a stop.
 
@@ -169,7 +169,16 @@ While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for de
 2. Another cause for trouble could be that the MCU is operated in an unstable electrical environment. This could mean that the supply voltage is fluctuating, an unstable external clock is used, blocking capacitors between (A)Vcc and (A)GND are missing, or, another classic, AVcc and/or AGND are not connected to the power rail. In these cases, unpredictable things can happen, and the MCU might not be responsive after having been switched into debugWIRE mode. In this case, repairing the fault, e.g., soldering a blocking capacitor between Vcc and GND, may or may not resolve the issue.
 3. The MCU could be a non-genuine product. Since such products do not satisfy all the specifications of genuine MCUs, these MCUs might be able to enter debugWIRE, but then one is stuck. Or debugWIRE mode is not supported at all.
 4. It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed `SPIEN` (Serial program downloading) and/or programmed `RSTDSBL`, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.
-5. There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. And usually, there is no easy recovery method (but see below).
+5. There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens. It could be that some of the finite state machinery took the wrong way and only needs a good kicking, which could range from a power-on reset to high-voltage programming (see below).
+
+### Exit debugWIRE mode
+
+One possible way to exit debugWIRE mode is to employ avrdude and one of the debug probes.
+
+1. Disconnect the target from everything and check that the RESET line is not connected to a capacitor or a RESET circuit.
+2. Connect it to one of the debug probes (and to power).
+3. Try to burn fuses or upload a program using avrdude (perhaps through the Arduino IDE 2) using ISP programming mode. Avrdude will then try to exit debugWIRE mode if it cannot connect using ISP programming. If it is successful, it will report it.
+4. Burn the default fuses (in particular, disable the DWEN fuse).
 
 ### High-voltage programming
 
