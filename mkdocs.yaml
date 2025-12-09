@@ -23,12 +23,14 @@ markdown_extensions:
         inheritHeadingDepth: False
   - admonition
   - footnotes
+  - attr_list
 
 nav:
   - Quickstart Guides:
     - Arduino IDE 2:
       - ATmega328P Xplained Mini: 'quick_xmini.md'
-      - dw-link & Arduino UNO R3: 'quick_dwlink+uno.md'
+      - dw-link & ATtiny85: 'quickstart-Arduino-IDE2.md'
+#     - dw-link & Arduino UNO R3: 'quick_dwlink+uno.md'
     - PlatformIO:
       - Atmel-ICE & ATmega1284: 'quick_atmega1284_pio.md'
       - dw-link & ATtiny85: 'quick_attiny_pio.md'

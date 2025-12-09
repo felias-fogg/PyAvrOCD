@@ -4,12 +4,6 @@ This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Some
 
 ## MCUs with debugWIRE interface
 
-### ATtinys and ATmegas supported by [*Arduino AVR Boards (Debug enabled)*](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-
-- **ATiny85**
-- **ATmega168**
-- **ATmega328P**
-
 ### ATmegas supported by [*Atmel AVR Xplained-minis (Debug enabled)*](https://github.com/felias-fogg/avr-xminis-debug-enabled)
 - **ATmega328P**
 - **ATmega168PB**
@@ -55,12 +49,6 @@ The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from 
 
 The MCUs in the lists below are all supported by PyAvrOCD. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.
 
-### ATmegas supported by *[Arduino AVR Boards (Debug enabled)](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)*
-
-- **ATmega1280**
-- **ATmega2560**
-- **ATmega32U4**
-
 ### ATmegas supported by [*MightyCore*](https://github.com/MCUdude/MightyCore) (soon)
 
 * <s>**ATmega16(A)**</s>, **ATmega32(A)**
@@ -91,6 +79,6 @@ The ATmega128(A) MCUs do not allow for software breakpoints. This means that you
 * ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2
 * ATmega64rfr2, ATmega128rfr2, <u>ATmega256rfr2</u>
 * ATmega128rfa1
-* ATmega16U4
+* ATmega16U4, <u>ATmega32U4</u>
 * ATmega406
 

@@ -32,7 +32,7 @@ If you are not a fan of a command-line interface, then an integrated development
 https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
-After that, you can install one of the platforms referred to in the index file, e.g., `Arduino AVR Boards (Debug enabled)`, which is a fork of the official `Arduino AVR Boards` platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
+After that, you can install one of the platforms referred to in the index file, e.g., `ATTinyCore (Debug enabled)`, which is a fork of Spence Konde's  `ATTinyCore v2.0.0-dev` platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
 
 The set of available cores is covered in the [section on Arduino cores](supporting-cores.md).
 

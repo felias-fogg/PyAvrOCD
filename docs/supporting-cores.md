@@ -4,16 +4,6 @@ Arduino cores or platforms are the means to support MCUs and boards for integrat
 
 If you want to install a core, in most cases, you first have to add a *package index json* URL to the list of `Additional boards manager URLs`, which you find in the `Preferences` dialog. Once this has been done, you can search in the `Boards Manager` (accessible through the `Tools` menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.
 
-### [Arduino AVR Boards (Debug enabled)](https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled)
-
-This is a fork of the official Arduino AVR core 1.8.6, which, among other things, contains the Arduino UNO R3, the Arduino Leonardo, and the Arduino Mega 2560. You get it as an installable core by adding the following URL:
-
-```
- https://downloads.pyavrocd.io/package_debug_enabled_index.json
-```
-
-After you have installed this core, you can safely remove the original core `Arduino AVR Boards` in order to avoid confusion. However, you do not have to.
-
 ### [ATTinyCore (Debug enabled)](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
 This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. As above, you can install it after including the following URL
@@ -36,13 +26,13 @@ If you had installed the original core `Atmel AVR Xplained-minis`, you should de
 
 ### [MicroCore](https://github.com/MCUdude/MicroCore)
 
-This is a core for the ATtiny13(A). Currently, it is already debug-enabled through [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver). You can make it installable by adding the following URL to the Boards Manager URLs:
+This is a core for the ATtiny13(A). You can make it installable by adding the following URL to the Boards Manager URLs:
 
 ```
 https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 ```
 
-It will be upgraded to work with PyAvrOCD soon.
+Currently, this will make a core installable that is debug-enabled by using the GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserverand, but it will be upgraded to work with PyAvrOCD soon.
 
 ### [MiniCore](https://github.com/MCUdude/MiniCore)
 

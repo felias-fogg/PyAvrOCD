@@ -4,12 +4,7 @@ This project owes its success to the following people and organizations:
 
 ## Contributors
 
-While there are no direct contributors (except myself) yet, I built PyAvrOCD on top of two earlier implementations of AVR GDB servers:
-
-- [pyAVRdbg](https://github.com/stemnic/pyAVRdbg) by [@stemic](https://github.com/stemnic)
-- [pyavrdebug](https://github.com/mraardvark/pyavrdebug) by [@mraadvark](https://github.com/mraardvark)
-
-Both of them worked as an inspiration and as a first scaffold for setting up my server.
+- [@maxgerhard](https://github.com/maxgerhardt)
 
 
 ## Third-party libraries
@@ -18,7 +13,8 @@ Both of them worked as an inspiration and as a first scaffold for setting up my 
 - [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog): This package provides the base for the GDB server. Without it, I probably would have never started to write PyAvrOCD. Great job by Microchip to publish these two packages!
 - [PyUSB](https://github.com/pyusb/pyusb): The essential library for communicating over USB.
 - [PyInstaller](https://github.com/pyinstaller/pyinstaller): The package that can create executables from Python packages.
-- [MkDocs](https://github.com/mkdocs/mkdocs): Generates georgeous online documentation.
+- [simavr](https://github.com/buserror/simavr): The AVR simulation package.
+- [MkDocs](https://github.com/mkdocs/mkdocs): Generates gorgeous online documentation.
 
 ## Financial support
 
@@ -26,9 +22,19 @@ This project did not receive any financial support. And, currently, there is no 
 
 ## Special thanks
 
+Without the effort of the Arduino community, I would not have started to work on the GDB server. So thanks go to:
+
 - The [**Arduino**](https://www.arduino.cc) project: for obvious reasons.
 - [@MCUdude](https://github.com/MCUdude): For creating the cool additional cores for ATmegas, and for incorporating PyAvrOCD into it.
 - [@SpenceKonde](https://github.com/SpenceKonde) (aka Dr. Azzy): For creating the great additional cores for ATtinys and the awesome DxCore.
+- And many more ...
+
+I built PyAvrOCD on top of two earlier implementations of Python AVR GDB servers:
+
+- [pyAVRdbg](https://github.com/stemnic/pyAVRdbg) by [@stemic](https://github.com/stemnic)
+- [pyavrdebug](https://github.com/mraardvark/pyavrdebug) by [@mraadvark](https://github.com/mraardvark)
+
+Both of them worked as an inspiration and as a first scaffold for setting up my server.
 
 ## License
 

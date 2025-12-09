@@ -8,7 +8,7 @@ This website is hosted as a GitHub Pages website. GitHub may collect personal in
 
 ### Website analytics
 
-No analytics or tracking mechanisms are employed on this website to monitor user behavior.
+No analytics or tracking mechanisms are employed on this website.
 
 ## Cookie usage
 
