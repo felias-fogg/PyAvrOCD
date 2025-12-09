@@ -47,7 +47,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                <li class="toctree-l2"><a class="reference internal" href="../quickstart-Arduino-IDE2/">dw-link & ATtiny85</a>
                 </li>
     </ul>
                   </li>
@@ -68,8 +68,6 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Arduino cores</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#arduino-avr-boards-debug-enabled">Arduino AVR Boards (Debug enabled)</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#atmel-avr-xplained-minis-debug-enabled">Atmel AVR Xplained-minis (Debug enabled)</a>
@@ -167,11 +165,6 @@
                 <h1 id="installing-a-debug-enabled-arduino-core">Installing a debug-enabled Arduino core</h1>
 <p>Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino support (so far).</p>
 <p>If you want to install a core, in most cases, you first have to add a <em>package index json</em> URL to the list of <code>Additional boards manager URLs</code>, which you find in the <code>Preferences</code> dialog. Once this has been done, you can search in the <code>Boards Manager</code> (accessible through the <code>Tools</code> menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.</p>
-<h3 id="arduino-avr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled">Arduino AVR Boards (Debug enabled)</a></h3>
-<p>This is a fork of the official Arduino AVR core 1.8.6, which, among other things, contains the Arduino UNO R3, the Arduino Leonardo, and the Arduino Mega 2560. You get it as an installable core by adding the following URL:</p>
-<pre><code> https://downloads.pyavrocd.io/package_debug_enabled_index.json
-</code></pre>
-<p>After you have installed this core, you can safely remove the original core <code>Arduino AVR Boards</code> in order to avoid confusion. However, you do not have to.</p>
 <h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore-debug-enabled">ATTinyCore (Debug enabled)</a></h3>
 <p>This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. As above, you can install it after including the following URL</p>
 <pre><code> https://downloads.pyavrocd.io/package_debug_enabled_index.json
@@ -183,10 +176,10 @@
 </code></pre>
 <p>If you had installed the original core <code>Atmel AVR Xplained-minis</code>, you should definitely remove it.</p>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
-<p>This is a core for the ATtiny13(A). Currently, it is already debug-enabled through <a href="https://github.com/felias-fogg/dw-gdbserver">dw-gdbserver</a>. You can make it installable by adding the following URL to the Boards Manager URLs:</p>
+<p>This is a core for the ATtiny13(A). You can make it installable by adding the following URL to the Boards Manager URLs:</p>
 <pre><code>https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 </code></pre>
-<p>It will be upgraded to work with PyAvrOCD soon.</p>
+<p>Currently, this will make a core installable that is debug-enabled by using the GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserverand, but it will be upgraded to work with PyAvrOCD soon.</p>
 <h3 id="minicore"><a href="https://github.com/MCUdude/MiniCore">MiniCore</a></h3>
 <p>This is the core for the small ATmegas with a debugWIRE interface, aka, ATmegaX8. As above, it is already debug-enabled through <a href="https://github.com/felias-fogg/dw-gdbserver">dw-gdbserver,</a> and it will be upgraded to work with PyAvrOCD soon. You can make it installable by adding the following boards manager URL:</p>
 <pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json

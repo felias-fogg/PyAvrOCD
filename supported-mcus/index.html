@@ -47,7 +47,7 @@
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../quick_dwlink%2Buno/">dw-link & Arduino UNO R3</a>
+                <li class="toctree-l2"><a class="reference internal" href="../quickstart-Arduino-IDE2/">dw-link & ATtiny85</a>
                 </li>
     </ul>
                   </li>
@@ -92,8 +92,6 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#mcus-with-debugwire-interface">MCUs with debugWIRE interface</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#attinys-and-atmegas-supported-by-arduino-avr-boards-debug-enabled">ATtinys and ATmegas supported by Arduino AVR Boards (Debug enabled)</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by Atmel AVR Xplained-minis (Debug enabled)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#attiny-supported-by-microcore-soon">ATtiny supported by MicroCore (soon)</a>
@@ -108,8 +106,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#atmegas-with-jtag-interface">ATmegas with JTAG interface</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-arduino-avr-boards-debug-enabled">ATmegas supported by Arduino AVR Boards (Debug enabled)</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore-soon">ATmegas supported by MightyCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore-soon">ATmegas supported by MegaCore (soon)</a>
@@ -181,12 +177,6 @@
                 <h1 id="supported-mcus">Supported MCUs</h1>
 <p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Some of them are supported by more than one core. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
 <h2 id="mcus-with-debugwire-interface">MCUs with debugWIRE interface</h2>
-<h3 id="attinys-and-atmegas-supported-by-arduino-avr-boards-debug-enabled">ATtinys and ATmegas supported by <a href="https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled"><em>Arduino AVR Boards (Debug enabled)</em></a></h3>
-<ul>
-<li><strong>ATiny85</strong></li>
-<li><strong>ATmega168</strong></li>
-<li><strong>ATmega328P</strong></li>
-</ul>
 <h3 id="atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by <a href="https://github.com/felias-fogg/avr-xminis-debug-enabled"><em>Atmel AVR Xplained-minis (Debug enabled)</em></a></h3>
 <ul>
 <li><strong>ATmega328P</strong></li>
@@ -230,12 +220,6 @@
 </ul>
 <h2 id="atmegas-with-jtag-interface">ATmegas with JTAG interface</h2>
 <p>The MCUs in the lists below are all supported by PyAvrOCD. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.</p>
-<h3 id="atmegas-supported-by-arduino-avr-boards-debug-enabled">ATmegas supported by <em><a href="https://github.com/felias-fogg/ArduinoCore-avr-debug-enabled">Arduino AVR Boards (Debug enabled)</a></em></h3>
-<ul>
-<li><strong>ATmega1280</strong></li>
-<li><strong>ATmega2560</strong></li>
-<li><strong>ATmega32U4</strong></li>
-</ul>
 <h3 id="atmegas-supported-by-mightycore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a> (soon)</h3>
 <ul>
 <li><s><strong>ATmega16(A)</strong></s>, <strong>ATmega32(A)</strong></li>
@@ -264,7 +248,7 @@
 <li>ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2</li>
 <li>ATmega64rfr2, ATmega128rfr2, <u>ATmega256rfr2</u></li>
 <li>ATmega128rfa1</li>
-<li>ATmega16U4</li>
+<li>ATmega16U4, <u>ATmega32U4</u></li>
 <li>ATmega406</li>
 </ul>
               
