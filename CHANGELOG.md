@@ -1,5 +1,13 @@
 # Changelog
 
+### NEW:
+- **Added**:
+      - The dwlink module sends all provided monitor value arguments as qRcmd packets to dw-link.
+      - The dwlink module sends all non-managed fuses to dw-link.
+
+- **Removed**:
+     - The Arduino AVR Boards core has been removed from the list of 'debug enabled' cores in order to avoid confusion for people who use both, and also to avoid unclear support relationships. Functionality is not affected because there are always other cores which can take the role, e.g., MiniCore, MegaCore, and ATTinyCore. The only uncovered MCU is the 32U4, for which I will create a separate core.
+
 ### 0.18.1 (02-12-2025)
 
 - **Fixed:**
