@@ -14,6 +14,7 @@ import serial
 import serial.threaded
 from serial import SerialException
 import serial.tools.list_ports
+from pyavrocd.monitor import monopts
 
 class DetachException(Exception):
     """Termination of session because of a detach command"""
@@ -76,6 +77,51 @@ class SerialToNet(serial.threaded.Protocol):
             sys.stdout.write('[INFO] Serial connection closed\n\r')
             os._exit(0)
 
+def build_packet(message, args):
+    """
+    Message is a string. Encode as ASCII and add pre- and suffix
+    """
+    message = message.encode('ascii')
+    checksum = sum(message)&0xFF
+    packet = b'$' + message + b'#' + (b'%02X' % checksum)
+    if args.verbose == 'debug':
+        sys.stdout.write("[DEBUG] Packet:" + str(packet) + "\n\r")
+    return packet
+
+def send_and_wait(ser, command, args):
+    """
+    Send one monitor command and wait for acknowledgment
+    """
+    trial = 3
+    resp = b''
+    while trial and b'+' not in resp:
+        hexcmd = command.encode('utf8').hex().upper()
+        ser.write(build_packet('qRcmd,' + hexcmd, args))
+        ser.flush()
+        resp = ser.read_until(b'+')
+        trial -= 1
+    resp = ser.read_until(b'#')
+    ser.write(b'+')
+    ser.reset_input_buffer()
+
+def send_mon_options(ser, args):
+    """
+    Send all monitor option values and the not-to-manage fuses
+    """
+    for key, value in monopts.items():
+        if value[0] == 'cli':
+            keyval = getattr(args, key, None)
+            if keyval:
+                if args.verbose == "debug":
+                    sys.stdout.write("[DEBUG] Send monitor option: " + key + "=" + keyval + "\n\r")
+                send_and_wait(ser, key + " " + keyval, args)
+    for man in ['bootrst', 'dwen', 'lockbits', 'eesave']:
+        if man not in args.manage:
+            if args.verbose == "debug":
+                sys.stdout.write("[DEBUG] Send not-manage option: no" + man + "\n\r")
+            send_and_wait(ser, "\x17no" + man, args)
+            sys.stdout.write('[WARNING] Fuse %s is not managed by dw-link\n\r' % man.upper())
+
 def discover(args):
     """
     Discovers the dw-link adapter, if present
@@ -107,6 +153,9 @@ def discover(args):
                             message = ('=' + args.dev).encode('ascii')
                             checksum = sum(message)&0xFF
                             ser.write(b'$' + message + b'#' + (b'%02X' % checksum))
+                            ser.reset_input_buffer()
+                            # send monitor value options + not-to-manage fuses
+                            send_mon_options(ser, args)
                             return (sp, s.device)
             except SerialException:
                 pass

@@ -88,14 +88,22 @@ class TestSerialToNet(TestCase):
         args = SimpleNamespace()
         args.verbose = 'debug'
         args.dev = 'atmega328p'
+        args.timers = 'freeze'
+        args.manage = ['bootrst', 'dwen', 'lockbits' ]
         with patch("serial.Serial") as mock_Serial:
             mock_iface = MagicMock()
             mock_iface.read.side_effect = [ b'', b'dw-link']
+            mock_iface.read_until.side_effect = [ b'+', b'#',b'+', b'#']
             mock_Serial.return_value.__enter__.return_value = mock_iface
             result = discover(args)
             mock_write.assert_has_calls([call("[DEBUG] Device: /dev/cu.debug-console\n"),
                                          call("[DEBUG] Device: /dev/tty\n"),
-                                         call("[DEBUG] Check: /dev/tty\n")])
+                                         call("[DEBUG] Check: /dev/tty\n"),
+                                         call('[DEBUG] Send monitor option: timers=freeze\n\r'),
+                                         call("[DEBUG] Packet:b'$qRcmd,74696D65727320667265657A65#A5'\n\r"),
+                                         call('[DEBUG] Send not-manage option: noeesave\n\r'),
+                                         call("[DEBUG] Packet:b'$qRcmd,176E6F656573617665#01'\n\r"),
+                                         call('[WARNING] Fuse EESAVE is not managed by dw-link\n\r')])
             mock_iface.write.assert_has_calls([call(b'\x05'), call(b'\x05'), call(b'$=atmega328p#B9')])
             self.assertEqual(result, (115200, '/dev/tty'))
 
