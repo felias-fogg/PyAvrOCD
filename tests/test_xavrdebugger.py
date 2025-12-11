@@ -295,14 +295,14 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.xaj.manage = []
         read = Mock(side_effect=[bytes([0x00])])
-        self.assertRaises(FatalError,self.xaj._handle_lockbits, read, Mock(), Mock(), Mock())
+        self.assertRaises(FatalError,self.xaj._handle_lockbits, read, Mock())
         self.xaj.manage = ['bootrst', 'lockbits', 'ocden'] # restore!
 
     def test__handle_lockbits_ok(self):
         self.set_up()
         read = Mock(side_effect=[bytes([0x00]), bytes([0xFF])])
         erase = Mock()
-        self.xaj._handle_lockbits(read, erase, Mock(), Mock())
+        self.xaj._handle_lockbits(read, erase)
         erase.assert_called_once()
         self.xaj.logger.info.assert_has_calls([
             call("MCU has been erased and lockbits have been cleared.")])
@@ -311,7 +311,7 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         read = Mock(side_effect=[bytes([0xFF])])
         erase = Mock()
-        self.xaj._handle_lockbits(read, erase, Mock(), Mock())
+        self.xaj._handle_lockbits(read, erase)
         erase.assert_not_called()
         self.xaj.logger.info.assert_has_calls([
             call("MCU is not locked.")])
@@ -412,28 +412,6 @@ class TestXAvrDebugger(TestCase):
         self.xa.spidevice.read.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E930A)
 
-    def test__eesave_set_and_save_nochange(self):
-        self.set_up()
-        read = Mock(side_effect=[bytes([0xFF])])
-        write = Mock()
-        self.assertEqual(self.xaj._eesave_set_and_save(read, write), None)
-        write.assert_not_called()
-
-    def test__eesave_set_and_save_ok(self):
-        self.set_up()
-        self.xaj.manage = ['bootrst', 'lockbits', 'ocden', 'eesave']
-        read = Mock(side_effect=[bytes([0xFF])])
-        write = Mock()
-        self.assertEqual(self.xaj._eesave_set_and_save(read, write), (1, 0xFF))
-        write.assert_has_calls([call(1, bytes([0xF7]))])
-        self.xaj.manage = ['bootrst', 'lockbits', 'ocden']
-
-    def test__eesave_restore(self):
-        self.set_up()
-        write = Mock()
-        self.xaj._eesave_restore((1,0xFF), write)
-        write.assert_has_calls([call(1,bytes([0xFF]))])
-
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(side_effect=[
         5.0, 5.0, 0.0, 0.0, 0.0, 5.0, 5.0, 5.0]))
@@ -442,7 +420,6 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.xa._power_cycle()
         self.xa.logger.info.assert_has_calls([call("Signed on to tool again")])
-
 
     def test_stack_pointer_write(self):
         self.set_up()

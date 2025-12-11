@@ -115,7 +115,7 @@ def send_mon_options(ser, args):
                 if args.verbose == "debug":
                     sys.stdout.write("[DEBUG] Send monitor option: " + key + "=" + keyval + "\n\r")
                 send_and_wait(ser, key + " " + keyval, args)
-    for man in ['bootrst', 'dwen', 'lockbits', 'eesave']:
+    for man in ['bootrst', 'dwen', 'lockbits']:
         if man not in args.manage:
             if args.verbose == "debug":
                 sys.stdout.write("[DEBUG] Send not-manage option: no" + man + "\n\r")

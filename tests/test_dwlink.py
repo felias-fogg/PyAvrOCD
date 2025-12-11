@@ -89,7 +89,7 @@ class TestSerialToNet(TestCase):
         args.verbose = 'debug'
         args.dev = 'atmega328p'
         args.timers = 'freeze'
-        args.manage = ['bootrst', 'dwen', 'lockbits' ]
+        args.manage = ['bootrst', 'lockbits' ]
         with patch("serial.Serial") as mock_Serial:
             mock_iface = MagicMock()
             mock_iface.read.side_effect = [ b'', b'dw-link']
@@ -101,9 +101,9 @@ class TestSerialToNet(TestCase):
                                          call("[DEBUG] Check: /dev/tty\n"),
                                          call('[DEBUG] Send monitor option: timers=freeze\n\r'),
                                          call("[DEBUG] Packet:b'$qRcmd,74696D65727320667265657A65#A5'\n\r"),
-                                         call('[DEBUG] Send not-manage option: noeesave\n\r'),
-                                         call("[DEBUG] Packet:b'$qRcmd,176E6F656573617665#01'\n\r"),
-                                         call('[WARNING] Fuse EESAVE is not managed by dw-link\n\r')])
+                                         call('[DEBUG] Send not-manage option: nodwen\n\r'),
+                                         call("[DEBUG] Packet:b'$qRcmd,176E6F6477656E#40'\n\r"),
+                                         call('[WARNING] Fuse DWEN is not managed by dw-link\n\r')])
             mock_iface.write.assert_has_calls([call(b'\x05'), call(b'\x05'), call(b'$=atmega328p#B9')])
             self.assertEqual(result, (115200, '/dev/tty'))
 

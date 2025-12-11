@@ -222,8 +222,7 @@ class XAvrDebugger(AvrDebugger):
         if self._iface != 'jtag':
             return
         # clear lockbits if necessary
-        self._handle_lockbits(self.read_lock_one_byte, self.device.erase,
-                                  self.read_fuse_one_byte, self.write_fuse)
+        self._handle_lockbits(self.read_lock_one_byte, self.device.erase)
         # unprogram BOOTRST fuse if necessary
         self._handle_bootrst(self.read_fuse_one_byte,
                 self.write_fuse)
@@ -398,7 +397,7 @@ class XAvrDebugger(AvrDebugger):
             else:
                 self.logger.info("BOOTRST was already unprogrammed")
 
-    def _handle_lockbits(self, read, erase, read_fuse_byte, write_fuse_byte):
+    def _handle_lockbits(self, read, erase):
         """
         Clear lockbits (if permitted) for different settings (JTAG and ISP)
         """
@@ -407,9 +406,7 @@ class XAvrDebugger(AvrDebugger):
         if lockbits[0] != 0xFF:
             if 'lockbits' in self.manage:
                 self.logger.info("MCU is locked.")
-                eesave_to_restore = self._eesave_set_and_save(read_fuse_byte, write_fuse_byte)
                 erase()
-                self._eesave_restore(eesave_to_restore, write_fuse_byte)
                 lockbits = read()
                 self.logger.debug("Lockbits after write: 0x%X", lockbits[0])
                 assert lockbits[0] == 0xFF, "Lockbits could not be cleared"
@@ -454,8 +451,7 @@ class XAvrDebugger(AvrDebugger):
             self.spidevice.isp.leave_progmode()
             self.spidevice =  NvmAccessProviderCmsisDapSpi(self.transport, self.device_info)
             self.logger.debug("Reconnected to SPI programming module")
-            self._handle_lockbits(self.spidevice.isp.read_lockbits, self.spidevice.erase,
-                                      self.spidevice.isp.read_fuse_byte, self.spidevice.isp.write_fuse_byte)
+            self._handle_lockbits(self.spidevice.isp.read_lockbits, self.spidevice.erase)
             self._handle_bootrst(self.spidevice.isp.read_fuse_byte, self.spidevice.isp.write_fuse_byte)
             # program the DWEN bit
             dwen_addr = self.device_info['dwen_base']
@@ -503,8 +499,6 @@ class XAvrDebugger(AvrDebugger):
         """
         self.logger.info("Test for dirty PC on ATmega48/88")
         # erase flash (and maybe EEPROM)
-        eesave_to_restore = self._eesave_set_and_save(self.spidevice.isp.read_fuse_byte,
-                                                          self.spidevice.isp.write_fuse_byte)
         self.spidevice.isp.erase()
         # program flash with test program, depending on MCU type
         if device_id == 0x1E9205: # ATmega48(A)
@@ -533,33 +527,9 @@ class XAvrDebugger(AvrDebugger):
         # Now erase chip again to clear lock bits
         self.spidevice.isp.erase()
         # Restore EESAVE bit if necessary
-        self._eesave_restore(eesave_to_restore, self.spidevice.isp.write_fuse_byte)
         # and check results
         if result_lockbits[0] != 0xFF:
             raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
-
-    def _eesave_set_and_save(self, read_fuse_byte, write_fuse_byte):
-        """
-        Check EESAVE fuse and return fuse address and byte if permitted and needed after
-        setting fuse. If None is returned, no restoration of the EESAVE bit is necessary.
-        """
-        eesave_mask = self.device_info.get('eesave_mask')
-        eesave_base = self.device_info.get('eesave_base')
-        if eesave_base and eesave_mask and 'eesave' in self.manage:
-            eesave_fuse_byte = read_fuse_byte(eesave_base)
-            if eesave_fuse_byte[0] & eesave_mask:
-                write_fuse_byte(eesave_base, bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
-                self.logger.debug("EESAVE temporarily set")
-                return(eesave_base, eesave_fuse_byte[0])
-        return None
-
-    def _eesave_restore(self, restore, write_fuse_byte):
-        """
-        Restore fuse byte containing EESAVE fuse, if needed
-        """
-        if restore:
-            write_fuse_byte(restore[0], bytearray([restore[1]]))
-            self.logger.debug("EESAVE unset again")
 
     def _power_cycle(self, callback=None, recognition=None):
         """
