@@ -189,13 +189,13 @@
 <p>You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue at all.</p>
 <h2 id="general-considerations">General considerations</h2>
 <p>Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.</p>
-<p>Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage dwen</code>, when <a href="../command-line-options/">invoking the GDB server</a>:</p>
+<p>Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>.</p>
 <ul>
-<li><code>Lockbits</code>: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and perhaps EEPROM) memory, provided PyAvrOCD has been instructed to manage the lockbits.</li>
+<li><code>Lockbits</code>: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and EEPROM) memory, provided PyAvrOCD has been instructed to manage the lockbits by <code>--manage all</code> or <code>--manage lockbits</code>.</li>
 <li><code>BOOTRST</code>: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including <code>bootrst</code> as a fuse to be managed by the server when starting the GDB server from the command line.</li>
 <li><code>DWEN</code>: This fuse needs to be programmed to use the debugWIRE on-chip debugger. PyAvrOCD will program this fuse when asked to do so by the command <code>monitor debugwire enable</code>. After the fuse has been programmed, you must power-cycle the target board to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command <code>monitor debugwire disable</code>, the debugWIRE interface will be disabled, and the <code>DWEN</code> fuse will be unprogrammed. Of course, DWEN programming by PyAvrOCD is only performed if PyAvrOCD is instructed to manage this fuse.</li>
 <li><code>OCDEN</code>: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than <code>DWEN</code>,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if PyAvrOCD has been instructed to manage this fuse.</li>
-<li><code>EESAVE</code>: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM.</li>
+<li><code>EESAVE</code>: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM. However, it does not help you when you need to erase your chip because you need to clear the lock bits. If any lock bits are set, it is not possible to change fuses, which means you cannot change the EESAVE fuse temporarily.</li>
 </ul>
 <p>If you want to leave all the fuse management to PyAvrOCD, then specify <code>--manage all</code>, which is the default with Arduino IDE2. If you want to play it safe, you can instead manage these fuses and the lockbits manually using a fuse setting program such as avrdude.</p>
 <p>Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object, or you have to make sure that not the entire flash is erased by using the monitor command <code>monitor erasebeforeload disable</code>.</p>
@@ -236,15 +236,12 @@
 <p>For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.</p>
 <h3 id="fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</h3>
 <p>In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the <code>RSTDSBL</code> fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using <a href="../limitations/#high-voltage-programming">high-voltage programming</a>. The same holds when <code>SPIEN</code> (enabling SPI programming) is unprogrammed.</p>
-<p>The <code>DWEN</code>, <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD, if this is permitted (see above).</p>
+<p>The <code>DWEN</code> and <code>BOOTRST</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD, if this is permitted (see above). <code>EESAVE</code> is not managed because the only situation where a chip erase can happen is when you clear the lockbits. And in this situation, <code>EESAVE</code> cannot be activated.</p>
 <h3 id="fuse-settings-when-fuses-are-managed-manually">Fuse settings when fuses are managed manually</h3>
 <p>When you want complete control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger:</p>
 <ol>
 <li>
-<p>You may want to program the <code>EESAVE</code> fuse before the next step in order to save the EEPROM content.</p>
-</li>
-<li>
-<p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise, debugging is impossible. It will erase any bootloader as well.</p>
+<p>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This operation will erase any bootloader as well.</p>
 </li>
 <li>
 <p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.</p>
@@ -270,12 +267,7 @@
 <h3 id="fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</h3>
 <p>When you want full control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger. Make sure that the JTAG pins are enabled (see above). Afterward, use avrdude and an SPI programmer as follows:</p>
 <ol>
-<li>
-<p>You may want to program the <code>EESAVE</code> fuse before the next step in order to save the EEPROM content. If you intend to load executables that contain EEPROM contents, you definitely need to program the fuse!</p>
-</li>
-<li>
-<p>Clear the <code>lockbits</code> by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.</p>
-</li>
+<li>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.</li>
 <li>
 <p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.</p>
 </li>
