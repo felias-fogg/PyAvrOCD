@@ -2,11 +2,15 @@
 
 ### NEW:
 - **Added**:
-      - The dwlink module sends all provided monitor value arguments as qRcmd packets to dw-link.
-      - The dwlink module sends all non-managed fuses to dw-link.
+  - The dwlink module sends all provided monitor value arguments as qRcmd packets to dw-link.
+
+  - The dwlink module sends all non-managed fuses to dw-link.
 
 - **Removed**:
-     - The Arduino AVR Boards core has been removed from the list of 'debug enabled' cores in order to avoid confusion for people who use both, and also to avoid unclear support relationships. Functionality is not affected because there are always other cores which can take the role, e.g., MiniCore, MegaCore, and ATTinyCore. The only uncovered MCU is the 32U4, for which I will create a separate core.
+     - The `monitor speed` command (for dw-link use only) has been removed. One can still recompile dw-link with a higher communication speed limit.
+     - The Arduino AVR Boards core fork has been removed from the list of 'debug-enabled' cores in order to avoid confusion for people who use both, and also to avoid unclear support relationships. Functionality is not affected because there are always other cores that can take the role, e.g., MiniCore, MegaCore, and ATTinyCore. The only uncovered MCU is the 32U4, for which a separate core will be created.
+     - The methods `_eesave_set_and_save` and `_eesave_restore` have been removed from the class `XAvrDebugger`. Their use in order to protect EEPROM content when doing a chip erase in order to clear the lockbits was unfortunately useless. When lockbits are set, you cannot change fuses!
+
 
 ### 0.18.1 (02-12-2025)
 

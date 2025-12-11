@@ -32,7 +32,7 @@ This is a core for the ATtiny13(A). You can make it installable by adding the fo
 https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 ```
 
-Currently, this will make a core installable that is debug-enabled by using the GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserverand, but it will be upgraded to work with PyAvrOCD soon.
+Currently, this will make a core installable that is debug-enabled by using the GDB server [dw-gdbserver](https://github.com/felias-fogg/dw-gdbserver), but it will be upgraded to work with PyAvrOCD soon.
 
 ### [MiniCore](https://github.com/MCUdude/MiniCore)
 
