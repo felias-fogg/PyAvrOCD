@@ -172,11 +172,11 @@
 </tr>
 <tr>
 <td><code>monitor</code> <code>debugwire</code> [<code>enable</code> | <code>disable</code>]</td>
-<td>DebugWIRE mode will be <code>enable</code>d or <code>disable</code>d. When enabling it, the MCU will be reset, and you may be asked to power-cycle the target. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming.</td>
+<td>DebugWIRE mode will be <code>enable</code>d or <code>disable</code>d. When enabling it, you may be asked to power-cycle the target, and the MCU will be reset. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming.</td>
 </tr>
 <tr>
 <td><code>monitor</code>  <code>erasebeforeload</code> [<code>enable</code> | <code>disable</code>]</td>
-<td>This monitor option controls whether the flash is erased before an executable is loaded, which is the default for all targets, except for debugWIRE targets, which do not have a chip erase command in debug mode. <strong>(+)</strong></td>
+<td>This monitor option controls whether the flash is erased before an executable is loaded, which is the default for JTAG targets. This option is ignored on debugWIRE targets since those do not support a chip erase command in debug mode.</td>
 </tr>
 <tr>
 <td><code>monitor</code> <code>help</code></td>
@@ -188,7 +188,7 @@
 </tr>
 <tr>
 <td><code>monitor</code> <code>load</code> [<code>readbeforewrite</code> | <code>writeonly</code> | <code>onlycache</code>]</td>
-<td>When loading an executable, either each flash page is compared with the content to be loaded, and flashing is skipped if the content is already there (<code>readbeforewrite</code>), or each flash page is written without reading the current contents beforehand (<code>writeonly</code>). The first option is the default option for debugWIRE targets. For JTAG targets, the overhead of checking whether the page content is identical is so high that the <code>writeonly</code> option is the default. The third option (<code>onlycache</code>) will disable loading code into flash memory. This is useful when one knows that the code is already loaded and one wants to avoid the overhead of reading flash memory content. After an initial <code>load</code> operation, the default is activated again.</td>
+<td>When loading an executable, either each flash page is compared with the content to be loaded, and flashing is skipped if the content is already there (<code>readbeforewrite</code>), or each flash page is written without reading the current contents beforehand (<code>writeonly</code>). The first option is the default option for debugWIRE targets. For JTAG targets, the overhead of checking whether the page content is identical is so high that the <code>writeonly</code> option is the default. The third option (<code>onlycache</code>) disables loading code into flash memory. This is useful when one knows that the code is already loaded and one wants to avoid the overhead of reading flash memory content. After an initial <code>load</code> operation, the default is activated again.</td>
 </tr>
 <tr>
 <td><code>monitor</code> <code>onlywhenloaded</code> [<code>enable</code> | <code>disable</code>]</td>
