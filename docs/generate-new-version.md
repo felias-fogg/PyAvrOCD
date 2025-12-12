@@ -4,7 +4,7 @@
    1. Bump version number in `pyproject.toml`
    2. git commit -a -m "\<version number\>"
    3. git push
-   4. Goto web page and make new release (use correct version number!). This will trigger a workflow that will do the following:
+   4. Goto web page and make new release (use correct version number for tag and version!). This will trigger a workflow that will do the following:
       - check for correct version number
       - run unit-tests
       - build the binaries

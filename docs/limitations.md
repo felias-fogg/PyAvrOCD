@@ -173,7 +173,7 @@ While debugWIRE is an excellent concept, as it requires no GPIO sacrifice for de
 
 ### Exit debugWIRE mode
 
-One possible way to exit debugWIRE mode is to employ avrdude and one of the debug probes.
+One possible way to exit debugWIRE mode is to employ avrdude (version 8.0 or more recent) and one of the debug probes.
 
 1. Disconnect the target from everything and check that the RESET line is not connected to a capacitor or a RESET circuit.
 2. Connect it to one of the debug probes (and to power).
@@ -200,7 +200,7 @@ So, how severe is the flash wear problem? The data sheets state that for classic
 
 Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. This means ten flash-page-reprogramming operations. That will probably result on average in 3 additional reprogramming operations on an individual page, leading together with reprogramming flash memory to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This, however, holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so.
 
-A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, [all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) (because the debug probes implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.
+A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, [all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/#minimizing-flash-wear) (because the debug probes implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.
 
 All in all, as Microchip states, you should not ship MCUs that have been used heavily in debugging to customers.
 
