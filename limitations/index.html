@@ -135,6 +135,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#single-stepping-break-instructions">Single-stepping BREAK instructions</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-lines-containing-loops">Single-stepping lines containing loops</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#serial-communication">Serial communication</a>
@@ -262,13 +264,9 @@ IN R2, PINB
 <p>When running this code normally, the value 0x66 would not read back to the  R2 register. However, when single-stepping this code, there is enough time for the new value to settle and be readable. In order to make 0x66 readable under normal execution, a <code>NOP</code> is necessary between <code>OUT</code> and <code>IN</code>.</p>
 <p>On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed.</p>
 <h3 id="single-stepping-break-instructions">Single-stepping BREAK instructions</h3>
-<p><code>BREAK</code> instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a <code>BREAK</code> instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from <a href="#unsafe-exits-from-debugging">a previous debugging session that has been ended abruptly</a>. In any case, it does not make sense to continue executing the code, which is reported back to the user.</p>
-<!--
-
-### Single-stepping SLEEP instructions
-
-Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint. -->
-
+<p><code>BREAK</code> instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a <code>BREAK</code> instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from <a href="#unsafe-exits-from-debugging">a previous debugging session that was ended abruptly</a>. In any case, it does not make sense to continue executing the code, which is reported back to the user.</p>
+<h3 id="single-stepping-lines-containing-loops">Single-stepping lines containing loops</h3>
+<p>When GDB is instructed to single-step source code, it will step until a new source line is hit. This can result in a problem with lines containing, perhaps implicitly, loops. For example, <code>_delay_ms</code> is a macro that expands into a loop. When single-stepping such a line, execution can be slowed down by a factor of 1,000,000. Fortunately, GDB supports so-called range-stepping, instructing the GDB server to execute a range of instructions until this range is left. The current implementation of the GDB servers (PyAvrOCD and dw-link) can deal with range-stepping and will handle  <code>_delay_ms</code> without a problem. However, in cases when such loops have more than one exit point, and we are working on a debugWIRE target, a slowdown will probably occur because only the hardware breakpoints are used to handle exit points of such ranges. One can recover from slow execution by interrupting using Ctrl-C, setting a breakpoint outside of the loop, and then continuing execution.</p>
 <h2 id="serial-communication">Serial communication</h2>
 <p>Stopping program execution in the middle of interrupt-driven serial output may lead to dropping part of the output.</p>
 <p>Stopping the program in the middle of a communication action is always a problem. When some serial output is happening, some of the output may get dropped when the program is stopped before everything has been printed. This is not a problem for the functionality of the debugged program, but it may look annoying.</p>

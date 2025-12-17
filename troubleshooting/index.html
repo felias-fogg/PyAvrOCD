@@ -93,6 +93,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-takes-forever">Single-stepping takes forever</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</a>
@@ -191,9 +193,11 @@
 </ul>
 <h2 id="problems-while-debugging">Problems while debugging</h2>
 <h3 id="loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</h3>
-<p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <em>JTAG</em>, the situation is much better. Default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
+<p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <em>JTAG</em>, the situation is much better. The default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
 <h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</h3>
 <p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
+<h3 id="single-stepping-takes-forever">Single-stepping takes forever</h3>
+<p>You requested a single step, and the debugger seems to take forever to complete this single step. There are two possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. The debugger will return from it, either when an interrupt wakes up the MCU or when you interrupt execution using Ctrl-C. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown. In order to recover, interrupt execution, set a breakpoint somewhere after this line, and then request to continue execution.</p>
 <h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
 <p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
 <h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
@@ -457,6 +461,10 @@
 <tr>
 <td style="text-align: right;">127</td>
 <td>Bad interrupt</td>
+</tr>
+<tr>
+<td style="text-align: right;">128</td>
+<td>Inconsistent classification of opcodes in range-stepping</td>
 </tr>
 </tbody>
 </table>

@@ -170,14 +170,14 @@
 </div>
 <div class="admonition warning">
 <p class="admonition-title">macOS</p>
-<p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in order to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE.</p>
+<p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in a terminal window to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE. After that, you can start the executable without a hitch.</p>
 </div>
 <h2 id="installation">Installation</h2>
 <h3 id="arduino-ide-2">Arduino IDE 2</h3>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="https://felias-fogg.github.io/PyAvrOCD/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core. Together with PyAvrOCD, you will also get the GDB client <code>avr-gdb</code> and the simulator (for some AVR chips) <code>simavr</code>.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="http://pyavrocd.io/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="http://PyAvrOCD.io/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core. Together with PyAvrOCD, you will also get the GDB client <code>avr-gdb</code> and the simulator (for some AVR chips) <code>simavr</code>.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
 <h3 id="downloading-binaries">Downloading binaries</h3>
-<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, click on the label <code>Latest</code> below the section title <code>Releases</code><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder <code>tools</code>, which in turn contains the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>,  <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips, and additionally <code>simavr</code> (or <code>simavr.exe</code>), a software simulator of some of the AVR chips.</p>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, click on the label <code>Latest</code> below the section title <code>Releases</code> (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder <code>tools</code>, which in turn contains the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>,  <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips, and additionally <code>simavr</code> (or <code>simavr.exe</code>), a software simulator of some of the AVR chips.</p>
 <p>Store all of it somewhere in the same folder and preferably include this folder in your <code>PATH</code> variable. My preference for such a folder is <code>~/.local/bin</code> , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):</p>
 <pre><code class="language-sh">mv tools/* ~/.local/bin
 </code></pre>
@@ -202,6 +202,7 @@
 <p>Furthermore, you can create a binary standalone package as follows:</p>
 <pre><code class="language-bash">&gt; poetry run pyinstaller pyavrocd.spec
 </code></pre>
+<p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those two to a place in your <code>PATH</code>.</p>
 <h2 id="configuration">Configuration</h2>
 <p>It is not necessary to set up any configuration file before you can use PyAvrOCD.</p>
 <p>However, sometimes, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
@@ -220,14 +221,6 @@ atmelice
 <pre><code>pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
 </code></pre>
 <p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:*">
-<p>Currently, it is not possible to get a list of releases by clicking on the <code>Releases</code> title. However, clicking on the Tag number or the <code>Latest</code> label works.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
               
             </div>
           </div><footer>

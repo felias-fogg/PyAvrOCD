@@ -168,7 +168,7 @@
 </tr>
 <tr>
 <td><code>--command</code><br><code>-c</code></td>
-<td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2. This is an alternative to the <code>--port</code> option.</td>
+<td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2 interface. This is an alternative to the <code>--port</code> option.</td>
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
@@ -225,6 +225,10 @@
 <tr>
 <td><code>--install-udev-rules</code></td>
 <td>Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with <code>sudo</code> and is only present under Linux.</td>
+</tr>
+<tr>
+<td><code>--dw-link-baud</code></td>
+<td>Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value.</td>
 </tr>
 </tbody>
 </table>
