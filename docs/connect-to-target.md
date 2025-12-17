@@ -13,7 +13,7 @@ Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
 </p>
-The [dw-link](https://github.com/felias-fogg/dw-link) debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the the following picture.
+The [dw-link](https://felias-fogg.github.io/dw-link) debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the the following picture.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link-spi.jpeg" width="70%">

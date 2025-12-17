@@ -149,6 +149,12 @@ Use @file to splice arguments from 'file' into command line.
                             type=str,
                             help="Extra arguments for simavr")
 
+    parser.add_argument("--dw-link-baud",
+                            dest='baud',
+                            type=int,
+                            default=115200,
+                            help=argparse.SUPPRESS)
+
     if platform.system() == 'Linux':
         parser.add_argument("--install-udev-rules",
                                 help="Install necessary udev rules for Microchip debuggers",
@@ -356,6 +362,7 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
         print("Debugging interface for device '%s' ambiguous: '%s'" % (device, intf))
         return 1, None, None
     intf = intf[0]
+    args.dev = device
     return None, device, intf
 
 def handle_simavr(args, device):

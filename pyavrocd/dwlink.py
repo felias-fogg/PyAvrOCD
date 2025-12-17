@@ -5,8 +5,6 @@ Based on Chris Liechti's tcp_serial_redirect script
 """
 import os
 import sys
-import shutil
-import shlex
 import subprocess
 import time
 import socket
@@ -15,6 +13,8 @@ import serial.threaded
 from serial import SerialException
 import serial.tools.list_ports
 from pyavrocd.monitor import monopts
+
+REQMJVERSION = 6 # required major version of dw-link
 
 class DetachException(Exception):
     """Termination of session because of a detach command"""
@@ -100,14 +100,13 @@ def send_and_wait(ser, command, args):
         ser.flush()
         resp = ser.read_until(b'+')
         trial -= 1
-    resp = ser.read_until(b'#')
-    ser.write(b'+')
     ser.reset_input_buffer()
 
 def send_mon_options(ser, args):
     """
     Send all monitor option values and the not-to-manage fuses
     """
+    send_and_wait(ser, "\x17mcu " + args.dev, args)
     for key, value in monopts.items():
         if value[0] == 'cli':
             keyval = getattr(args, key, None)
@@ -125,6 +124,7 @@ def send_mon_options(ser, args):
 def discover(args):
     """
     Discovers the dw-link adapter, if present
+    Returns (speed, device, major version of dw-link)
     """
     for delay in (0.2, 2):
         for s in serial.tools.list_ports.comports(True):
@@ -137,7 +137,7 @@ def discover(args):
                 sys.stdout.write("[DEBUG] Check: {}\n".format(s.device))
                 sys.stdout.flush()
             try:
-                for sp in (115200, 74880):
+                for sp in (args.baud, ):
                     with serial.Serial(s.device, sp, timeout=0.1,
                                            write_timeout=0.1, exclusive=True) as ser:
                         time.sleep(delay)
@@ -149,19 +149,18 @@ def discover(args):
                             resp = ser.read(7) # now it should be the right response!
                         # if we get this response, it must be an dw-link adapter
                         if resp == b'dw-link':
-                            # send type of MCU in a special RSP packet
-                            message = ('=' + args.dev).encode('ascii')
-                            checksum = sum(message)&0xFF
-                            ser.write(b'$' + message + b'#' + (b'%02X' % checksum))
-                            ser.reset_input_buffer()
-                            # send monitor value options + not-to-manage fuses
-                            send_mon_options(ser, args)
-                            return (sp, s.device)
+                            version = ser.read_until(b'.')
+                            if not version:
+                                mversion = 0
+                            else:
+                                version = version.decode('utf-8')
+                                mversion = int(version[:version.find('.')])
+                            return (sp, s.device, mversion)
             except SerialException:
                 pass
             except Exception as e:
                 sys.stdout.write('[ERROR] ' + repr(e) + '\n\r')
-    return (None, None)
+    return (None, None, None)
 
 def main(args, intf):
     """
@@ -171,9 +170,13 @@ def main(args, intf):
         args.verbose = "debug"
 
     # discover adapter
-    speed, device = discover(args)
+    speed, device, mjversion = discover(args)
     if speed is None or device is None:
         return # return to PyAvrOCD main, which will handle this problem
+
+    if mjversion < REQMJVERSION:
+        sys.stdout.write('[CRITICAL] dw-link version is not compatible, should be at least v%d.0.0\n' % REQMJVERSION)
+        sys.exit(1)
 
     # check whether interface is OK
     if intf != "debugwire":
@@ -196,6 +199,11 @@ def main(args, intf):
         sys.stdout.write('[CRITICAL] Could not open serial port {}: {}\n'.format(device, e))
         sys.exit(2)
 
+    # send monitor value options + not-to-manage fuses + mcu type
+    ser.timeout = 0.2
+    send_mon_options(ser, args)
+    ser.timeout = None
+
     try:
         ser_to_net = SerialToNet(args.verbose in [ 'debug', 'all' ])
         serial_worker = serial.threaded.ReaderThread(ser, ser_to_net)
@@ -211,10 +219,8 @@ def main(args, intf):
             sys.exit(3)
 
         subprc = None
-        if args.prg and args.prg != "noop":
-            cmd = shlex.split(args.prg)
-            cmd[0] = shutil.which(cmd[0])
-            subprc = subprocess.Popen(cmd)
+        if args.prg and args.prg != "nop":
+            subprc = subprocess.Popen(args.prg)
 
         sys.stdout.write("[INFO] Connected to dw-link debugger\r\n")
         sys.stdout.write("[INFO] Listening on port {} for gdb connection\n\r".format(args.port))

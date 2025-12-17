@@ -90,22 +90,18 @@ class TestSerialToNet(TestCase):
         args.dev = 'atmega328p'
         args.timers = 'freeze'
         args.manage = ['bootrst', 'lockbits' ]
+        args.baud = 115200
         with patch("serial.Serial") as mock_Serial:
             mock_iface = MagicMock()
-            mock_iface.read.side_effect = [ b'', b'dw-link']
-            mock_iface.read_until.side_effect = [ b'+', b'#',b'+', b'#']
+            mock_iface.read.side_effect = [ b'', b'dw-link' ]
+            mock_iface.read_until.side_effect = [ b'6.', b'+', b'+', b'+' ]
             mock_Serial.return_value.__enter__.return_value = mock_iface
             result = discover(args)
+            mock_iface.write.assert_has_calls([call(b'\x05'), call(b'\x05')])
+            self.assertEqual(result, (115200, '/dev/tty', 6))
             mock_write.assert_has_calls([call("[DEBUG] Device: /dev/cu.debug-console\n"),
                                          call("[DEBUG] Device: /dev/tty\n"),
-                                         call("[DEBUG] Check: /dev/tty\n"),
-                                         call('[DEBUG] Send monitor option: timers=freeze\n\r'),
-                                         call("[DEBUG] Packet:b'$qRcmd,74696D65727320667265657A65#A5'\n\r"),
-                                         call('[DEBUG] Send not-manage option: nodwen\n\r'),
-                                         call("[DEBUG] Packet:b'$qRcmd,176E6F6477656E#40'\n\r"),
-                                         call('[WARNING] Fuse DWEN is not managed by dw-link\n\r')])
-            mock_iface.write.assert_has_calls([call(b'\x05'), call(b'\x05'), call(b'$=atmega328p#B9')])
-            self.assertEqual(result, (115200, '/dev/tty'))
+                                         call("[DEBUG] Check: /dev/tty\n")])
 
     @patch('pyavrocd.dwlink.serial.tools.list_ports.comports')
     @patch('pyavrocd.dwlink.sys.stdout.write')
@@ -121,6 +117,7 @@ class TestSerialToNet(TestCase):
         args = SimpleNamespace()
         args.verbose = 'info'
         args.dev = 'atmega328p'
+        args.baud = 115200
         with patch("serial.Serial") as mock_Serial:
             mock_iface = MagicMock()
             mock_iface.read.return_value = b''
@@ -128,7 +125,7 @@ class TestSerialToNet(TestCase):
             result = discover(args)
             mock_write.assert_not_called()
             mock_iface.write.assert_has_calls([call(b'\x05'), call(b'\x05'), call(b'\x05'), call(b'\x05')])
-            self.assertEqual(result, (None, None))
+            self.assertEqual(result, (None, None, None))
 
     @patch('pyavrocd.dwlink.discover')
     @patch('pyavrocd.dwlink.sys.stdout.write')
@@ -137,7 +134,7 @@ class TestSerialToNet(TestCase):
         args = SimpleNamespace()
         args.verbose = 'info'
         args.dev = 'atmega328p'
-        mock_discover.return_value = (None, None)
+        mock_discover.return_value = (None, None, None)
         self.assertEqual(main(args, 'debugwire'), None)
         mock_write.assert_not_called()
 
@@ -148,7 +145,7 @@ class TestSerialToNet(TestCase):
         args = SimpleNamespace()
         args.verbose = 'all'
         args.dev = 'atmega328p'
-        mock_discover.return_value = (10, '/dev/null')
+        mock_discover.return_value = (10, '/dev/null', 6)
         self.assertRaises(SystemExit, main, args, 'jtag')
         mock_write.assert_called_once()
 

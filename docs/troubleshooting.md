@@ -31,11 +31,15 @@ For most of the error messages, it should be obvious what to do. However, there 
 
 ### Loading code and/or debugging feels sluggish
 
-When using *debugWIRE*, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the `readbeforewrite` option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With *JTAG*, the situation is much better. Default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.
+When using *debugWIRE*, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the `readbeforewrite` option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With *JTAG*, the situation is much better. The default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.
 
 ### The debugger does not stop at a line with a set breakpoint, but only later
 
 This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch `Optimize for Debugging` in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the `-Og` compiler option.
+
+### Single-stepping takes forever
+
+You requested a single step, and the debugger seems to take forever to complete this single step. There are two possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. The debugger will return from it, either when an interrupt wakes up the MCU or when you interrupt execution using Ctrl-C. Second, [single-steping a source code line that contains an (implicit) loop](limitations.md#single-stepping-lines-containing-loops) can lead to a severe slowdown. In order to recover, interrupt execution, set a breakpoint somewhere after this line, and then request to continue execution.
 
 ### Variables cannot be accessed in the debugger
 

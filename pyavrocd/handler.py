@@ -51,8 +51,8 @@ class GdbHandler():
         self.packettypes = {
             '!'           : self._extended_remote_handler,
             '?'           : self._stop_reason_handler,
-            'c'           : self._continue_handler,
-            'C'           : self._continue_with_signal_handler, # signal will be ignored
+          # 'c'           : self._continue_handler,
+          # 'C'           : self._continue_with_signal_handler, # signal will be ignored
             'D'           : self._detach_handler,
             'g'           : self._get_register_handler,
             'G'           : self._set_register_handler,
@@ -71,8 +71,8 @@ class GdbHandler():
             'qXfer'       : self._memory_map_handler,
           # 'Q'           : general set commands - no relevant cases
           # 'R'           : run command - never used because vRun is supported
-            's'           : self._step_handler,
-            'S'           : self._step_with_signal_handler, # signal will be ignored
+          # 's'           : self._step_handler,
+          # 'S'           : self._step_with_signal_handler, # signal will be ignored
             'T'           : self._thread_alive_handler,
             'vCont'       : self._vcont_handler,
             'vFlashDone'  : self._vflash_done_handler,

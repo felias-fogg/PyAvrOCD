@@ -243,7 +243,7 @@ class BreakAndExec():
     def resume_execution(self, addr):
         """
         Start execution at given addr (byte addr). If none given, use the actual PC.
-        Update breakpoints. Return SIGABRT if not enough break points.
+        Update breakpoints. Return SIGSYS if not enough break points.
         SWBPs at this point are not protected! The reason is that if we start at a location
         with a BP, GDB would never simply resume when the BP is still there. So, we can safely
         remove a SWBP before starting to execute at this point.
@@ -523,7 +523,7 @@ class BreakAndExec():
         """
         self.logger.debug("Range stepping from 0x%X to 0x%X", start, end)
         if not self.mon.is_range() or self.mon.is_old_exec():
-            self.logger.warning("Range stepping forbidden")
+            self.logger.debug("Range stepping forbidden")
             return self.single_step(None)
         if start%2 != 0 or end%2 != 0:
             self.logger.error("Range addresses in range stepping are ill-formed")

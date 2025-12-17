@@ -101,13 +101,11 @@ On the other hand, often instructions need to be executed closely together. Sinc
 
 ### Single-stepping BREAK instructions
 
-`BREAK` instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a `BREAK` instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from [a previous debugging session that has been ended abruptly](#unsafe-exits-from-debugging). In any case, it does not make sense to continue executing the code, which is reported back to the user.
+`BREAK` instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a `BREAK` instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from [a previous debugging session that was ended abruptly](#unsafe-exits-from-debugging). In any case, it does not make sense to continue executing the code, which is reported back to the user.
 
-<!--
+### Single-stepping lines containing loops
 
-### Single-stepping SLEEP instructions
-
-Single-stepping means that a single instruction is executed and then control is immediately returned to the debugger. This does not work with a `SLEEP` instruction since executing it means waiting for some external event to end it. For this reason, when single-stepping a `SLEEP` instruction, it is treated as a `NOP` instruction. When you want to debug the sleep state, use a breakpoint. -->
+When GDB is instructed to single-step source code, it will step until a new source line is hit. This can result in a problem with lines containing, perhaps implicitly, loops. For example, `_delay_ms` is a macro that expands into a loop. When single-stepping such a line, execution can be slowed down by a factor of 1,000,000. Fortunately, GDB supports so-called range-stepping, instructing the GDB server to execute a range of instructions until this range is left. The current implementation of the GDB servers (PyAvrOCD and dw-link) can deal with range-stepping and will handle  `_delay_ms` without a problem. However, in cases when such loops have more than one exit point, and we are working on a debugWIRE target, a slowdown will probably occur because only the hardware breakpoints are used to handle exit points of such ranges. One can recover from slow execution by interrupting using Ctrl-C, setting a breakpoint outside of the loop, and then continuing execution.
 
 ## Serial communication
 

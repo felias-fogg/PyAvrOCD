@@ -132,7 +132,7 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.status_register_read.return_value = [0x55]
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.program_counter_read.return_value = 0x00003421
-        self.gh.dispatch('c',b'')
+        self.gh.dispatch('vCont',b';c')
         self.gh._comsocket.sendall.assert_has_calls([
             call(rsp("O456E61626C65206465627567574952452066697273743A202" + \
                          "76D6F6E69746F722064656275677769726520656E61626C65270A")),
@@ -147,7 +147,7 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.program_counter_read.return_value = 0x00003421
         self.gh.dbg.get_iface.return_value = 'jtag'
-        self.gh.dispatch('c',b'')
+        self.gh.dispatch('vCont',b';c')
         self.gh._comsocket.sendall.assert_has_calls([
             call(rsp("O4A5441472070696E7320617265206E6F7420656E61626C65640A")),
             call(rsp("S01"))])
@@ -161,7 +161,7 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.program_counter_read.return_value = 0x00003421
         self.gh.dbg.get_iface.return_value = 'updi'
-        self.gh.dispatch('c',b'')
+        self.gh.dispatch('vCont',b';c')
         self.gh._comsocket.sendall.assert_has_calls([
             call(rsp("O4E6F20636F6E6E656374696F6E20746F204F43442E20456E61626C6520646562756767696E672066697273740A")),
             call(rsp("S01"))])
@@ -175,20 +175,11 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.program_counter_read.return_value = 0x00003421
         self.gh.mon.is_debugger_active.return_value = True
-        self.gh.dispatch('c',b'')
+        self.gh.dispatch('vCont',b';c')
         self.gh._comsocket.sendall.assert_has_calls([
             call(rsp("O4E6F2070726F6772616D206C6F616465643B2063616E6E6F7420" + \
                          "737461727420657865637574696F6E0A")),
             call(rsp("S0B"))])
-
-    def test_continue_handler_with_start(self):
-        self.set_up()
-        self.gh.mon.is_debugger_active.return_value = True
-        self.gh.mem.is_flash_empty.return_value = False
-        self.gh.bp.resume_execution.return_value = None
-        self.gh.dispatch('c',b'2244')
-        self.gh.bp.resume_execution.assert_called_with(0x2244)
-        self.gh._comsocket.sendall.assert_not_called()
 
     def test_continue_handler_without_start(self):
         self.set_up()
@@ -196,30 +187,23 @@ class TestGdbHandler(TestCase):
         self.gh.mem.is_flash_empty.return_value = False
         self.gh.bp.resume_execution.return_value = None
         self.gh.dbg.program_counter_read.return_value = 1
-        self.gh.dispatch('c',b'')
+        self.gh.dispatch('vCont',b';c')
         self.gh.bp.resume_execution.assert_called_with(None)
         self.gh._comsocket.sendall.assert_not_called()
-
-    def test_continue_with_signal_handler(self):
-        self.set_up()
-        self.gh._continue_handler = Mock()
-        self.gh.dispatch('C',b'09;2244')
-        self.gh.dispatch('C',b'09')
-        self.gh._continue_handler.assert_has_calls([call('2244'), call('')])
 
     def test_continue_with_signal_handler_without_start(self):
         self.set_up()
         self.gh.mon.is_debugger_active.return_value = True
         self.gh.mem.is_flash_empty.return_value = False
         self.gh.bp.resume_execution.return_value = None
-        self.gh.dispatch('C',b'09')
+        self.gh.dispatch('vCont',b';C09')
         self.gh.bp.resume_execution.assert_called_with(None)
         self.gh._comsocket.sendall.assert_not_called()
 
     def test_continue_after_critical_error(self):
         self.set_up()
         self.gh.critical = True
-        self.gh.dispatch('C',b'')
+        self.gh.dispatch('vCont',b';C06')
         self.gh._comsocket.sendall.assert_called_with(rsp("S06"))
 
     def test_detach_handler(self):
@@ -580,24 +564,11 @@ class TestGdbHandler(TestCase):
         self.gh.mon.is_debugger_active.return_value=False
         self.gh.mem.is_flash_empty.return_value = True
         self.gh.mon.is_noload.return_value = False
-        self.gh.dispatch('s', b'')
+        self.gh.dispatch('vCont', b';s')
         self.gh._comsocket.sendall.assert_called_with(rsp("S01"))
         self.gh.mon.is_debugger_active.return_value=True
-        self.gh.dispatch('s', b'')
+        self.gh.dispatch('vCont', b';s')
         self.gh._comsocket.sendall.assert_called_with(rsp("S0B"))
-
-    def test_step_handler_with_start(self):
-        self.set_up()
-        self.gh.mon.is_debugger_active.return_value=True
-        self.gh.mem.is_flash_empty.return_value = False
-        self.gh.mon.is_noload.return_value = False
-        self.gh.dbg.program_counter_read.return_value = 0x00000102
-        self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
-        self.gh.dbg.status_register_read.return_value = [0x55]
-        self.gh.bp.single_step.return_value = 5
-        self.gh.dispatch('s', b'00000202')
-        self.gh.bp.single_step.assert_called_with(0x202)
-        self.gh._comsocket.sendall.assert_called_with(rsp("T0520:55;21:3412;22:04020000;thread:1;"))
 
     def test_step_handler_without_start(self):
         self.set_up()
@@ -608,16 +579,15 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.status_register_read.return_value = [0x55]
         self.gh.bp.single_step.return_value = 5
-        self.gh.dispatch('s', b'')
+        self.gh.dispatch('vCont', b';s')
         self.gh.bp.single_step.assert_called_with(None)
         self.gh._comsocket.sendall.assert_called_with(rsp("T0520:55;21:3412;22:02020000;thread:1;"))
 
     def test_step_with_signal_handler(self):
         self.set_up()
         self.gh._step_handler = Mock()
-        self.gh.dispatch('S', b'09;4545')
-        self.gh.dispatch('S', b'09')
-        self.gh._step_handler.assert_has_calls([call('4545'), call('')])
+        self.gh.dispatch('vCont', b';S09')
+        self.gh._step_handler.assert_has_calls([call('')])
 
     def test_thread_alive_handler(self):
         self.set_up()

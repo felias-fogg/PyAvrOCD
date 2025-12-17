@@ -1,5 +1,4 @@
 
-
 # Quickstart guide: dw-link & ATtiny85
 
 This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a debug probe.
@@ -8,7 +7,7 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
 
 - how to install the PyAvrOCD GDB server,
 
-- how to turn an Arduino UNO R3 into a [debugWIRE](https://debugwire.de/) debug probe using the [dw-link](https://github.com/felias-fogg/dw-link/) firmware,
+- how to turn an Arduino UNO R3 into a [debugWIRE](https://debugwire.de/) debug probe using the [dw-link](https://felias-fogg.github.io/dw-link/) firmware,
 - how to set up the breadboard with the ATtiny85 on it, and
 - how to use PlatformIO for debugging a program on the ATtiny.
 

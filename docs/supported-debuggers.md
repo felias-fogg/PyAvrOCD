@@ -1,6 +1,6 @@
 # Supported debug probes
 
-PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe [dw-link](https://github.com/felias-fogg/dw-link). And, as a service to Arduino users, it provides access to the software simulation tool [simavr](https://github.com/buserror/simavr) (see [below](#software-simulator)).
+PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe [dw-link](https://felias-fogg.github.io/dw-link). And, as a service to Arduino users, it provides access to the software simulation tool [simavr](https://github.com/buserror/simavr) (see [below](#software-simulator)).
 
 ## Hardware debug probes
 
@@ -16,11 +16,9 @@ Except for dw-link and microUPDI, the list below is copied from the README file 
 * **[mEDBG](https://onlinedocs.microchip.com/oxy/GUID-FC2A0384-AC9D-45B4-951E-5C0DEFE8B2E9-en-US-5/GUID-4063E88C-69CE-4393-ABBF-46E406D92BD3.html) - on-board debuggers on Xplained Mini/Nano**
 * <u>[microUPDI](https://github.com/MCUdude/microUPDI)</u> - an mEDBG clone by MCUdude (only UPDI)
 * <u>[nEDBG](https://www.microchipdirect.com/dev-tools/curiosityboards_curiositynanoboards?allDevTools=true)</u> - on-board debuggers on Curiosity Nano
-* **[dw-link](https://github.com/felias-fogg/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
+* **[dw-link](https://felias-fogg.github.io/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
 
 My **JTAGICE3**, being the oldest one of the set of supported debuggers, is sometimes a bit shaky. In particular, with lower voltages and when the MCU has a clock less than 8 MHz, sometimes it emits error messages when other debuggers work without a hitch. It is not clear whether these issues are with my sample or a general problem for these debuggers.
-
-The **dw-link** debugger is limited in a number of respects. First of all, it only supports debugWire targets. Further, it does not honor all of the possible PyAvrOCD options. It will always manage all fuses, it cannot cache the flash content, and, in particular, does not implement range-stepping. This implies that debugging ATtiny13s using MicroCore is not possible because delays are implemented using the `_delay_ms` macros.
 
 ### Switching to AVR mode
 

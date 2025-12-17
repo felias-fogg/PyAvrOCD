@@ -1,6 +1,6 @@
 # Quickstart guide: dw-link & ATtiny85
 
-This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a debug probe.
+This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe.
 
 
 ## What you need
@@ -35,7 +35,7 @@ Download the dw-link firmware. This means you should
 * open the webpage [https://github.com/felias-fogg/dw-link](https://github.com/felias-fogg/dw-link),
 * click on `Latest` in the field **Releases** (on the left),
 * choose either `zip` or `tar.gz`,
-* download it to  your hard disk,
+* download it to  your hard disk, and
 * extract the firmware from the downloaded archive using `unzip` or `tar -xvzf`.
 
 In order to install the firmware,
@@ -107,5 +107,4 @@ So, after everything has been debugged, what do you do with your newly built deb
 ## What can go wrong?
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `gdb-server` console. Messages with the prefix [WARNING] often tell what went wrong. If the status LED is blinking very fast, it means that the debugger has hit an unrecoverable error. Type `monitor info` into the last line of the `Debug Console` in order to find out about the [error number](troubleshooting.md#internal-and-fatal-dw-link-errors). It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) sections.
-
 

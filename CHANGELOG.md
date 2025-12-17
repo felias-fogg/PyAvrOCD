@@ -1,28 +1,37 @@
 # Changelog
 
-### NEW:
-- **Added**:
-  - The dwlink module sends all provided monitor value arguments as qRcmd packets to dw-link.
+### 0.19.0 (17-Dec-2025)
 
-  - The dwlink module sends all non-managed fuses to dw-link.
+- **Changed**:
+     - PyAvrOCD from this version on requires that dw-link attach the version number to its initial response string 'dw-link' with a version >= 6.0.0. This is required so that one can be sure that the 'manage' requests from PyAcrOCD (e.g., `nodwen`) are indeed honored by dw-link.
+
+- **Added**:
+  - The `dwlink` module sends all provided monitor value arguments as qRcmd packets to dw-link.
+
+  - The `dwlink` module sends all non-managed fuses to dw-link.
+
+  - New (hidden) command line option: `--dw-link-baud`. It can be used to specify a different baud value for communication with dw-link.
 
 - **Removed**:
+     - `device` files with a debugging interface other than debugWIRE and JTAG only.
      - The `monitor speed` command (for dw-link use only) has been removed. One can still recompile dw-link with a higher communication speed limit.
      - The Arduino AVR Boards core fork has been removed from the list of 'debug-enabled' cores in order to avoid confusion for people who use both, and also to avoid unclear support relationships. Functionality is not affected because there are always other cores that can take the role, e.g., MiniCore, MegaCore, and ATTinyCore. The only uncovered MCU is the 32U4, for which a separate core will be created.
      - The methods `_eesave_set_and_save` and `_eesave_restore` have been removed from the class `XAvrDebugger`. Their use in order to protect EEPROM content when doing a chip erase in order to clear the lockbits was unfortunately useless. When lockbits are set, you cannot change fuses!
+     - The 's', 'S', 'c', and 'C' packets have been removed from GdbHandler because the 'vCont' packets fill this place.
 
 
-### 0.18.1 (02-12-2025)
+
+### 0.18.1 (02-Dec-2025)
 
 - **Fixed:**
-     - Unfortunately, Windows command lines cannot be parsed with the Python module`shlex`, which led to the problem that `simavr` could not be started under Windows. Now, the `-s` option expects the path to a program (without any arguments). If extra arguments to `simavr` are necessary, one has use the new `-x` option.
+     - Unfortunately, Windows command lines cannot be parsed with the Python module `shlex`, which led to the problem that `simavr` could not be started under Windows. Now, the `-s` option expects the path to a program (without any arguments). If extra arguments to `simavr` are necessary, one has to use the new `-x` option.
      - On Linux, the simavr executables use dynamic libraries. They have now been added. This also means that the path to access the executable had to be adapted.
      - Not `simavr.protocol` but `simavr.upload.protocol` needs to be set to a strange name to signal the user that `Simulator (simavr)` is not a regular programmer.
 
 ### 0.18.0 (30-Nov-2025)
 
 - **Added:**
-     - `simavr` has been added to the binary tools. With that, one can now start the simulator by using the "virtual programmer" simavr when starting the debugging process. This looks a bit strange but it appeared to be the only straightforward way of starting simavr without using `pyavrcod.options`. Using `pyavrocd.options` still works and can be used to start simavr with extra arguments.
+     - `simavr` has been added to the binary tools. With that, one can now start the simulator by using the "virtual programmer" simavr when starting the debugging process. This looks strange but it appeared to be the only straightforward way of starting simavr without using `pyavrcod.options`. Using `pyavrocd.options` still works and can be used to start simavr with extra arguments.
 
 ### 0.17.1 (24-Nov-2025)
 
@@ -48,7 +57,7 @@
      - The SVD files contained FUSEs and LOCKBITs, but not SP and SREG. For some reason, a wrong version of atdf2svd was invoked, and the option value was misspelled. Perhaps there should be a unit test here as well.
      - It could happen that when lazy loading (with X-records), another record is received before the timeout in the server loop calls for finalizing the load operation. Now, we catch that by checking whether a non-X record is received while lazy loading.
 - **Added:**
-     - `monitor load onlycache` will disable flashing when loading. It is useful when one can use ordinary programming for debugWIRE targets, e.g., when using the Xplained-Mini boards. This will disable flashing in the `flash_pages` method. The switch is disabled after the initial load and changed to read-before-write.
+     - The command `monitor load onlycache` will disable flashing when loading. It is useful when one can use ordinary programming for debugWIRE targets, e.g., when using the Xplained-Mini boards. This will disable flashing in the `flash_pages` method. The switch is disabled after the initial load and changed to read-before-write.
      - Three debug-enabled cores:
           - ArduinoCore-avr-debug-enabled: the usual classic Arduino boards,
           - ATTinyCore-debug-enabled (2.0.0-dev): all classic ATtinys with the brand-new core

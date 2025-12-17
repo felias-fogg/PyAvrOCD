@@ -2,13 +2,13 @@
 
 ### Arduino IDE 2
 
-If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" ](https://felias-fogg.github.io/PyAvrOCD/debugging-software/#arduino-ide-2) and [install the respective core](https://felias-fogg.github.io/PyAvrOCD/supporting-cores/). It will then be installed as a tool for this core. Together with PyAvrOCD, you will also get the GDB client `avr-gdb` and the simulator (for some AVR chips) `simavr`.
+If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient [to add an "additional boards manager URL" ](http://pyavrocd.io/debugging-software/#arduino-ide-2) and [install the respective core](http://PyAvrOCD.io/supporting-cores/). It will then be installed as a tool for this core. Together with PyAvrOCD, you will also get the GDB client `avr-gdb` and the simulator (for some AVR chips) `simavr`.
 
 If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.
 
 ### Downloading binaries
 
-Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases`[^*] (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder `tools`, which in turn contains the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`,  `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips, and additionally `simavr` (or `simavr.exe`), a software simulator of some of the AVR chips.
+Go to the [GitHub page](https://github.com/felias-fogg/PyAvrOCD), click on the label `Latest` below the section title `Releases` (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder `tools`, which in turn contains the executable `pyavrocd` (or `pyavrocd.exe`), a folder `pyavrocd-util`,  `avr-gdb` (or `avr-gdb.exe`), the GDB debugger for AVR chips, and additionally `simavr` (or `simavr.exe`), a software simulator of some of the AVR chips.
 
 Store all of it somewhere in the same folder and preferably include this folder in your `PATH` variable. My preference for such a folder is `~/.local/bin` , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):
 
@@ -19,8 +19,6 @@ mv tools/* ~/.local/bin
 The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
 
 Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
-
-[^*]: Currently, it is not possible to get a list of releases by clicking on the `Releases` title. However, clicking on the Tag number or the `Latest` label works.
 
 ### PyPI
 

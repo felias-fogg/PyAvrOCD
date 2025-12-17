@@ -2,7 +2,7 @@
 
 This quickstart guide shows how to try out embedded debugging as offered by the Arduino IDE 2 without requiring you to invest in a debug probe. It explains
 
-- how to turn an Arduino UNO R3 into a [debugWIRE](https://debugwire.de/) debug probe using the [dw-link](https://github.com/felias-fogg/dw-link/) firmware,
+- how to turn an Arduino UNO R3 into a [debugWIRE](https://debugwire.de/) debug probe using the [dw-link](https://felias-fogg.gitghub.io/dw-link/) firmware,
 - how to set up the [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) so that you can use its debugging feature,  and
 - how to use this combo in order to do embedded debugging on another Arduino UNO R3.
 

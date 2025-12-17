@@ -13,7 +13,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `--help`<br/> `-h`                                           | Gives help text and exits.                                   |
-| `--command`<br>`-c`                                          | Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2. This is an alternative to the `--port` option. |
+| `--command`<br>`-c`                                          | Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2 interface. This is an alternative to the `--port` option. |
 | `--device` <br>`-d`                                          | The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed. |
 | `--debug-clock`<br>`-D`                                      | JTAG clock frequency for debugging in kHz. This value should be less than a quarter of the MCU clock frequency. The default is min(2000, `F_CPU`/5000) in kHz. |
 | `--F_CPU`<br>`-F`                                            | Frequency of CPU clock (Hz). It is used to determine the default value for `--debug-clock` and will be passed to `simavr` if called. The default is 1,000,000 Hz. |
@@ -28,6 +28,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--version` <br>`-V`                                         | Print PyAvrOCD version number and exit.                      |
 | `--xargs`<br> `-x`                                           | Extra arguments for `simavr`.                                |
 | `--install-udev-rules`                                       | Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with `sudo` and is only present under Linux. |
+| `--dw-link-baud`                                             | Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value. |
 
 You can also use the [monitor command options](monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--timers freeze,` which has the same effect as issuing the command `monitor timers freeze` in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--ti f` .
 
