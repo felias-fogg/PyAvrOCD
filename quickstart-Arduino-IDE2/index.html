@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quickstart-Arduino-IDE2/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>dw-link & ATtiny85 - PyAvrOCD</title>
+    <title>quickstart Arduino IDE2 - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "dw-link \u0026 ATtiny85";
+        var mkdocs_page_name = "quickstart Arduino IDE2";
         var mkdocs_page_input_path = "quickstart-Arduino-IDE2.md";
         var mkdocs_page_url = "/quickstart-Arduino-IDE2/";
       </script>
@@ -42,38 +42,10 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" >Arduino IDE 2</a>
-    <ul class="current">
-                <li class="toctree-l2"><a class="reference internal" href="../quick_xmini/">ATmega328P Xplained Mini</a>
-                </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="#">dw-link & ATtiny85</a>
-    <ul class="current">
-    <li class="toctree-l3"><a class="reference internal" href="#what-you-need">What you need</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-new-board-manager-files">Step 1: Install new board manager files</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-2-install-dw-link-firmware-on-an-uno">Step 2: Install dw-link firmware on an Uno</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-3-hardware-setup">Step 3: Hardware setup</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-4-start-debugging">Step 4: Start Debugging</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-has-finished">After debugging has finished</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#what-can-go-wrong">What can go wrong?</a>
-    </li>
-    </ul>
-                </li>
-    </ul>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" >PlatformIO</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../quick_atmega1284_pio/">Atmel-ICE & ATmega1284</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../quick_attiny_pio/">dw-link & ATtiny85</a>
-                </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -151,9 +123,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Quickstart Guides</li>
-          <li class="breadcrumb-item">Arduino IDE 2</li>
-      <li class="breadcrumb-item active">dw-link & ATtiny85</li>
+      <li class="breadcrumb-item active">quickstart Arduino IDE2</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quickstart-Arduino-IDE2.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -163,9 +133,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</h1>
+                <h2 id="quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</h2>
 <p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe.</p>
-<h2 id="what-you-need">What you need</h2>
+<h3 id="what-you-need">What you need</h3>
 <ul>
 <li>Computer running Windows, macOS, or Linux (the <em>host</em>)</li>
 <li>Arduino Uno (will become the <em>debug probe</em>)</li>
@@ -180,7 +150,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="step-1-install-new-board-manager-files">Step 1: Install new board manager files</h2>
+<h3 id="step-1-install-new-board-manager-files">Step 1: Install new board manager files</h3>
 <p>Open the <code>Preferences</code> dialog of the Arduino IDE and paste the following <code>Board Manager URLs</code> into the list:</p>
 <pre><code>https://downloads.pyavrocd.io/package_debug_enabled_index.json
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
@@ -191,7 +161,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 <li>Select <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>Board Managers</code> ... . This will open the Boards Manager dialog.</li>
 <li>In the search field, type <code>ATTinyCore (Debug enabled)</code> and install the most recent version.</li>
 </ul>
-<h2 id="step-2-install-dw-link-firmware-on-an-uno">Step 2: Install <em>dw-link</em> firmware on an Uno</h2>
+<h3 id="step-2-install-dw-link-firmware-on-an-uno">Step 2: Install <em>dw-link</em> firmware on an Uno</h3>
 <p>Download the dw-link firmware. This means you should</p>
 <ul>
 <li>open the webpage <a href="https://github.com/felias-fogg/dw-link">https://github.com/felias-fogg/dw-link</a>,</li>
@@ -210,7 +180,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 <li>Finally, compile and download the sketch to the Uno by either pressing the right arrow button, or by typing <code>CTRL-U</code> or <code>⌘U</code>. The Uno acts now as a debug probe (but needs a bit of additional hardware).</li>
 </ul>
 <p><strong>Check:</strong> Open the <code>Serial Monitor</code> (under <code>Tools</code> menu), choose <code>115200 baud</code>,  type  <code>-</code>  (minus sign) into the upper line, and send it. The debug probe should respond with <code>$#00</code>.</p>
-<h2 id="step-3-hardware-setup">Step 3: Hardware setup</h2>
+<h3 id="step-3-hardware-setup">Step 3: Hardware setup</h3>
 <p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a debug probe. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
 <p><img alt="ATtiny85-debug" src="../pics/attiny85-debug-new.png" /></p>
 <p>Here is a table of all connections to check that you have made all the connections.</p>
@@ -283,7 +253,7 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 <li>ISP programming (LED is blinking slowly),</li>
 <li>error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).</li>
 </ol>
-<h2 id="step-4-start-debugging">Step 4: Start Debugging</h2>
+<h3 id="step-4-start-debugging">Step 4: Start Debugging</h3>
 <ul>
 <li>Load the sketch you want to debug  (e.g., <code>dw-link-x.y.z/examples/varblink/varblink.ino</code>) into the IDE by choosing <code>Open...</code> in the <code>File</code> menu.</li>
 <li>Select <code>ATtiny25/45/85 (no bootloader)</code> as the board under <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>ATTinyCore</code>.</li>
@@ -298,18 +268,14 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 </ul>
 <p><img alt="debug window" src="../pics/ide2-3.png" /></p>
 <p>Be aware that after finishing the debug session, the MCU is still in debugWIRE mode! You can change that by typing <code>monitor debugwire disable</code> in the last line of the <code>Debug Console</code>.</p>
-<h2 id="after-debugging-has-finished">After debugging has finished</h2>
+<h3 id="after-debugging-has-finished">After debugging has finished</h3>
 <p>When you are done with debugging, you probably want to disable the debugWIRE mode again, because in debugWIRE mode you cannot use the RESET line or ISP programming. This can be accomplished by using the command <code>monitor debugwire disable</code> before you leave the debugger.</p>
 <p>So, after everything has been debugged, what do you do with your newly built debug probe? You don't have to throw it away. You can also use it as an ISP programmer (STK500 v1). In the Arduino IDE, such a programmer is called <code>Arduino as ISP</code>.</p>
-<h2 id="what-can-go-wrong">What can go wrong?</h2>
+<h3 id="what-can-go-wrong">What can go wrong?</h3>
 <p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [WARNING] often tell what went wrong. If the status LED is blinking very fast, it means that the debugger has hit an unrecoverable error. Type <code>monitor info</code> into the last line of the <code>Debug Console</code> in order to find out about the <a href="../troubleshooting/#internal-and-fatal-dw-link-errors">error number</a>. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../quick_xmini/" class="btn btn-neutral float-left" title="ATmega328P Xplained Mini"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../quick_atmega1284_pio/" class="btn btn-neutral float-right" title="Atmel-ICE & ATmega1284">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -335,10 +301,6 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
         </span>
     
     
-      <span><a href="../quick_xmini/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../quick_atmega1284_pio/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
