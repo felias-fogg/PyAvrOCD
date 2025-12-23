@@ -149,7 +149,7 @@
 <tr>
 <td>AVaRICE</td>
 <td>2001</td>
-<td>Mainly POSIX, but now  Linux/Mac/Windows</td>
+<td>Mainly POSIX, but now  Linux/Mac/Windows (C++)</td>
 <td>JTAG, dw, PDI</td>
 <td>classic ATtiny &amp; ATmega, Xmegas</td>
 <td>all, but the most recent MPLAB probes (5 series)</td>
@@ -158,65 +158,110 @@
 <tr>
 <td>dwire-debug</td>
 <td>2017</td>
-<td>Cross-platform</td>
+<td>Cross-platform (C)</td>
 <td>dw</td>
-<td>ATtiny13, ATtiny45, ATtiny84, ATtiny841, ATtiny85, ATmega168PA, ATmega328P, and perhaps similar</td>
+<td>ATtiny13, 84, 841, 45, 85, <br>ATmega168PA, 328P, and perhaps similar</td>
 <td>only USB-UART bridge and a bit of hardware</td>
-<td>Minimal implementation, only one BP</td>
+<td>Minimal implementation, only one BP, based on reverse engineering of debugWIRE protocol</td>
+</tr>
+<tr>
+<td>debugwire-gdb-bridge</td>
+<td>2018</td>
+<td>Cross-platform (Pascal)</td>
+<td>dw</td>
+<td>ATtiny 13, 2313, 24, 44, 84, 25, 45, 85, 441, 841<br>ATmega48, 88, 168, 328</td>
+<td>USB-UART bridge</td>
+<td></td>
+</tr>
+<tr>
+<td>dwtk</td>
+<td>2019</td>
+<td>Cross-platform (Go)</td>
+<td>dw</td>
+<td>all dw targets</td>
+<td>only USB-UART bridge</td>
+<td>Full server</td>
+</tr>
+<tr>
+<td>pyAVRdbg</td>
+<td>2020</td>
+<td>Cross-platform (Python)</td>
+<td>UPDI</td>
+<td>ATmega4809, AVR128DA48, probably more</td>
+<td>All EDBG-based debuggers</td>
+<td>HW and SW breakpoints, no flash programming</td>
 </tr>
 <tr>
 <td>dw-link</td>
 <td>2021</td>
-<td>Cross-platform</td>
+<td>Cross-platform (Arduino firmware)</td>
 <td>dw</td>
 <td>all dw targets</td>
-<td>only Arduino UNO</td>
-<td></td>
+<td>runs on Arduino UNO</td>
+<td>Provides RSP interface over serial line</td>
 </tr>
 <tr>
 <td>Bloom</td>
 <td>2021</td>
-<td>Only Linux</td>
+<td>Only Linux (POSIX, C++)</td>
 <td>JTAG, dw, PDI, UPDI</td>
-<td>classic ATtiny &amp; ATmega, Xmegas, all modern parts</td>
+<td>classic ATtinys &amp; ATmegas, Xmegas, all modern parts</td>
 <td>All EDBG-based debuggers</td>
-<td></td>
+<td>Coverage as good as Microchip Studio</td>
+</tr>
+<tr>
+<td>pyavrdebug</td>
+<td>2022</td>
+<td>Cross-platform (Python)</td>
+<td>UPDI</td>
+<td>some modern parts</td>
+<td>All EDBG-based debuggers</td>
+<td>Only 2 breakpoints, no flash programming, based on pymcuprog</td>
+</tr>
+<tr>
+<td>gdb-debug-wire-integrated-server</td>
+<td>2022</td>
+<td>Cross-platform (Arduino firmware)</td>
+<td>dw</td>
+<td>ATmega328P, ATTiny85</td>
+<td>Implemented on ATmega32U2 or ATmega16U2</td>
+<td>Provides RSP interface over serial line; in addition a RTT line; can be flased on a 16U2 on an UNO board</td>
+</tr>
+<tr>
+<td>updi-gdbserver</td>
+<td>2023</td>
+<td>Cross-platform (Scheme)</td>
+<td>UPDI</td>
+<td>some modern parts</td>
+<td>USB-UART bridge</td>
+<td>Written in Scheme, only two breakpoints, based on reverse engineering of UPDI protocol</td>
+</tr>
+<tr>
+<td>PK5-UPDI-GDB-Server</td>
+<td>2024</td>
+<td>Cross-platform (Python)</td>
+<td>UPDI</td>
+<td>all modern parts</td>
+<td>PICkit 4/5</td>
+<td>Only two hardware breakpoints, based on reverse engineering of USB protocol</td>
+</tr>
+<tr>
+<td>dw-gdbserver</td>
+<td>2025</td>
+<td>Cross-platform (Python)</td>
+<td>dw</td>
+<td>All dw targets</td>
+<td>All EDBG-based debuggers &amp; dw-link</td>
+<td>Based on pymcuprog</td>
 </tr>
 <tr>
 <td>PyAvrOCD</td>
 <td>2025</td>
-<td>Cross-platform</td>
+<td>Cross-platform (Python)</td>
 <td>JTAG, dw</td>
-<td>classic ATtiny &amp; ATmegas</td>
-<td>All EDBG-based debuggers</td>
-<td>Successor of dw-gdbserver</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>All classic ATtinys &amp; ATmegas</td>
+<td>All EDBG-based debuggers &amp; dw-link</td>
+<td>Successor of dw-gdbserver, based om pymcuprog</td>
 </tr>
 </tbody>
 </table>
