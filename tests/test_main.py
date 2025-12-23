@@ -315,7 +315,7 @@ class TestMain(TestCase):
     def test_startup_wrong_args(self, mock_print):
         self.assertRaises(SystemExit,startup, ['-z'], Mock)
         caller = os.path.basename(sys.argv[0])
-        mock_print.assert_has_calls([call('usage: ' + caller + ' [options]\n'),
+        mock_print.assert_has_calls([
                                      call(caller + ': error: unrecognized arguments: -z\n')])
 
     @patch('pyavrocd.main.importlib.metadata.version')

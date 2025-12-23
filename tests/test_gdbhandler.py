@@ -901,11 +901,8 @@ class TestGdbHandler(TestCase):
 
     def test_handle_data_CTRLC(self):
         self.set_up()
-        self.gh.dbg.program_counter_read.return_value = 0x00000404
-        self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x11])
-        self.gh.dbg.status_register_read.return_value = [0x11]
         self.gh.handle_data(b'\x03')
-        self.gh._comsocket.sendall.assert_called_with(rsp("T0220:11;21:3411;22:08080000;thread:1;"))
+        self.assertTrue(self.gh._interrupt)
 
     def test_handle_data_Packets(self):
         self.set_up()

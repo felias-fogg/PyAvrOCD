@@ -5,6 +5,10 @@ This module deals with breakpoints and execution.
 # args, logging
 import logging
 
+# AVR8 errors
+from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
+from pyedbglib.protocols.avr8protocol import Avr8Protocol
+
 # Errors
 from pyavrocd.errors import FatalError
 
@@ -517,7 +521,7 @@ class BreakAndExec():
         when we do an ordinary 'continue' or 'step'.
         Otherwise, we break at each branching point and single-step this branching instruction.
         Note that we need to return after the first step to allow GDB to set a breakpoint at the
-        location where we started.
+        location where we started -- actually GDB will make a single step by itself, so we do not need this!
         There is one corner case: If only hardware breakpoints are allowed, and all of them
         are in use, we simply single-step.
         """
@@ -542,8 +546,7 @@ class BreakAndExec():
             return self.single_step(None)
         if (addr in self._range_exit or # starting at possible exit point inside range
             self._read_filtered_flash_word(addr) in { BREAKCODE, SLEEPCODE } or # special opcode
-            addr in self._bp or # a SWBP at this point
-            new_range): # or it is a new range
+            addr in self._bp):  # a SWBP at this point
             return self.single_step(None, fresh=False) # reduce to one step!
         if not self.hwbp.temp_allocated(): # we need to set up the range scaffold
             available = self.dbg.get_hwbpnum()
@@ -635,11 +638,20 @@ class BreakAndExec():
         Simulate a two-word instruction with opcode and 2nd word secondword at addr (byte address).
         Update all registers (except PC) and return the (byte-) address
         where execution will continue.
+        SRAM access is unfiltered. For this reason, we need to catch the INVALID ADDRESS error
+        when reading from DWDR under debugWIRE.
         """
         newaddr = (secondword << 1) + ((opcode & 1) << 17) # new byte addr, only for branching instructions
         if (opcode & ~0x1F0) == 0x9000: # lds
             register = (opcode & 0x1F0) >> 4
-            val = self.dbg.sram_read(secondword, 1)
+            try:
+                val = self.dbg.sram_read(secondword, 1)
+            except Jtagice3ResponseError as error:
+                if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_ADDRESS:
+                    self.logger.error("Read access to invalid address: 0x%X", secondword)
+                    val = bytearray([0])
+                else:
+                    raise error
             self.dbg.sram_write(register, val)
             self.logger.debug("Simulating lds")
             addr += 4

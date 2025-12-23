@@ -161,7 +161,7 @@ def run_script(logger, test_name, script):
         child.sendline(interact[0])
         resp = child.expect([ r"\(gdb\)", pexpect.TIMEOUT, pexpect.EOF,
                                 r'Please power-cycle the target system' ],
-                                timeout=(300 if interact[0] == 'load' else 60))
+                                timeout=(120 if interact[0] == 'load' else 20))
         if resp == 1:
             if interact[1] == pexpect.TIMEOUT:
                 logger.debug("RESPONSE: TIMEOUT")

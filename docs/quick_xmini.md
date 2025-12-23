@@ -1,4 +1,4 @@
-# Quickstart guide: ATmega328P Xplained Mini
+## Quickstart guide: ATmega328P Xplained Mini
 
 This quickstart guide explains how to set up the [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) so that you can use its debugging feature on an [Atmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini) board. This development board is ideal for making a first experience with embedded debugging because it already contains an onboard debugger.  This means you do not have to bother with preparing the board for debugging, connecting the debug probe to the board, choosing a programmer/debugger, and setting the proper fuses. It is simply plug-and-play.
 
@@ -9,7 +9,7 @@ This quickstart guide explains how to set up the [Arduino IDE 2](https://docs.ar
 
 In addition, this development board has an Arduino UNO R3 footprint. If you solder headers (at the right place) on the board, then it is possible to plug ordinary Uno shields into the headers. And if you need more I/O power, there is also an Xplained Mini board with the ATmega328**PB** for the same price. By the way, these boards are not overly expensive.
 
-## Step 1: Extend the list of boards manager URLs
+### Step 1: Extend the list of boards manager URLs
 
 Assuming that you have already installed the Arduino IDE 2, you first have to extend the list of `Additional boards manager URLs`. Start the `Preferences` dialog, which you find, depending on your operating system,  either in the `Arduino IDE` or the `File` menu.
 
@@ -37,7 +37,7 @@ https://downloads.pyavrocd.io/package_debug_enabled_index.json
 
 You close the dialog by clicking on two `OK` buttons in succession.
 
-## Step 2: Install a debug-enabled core
+### Step 2: Install a debug-enabled core
 
 Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Atmel AVR Xplained-minis (Debug enabled)." Install this core by clicking on `Install` (3).
 
@@ -48,7 +48,7 @@ Loading the core and all the necessary tools might take a while.
 !!! info "Linux systems"
     After the installation, users of Linux systems will need to add `udev` rules, which can be done [manually](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Alternatively, when the IDE does not find a debug probe, it will tell you what to do in order to install the rules using `pyavrocd`.
 
-## Step 3: Connect the board and select the board type and port in the boards manager
+### Step 3: Connect the board and select the board type and port in the boards manager
 
 In our case, connecting the target board to the host consists simply of plugging the USB cable into the board. After that, you have to select the right board and serial line in the IDE. First, click on `Select Board` in the top bar and choose `Select other board and port ...`.
 
@@ -62,7 +62,7 @@ Then type "328" in the search field (1), select the right board (2), the correct
 
 The debugging icon in the top row is no longer greyed out. In other words, you have unleashed the power of the Arduino debugger at this point.
 
-## Step 4: Edit and compile a sketch
+### Step 4: Edit and compile a sketch
 
 Let us choose a simple sketch that is a little bit more challenging than the `Blink` example. The `Debounce` example will do. Let us load it and modify it for our needs.
 
@@ -80,7 +80,7 @@ Before compiling and uploading the sketch, you should set the `Optimize for Debu
 
 Now it is time to compile the sketch. Click the `Verify` button (a check mark symbol) in the top bar, which will compile the sketch. Loading the compiled code will then be done when the debugger is started. Instead, you can click on the `Upload` button (the right arrow symbol), which will compile and upload the code. In the case of the Xmini development board, this is the preferred way because it results in an overall faster upload time.
 
-## Step 5: Debug the sketch
+### Step 5: Debug the sketch
 
 Now it is time to start debugging by clicking the `Debug` button (bug in front of a triangle) in the top row.
 
@@ -118,13 +118,13 @@ Pressing the button changes the level and will stop again in line 75, as shown b
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-xmini-4.png" width="90%"></p>
 
-## Step 6: Start over or terminate the debugging session
+### Step 6: Start over or terminate the debugging session
 
 You can now edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
 Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, it may be a good idea to disable the `Optimize for Debugging` flag in the `Sketch` menu, because not doing so will result in larger code next time you compile a sketch.
 
-## Potential problems
+### Potential problems
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the PyAvrOCD manual.
 

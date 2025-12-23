@@ -1,4 +1,4 @@
-# Quickstart guide: Atmel-ICE & ATmega1284
+## Quickstart guide: Atmel-ICE & ATmega1284
 
 This quickstart guide shows you how to set up a PlatformIO project so that you can debug an ATmega1284 (or any other [AVR JTAG Mega](supported-mcus.md#atmegas-with-jtag-interface)) using the debug probe Atmel-ICE (or any other [EDBG-based debug probe](supported-debuggers.md)). We will use the [DIP-40 Arduino-compatible development board](https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/) to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.
 
@@ -10,7 +10,7 @@ In the following, I will assume that PlatformIO, as an extension of VSCode, has 
 
 {!pio_quick_install.md!}
 
-## Step 3: Set up the example project
+### Step 3: Set up the example project
 
 Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file `platformio.ini`, too long to present here. You can clone a project containing this file, together with a small program, from
 
@@ -32,7 +32,7 @@ The repo will be cloned, and you have to provide a destination for it.
 
 
 
-## Step 4: Prepare the board for debugging
+### Step 4: Prepare the board for debugging
 
 Before debugging can take place, you need to make sure that the JTAG pins are enabled. On an ATmega1284P, these are the pins  `PC2`&mdash;`PC5`. Fresh from the factory, the JTAG pins are enabled. However, on Arduino boards, they are by default disabled. Since the state is probably unknown, we will set them anyway. In order to activate them, we need to connect the Atmel-ICE to the board using the ISP connection, as shown in the following photo. The key or marker of the ISP plug should be oriented towards the MCU.
 
@@ -57,9 +57,8 @@ Before we can start debugging, we need to change the connection between the debu
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmelice_jtag.jpg" width="70%">
 </p>
 
-##
 
-## Step 5: Debug the program
+### Step 5: Debug the program
 
 If you have not activated the `debug` environment, now is the time to do it (as shown in the previous step). And then we are ready to go into business seriously. First, click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.
 
@@ -94,13 +93,13 @@ After a short while, execution will stop in line 19. As one can see on the left,
 
 I believe that from here on, you will be able to use the debugger productively.
 
-## Step 6: Start over or terminate the debugging session
+### Step 6: Start over or terminate the debugging session
 
 If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
 Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to disable the JTAG pins, perhaps. For this purpose, you first need to switch back to the ISP connection. Then switch to the `release` environment and click `Set Fuses` again. Possibly, you even want to restore the bootloader, which was deleted when starting the debugger. In this case, you need to click `Burn Bootloader`.
 
-## Potential Problems
+### Potential Problems
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `DEBUG CONSOLE`. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) sections of the PyAvrOCD manual.
 

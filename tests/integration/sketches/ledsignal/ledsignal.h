@@ -3,7 +3,7 @@
 // If the sketch ends in an OK state, it will flash every 1.5 seconds for 0.2 seconds.
 // If something went wrong, it will flash every 0.2 seconds for 0.2 seconds
 // For the debugger, two routines are provided for testing the outcome.
-#include <util/delay.h>
+
 // Always blink SCK
 #ifdef SCK
   #define LED0 SCK
@@ -15,28 +15,33 @@
 #elif defined(__AVR_ATmega324PB__)
 #define LED1 23
 #define Serial Serial1
+#define ONVAL LOW
+#define OFFVAL HIGH
 #elif defined(LED_BUILTIN)
   #define LED1 LED_BUILTIN
 #else
   #warning "NO LED_BUILTIN or otherwise defined LED"
 #endif
-
+#ifndef ONVAL
+#define ONVAL HIGH
+#define OFFVAL LOW
+#endif
 
 void LedOn() {
 #ifdef LED0
-    digitalWrite(LED0, HIGH);
+    digitalWrite(LED0, ONVAL);
 #endif
 #ifdef LED1
-    digitalWrite(LED1, HIGH);
+    digitalWrite(LED1, ONVAL);
 #endif
 }
 
 void LedOff() {
 #ifdef LED0
-    digitalWrite(LED0, LOW);
+    digitalWrite(LED0, OFFVAL);
 #endif
 #ifdef LED1
-    digitalWrite(LED1, LOW);
+    digitalWrite(LED1, OFFVAL);
 #endif
 }
 
@@ -47,23 +52,26 @@ void LedInit() {
 #ifdef LED1
   pinMode(LED1, OUTPUT);
 #endif
+  LedOff();
 }
 
 void OKBlink() {
-  delay(1500);
+  _delay_ms(1500);
 }
 
 void FailBlink() {
-  delay(200);
+  _delay_ms(200);
 }
 
-void blink_exit (boolean OK) {
+void blink_exit (bool OK) {
   LedInit();
   while (1) {
     LedOn();
-    delay(200);
+    _delay_ms(200);
     LedOff();
-    if (OK) OKBlink();
-    else FailBlink();
+    if (OK)
+      OKBlink();
+    else
+      FailBlink();
   }
 }

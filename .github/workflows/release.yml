@@ -24,7 +24,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Install dependencies
         if: ${{ github.event.release.tag_name != '' }}
@@ -74,13 +74,13 @@ jobs:
         if: matrix.os != 'windows-2022'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.14'
 
       - name: Set up Python-32-bit
         if: matrix.os == 'windows-2022'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.14'
           architecture: 'x86'
 
       - name: Install dependencies
@@ -91,6 +91,11 @@ jobs:
       - name: Package PyAvrOCD with PyInstaller
         run: |
           pyinstaller -y pyavrocd.spec
+
+      - name: Run pyavrocd
+        run: |
+          dist/pyavrocd/pyavrocd -V
+          dist/pyavrocd/pyavrocd -d ? -t ?
 
       - name: Upload as artifact (macOS ARM = macos-15)
         if: matrix.os == 'macos-15'
@@ -197,12 +202,6 @@ jobs:
       - name: Packing
         run: bash extras/packer.sh
 
-#      - name: Deploy
-#        uses: JamesIves/github-pages-deploy-action@v4
-#        with:
-#          folder: extras/avrocd-tools
-#          target-folder: avrocd-tools
-
       - name: Asset upload
         uses: softprops/action-gh-release@v2
         with:
@@ -223,7 +222,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.13"
+        python-version: "3.14"
 
     - name: Install pypa/build
       run: >-

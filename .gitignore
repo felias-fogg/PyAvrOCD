@@ -8,9 +8,12 @@ Thumbs.db
 *.lst
 *.bin
 *.log
+*.map
+*.o
 .vscode
 .gitignore
 *__pycache__*
 dist/*
 .theia
 site/**
+gdb.txt

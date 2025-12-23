@@ -12,6 +12,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
     "Operating System :: POSIX :: Linux",
@@ -23,7 +24,7 @@ classifiers = [
 ]
 license-files = ["LICENSE*"]
 readme = "README.md"
-requires-python = "<3.14,>=3.10"
+requires-python = "<3.15,>=3.10"
 dependencies = [
     "pymcuprog (>=3.17.3.45,<4.0.0.0)",
     "pyedbglib (>=2.24.2.18,<3.0.0.0)",
@@ -108,6 +109,7 @@ max-public-methods=25
 max-bool-expr=10
 max-nested-blocks=7
 max-line-length=120
+max-module-lines=1200
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

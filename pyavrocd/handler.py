@@ -48,7 +48,9 @@ class GdbHandler():
         self._vflashdone = False # set to True after vFlashDone received
         self.critical = None
         self._live_tests = LiveTests(self)
+        self._interrupt = False
         self.packettypes = {
+            '.'           : self._ctrlc_interrupt,
             '!'           : self._extended_remote_handler,
             '?'           : self._stop_reason_handler,
           # 'c'           : self._continue_handler,
@@ -91,6 +93,9 @@ class GdbHandler():
         """
         Dispatches command to the right handler
         """
+        if self._interrupt and cmd in ['vCont', None]:
+            self._interrupt = False
+            cmd = '.'
         try:
             handler = self.packettypes[cmd]
         except (KeyError, IndexError):
@@ -98,7 +103,7 @@ class GdbHandler():
             self.send_packet("")
             return
         try:
-            if cmd not in {'X', 'vFlashWrite', None}: # no binary data in packet
+            if cmd not in {'X', 'vFlashWrite', '.', None}: # no binary data in packet
                 packet = packet.decode('ascii')
             if self.mem.lazy_loading and cmd != 'X': # new packet after a string of X-packets
                 self._set_binary_memory_handler_finalize(None)
@@ -110,6 +115,14 @@ class GdbHandler():
             if not self.critical:
                 self.critical = e
             self.send_signal(SIGABRT)
+
+    def _ctrlc_interrupt(self, _):
+        """
+        '.': A pseudo packet triggered by a CTRL-C
+        """
+        self.logger.info("Asynchronous stop")
+        self.dbg.stop()
+        self.send_signal(SIGINT)
 
     def _extended_remote_handler(self, _):
         """
@@ -861,10 +874,7 @@ class GdbHandler():
                     self.send_packet("")
             elif data[0] == 3: # CTRL-C
                 self.logger.info("CTRL-C")
-                self.dbg.stop()
-                self.send_signal(SIGINT)
-                #self._comsocket.sendall(b"+")
-                #self.rsp_logger.debug("<- +")
+                self._interrupt = True
                 data = data[1:]
             elif data[0] == ord('$'): # start of message
                 valid_data = True

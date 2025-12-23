@@ -1,9 +1,9 @@
-# Quickstart guide: dw-link & ATtiny85
+## Quickstart guide: dw-link & ATtiny85
 
 This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe.
 
 
-## What you need
+### What you need
 
 * Computer running Windows, macOS, or Linux (the *host*)
 * Arduino Uno (will become the *debug probe*)
@@ -16,7 +16,7 @@ This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on
     * 3 Resistors (10 kΩ, 220Ω, 220Ω)
     * 2 Capacitors (100 nF, 10 µF)
 
-## Step 1: Install new board manager files
+### Step 1: Install new board manager files
 
 Open the `Preferences` dialog of the Arduino IDE and paste the following `Board Manager URLs` into the list:
 
@@ -28,7 +28,7 @@ Close the `Preference` dialog with `OK`. Now, you can install the cores, `ATTiny
 * Select `Tools` -> `Board` -> `Board Managers` ... . This will open the Boards Manager dialog.
 * In the search field, type `ATTinyCore (Debug enabled)` and install the most recent version.
 
-## Step 2: Install *dw-link* firmware on an Uno
+### Step 2: Install *dw-link* firmware on an Uno
 
 Download the dw-link firmware. This means you should
 
@@ -49,7 +49,7 @@ In order to install the firmware,
 
 **Check:** Open the `Serial Monitor` (under `Tools` menu), choose `115200 baud`,  type  `-`  (minus sign) into the upper line, and send it. The debug probe should respond with `$#00`.
 
-## Step 3: Hardware setup
+### Step 3: Hardware setup
 
 You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a debug probe. Note that the notch or dot on the ATtiny is oriented towards the left.
 
@@ -80,7 +80,7 @@ The yellow LED is the *system LED*, and the red one is the *ATtiny-LED*. The sys
 4. ISP programming (LED is blinking slowly),
 5. error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).
 
-## Step 4: Start Debugging
+### Step 4: Start Debugging
 
 - Load the sketch you want to debug  (e.g., `dw-link-x.y.z/examples/varblink/varblink.ino`) into the IDE by choosing `Open...` in the `File` menu.
 - Select `ATtiny25/45/85 (no bootloader)` as the board under `Tools` -> `Board` -> `ATTinyCore`.
@@ -97,14 +97,14 @@ The yellow LED is the *system LED*, and the red one is the *ATtiny-LED*. The sys
 
 Be aware that after finishing the debug session, the MCU is still in debugWIRE mode! You can change that by typing `monitor debugwire disable` in the last line of the `Debug Console`.
 
-## After debugging has finished
+### After debugging has finished
 
 When you are done with debugging, you probably want to disable the debugWIRE mode again, because in debugWIRE mode you cannot use the RESET line or ISP programming. This can be accomplished by using the command `monitor debugwire disable` before you leave the debugger.
 
 So, after everything has been debugged, what do you do with your newly built debug probe? You don't have to throw it away. You can also use it as an ISP programmer (STK500 v1). In the Arduino IDE, such a programmer is called `Arduino as ISP`.
 
 
-## What can go wrong?
+### What can go wrong?
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `gdb-server` console. Messages with the prefix [WARNING] often tell what went wrong. If the status LED is blinking very fast, it means that the debugger has hit an unrecoverable error. Type `monitor info` into the last line of the `Debug Console` in order to find out about the [error number](troubleshooting.md#internal-and-fatal-dw-link-errors). It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) sections.
 

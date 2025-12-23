@@ -1,5 +1,23 @@
 # Changelog
 
+### NEW:
+
+- **Changed**:
+     - We now allow Python 3.14 since the hidapi package has apparently been built under Windows.
+     - CI workflows use Python 3.14
+     - In CI workflow `release.yml`, we run pyavrocd with `-V` and `-d ? -t ?`
+     - The initial single step in range stepping has been eliminated because GDB oversteps breakpoints using a single-step command anyway.
+     - In the manual, the quickstart guides for each IDE have been joined.
+- **Fixed**:
+     - CTRL-C is now brought into synchronization with the packet flow in order to allow interruption of heavy single-stepping. Works perfectly.
+     - When accessing the DWDR in simulating a two-word instruction, an INVALID ADDRESS error was raised. This is nothing that is likely to happen ever, but it is now caught, an error is logged, and debugging can continue.
+
+- **Added**:
+     - New integration sketches: `range_dw.ino`, `range_jtag.ino`, `sleepwalk.ino`, `break.c`
+     - New header file in integration directory: `irqpin.h`
+     -
+
+
 ### 0.19.0 (17-Dec-2025)
 
 - **Changed**:

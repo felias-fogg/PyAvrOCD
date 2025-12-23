@@ -26,8 +26,8 @@ epilog = (
 #   Third item is a string containing additional compiler flags
 #   Fourth item is a sequence of interactive tuples, first item an input, the other items potential responses
 
-# enables debugging and runs live tests
 all_scripts = {
+# enables debugging and runs live tests
     "live" : (
     ('first', 'small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
     "",
@@ -56,6 +56,114 @@ all_scripts = {
      ("$SUCCESS_IF", "Range stepping is not yet implemented"),
      ("next", "clearBit(LED1_PORT, LED1);")) + epilog),
 
+# Tests all ways how signals are raised
+# SIGHUP will be tested in the "off" script, SIGABRT cannot be tested
+     "signals" : (
+      ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+      "break",
+      "",
+      (("set logging file log/signals.log", ""),) + prolog + \
+      (("cont", "SIGSEGV"),
+       ("load", "Start address 0x"),
+       ("break main", "Breakpoint 1"),
+       ("cont", "break.c:19"),
+       ("break 20", "line 20"),
+       ("break 21", "line 21"),
+       ("break 22", "line 22"),
+       ("break 24", "line 24"),
+       ("cont", "SIGSYS"),
+       ("delete 1-5", ""),
+       ("cont", "SIGTRAP"),
+       ("cont", "SIGILL"),
+       ("next", "SIGILL"),
+       ("step", "SIGILL"),
+       ("monitor reset", ""),
+       ("break 27", ""),
+       ("set $sp=0x5e", ""),
+       ("cont", "SIGBUS")) + epilog),
+
+# Checks range stepping for debugWIRE targets
+# _delay_ms (will be fast), loop with 2 exits (will be slow), loop with 0 exits (will be fast again)
+    "range_dw" : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'arduino', 'noadc'),
+    "range_dw",
+    "",
+    (("set logging file log/range_dw.log", ""),) + prolog + \
+    (("load",  "Start address 0x"),
+     ("break range_dw.ino:23", "Breakpoint 1"),
+     ("cont", ""),
+     ("next", "_delay_ms"),
+     ("next", "LedOff"),
+     ("break range_dw.ino:30", "Breakpoint 2"),
+     ("cont", "Breakpoint 2"),
+     ("next", "while"),
+     ("next &", ""),
+     ("$SLEEP", 3),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
+     ("", "SIGINT"),
+     ("print cnt > 1", "= true", "= 1"),
+     ("print cnt < 10", "= true", "= 1"),
+     ("break 33", "Breakpoint 2"),
+     ("cont", ""),
+     ("next", "while"),
+     ("next &", ""),
+     ("$SLEEP", 3),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
+     ("", "SIGINT"),
+     ("print cnt > 100000", "= true", "= 1")) + epilog),
+
+# Checks range stepping for JTAG targets
+# _delay_ms (will be fast), loop with 4 exits (will be relatively fast),
+# loop with 5 exits (will be slow), deadloop (will be fast again)
+# Note that the current version of GCC is not able to stop in front of the while statements.
+# Maybe the next version?
+    "range_jtag" : (
+    ('small', 'medium', 'large', 'huge', 'jtag', 'arduino', 'noadc'),
+    "range_jtag",
+    "",
+    (("set logging file log/range_jtag.log", ""),) + prolog + \
+    (("load",  "Start address 0x"),
+     ("break range_jtag.ino:25", "Breakpoint 1"),
+     ("cont", "LedOn"),
+     ("next", "_delay_ms"),
+     ("next", "LedOff"),
+     ("break range_jtag.ino:33", "Breakpoint 2"),
+     ("cont", "LedOn"),
+     ("next", "LedOff"),
+     ("next &", ""),
+     ("$SLEEP", 3),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
+     ("", "SIGINT"),
+     ("print cnt2 > 1", "= true", "= 1"),
+     ("print cnt2 < 10", "= true", "= 1"),
+     ("break 35", ""),
+     ("cont", "LedOn"),
+     ("next &", ""),
+     ("$SLEEP", 3),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
+     ("", "SIGINT"),
+     ("print cnt3 > 100000", "= true", "= 1")) + epilog),
+
+# Test sleep walking
+    "sleepwalk" : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    "sleepwalk",
+    "",
+    (("set logging file log/sleepwalk.log", ""),) + prolog + \
+    (("load", "Start address 0x"),
+     ("break sleepwalk.ino:13", "Breakpoint 1"),
+     ("cont", "sei"),
+     ("next", "sleep_cpu"),
+     ("next &", ""),
+     ("$SLEEP", 2),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
+     ("", "SIGINT")) + epilog),
+
 # C++ program to measure supply voltage
     "measure" : (
     ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino'),
@@ -82,14 +190,14 @@ all_scripts = {
     (("monitor help", "monitor info"),
      ("monitor info", "Target:"),
      ("monitor version", "version"),
-     ("monitor atexit leave", "MCU will leave debugWIRE mode on exit"),
-     ("monitor atexit stayindebugwire", "MCU will stay in debugWIRE mode on exit"),
+     ("monitor atexit leave", "MCU will leave debugWIRE mode on exit", "Leave debugWIRE at exit"),
+     ("monitor atexit stayindebugwire", "MCU will stay in debugWIRE mode on exit", "Stay in debugWIRE at exit"),
      ("monitor breakpoints software", "Only software breakpoints",
           "Breakpoint mode cannot be changed on this MCU"),
      ("monitor breakpoints hardware", "Only hardware breakpoints",
           "Breakpoint mode cannot be changed on this MCU"),
      ("monitor breakpoints all", "All breakpoints are allowed",
-          "Breakpoint mode cannot be changed on this MCU"),          
+          "Breakpoint mode cannot be changed on this MCU"),
      ("monitor caching disable", "Flash memory will not be cached",
          "Caching is not implemented"),
      ("monitor caching enable", "Flash memory will be cached",
@@ -99,22 +207,21 @@ all_scripts = {
      ("monitor erasebeforeload disable",
          "Flash memory will not be erased before loading executable",
          "On debugWIRE targets, flash memory cannot be erased before loading executable",
-         "Erase is not implemented"),
+         "'Erase-before-load' is not supported on debugWIRE targets"),
      ("monitor erasebeforeload enable",
          "Flash memory will be erased before loading executable",
          "On debugWIRE targets, flash memory cannot be erased before loading executable",
-         "Erase is not implemented"),
+         "'Erase-before-load' is not supported on debugWIRE targets"),
      ("monitor erasebeforeload",
          "Flash memory will be erased before loading executable",
          "On debugWIRE targets, flash memory cannot be erased before loading executable",
-         "Erase is not implemented"),
+         "'Erase-before-load' is not supported on debugWIRE targets"),
+     ("monitor load onlycaching", "Only reading, but no flashing", "Only caching when loading"),
      ("monitor load readbeforewrite", "Reading before writing when loading"),
      ("monitor load writeonly", "No reading before writing when loading"),
      ("monitor load",  "No reading before writing when loading"),
-     ("monitor rangestepping disable", "Range stepping is disabled",
-         "Range stepping is not yet implemented"),
-     ("monitor rangestepping enable", "Range stepping is enabled",
-         "Range stepping is not yet implemented"),
+     ("monitor rangestepping disable", "Range stepping is disabled", "No range stepping"),
+     ("monitor rangestepping enable", "Range stepping is enabled", "Range stepping allowed"),
      ("monitor verify enable", "Verifying flash after load"),
      ("monitor verify disable", "Load operations are not verified"),
      ("monitor verify", "Load operations are not verified"),
@@ -138,9 +245,10 @@ all_scripts = {
      ("monitor load xxx", "Unknown argument in 'monitor' command")) + epilog),
 
 # test timer settings
-    "timers" :
+    "timers" : (
     ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
     "blink",
+    "",
     (("set logging file log/blink.log", ""),) + prolog + \
     (("load", "Loading"),
      ("break loop", "Breakpoint 1"),
@@ -452,12 +560,15 @@ all_scripts = {
 
 # switch off debugWIRE mode (if applicable)
 # this test script should be run last in each sequence in order to disable debugWIRE
+# We will check that SIGHUP is generated
     "off" : (
     ('last', 'small', 'medium', 'large', 'huge', 'dw', 'arduino', 'nonarduino', 'noadc'),
     "",
     "",
     (("set logging file log/off.log", ""),) + prolog + \
-    (("monitor debugwire disable",  "disabled", "This is not a debugWIRE target"),) + epilog),
+    (("monitor debugwire disable",  ""),
+     ("$SUCCESS_IF", "This is not a debugWIRE target"),
+     ("continue", "SIGHUP"),) + epilog),
 
 # check that MCU is categorized as a MCU with a dirty PC
     "dirty" : (

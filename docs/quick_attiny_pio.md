@@ -1,5 +1,5 @@
 
-# Quickstart guide: dw-link & ATtiny85
+## Quickstart guide: dw-link & ATtiny85
 
 This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a debug probe.
 
@@ -13,7 +13,7 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
 
 
 
-## Required hardware
+### Required hardware
 
 * Arduino Uno (will become the *debug probe*)
 * USB cable
@@ -27,7 +27,7 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
 
 {!pio_quick_install.md!}
 
-## Step 3: Turn an UNO into a debug probe
+### Step 3: Turn an UNO into a debug probe
 
 Download the dw-link firmware. This means you should
 
@@ -46,7 +46,7 @@ In order to install the firmware,
 
 The Uno now acts as a debug probe providing a [GDB RSP](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html) interface. If you configured the serial line to the Uno as 115200 baud, and click on `Monitor` in the `PROJECT TASK` menu, select the `Terminal` window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".
 
-## Step 4: Set up the example project
+### Step 4: Set up the example project
 
 Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file `platformio.ini`, too long to present here. You can clone a project containing this file, together with a small program, from
 
@@ -69,7 +69,7 @@ The repo will be cloned, and you have to provide a destination for it.
 
 
 
-## Step 5: Set up the hardware
+### Step 5: Set up the hardware
 
 You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left.
 
@@ -106,7 +106,7 @@ The yellow LED is the *system LED*, and the red one is the *ATtiny-LED*. The sys
 4. ISP programming (LED is blinking slowly),
 5. error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).
 
-## Step 6: Debug the program
+### Step 6: Debug the program
 
 If you have not activated the `debug` environment, now is the time to do it.
 
@@ -140,7 +140,7 @@ After having done that, the ATtiny is in debugWIRE mode, the executable will be 
 </p>
 From here on, I believe, you know your way around. Otherwise, consult, e.g., the [debugging section of another quickstart guide](quick_atmega1284_pio.md#step-5-debug-the-program).
 
-## Step 7: Start over or terminate the debugging session
+### Step 7: Start over or terminate the debugging session
 
 If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
@@ -150,6 +150,6 @@ Instead of starting a new edit/compile/debug cycle, you may want to call it a da
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
 </p>
 
-## Potential Problems
+### Potential Problems
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `DEBUG CONSOLE`. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) sections.

@@ -658,19 +658,6 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(self.bp.range_step(start, end), None)
         self.bp.dbg.run_to.assert_called_with(0x033e)
 
-    def test_range_step_return_after_first_step(self):
-        self.set_up()
-        self.bp.mon.is_onlyswbps.return_value = False
-        # while (++i) { if ( i < 0 ) return(i); }
-        code = [ 0x2f98, 0x5f8f, 0xf011, 0xf7e2, 0x9508, 0xe083, 0x2f98, 0x2f98, 0x2f98, 0x2f98 ]
-        self.bp._read_flash_word.side_effect = code
-        start = 0x033a
-        end = 0x0344
-        self.bp.dbg.program_counter_read.return_value = start >> 1
-        self.assertEqual(self.bp.range_step(start, end), SIGTRAP)
-        self.bp.dbg.run_to.assert_not_called()
-        self.bp.dbg.step.assert_called()
-
     def test_build_range_one_exit(self):
         self.set_up()
         # _delay_ms(100)

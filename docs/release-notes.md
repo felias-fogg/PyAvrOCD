@@ -1,5 +1,13 @@
 # Release Notes
 
+## Release v0.19.0
+
+- From this version on, dw-link (if used) is required to send its version number and it will be required to honor the monitor option value commands and the fuse bit manage requests.
+
+- It is now possible to specify a `--dw-link-baud` option (for, e.g., the Xplained boards)
+
+- The `ArduinoCore-avr (1.8.6)` fork has been removed to avoid confusion.
+
 ## Release v0.18.1
 
 - Fixed a few `simavr` integration problems.
