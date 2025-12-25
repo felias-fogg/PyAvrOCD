@@ -155,6 +155,10 @@
 <td>Gives help text and exits.</td>
 </tr>
 <tr>
+<td><code>--webhelp</code><br/><code>-H</code></td>
+<td>Opens web page with help text.</td>
+</tr>
+<tr>
 <td><code>--command</code><br><code>-c</code></td>
 <td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2 interface. This is an alternative to the <code>--port</code> option.</td>
 </tr>
@@ -195,6 +199,10 @@
 <td>Specifying the debug tool. Possible values are <code>atmelice</code>, <code>edbg</code>, <code>jtagice3</code>, <code>medbg</code>, <code>nedbg</code>, <code>pickit4</code>, <code>powerdebugger</code>, <code>snap</code>, <code>dwlink</code>. Use of this option is necessary only if more than one debugging tool is connected to the computer.</td>
 </tr>
 <tr>
+<td><code>--timers</code><br><code>-T</code></td>
+<td>Specify whether timers and counters shall continue to <code>run</code> when execution is halted (the default), or whether they should <code>freeze</code>.</td>
+</tr>
+<tr>
 <td><code>--usbsn</code> <br><code>-u</code></td>
 <td>USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer.</td>
 </tr>
@@ -220,7 +228,7 @@
 </tr>
 </tbody>
 </table>
-<p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options in order to set debugger values already at startup. For example, you may specify <code>--timers freeze,</code> which has the same effect as issuing the command <code>monitor timers freeze</code> in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--ti f</code> .</p>
+<p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options in order to set debugger values already at startup. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code> .</p>
 <p>In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.</p>
 <p>The argument <code>@pyavrocd.options</code> is always added to the end of the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will have precedence over the arguments on the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.</p>
               
