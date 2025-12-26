@@ -83,9 +83,9 @@ def main():
     logger.warning("Press <RETURN> when everything has been set up.")
     input()
 
+    failed_scripts = []
+    failed_comp = []
     logger.info("Running %d integration test%s on %s", len(script_list), "s" if len(script_list) > 1 else "", mcu_name)
-    failed_comp = 0
-    failed_scripts = 0
     tests_done = 0
     for sn in script_list:
         logger.info("Try: %s", sn)
@@ -106,16 +106,21 @@ def main():
         tests_done += 1
         if exit_status != 0:
             logger.error("Failed compilation: %s", cmd_out)
-            failed_comp += 1
+            failed_comp += [ sn ]
             continue
         if not run_script(logger, sn, script):
             logger.error("Failed to run script '%s'", sn)
-            failed_scripts += 1
+            failed_scripts += [ sn ]
         else:
             logger.info("Succeeded: %s", sn)
+    logger.info("All tests:           %s", len(all_scripts))
     logger.info("Test runs:           %s", tests_done)
-    logger.info("Compilations failed: %s", failed_comp)
-    logger.info("Scripts failed:      %s", failed_scripts)
+    logger.info("Compilations failed: %s", len(failed_comp))
+    logger.info("Scripts failed:      %s", len(failed_scripts))
+    if failed_comp:
+        logger.info("Failed compilations: %s", failed_comp)
+    if failed_scripts:
+        logger.info("Failed scripts:      %s", failed_scripts)
     return 0
 
 #pylint: disable=too-many-return-statements,too-many-branches,too-many-statements

@@ -122,9 +122,14 @@ class XTinyAvrTarget(TinyAvrTarget):
         Sets up a debugging session on an Tiny AVR (debugwire)
         """
         _dummy = kwargs
+        self.logger_loc.info("Setting up debug session for debugWIRE target")
+        self.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
+                                              Avr8Protocol.AVR8_OPT_RUN_TIMERS,
+                                              0x01)
         self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_TINYOCD)
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
         self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_DW)
+
 
     #pylint: disable=arguments-differ
     def memtype_read_from_string(self, memtype_string):
@@ -388,14 +393,24 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         Sets up a programming session on an Mega AVR (JTAG)
         """
-        self.logger.debug("Setting up debug session for JTAG target")
-        self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
-        self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
-        self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
-        self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_PRG_CLK, clkprg)
-        self.logger_loc.info("Programming JTAG frequency: %d kHz", clkprg)
+        self.logger_loc.info("Setting up debug session for JTAG target")
         self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_DBG_CLK, clkdeb)
         self.logger_loc.info("Debugging JTAG frequency: %d kHz", clkdeb)
+        self.protocol.set_le32(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_JTAG_DAISY, 0)
+        self.logger_loc.debug("JTAG daisy chain configuration set up")
+        self.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
+                                              Avr8Protocol.AVR8_OPT_RUN_TIMERS,
+                                              0x01)
+        self.logger_loc.debug("Configured timers as: 'run when execution stopped'")
+        self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
+        self.logger_loc.debug("Set Variant: megaJTAG")
+        self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
+        self.logger_loc.debug("Set Function: Debugging")
+        self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_JTAG)
+        self.logger_loc.debug("Set Interface: JTAG")
+        self.protocol.set_le16(Avr8Protocol.AVR8_CTXT_PHYSICAL, Avr8Protocol.AVR8_PHY_MEGA_PRG_CLK, clkprg)
+        self.logger_loc.info("Programming JTAG frequency: %d kHz", clkprg)
+
 
     # setup_config is done in the super class
     # However, it seems to be wrong. Instead of IO register addresses RAM addresses

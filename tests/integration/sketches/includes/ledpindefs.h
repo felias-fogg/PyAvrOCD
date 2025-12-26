@@ -52,7 +52,7 @@
  #define LED1_PORT PORTB
  #define LED1_DDR  DDRB
  #define LED1      PB0
-#elif defined(__AVR_ATtiny13__) || defined(__AVR_ATtiny13A__) || \\
+#elif defined(__AVR_ATtiny13__) || defined(__AVR_ATtiny13A__) || \
   defined(__AVR_ATtiny25__) || defined(__AVR_ATtiny45__) || defined(__AVR_ATtiny85__)
 // SCK
  #define LED1_PORT PORTB

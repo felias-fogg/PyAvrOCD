@@ -3,6 +3,7 @@ AVR GDB server main program
 """
 
 # args, logging
+import webbrowser
 import platform
 import importlib.metadata
 import sys
@@ -59,17 +60,18 @@ def options(cmd):
     parser = argparse.ArgumentParser(usage="%(prog)s [options]",
             fromfile_prefix_chars='@',
             #formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            epilog='''You can also use monitor command options, e.g., --timer=freeze.
-Use @file to splice arguments from 'file' into command line.
-''',
+            #epilog="Monitor options can also be specified, e.g. '--verify enable'",
             description='GDB server for debugWIRE and JTAG AVR MCUs'
                                          )
+    parser.add_argument("-H", "--webhelp",
+                            action='store_true',
+                            help="Open web page with help text")
 
     parser.add_argument("-c", "--command",
                             action='append',
                             dest='cmd',
                             type=str,
-                            help="Command to set gdb port (OpenOCD style)")
+                            help=argparse.SUPPRESS) # "Command to set gdb port (OpenOCD style)")
 
     parser.add_argument("-d", "--device",
                             dest='dev',
@@ -77,7 +79,7 @@ Use @file to splice arguments from 'file' into command line.
                             help="Device to debug, list supported MCUs with '?'")
 
     parser.add_argument("-D", "--debug-clock",
-                            metavar="CD",
+                            metavar="DC",
                             dest='clkdeb',
                             type=int,
                             help="JTAG clock frequency for debugging (kHz) (def.: 200)")
@@ -102,7 +104,7 @@ Use @file to splice arguments from 'file' into command line.
                             metavar="FUSE",
                             action='append',
                             dest='manage',
-                            default = [],
+                            default = [ 'none' ],
                             type=str,
                             choices= ['?'] + manage_choices,
                             help="Fuses to be managed, use '?' for list")
@@ -111,7 +113,7 @@ Use @file to splice arguments from 'file' into command line.
                             help='Local port on machine (default: 2000)')
 
     parser.add_argument("-P", "--prog-clock",
-                            metavar="CP",
+                            metavar="PC",
                             dest='clkprg',
                             type=int,
                             default=1000,
@@ -169,12 +171,18 @@ Use @file to splice arguments from 'file' into command line.
                                     type=str, choices=choices, default=default)
 
     # Parse args and return
+    if os.path.exists('pyavrocd.options'):
+        cmd.append('@pyavrocd.options')
     if len(cmd) == 0:
         cmd.append('-h')
-    cmd.append('@pyavrocd.options')
     cmd = [x for x in cmd if not x.startswith('@') or os.path.exists(x[1:]) ]
 
     args = parser.parse_args(cmd)
+
+    if args.webhelp:
+        webbrowser.open('pyavrocd.io/command-line-options/')
+        sys.exit(0)
+
     if args.version:
         print("PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))
         sys.exit(0)
@@ -204,7 +212,7 @@ Use @file to splice arguments from 'file' into command line.
     if '?' in args.manage:
         questionmark = True
         print("Possible (repeatable) fuse management options (-m) are: ")
-        print(', '.join(map(str, manage_choices)))
+        print(', '.join(map(str, manage_choices)),  "(default = %s)" % 'none')
 
     if args.tool == '?':
         questionmark = True
@@ -214,8 +222,8 @@ Use @file to splice arguments from 'file' into command line.
     if args.verbose == '?':
         questionmark = True
         args.verbose = 'info'
-        print("Possible verbosity levels (-v) are: ", end="")
-        print(', '.join(map(str, level_choices)))
+        print("Possible verbosity levels (-v) are: ")
+        print(', '.join(map(str, level_choices)), "(default = %s)" % vars(parser.parse_args([]))['verbose'])
 
     if questionmark:
         sys.exit(0)

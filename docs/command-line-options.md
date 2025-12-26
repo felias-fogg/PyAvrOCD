@@ -13,6 +13,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `--help`<br/> `-h`                                           | Gives help text and exits.                                   |
+| `--webhelp`<br/>`-H`                                         | Opens web page with help text.                               |
 | `--command`<br>`-c`                                          | Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2 interface. This is an alternative to the `--port` option. |
 | `--device` <br>`-d`                                          | The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed. |
 | `--debug-clock`<br>`-D`                                      | JTAG clock frequency for debugging in kHz. This value should be less than a quarter of the MCU clock frequency. The default is min(2000, `F_CPU`/5000) in kHz. |
@@ -30,7 +31,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--install-udev-rules`                                       | Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with `sudo` and is only present under Linux. |
 | `--dw-link-baud`                                             | Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value. |
 
-You can also use the [monitor command options](monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--timers freeze,` which has the same effect as issuing the command `monitor timers freeze` in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--ti f` .
+You can also use the [monitor command options](monitor-commands.md) as command-line options in order to set debugger values already at startup. For example, you may specify `--verify enable,` which has the same effect as issuing the command `monitor verify enable` in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--veri e` .
 
 In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.
 

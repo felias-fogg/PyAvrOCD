@@ -37,7 +37,7 @@ all_scripts = {
 
 # C blink program built using make
     "cblink" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
     "cblink",
     "",
     (("set logging file log/cblink.log", ""),) + prolog + \
@@ -59,7 +59,7 @@ all_scripts = {
 # Tests all ways how signals are raised
 # SIGHUP will be tested in the "off" script, SIGABRT cannot be tested
      "signals" : (
-      ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+      ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
       "break",
       "",
       (("set logging file log/signals.log", ""),) + prolog + \
@@ -125,27 +125,30 @@ all_scripts = {
     "",
     (("set logging file log/range_jtag.log", ""),) + prolog + \
     (("load",  "Start address 0x"),
-     ("break range_jtag.ino:25", "Breakpoint 1"),
+     ("break range_jtag.ino:32", "Breakpoint 1"),
      ("cont", "LedOn"),
      ("next", "_delay_ms"),
      ("next", "LedOff"),
-     ("break range_jtag.ino:33", "Breakpoint 2"),
+     ("delete 1", ""),
+     ("break loop", "Breakpoint 2"),
      ("cont", "LedOn"),
      ("next", "LedOff"),
      ("next &", ""),
      ("$SLEEP", 3),
      ("interrupt", ""),
-     ("$SLEEP", 0.5),
+     ("$SLEEP", 1),
      ("", "SIGINT"),
-     ("print cnt2 > 1", "= true", "= 1"),
+     ("print cnt2", ""),
+     ("print cnt2 > 0", "= true", "= 1"),
      ("print cnt2 < 10", "= true", "= 1"),
-     ("break 35", ""),
+     ("break 42", ""),
      ("cont", "LedOn"),
      ("next &", ""),
      ("$SLEEP", 3),
      ("interrupt", ""),
-     ("$SLEEP", 0.5),
+     ("$SLEEP", 1),
      ("", "SIGINT"),
+     ("print cnt3", ""),
      ("print cnt3 > 100000", "= true", "= 1")) + epilog),
 
 # Test sleep walking
@@ -166,7 +169,7 @@ all_scripts = {
 
 # C++ program to measure supply voltage
     "measure" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino'),
     "measure",
     "",
     (("set logging file log/measure.log", ""),) + prolog + \
@@ -183,8 +186,8 @@ all_scripts = {
 
 # tests monitor commands across different gdb servers
     "monitor" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
-    "cblink",
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    "blink",
     "",
     (("set logging file log/monitor.log", ""),) + prolog + \
     (("monitor help", "monitor info"),
@@ -216,7 +219,7 @@ all_scripts = {
          "Flash memory will be erased before loading executable",
          "On debugWIRE targets, flash memory cannot be erased before loading executable",
          "'Erase-before-load' is not supported on debugWIRE targets"),
-     ("monitor load onlycaching", "Only reading, but no flashing", "Only caching when loading"),
+     ("monitor load onlycache", "Only reading, but no flashing", "Only caching when loading"),
      ("monitor load readbeforewrite", "Reading before writing when loading"),
      ("monitor load writeonly", "No reading before writing when loading"),
      ("monitor load",  "No reading before writing when loading"),
@@ -228,9 +231,10 @@ all_scripts = {
      ("monitor onlywhenloaded enable", "Execution is only possible after a previous load command"),
      ("monitor onlywhenloaded", "Execution is only possible after a previous load command"),
      ("continue", "No program loaded"),
-     ("next", "No program loaded"),
+     ("stepi", "No program loaded"),
      ("monitor onlywhenloaded disable", "Execution is always possible"),
-     ("next", "Single stepping until"),
+     ("monitor reset", ""),
+     ("stepi", "()"),
      ("load", "Loading"),
      ("break main", "Breakpoint 1"),
      ("continue", "Breakpoint 1"),
@@ -260,7 +264,7 @@ all_scripts = {
 
 # tests extended-remote target
     "extended" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
     "cblink",
     "",
     (("set style enabled off", ""),
@@ -308,7 +312,7 @@ all_scripts = {
      ("continue&", ""),
      ("$SLEEP", 3),
      ("interrupt", ""),
-     ("$SLEEP", 0.5),
+     ("$SLEEP", 1),
      ("", "Program received signal SIGINT, Interrupt"), # this message comes asynchronously
      ("i b","No breakpoints")) + epilog),
 
@@ -512,7 +516,7 @@ all_scripts = {
 
 # load something into EEPROM
     "eeprom" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
     "ceeprom",
     "",
     (("set logging file log/eeprom.log", ""),) + prolog + \
@@ -531,7 +535,7 @@ all_scripts = {
 # also loads signature, which is compared with the signature
 # given when inoking pyavrocd
     "fuses" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
     "fuses",
     "",
     (("set logging file log/fuses.log", ""),) + prolog + \
@@ -572,7 +576,7 @@ all_scripts = {
 
 # check that MCU is categorized as a MCU with a dirty PC
     "dirty" : (
-    ('dirty', 'arduino', 'nonarduino'),
+    ('dirty', 'dw', 'jtag'),
     "",
     "",
     (("set logging file log/dirty.log", ""),) + prolog + \

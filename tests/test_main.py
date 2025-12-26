@@ -41,11 +41,12 @@ class TestMain(TestCase):
     @patch('pyavrocd.main.sys.exit', MagicMock())
     def test_options_none(self):
         args = options([])
+        self.assertEqual(args.webhelp, False)
         self.assertEqual(args.cmd, None)
         self.assertEqual(args.dev, None)
         self.assertEqual(args.clkdeb, None)
         self.assertEqual(args.interface, None)
-        self.assertEqual(args.manage, [])
+        self.assertEqual(args.manage, ['none'])
         self.assertEqual(args.port, 2000)
         self.assertEqual(args.clkprg, 1000)
         self.assertEqual(args.tool, None)
@@ -73,6 +74,14 @@ class TestMain(TestCase):
         self.assertEqual(args.tool, "?")
         sys.exit.assert_called_once()
 
+    @patch('pyavrocd.main.sys.exit', MagicMock())
+    @patch('pyavrocd.main.webbrowser.open')
+    def test_options_webhelp(self, mock_web):
+        options(["-H"])
+        mock_web.assert_called_once()
+        sys.exit.assert_called_once()
+
+
     @patch('builtins.print')
     @patch('pyavrocd.main.sys.exit', MagicMock())
     def test_options_device_with_interface_questionmark(self, mocked_print):
@@ -97,16 +106,16 @@ class TestMain(TestCase):
             call('Possible interfaces (-i) are: ', end=''),
             call('debugwire, jtag, pdi, updi'),
             call('Possible (repeatable) fuse management options (-m) are: '),
-            call('all, none, bootrst, nobootrst, dwen, nodwen, ocden, noocden, lockbits, nolockbits, eesave, noeesave'),
-            call('Possible verbosity levels (-v) are: ', end=''),
-            call('all, debug, info, warning, error, critical')])
+            call('all, none, bootrst, nobootrst, dwen, nodwen, ocden, noocden, lockbits, nolockbits, eesave, noeesave', '(default = none)'),
+            call('Possible verbosity levels (-v) are: '),
+            call('all, debug, info, warning, error, critical', '(default = info)')])
 
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
     @patch('pyavrocd.main.sys.exit', MagicMock())
     def test_options_list(self):
         args = options(["-m", "all", "-m", "nobootrst", "-m=nodwen"])
-        self.assertEqual(args.manage, [ "all", "nobootrst", "nodwen"])
+        self.assertEqual(args.manage, [ "none", "all", "nobootrst", "nodwen"])
         sys.exit.assert_not_called()
 
     @patch('pyavrocd.main.open', MagicMock())

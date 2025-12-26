@@ -9,6 +9,7 @@
      - The initial single step in range stepping has been eliminated because GDB oversteps breakpoints using a single-step command anyway.
      - In the manual, the quickstart guides for each IDE have been joined.
 - **Fixed**:
+connection. For this reason, the monitor command `monitor timer` is removed and a new option is added.
      - CTRL-C is now brought into synchronization with the packet flow in order to allow interruption of heavy single-stepping. Works perfectly.
      - When accessing the DWDR in simulating a two-word instruction, an INVALID ADDRESS error was raised. This is nothing that is likely to happen ever, but it is now caught, an error is logged, and debugging can continue.
 

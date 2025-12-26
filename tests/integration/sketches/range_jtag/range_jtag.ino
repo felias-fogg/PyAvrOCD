@@ -9,14 +9,21 @@
 #include "ledsignal.h"
 
 volatile unsigned long cnt1, cnt2, cnt3;
+volatile boolean stateoff;
 unsigned long limit;
+
 
 void LedToggle(void)
 {
-  static boolean stateoff;
   if (stateoff) LedOff();
   else LedOn();
   stateoff = !stateoff;
+}
+
+void LedTrulyOff(void)
+{
+  stateoff = false;
+  LedOff();
 }
 
 void setup(void)
@@ -31,7 +38,7 @@ void setup(void)
 void loop(void)
 {
   LedOn(); while (cnt1 < limit) { cnt1++; if ((cnt1 & 0x1FF) == 0x01FF) LedToggle(); if ((cnt1 & 0x1FE) == 0x1FE) LedOff(); if ((cnt1 & 0x1FC) == 0x1FC) LedOn(); };
-  LedOff(); while (cnt2 < 100) { cnt2++; if ((cnt2 & 0xFF) == 9) LedToggle(); if ((cnt2 & 0xFF) == 9) LedOff(); if ((cnt2 & 0xFF) == 9) LedOn(); if ((cnt2 & 0xFF) == 9) setup();};
+  LedOff(); while (cnt2 < 100) { cnt2++; if ((cnt2 & 0xFF) == 9) LedToggle(); if ((cnt2 & 0xFF) == 9) LedOff(); if ((cnt2 & 0xFF) == 9) LedOn(); if ((cnt2 & 0xFF) == 9) LedTrulyOff();};
   LedOn(); while (1) { cnt3++; };
   return;
 }

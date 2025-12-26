@@ -179,7 +179,8 @@ class LiveTests():
         Test 'continue' and 'stop' function.
         """
         self.logger.info("Running 'continue with signal' and 'stop' test ...")
-        self.handler.dispatch("C", b"05;01AA")
+        self.dbg.program_counter_write(0x1aa >> 1)
+        self.handler.dispatch("vCont", b";C05:1")
         time.sleep(0.01)
         self.dbg.stop()
         self.logger.debug("Sent: %s", self.send_string)
@@ -189,8 +190,9 @@ class LiveTests():
         """
         Test 'continue' at a 'break' location
         """
-        self.logger.info("Running 'continue' at a location with a 'break' instruction ...")
-        self.handler.dispatch('c', b"01cc")
+        self.logger.info("Running 'continue' with a 'break' instruction ...")
+        self.dbg.program_counter_write(0x1cc >> 1)
+        self.handler.dispatch('vCont', b";c")
         self.logger.debug("Sent: %s", self.send_string)
         self.check_result(self.send_string == "S04")
         self.dbg.stop() # stop execution in any case
@@ -389,19 +391,20 @@ class LiveTests():
         self.logger.debug("PC=%0X", self.dbg.program_counter_read() << 1)
         self.logger.debug("regs=%s", self.dbg.sram_read(16, 3))
         self.logger.debug("mem=%s", self.dbg.sram_read(self.sram_start, 1))
-        self.handler.dispatch('S', b'05;01b2')
+        self.dbg.program_counter_write(0x1b2 >> 1)
+        self.handler.dispatch('vCont', b';S05')
         time.sleep(0.1)
         self.handler.poll_events()
         send1 = self.send_string
         self.logger.debug("Send1: %s", self.send_string)
         self.send_string = ""
-        self.handler.dispatch('s', b'')
+        self.handler.dispatch('vCont', b';s')
         time.sleep(0.1)
         self.handler.poll_events()
         send2 = self.send_string
         self.logger.debug("Send2: %s", self.send_string)
         self.send_string = ""
-        self.handler.dispatch('s', b'')
+        self.handler.dispatch('vCont', b';s')
         time.sleep(0.1)
         self.handler.poll_events()
         send3 = self.send_string
@@ -420,18 +423,18 @@ class LiveTests():
 
     def _live_test_vcont_range(self):
         """
-        Testing the range step command
+        Testing the range step command. Note that we do not stop anymore after first step
         """
         self.logger.info("Running vcont range test ...")
         self.dbg.program_counter_write(0x1b2 >> 1)
-        self.send_string = ""
-        self.handler.dispatch("vCont", b";r1b2,1c0")
-        time.sleep(0.1)
-        self.handler.poll_events()
-        send1 = self.send_string
-        self.logger.debug("Result of range-stepping: %s", send1)
-        self.dbg.stop() # in order to stop a runaway!
-        pc1 = self.dbg.program_counter_read() << 1
+        #self.send_string = ""
+        #self.handler.dispatch("vCont", b";r1b2,1c0")
+        #time.sleep(0.1)
+        #self.handler.poll_events()
+        #send1 = self.send_string
+        #self.logger.debug("Result of range-stepping: %s", send1)
+        #self.dbg.stop() # in order to stop a runaway!
+        #pc1 = self.dbg.program_counter_read() << 1
         self.send_string = ""
         self.handler.dispatch("vCont", b";r1b2,1c0")
         time.sleep(0.1)
@@ -440,8 +443,7 @@ class LiveTests():
         self.dbg.stop() # in order to stop a runaway!
         pc2 = self.dbg.program_counter_read() << 1
         self.logger.debug("Result of range-stepping: %s", send2)
-        self.check_result(pc1 == 0x1b4 and pc2 == 0x1aa and
-                              send1.startswith("T05") and send2.startswith("T05"))
+        self.check_result(pc2 == 0x1aa and send2.startswith("T05"))
 
     def _live_test_vcont_step_with_protected_bp(self):
         """
@@ -577,16 +579,16 @@ class LiveTests():
         self.handler.dispatch("vCont", b";c")
         time.sleep(0.1)
         self.handler.poll_events()
-        self.logger.debug("HWBP after stopping: %s", self.bp._hwbp._hwbplist[0])
+        self.logger.debug("HWBP after stopping: %s", self.bp.hwbp._hwbplist[0])
         self.logger.debug("Breakpoint at 0x1b2 after stopping: %s", self.bp._bp.get(0x1b2,None))
-        hw1 = self.bp._hwbp._hwbplist[0]
+        hw1 = self.bp.hwbp._hwbplist[0]
         self.handler.dispatch("z", b"1,1b2,2")
         self.handler.dispatch("vCont", b";s")
         time.sleep(0.1)
         self.handler.poll_events()
-        self.logger.debug("HWBP after single-step: %s", self.bp._hwbp._hwbplist[0])
+        self.logger.debug("HWBP after single-step: %s", self.bp.hwbp._hwbplist[0])
         self.logger.debug("Breakpoint at 0x1b2 after step: %s", self.bp._bp.get(0x1b2,None))
-        hw2 = self.bp._hwbp._hwbplist[0]
+        hw2 = self.bp.hwbp._hwbplist[0]
         self.check_result(hw1 == 0x1b2 and hw2 is None)
 
     def _live_test_v_flash_erase_clean_bps(self):
