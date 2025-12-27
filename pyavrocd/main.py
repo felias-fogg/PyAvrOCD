@@ -527,7 +527,7 @@ def startup(command_line, logger):
     # tool is connected, now we can start
     logger.info("Starting GDB server")
     try:
-        avrdebugger = XAvrDebugger(transport, device, intf, args.manage, args.clkprg, args.clkdeb)
+        avrdebugger = XAvrDebugger(transport, device, intf, args.manage, args.clkprg, args.clkdeb, args.timers[0]=='r')
         server = RspServer(avrdebugger, device, args)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:

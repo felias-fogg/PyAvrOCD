@@ -1,6 +1,6 @@
 # Changelog
 
-### NEW:
+### 0.20.0 (27-Dec-2025):
 
 - **Changed**:
      - We now allow Python 3.14 since the hidapi package has apparently been built under Windows.
@@ -8,12 +8,20 @@
      - In CI workflow `release.yml`, we run pyavrocd with `-V` and `-d ? -t ?`
      - The initial single step in range stepping has been eliminated because GDB oversteps breakpoints using a single-step command anyway.
      - In the manual, the quickstart guides for each IDE have been joined.
+     - The protocol for switching between debug mode and programming has been simplified. Simply attach/detach for debugging mode and enter_progmode/leave_progmode for programming mode. I have no idea why I did not try this in the first place.
+
 - **Fixed**:
-connection. For this reason, the monitor command `monitor timer` is removed and a new option is added.
+
+  - After loading and after changing the timer mode, a new AVR8 method called `reactivate` is called. This method deactivates and reactivates the physical in order to set the timer mode (I have no idea why this is necessary, but it works).
+  - In order to set the initial value for timer mode according to the command-line argument, a further parameter for XAvrDebugger is defined (`timers_run`), which is used when calling the `setup_debug_session` method in `xavr8target.py`.
+
      - CTRL-C is now brought into synchronization with the packet flow in order to allow interruption of heavy single-stepping. Works perfectly.
      - When accessing the DWDR in simulating a two-word instruction, an INVALID ADDRESS error was raised. This is nothing that is likely to happen ever, but it is now caught, an error is logged, and debugging can continue.
 
 - **Added**:
+
+     - New method `reactivate`  in `xavr8target` (for each target).
+
      - New integration sketches: `range_dw.ino`, `range_jtag.ino`, `sleepwalk.ino`, `break.c`
      - New header file in integration directory: `irqpin.h`
      -

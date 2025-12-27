@@ -117,7 +117,7 @@ class XTinyAvrTarget(TinyAvrTarget):
             # but no new EDBG firmware has/will be built)
             self.max_read_chunk_size = 256
 
-    def setup_debug_session(self, **kwargs):
+    def setup_debug_session(self, timers_run=True, **kwargs):
         """
         Sets up a debugging session on an Tiny AVR (debugwire)
         """
@@ -125,7 +125,7 @@ class XTinyAvrTarget(TinyAvrTarget):
         self.logger_loc.info("Setting up debug session for debugWIRE target")
         self.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
                                               Avr8Protocol.AVR8_OPT_RUN_TIMERS,
-                                              0x01)
+                                              timers_run)
         self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_TINYOCD)
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)
         self.protocol.set_interface(Avr8Protocol.AVR8_PHY_INTF_DW)
@@ -172,6 +172,12 @@ class XTinyAvrTarget(TinyAvrTarget):
         For debugWIRE, we will attach to the OCD just once.
         """
         self.protocol.attach()
+
+    def reactivate(self):
+        """
+        For debugWIRE, reactivating is simply a reset
+        """
+        self.protocol.reset()
 
     def setup_config(self, device_info):
         """
@@ -364,32 +370,37 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
 
     def switch_to_progmode(self):
         """
-        This is a horrible kludge to get safe mode switches on
-        SNAP and PICkit4. On these tools, you HAVE TO restart the
-        session in order to get safe mode switching. Everything else
-        leads to interesting errors.
+        Simply detach and enter prog mode
         """
         self.protocol.detach()
-        self.deactivate_physical()
-        self.activate_physical()
         self.protocol.enter_progmode()
 
     def switch_to_debmode(self):
         """
-        Similar thing, but worse. You have to enter and leave progmode
-        in order to make a safe transition to debug mode. The attach
-        function often does not work!
+        Simply leave prog mode and attach again
         """
-        self.switch_to_progmode()
         self.protocol.leave_progmode()
+        self.protocol.attach()
 
     def attach(self):
         """
-        For JTAG targets, the methods 'switch_to_progmode' and 'switch_to_debmode' make
-        sure that we are attached. So this is a no-op.
-        """
+        Attach (in the beginning)
 
-    def setup_debug_session(self, clkprg=200, clkdeb=1000):
+        """
+        self.protocol.attach()
+
+    def reactivate(self):
+        """
+        Reactivate physical: Necessary to get set the right timer mode
+        """
+        self.protocol.detach()
+        self.deactivate_physical()
+        self.activate_physical()
+        self.protocol.attach()
+        self.protocol.reset()
+        self.logger_loc.info("Physical interface re-activated")
+
+    def setup_debug_session(self, clkprg=200, clkdeb=1000, timers_run=True):
         """
         Sets up a programming session on an Mega AVR (JTAG)
         """
@@ -400,8 +411,8 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         self.logger_loc.debug("JTAG daisy chain configuration set up")
         self.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
                                               Avr8Protocol.AVR8_OPT_RUN_TIMERS,
-                                              0x01)
-        self.logger_loc.debug("Configured timers as: 'run when execution stopped'")
+                                              timers_run)
+        self.logger_loc.info("Configured timers as running: %d", timers_run)
         self.protocol.set_variant(Avr8Protocol.AVR8_VARIANT_MEGAOCD)
         self.logger_loc.debug("Set Variant: megaJTAG")
         self.protocol.set_function(Avr8Protocol.AVR8_FUNC_DEBUGGING)

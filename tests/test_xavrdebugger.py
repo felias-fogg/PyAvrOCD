@@ -21,7 +21,7 @@ class TestXAvrDebugger(TestCase):
     def set_up(self):
         mock_transport = MagicMock()
         # a debugWIRE target
-        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", ['bootrst', 'lockbits', 'dwen'], 4000, 500)
+        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", ['bootrst', 'lockbits', 'dwen'], 4000, 500, True)
         self.xa.logger = MagicMock()
         self.xa.transport = mock_transport
         self.xa.memory_info = MagicMock()
@@ -31,7 +31,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.logger = Mock()
         self.xa.housekeeper = Mock()
         # a JTAG target
-        self.xaj = XAvrDebugger(mock_transport, "atmega644", "jtag", ['bootrst', 'lockbits', 'ocden'], 4000, 500)
+        self.xaj = XAvrDebugger(mock_transport, "atmega644", "jtag", ['bootrst', 'lockbits', 'ocden'], 4000, 500, True)
         self.xaj.logger = MagicMock()
         self.xaj.transport = mock_transport
         self.xaj.memory_info = MagicMock()
@@ -40,7 +40,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.device.avr.protocol = MagicMock(spec=Avr8Protocol)
         self.xaj.housekeeper = Mock()
         # a UPDI target
-        self.xau = XAvrDebugger(mock_transport, "atmega4809", "updi", ['bootrst', 'lockbits', 'ocden'], 4000, 500)
+        self.xau = XAvrDebugger(mock_transport, "atmega4809", "updi", ['bootrst', 'lockbits', 'ocden'], 4000, 500, True)
         self.xau.logger = MagicMock()
         self.xau.transport = mock_transport
         self.xau.memory_info = MagicMock()

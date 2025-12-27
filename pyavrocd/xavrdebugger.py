@@ -42,7 +42,7 @@ class XAvrDebugger(AvrDebugger):
     :type use_events_for_run_stop_state: boolean
     """
     #pylint: disable=super-init-not-called,too-many-positional-arguments
-    def __init__(self, transport, devicename, iface, manage, clkprg, clkdeb):
+    def __init__(self, transport, devicename, iface, manage, clkprg, clkdeb, timers_run):
         """
         We do not want to make use of the base class' init method,
         because all startup code is collected in the start_debugging method!
@@ -54,6 +54,7 @@ class XAvrDebugger(AvrDebugger):
         self.manage = manage
         self.clkprg = clkprg
         self.clkdeb = clkdeb
+        self.timers_run = timers_run
         self.housekeeper = None
         self._hwbpnum = None
         self._architecture = None
@@ -127,7 +128,7 @@ class XAvrDebugger(AvrDebugger):
             self.housekeeper = housekeepingprotocol.Jtagice3HousekeepingProtocol(self.transport)
             self.housekeeper.start_session()
             self.logger.info("Signed on to tool")
-            self.device.avr.setup_debug_session(clkprg=self.clkprg, clkdeb=self.clkdeb)
+            self.device.avr.setup_debug_session(clkprg=self.clkprg, clkdeb=self.clkdeb, timers_run=self.timers_run)
             self.logger.info("Session configuration communicated to tool")
             self.device.avr.setup_config(self.device_info)
             self.logger.info("Device configuration communicated to tool")
@@ -365,7 +366,6 @@ class XAvrDebugger(AvrDebugger):
             else:
                 raise
         return dev_code
-
 
     def _handle_bootrst(self, read, write):
         """

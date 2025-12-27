@@ -411,6 +411,7 @@ class GdbHandler():
                 self.dbg.device.avr.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
                                                     Avr8Protocol.AVR8_OPT_RUN_TIMERS,
                                                     response[0])
+                self.dbg.device.avr.reactivate()
             elif 'power o' in response[0]:
                 self.dbg.edbg_protocol.set_byte(EdbgProtocol.EDBG_CTXT_CONTROL,
                                                     EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
@@ -427,6 +428,8 @@ class GdbHandler():
                                                    error_line))
             elif 'live_tests' in response[0]:
                 self._live_tests.run_tests()
+            elif 'test' == response[0]:
+                self.dbg.device.avr.reactivate()
         except AvrIspProtocolError:
             self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
             if not self.critical:
@@ -597,6 +600,7 @@ class GdbHandler():
             if self.mon.is_onlycache():
                 self.logger.info("Only cached, not flashed!")
                 self.mon.disable_onlycache() # after the first load operation, load physically again
+            self.dbg.device.avr.reactivate()
         self.send_packet("OK")
 
     def _vflash_erase_handler(self, _):
@@ -750,6 +754,7 @@ class GdbHandler():
         self.dbg.switch_to_debmode()
         self.mem.programming_mode = False
         self.logger.info("Programming mode stopped")
+        self.dbg.device.avr.reactivate()
         if self.mon.is_onlycache():
             self.logger.info("Only cached, not flashed!")
             self.mon.disable_onlycache() # after the first load operation, load physically again

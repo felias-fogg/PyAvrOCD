@@ -32,7 +32,8 @@ monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwi
             'NoXML'           : ['full', None, [None]],
             'OldExecution'    : ['full', None, [None]],
             'Target'          : ['full', None, [None, 'on', 'off', 'query']],
-            'LiveTests'       : ['full', None, [None]] }
+            'LiveTests'       : ['full', None, [None]],
+            'Test'            : ['full', None, [None]] }
 
 class MonitorCommand():
     """
@@ -88,6 +89,7 @@ class MonitorCommand():
             'OldExecution'    : self._mon_old_execution,
             'Target'          : self._mon_target,
             'LiveTests'       : self._mon_live_tests,
+            'Test'            : self._mon_test
             }.items():
             self.moncmds[key] = [value] + monopts.get(key,[])
             if len(self.moncmds[key]) != 4:
@@ -519,3 +521,7 @@ Timers:                   """ + ("frozen when stopped"
         return("", "Cannot run tests because debugging is not enabled")
 
 
+    def _mon_test(self,_):
+        if self._debugger_active:
+            return("test", "Tests done")
+        return("", "Cannot execute test because debugging is not enabled")
