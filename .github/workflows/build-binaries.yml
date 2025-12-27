@@ -22,13 +22,13 @@ jobs:
         if: matrix.os != 'windows-2022'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.14'
 
       - name: Set up Python-32-bit
         if: matrix.os == 'windows-2022'
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.14'
           architecture: 'x86'
 
       - name: Install dependencies
