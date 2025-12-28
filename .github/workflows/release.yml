@@ -164,37 +164,37 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Download arm64-apple-darwin
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: arm64-apple-darwin
           path: extras/binaries/arm64-apple-darwin
 
       - name: Download aarch64-linux-gnu
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: aarch64-linux-gnu
           path: extras/binaries/aarch64-linux-gnu
 
       - name: Download x86_64-mingw32
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: x86_64-mingw32
           path: extras/binaries/x86_64-mingw32
 
       - name: Download i686-mingw32
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: i686-mingw32
           path: extras/binaries/i686-mingw32
 
       - name: Download x86_64-apple-darwin
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: x86_64-apple-darwin
           path: extras/binaries/x86_64-apple-darwin
 
       - name: Download x86_64-linux-gnu
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: x86_64-linux-gnu
           path: extras/binaries/x86_64-linux-gnu
