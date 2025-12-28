@@ -6,7 +6,7 @@ If you want to install a core, in most cases, you first have to add a *package i
 
 ### [ATTinyCore (Debug enabled)](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
-This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. As above, you can install it after including the following URL
+This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. You can install it after including the following URL
 
 ```
  https://downloads.pyavrocd.io/package_debug_enabled_index.json

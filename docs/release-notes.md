@@ -4,7 +4,7 @@
 
 - Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows
 - Ctrl-C synchronization with the ordinary GDB packet flow so that interruptions are possible even under heavy single-stepping
-- Fixed timer mode issues for JTAG targets
+- Timer mode issues for JTAG targets has been fixed
 
 ## Release v0.19.0
 

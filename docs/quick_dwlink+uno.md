@@ -19,7 +19,9 @@ This means that you need two UNO boards to try out debugging. Of course, any oth
 
 ## Step 1: Turning an UNO into a debug probe
 
-Download the [latest release of dw-link](https://github.com/felias-fogg/dw-link/releases/latest) from GitHub. Then uncompress the archive and start the Arduino IDE 2. Open the sketch `dw-link-X.Y.Z/dw-link/dw-link.ino` and upload it to the UNO that you want to use as the debug probe.
+The simplest way to install the firmware is to download an uploader from the Release assets of the [GitHub repo](https://github.com/felias-fogg/dw-link). The uploader should fit your architecture, e.g., `dw-uploader-windows-intel64` for Windows. Under *Linux* and *macOS*, open a terminal window, go to the download folder, and set the executable permission using `chmod +x`. Afterward, execute the program. Under *Windows*, it is enough to start the program after downloading by double-clicking on it.
+
+Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using the Arduino IDE 2.
 
 From now on, you can use this board as a debug probe. In order to make it easier to use, plug the (optional) electrolyte capacitor into the RESET and GND header (the negative pin goes into GND). This will make sure that the board does not go into RESET when the host contacts the debug probe. In addition, put the LED with the soldered-on resistor into the header 6 and 7, 6 being used as GND. The LED tells you the internal state of the debug probe:
 

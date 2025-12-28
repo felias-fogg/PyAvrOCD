@@ -30,22 +30,11 @@ Close the `Preference` dialog with `OK`. Now, you can install the cores, `ATTiny
 
 ### Step 2: Install *dw-link* firmware on an Uno
 
-Download the dw-link firmware. This means you should
+First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).
 
-* open the webpage [https://github.com/felias-fogg/dw-link](https://github.com/felias-fogg/dw-link),
-* click on `Latest` in the field **Releases** (on the left),
-* choose either `zip` or `tar.gz`,
-* download it to  your hard disk, and
-* extract the firmware from the downloaded archive using `unzip` or `tar -xvzf`.
+The simplest way to install the firmware is to download an uploader from the Release assets of the [GitHub repo](https://github.com/felias-fogg/dw-link). The uploader should fit your architecture, e.g., `dw-uploader-windows-intel64` for Windows. Under *Linux* and *macOS*, open a terminal window, go to the download folder, and set the executable permission using `chmod +x`. Afterward, execute the program. Under *Windows*, it is enough to start the program after downloading by double-clicking on it.
 
-In order to install the firmware,
-
-* first make sure that the auto-reset feature of the Uno is not disabled, e.g., by a shield or a capacitor plugged into the Uno board,
-* then connect the Arduino Uno to your computer with a USB cable,
-* open the Arduino IDE and select `Arduino Uno` under `Tools` as the destination `board`,
-* select the right `Port` in the `Tools` menu,
-* and load the dw-link sketch into the IDE, which is located at `dw-link-x.y.z/dw-link/dw-link.ino`.
-* Finally, compile and download the sketch to the Uno by either pressing the right arrow button, or by typing `CTRL-U` or `⌘U`. The Uno acts now as a debug probe (but needs a bit of additional hardware).
+Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using the Arduino IDE 2.
 
 **Check:** Open the `Serial Monitor` (under `Tools` menu), choose `115200 baud`,  type  `-`  (minus sign) into the upper line, and send it. The debug probe should respond with `$#00`.
 

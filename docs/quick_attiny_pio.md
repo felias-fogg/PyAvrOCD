@@ -29,20 +29,11 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
 
 ### Step 3: Turn an UNO into a debug probe
 
-Download the dw-link firmware. This means you should
+First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).
 
-* go to the [dw-link GitHub repo](https://github.com/felias-fogg/dw-link),
-* as in Step 1, click on the  `Latest` label below **Releases**,
-* download the **Source Code**, either zip or tar.gz,
-* extract the project files using `unzip` or `tar -xvzf`.
+The simplest way to install the firmware is to download an uploader from the Release assets of the [GitHub repo](https://github.com/felias-fogg/dw-link). The uploader should fit your architecture, e.g., `dw-uploader-windows-intel64` for Windows. Under *Linux* and *macOS*, open a terminal window, go to the download folder, and set the executable permission using `chmod +x`. Afterward, execute the program. Under *Windows*, it is enough to start the program after downloading by double-clicking on it.
 
-In order to install the firmware,
-
-* connect the Arduino Uno to your computer with a USB cable,
-* open VSCode/PlatformIO,
-* open the folder  `dw-link-x.y.z` with the extracted project files in VSCode,
-* and load the program`dw-link-x.y.z/src/dw-link.ino` into the editor (ignore the warnings from PlatformIO),
-* compile the program and upload it to the Uno.
+Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using PlatformIO.
 
 The Uno now acts as a debug probe providing a [GDB RSP](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html) interface. If you configured the serial line to the Uno as 115200 baud, and click on `Monitor` in the `PROJECT TASK` menu, select the `Terminal` window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".
 
