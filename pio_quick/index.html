@@ -387,21 +387,9 @@
 <pre><code class="language-sh">cp ~/.local/bin/avr-gdb .platformio/packages/toolchain-atmelavr/bin/
 </code></pre>
 <h3 id="step-3-turn-an-uno-into-a-debug-probe">Step 3: Turn an UNO into a debug probe</h3>
-<p>Download the dw-link firmware. This means you should</p>
-<ul>
-<li>go to the <a href="https://github.com/felias-fogg/dw-link">dw-link GitHub repo</a>,</li>
-<li>as in Step 1, click on the  <code>Latest</code> label below <strong>Releases</strong>,</li>
-<li>download the <strong>Source Code</strong>, either zip or tar.gz,</li>
-<li>extract the project files using <code>unzip</code> or <code>tar -xvzf</code>.</li>
-</ul>
-<p>In order to install the firmware,</p>
-<ul>
-<li>connect the Arduino Uno to your computer with a USB cable,</li>
-<li>open VSCode/PlatformIO,</li>
-<li>open the folder  <code>dw-link-x.y.z</code> with the extracted project files in VSCode,</li>
-<li>and load the program<code>dw-link-x.y.z/src/dw-link.ino</code> into the editor (ignore the warnings from PlatformIO),</li>
-<li>compile the program and upload it to the Uno.</li>
-</ul>
+<p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
+<p>The simplest way to install the firmware is to download an uploader from the Release assets of the <a href="https://github.com/felias-fogg/dw-link">GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
+<p>Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using PlatformIO.</p>
 <p>The Uno now acts as a debug probe providing a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html">GDB RSP</a> interface. If you configured the serial line to the Uno as 115200 baud, and click on <code>Monitor</code> in the <code>PROJECT TASK</code> menu, select the <code>Terminal</code> window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".</p>
 <h3 id="step-4-set-up-the-example-project">Step 4: Set up the example project</h3>
 <p>Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file <code>platformio.ini</code>, too long to present here. You can clone a project containing this file, together with a small program, from</p>

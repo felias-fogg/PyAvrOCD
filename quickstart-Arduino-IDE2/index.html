@@ -162,23 +162,9 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 <li>In the search field, type <code>ATTinyCore (Debug enabled)</code> and install the most recent version.</li>
 </ul>
 <h3 id="step-2-install-dw-link-firmware-on-an-uno">Step 2: Install <em>dw-link</em> firmware on an Uno</h3>
-<p>Download the dw-link firmware. This means you should</p>
-<ul>
-<li>open the webpage <a href="https://github.com/felias-fogg/dw-link">https://github.com/felias-fogg/dw-link</a>,</li>
-<li>click on <code>Latest</code> in the field <strong>Releases</strong> (on the left),</li>
-<li>choose either <code>zip</code> or <code>tar.gz</code>,</li>
-<li>download it to  your hard disk, and</li>
-<li>extract the firmware from the downloaded archive using <code>unzip</code> or <code>tar -xvzf</code>.</li>
-</ul>
-<p>In order to install the firmware,</p>
-<ul>
-<li>first make sure that the auto-reset feature of the Uno is not disabled, e.g., by a shield or a capacitor plugged into the Uno board,</li>
-<li>then connect the Arduino Uno to your computer with a USB cable,</li>
-<li>open the Arduino IDE and select <code>Arduino Uno</code> under <code>Tools</code> as the destination <code>board</code>,</li>
-<li>select the right <code>Port</code> in the <code>Tools</code> menu,</li>
-<li>and load the dw-link sketch into the IDE, which is located at <code>dw-link-x.y.z/dw-link/dw-link.ino</code>.</li>
-<li>Finally, compile and download the sketch to the Uno by either pressing the right arrow button, or by typing <code>CTRL-U</code> or <code>⌘U</code>. The Uno acts now as a debug probe (but needs a bit of additional hardware).</li>
-</ul>
+<p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
+<p>The simplest way to install the firmware is to download an uploader from the Release assets of the <a href="https://github.com/felias-fogg/dw-link">GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
+<p>Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using the Arduino IDE 2.</p>
 <p><strong>Check:</strong> Open the <code>Serial Monitor</code> (under <code>Tools</code> menu), choose <code>115200 baud</code>,  type  <code>-</code>  (minus sign) into the upper line, and send it. The debug probe should respond with <code>$#00</code>.</p>
 <h3 id="step-3-hardware-setup">Step 3: Hardware setup</h3>
 <p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a debug probe. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
