@@ -108,6 +108,9 @@ def main():
             logger.error("Failed compilation: %s", cmd_out)
             failed_comp += [ sn ]
             continue
+        with open("pyavrocd.options", "w", encoding='utf-8') as f:
+            f.write("\n".join(['-d', args.dev, '-m', 'all'] + script[3].split(" ")))
+        sleep(3)
         if not run_script(logger, sn, script):
             logger.error("Failed to run script '%s'", sn)
             failed_scripts += [ sn ]
@@ -136,10 +139,9 @@ def run_script(logger, test_name, script):
     if script[1] == "":
         test_binary = ""
     child = pexpect.spawn("avr-gdb " + test_binary + " -n")
-    sleep(2)
     ix = 0
-    script = script[3] # The list of interaction pairs
-    resp = child.expect([r"\(gdb\)",pexpect.TIMEOUT,pexpect.EOF],timeout=1)
+    script = script[4] # The list of interaction pairs
+    resp = child.expect([r"((\(gdb\))|(SIGINT))",pexpect.TIMEOUT,pexpect.EOF],timeout=1)
     logger.debug("Initial response: %s", child.before.decode())
     if resp >= 1:
         logger.error("Failed %s calling avr-gdb", test_name)

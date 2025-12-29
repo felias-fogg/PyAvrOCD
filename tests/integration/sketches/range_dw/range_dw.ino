@@ -28,7 +28,7 @@ void setup(void)
 void loop(void)
 {
   cnt = 0;
-  while (cnt < 10) { cnt++; if ((cnt & 7) == 0) LedToggle(); };
+  while (cnt < 30) { cnt++; if ((cnt & 7) == 0) LedToggle(); };
   LedOff();
   cnt = 0;
   while (1) { cnt++; };

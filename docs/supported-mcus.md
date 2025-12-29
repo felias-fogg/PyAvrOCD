@@ -13,7 +13,7 @@ This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Some
 
 - **ATtiny13**
 
-### ATtinys supported by the [*ATTinyCore (Debug enabled)*](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
+### ATtinys supported by [*ATTinyCore (Debug enabled)*](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
 * **ATtiny43U**
 * **ATtiny2313, ATtiny2313A, ATtiny4313**

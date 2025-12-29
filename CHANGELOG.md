@@ -1,5 +1,9 @@
 # Changelog
 
+### New
+
+
+
 ### 0.20.0 (27-Dec-2025):
 
 - **Changed**:
@@ -14,9 +18,8 @@
 
   - After loading and after changing the timer mode, a new AVR8 method called `reactivate` is called. This method deactivates and reactivates the physical in order to set the timer mode (I have no idea why this is necessary, but it works).
   - In order to set the initial value for timer mode according to the command-line argument, a further parameter for XAvrDebugger is defined (`timers_run`), which is used when calling the `setup_debug_session` method in `xavr8target.py`.
-
-     - CTRL-C is now brought into synchronization with the packet flow in order to allow interruption of heavy single-stepping. Works perfectly.
-     - When accessing the DWDR in simulating a two-word instruction, an INVALID ADDRESS error was raised. This is nothing that is likely to happen ever, but it is now caught, an error is logged, and debugging can continue.
+  - CTRL-C is now brought into synchronization with the packet flow in order to allow interruption of heavy single-stepping. Works perfectly.
+  - When accessing the DWDR in simulating a two-word instruction, an INVALID ADDRESS error was raised. This is nothing that is likely to happen ever, but it is now caught, an error is logged, and debugging can continue.
 
 - **Added**:
 

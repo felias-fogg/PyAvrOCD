@@ -2,7 +2,7 @@
 # Tags for scripts. Only if the MCU descriptoion contains a matching tag, then the script
 # will be selected
 all_tags = ('first', 'last', 'small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi',
-                'dirty', 'arduino', 'nonarduino', 'noadc')
+                'dirty', 'arduino', 'nonarduino', 'noadc', 'noautopc')
 
 # This is the prelude for (almost) every script
 prolog = (
@@ -12,6 +12,7 @@ prolog = (
     ("set logging on",  ""),
     ("target remote :2000", "0x00000000 in"),
     ("monitor debugwire enable", "enabled", "This is not a debugWIRE target"),
+    ("!rm pyavrocd.options", ""),
     ("monitor reset", ""))
 
 # The epilog of (almost) every script
@@ -21,15 +22,18 @@ epilog = (
 
 # List of scripts:
 #   Key is the name of the script
-#   First item is a tag list
+#   First item is a tag list (of requirements the script fulfills)
 #   Second item is the name of a sketch/program folder
 #   Third item is a string containing additional compiler flags
-#   Fourth item is a sequence of interactive tuples, first item an input, the other items potential responses
+#   Fourth item is a string containing options to PyAvrOCD
+#   Fifth item is a sequence of interactive tuples, first item an input, the other items potential responses
 
 all_scripts = {
 # enables debugging and runs live tests
     "live" : (
-    ('first', 'small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'nonarduino', 'noadc'),
+    ('first', 'small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino',
+         'nonarduino', 'noadc', 'noautopc'),
+    "",
     "",
     "",
     (("set logging file log/live.log", ""),) + prolog + \
@@ -37,8 +41,9 @@ all_scripts = {
 
 # C blink program built using make
     "cblink" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc', 'noautopc'),
     "cblink",
+    "",
     "",
     (("set logging file log/cblink.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -47,7 +52,7 @@ all_scripts = {
      ("next", "setBit(LED2_DDR, LED2);"),
      ("next", "setBit(LED1_PORT, LED1);"),
      ("break", "Breakpoint 2"),
-     ("ignore 2 15", ""),
+     ("ignore 2 5", ""),
      ("delete 1", ""),
      ("continue", "Breakpoint 2"),
      ("n", "setBit(LED2_PORT, LED2);"),
@@ -59,12 +64,14 @@ all_scripts = {
 # Tests all ways how signals are raised
 # SIGHUP will be tested in the "off" script, SIGABRT cannot be tested
      "signals" : (
-      ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
+      ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc', 'noautopc'),
       "break",
+      "",
       "",
       (("set logging file log/signals.log", ""),) + prolog + \
       (("cont", "SIGSEGV"),
        ("load", "Start address 0x"),
+       ("monitor break hardware",""),
        ("break main", "Breakpoint 1"),
        ("cont", "break.c:19"),
        ("break 20", "line 20"),
@@ -79,19 +86,21 @@ all_scripts = {
        ("step", "SIGILL"),
        ("monitor reset", ""),
        ("break 27", ""),
+       ("cont", ""),
        ("set $sp=0x5e", ""),
        ("cont", "SIGBUS")) + epilog),
 
 # Checks range stepping for debugWIRE targets
 # _delay_ms (will be fast), loop with 2 exits (will be slow), loop with 0 exits (will be fast again)
     "range_dw" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'arduino', 'noadc', 'noautopc'),
     "range_dw",
+    "",
     "",
     (("set logging file log/range_dw.log", ""),) + prolog + \
     (("load",  "Start address 0x"),
      ("break range_dw.ino:23", "Breakpoint 1"),
-     ("cont", ""),
+     ("cont", "LedOn"),
      ("next", "_delay_ms"),
      ("next", "LedOff"),
      ("break range_dw.ino:30", "Breakpoint 2"),
@@ -103,15 +112,18 @@ all_scripts = {
      ("$SLEEP", 0.5),
      ("", "SIGINT"),
      ("print cnt > 1", "= true", "= 1"),
-     ("print cnt < 10", "= true", "= 1"),
-     ("break 33", "Breakpoint 2"),
-     ("cont", ""),
+     ("print cnt < 30", "= true", "= 1"),
+     ("break 33", "Breakpoint 3"),
+     ("cont", "cnt = 0"),
      ("next", "while"),
      ("next &", ""),
      ("$SLEEP", 3),
      ("interrupt", ""),
      ("$SLEEP", 0.5),
-     ("", "SIGINT"),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
+     ("interrupt", ""),
+     ("$SLEEP", 0.5),
      ("print cnt > 100000", "= true", "= 1")) + epilog),
 
 # Checks range stepping for JTAG targets
@@ -120,8 +132,9 @@ all_scripts = {
 # Note that the current version of GCC is not able to stop in front of the while statements.
 # Maybe the next version?
     "range_jtag" : (
-    ('small', 'medium', 'large', 'huge', 'jtag', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'jtag', 'arduino', 'noadc', 'noautopc'),
     "range_jtag",
+    "",
     "",
     (("set logging file log/range_jtag.log", ""),) + prolog + \
     (("load",  "Start address 0x"),
@@ -153,8 +166,9 @@ all_scripts = {
 
 # Test sleep walking
     "sleepwalk" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "sleepwalk",
+    "",
     "",
     (("set logging file log/sleepwalk.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -163,14 +177,14 @@ all_scripts = {
      ("next", "sleep_cpu"),
      ("next &", ""),
      ("$SLEEP", 2),
-     ("interrupt", ""),
-     ("$SLEEP", 0.5),
-     ("", "SIGINT")) + epilog),
+     ("interrupt", "SIGINT"))
+     + epilog),
 
 # C++ program to measure supply voltage
     "measure" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noautopc'),
     "measure",
+    "",
     "",
     (("set logging file log/measure.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -186,8 +200,9 @@ all_scripts = {
 
 # tests monitor commands across different gdb servers
     "monitor" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "blink",
+    "",
     "",
     (("set logging file log/monitor.log", ""),) + prolog + \
     (("monitor help", "monitor info"),
@@ -250,8 +265,9 @@ all_scripts = {
 
 # test timer settings
     "timers" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "blink",
+    "",
     "",
     (("set logging file log/blink.log", ""),) + prolog + \
     (("load", "Loading"),
@@ -264,8 +280,9 @@ all_scripts = {
 
 # tests extended-remote target
     "extended" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc', 'noautopc'),
     "cblink",
+    "",
     "",
     (("set style enabled off", ""),
      ("set logging file log/extended.log", ""),
@@ -284,8 +301,9 @@ all_scripts = {
 # tests asynchronous stop
 # tests display
     "blink" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "blink",
+    "",
     "",
     (("set logging file log/blink.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -318,8 +336,9 @@ all_scripts = {
 
 # Testing 'hardware-only' breakpoints for debugWIRE targets (1 HWBP only)
     "breakdw" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'arduino', 'noadc', 'noautopc'),
     "blink",
+    "",
     "",
     (("set logging file log/break.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -343,8 +362,9 @@ all_scripts = {
 
 # Testing 'hardware-only' breakpoints for JTAG targets (4 HWBPs)
     "breakjtag" : (
-    ('small', 'medium', 'large', 'huge', 'jtag', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'jtag', 'arduino', 'noadc', 'noautopc'),
     "blink",
+    "",
     "",
     (("set logging file log/break.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -372,8 +392,9 @@ all_scripts = {
 
 # test whether flash memory is loaded up without any error
     "flash" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "flashed",
+    "",
     "",
     (("set logging file log/flash.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -387,8 +408,9 @@ all_scripts = {
 # test run command
 # software watchpoint
     "fibonacci" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "fibonacci",
+    "",
     "",
     (("set logging file log/fib.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -437,9 +459,10 @@ all_scripts = {
 # test OOP debugging - make sure, that LTO is disabled!
 # test maximal BP setting (set to 4!)
     "oop" : (
-    ('medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "oop",
     "-fno-lto",
+    "",
     (("set logging file log/oop.log", ""),) + prolog + \
     (("load", "Start address 0x"),
      ("whatis r", "Rectangle"),
@@ -458,8 +481,9 @@ all_scripts = {
 
 #tests terminal I/O and heavy IRQ load
     "tictactoe" : (
-    ('large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "tictactoe",
+    "",
     "",
     (("set logging file log/tictactoe.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -491,8 +515,9 @@ all_scripts = {
 # tests safe and interruptible single-step execution
 # INT 0 is enabled and switched active by setting the IRQ pin as an output
     "singlestep" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc', 'noautopc'),
     "isr",
+    "",
     "",
     (("set logging file log/isr.log", ""),) + prolog +
     (("load", "Start address 0x"),
@@ -516,8 +541,9 @@ all_scripts = {
 
 # load something into EEPROM
     "eeprom" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc', 'noautopc'),
     "ceeprom",
+    "",
     "",
     (("set logging file log/eeprom.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -535,8 +561,9 @@ all_scripts = {
 # also loads signature, which is compared with the signature
 # given when inoking pyavrocd
     "fuses" : (
-    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc'),
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc', 'noautopc'),
     "fuses",
+    "",
     "",
     (("set logging file log/fuses.log", ""),) + prolog + \
     (("load", "Start address 0x"),) + epilog),
@@ -547,6 +574,7 @@ all_scripts = {
     "simhigh" : (
     ('huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
     "sim2word_highjmp",
+    "",
     "",
     (("set logging file log/sim2word_highjmp.log", ""),) + prolog + \
     (("load", "Start address 0x"),
@@ -566,7 +594,8 @@ all_scripts = {
 # this test script should be run last in each sequence in order to disable debugWIRE
 # We will check that SIGHUP is generated
     "off" : (
-    ('last', 'small', 'medium', 'large', 'huge', 'dw', 'arduino', 'nonarduino', 'noadc'),
+    ('last', 'small', 'medium', 'large', 'huge', 'dw', 'arduino', 'nonarduino', 'noadc', 'noautopc'),
+    "",
     "",
     "",
     (("set logging file log/off.log", ""),) + prolog + \
@@ -577,6 +606,7 @@ all_scripts = {
 # check that MCU is categorized as a MCU with a dirty PC
     "dirty" : (
     ('dirty', 'dw', 'jtag'),
+    "",
     "",
     "",
     (("set logging file log/dirty.log", ""),) + prolog + \

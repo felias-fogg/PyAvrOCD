@@ -1,8 +1,8 @@
 # Release Notes
 
-## Release 0.20.0
+## Release v0.20.0
 
-- Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows
+- Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows for this Python version
 - Ctrl-C synchronization with the ordinary GDB packet flow so that interruptions are possible even under heavy single-stepping
 - Timer mode issues for JTAG targets has been fixed
 
@@ -70,9 +70,9 @@ This is considered a pre-release in order to give people a chance to play around
     -   `--debug-clock` for setting the JTAG clock frequency for debugging
     -   `--prog-clock` for setting the JTAG clock frequency for programming
     -   `--manage` in order to specify which fuses and lock bits should be managed by the GDB server
-    -   and all `monitor` settings can now be done at the command-line, e.g., `--timers freeze`.
-    -   In addition, you can set options in the file `pyavrocd.options` that will override the options on the command line.
-    -   Using the notation `@file.ext`, any arguments in the file `file.ext` will be spliced into  the command line.
+    -   and all `monitor` settings can now be used at the command-line, e.g., `--timers freeze`.
+    -   Using the notation `@file.ext`, any arguments in the file `file.ext` will be spliced into  the command line. If the file `file.ext` does not exist, no error is raised.
+    -   In addition, you can set options in the file `pyavrocd.options` that will override the options on the command line. The trick is that `@pyavrocd.options` is always implicitly added at the end.
     -   The option `-g`/`--gede` has been removed since the effect of this option can be achieved with the `-s` option.
 - A few monitor commands have been added or modified:
     -   `atexit`: With this option, one can control whether the debugWIRE mode will be left when the debugging session is terminated.

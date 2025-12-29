@@ -1,16 +1,20 @@
 #!/bin/bash
-if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
-   echo "usage: serv.sh <mcu> [<verbosity level>]"
-   exit
+if [ "$#" -gt 1 ]; then
+    echo "usage: serv.sh [<verbosity level>]"
+    echo "call always in 'integration' folder"
+    exit
 fi
-if [ "$#" -eq 2 ]; then
-    verb=$2
+if [ "$#" -eq 1 ]; then
+    verb=$1
 else
     verb=info
 fi
+rm -f pyavrocd.options
 while :
 do
-    poetry run pyavrocd -m all -v $verb -d $1
+    while [ ! -f pyavrocd.options ]; do sleep 0.3; done
+    sleep 0.2
+    poetry run pyavrocd -m all -v $verb
     if [ $? -eq 1 ]
     then
 	echo "Goodbye"

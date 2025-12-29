@@ -36,12 +36,12 @@ Run integration test in folder `integration` (probably only works on POSIX
 OSs). First start the server in one terminal window:
 
 ```
-serv.sh <mcu> [<verbosity level>]
+serv.sh [<verbosity level>]
 ```
-Then start the integration tests in another window (root directory)
+Then start the integration tests in another window (also in the `integration` folder)
 
 ```shell
-poetry run python3 -m integration_test -d <mcu> -c <clock in MHz>
+poetry run python3 test.py -d <mcu> -c <clock in MHz>
 ```
 
 Afterwards, you need to kill the `serv.sh` script with CTRL-C
