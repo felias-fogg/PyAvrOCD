@@ -134,7 +134,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="pyavrocd">PyAvrOCD</h1>
-<p>PyAvrOCD is a Python GDB server for 8-bit AVR MCUs (currently only classic debugWIRE and JTAG ATtinys and ATmegas), enabling you to debug programs running on these MCUs using the <a href="https://www.sourceware.org/gdb/">GNU Project Debugger GDB</a>. PyAvrOCD communicates with Microchip's debug probes, such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a>, using the software infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>. In addition, it provides a pass-through service for the UNO-based debug probe <a href="https://felias-fogg.github.io/dw-link">dw-link</a> and the simulation tool <a href="https://github.com/buserror/simavr">simavr</a>.</p>
+<p>PyAvrOCD<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a Python GDB server<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> for 8-bit AVR MCUs (currently only classic debugWIRE and JTAG ATtinys and ATmegas), enabling you to debug programs running on these MCUs using the <a href="https://www.sourceware.org/gdb/">GNU Project Debugger GDB</a>. PyAvrOCD communicates with Microchip's debug probes, such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a>, using the software infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>. In addition, it provides a pass-through service for the UNO-based debug probe <a href="https://felias-fogg.github.io/dw-link">dw-link</a> and the simulation tool <a href="https://github.com/buserror/simavr">simavr</a>.</p>
 <p>Why another open-source GDB server for AVR MCUs (others are <a href="https://github.com/avrdudes/avarice">AVaRICE</a> and <a href="https://github.com/bloombloombloom/Bloom">Bloom</a>)? The main intention is to provide a <em>cross-platform</em> AVR GDB server. In other words, it is <em>the missing AVR debugging solution</em> for <a href="https://platformio.org">PlatformIO</a> and the <a href="https://www.arduino.cc/en/software/">Arduino IDE 2</a>.</p>
 <p><img alt="ide2-6" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-6.png" /></p>
 <p>In addition to being cross-platform, PyAvrOCD offers some enhancements over its "competitors", particularly in terms of <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/">flash wear</a> and <a href="https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/">single-stepping</a>.</p>
@@ -149,6 +149,17 @@
 </ol>
 <p>Once you have a symbolic debugger connected to the GDB server, you can control the server's behavior using <a href="monitor-commands/"><code>monitor</code> commands</a>.</p>
 <p>While the package appears to function as intended, there is always the chance of a bug, the documentation may need improvements, or a feature may be missing. Or you simply have a question or an idea. We are always happy to receive <a href="contributing/">contributions</a> along those lines.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>How to pronounce PyAvrOCD? Since AVR and OCD are both initialisms, the canonical pronunciations would be Pie-Ay-Vee-Ar-Oh-See-Dee. However, you are free to pronounce it as 'Piaf rocked'.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>The term <em>GDB server</em> is often loosely used for programs that provide an interface similar to what the program <code>gdbserver</code> does in the context of the GNU Project Debugger GDB. <code>gdbserver</code> runs on the target machine, controlling the program to be debugged and communicating with the GDB on the host machine using the <em>remote serial protocol</em> (RSP). In contrast to that, a general GDB server, in particular in the context of embedded debugging, usually does not run on the target machine, but either on the hardware debug adapter or on the host as well. However, it also uses RSP for communicating with GDB.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>
@@ -196,5 +207,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-12-28 20:45:11.790664+00:00
+Build Date UTC : 2025-12-31 16:09:58.668292+00:00
 -->

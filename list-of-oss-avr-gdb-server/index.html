@@ -137,26 +137,29 @@
 <thead>
 <tr>
 <th>Name</th>
-<th>Year</th>
+<th>PoC only</th>
+<th>Start of Dev.</th>
 <th>Platforms</th>
 <th>Interfaces</th>
 <th>MCUs</th>
-<th>Debuggers</th>
+<th>Debug Probes</th>
 <th>Comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>AVaRICE</td>
+<td></td>
 <td>2001</td>
-<td>Mainly POSIX, but now  Linux/Mac/Windows (C++)</td>
+<td>Mainly POSIX (Linux), but by now  also Mac &amp; Windows (C++)</td>
 <td>JTAG, dw, PDI</td>
 <td>classic ATtiny &amp; ATmega, Xmegas</td>
 <td>all, but the most recent MPLAB probes (5 series)</td>
-<td></td>
+<td>First AVR GDB server ever. Support used to be more active.</td>
 </tr>
 <tr>
 <td>dwire-debug</td>
+<td>Yes</td>
 <td>2017</td>
 <td>Cross-platform (C)</td>
 <td>dw</td>
@@ -166,24 +169,27 @@
 </tr>
 <tr>
 <td>debugwire-gdb-bridge</td>
+<td>?</td>
 <td>2018</td>
 <td>Cross-platform (Pascal)</td>
 <td>dw</td>
 <td>ATtiny 13, 2313, 24, 44, 84, 25, 45, 85, 441, 841<br>ATmega48, 88, 168, 328</td>
-<td>USB-UART bridge</td>
-<td></td>
+<td>USB-UART bridge and a bit of hardware</td>
+<td>Based on dwire-debug, but much more complete</td>
 </tr>
 <tr>
 <td>dwtk</td>
+<td></td>
 <td>2019</td>
-<td>Cross-platform (Go)</td>
+<td>Linux (Go)</td>
 <td>dw</td>
 <td>all dw targets</td>
-<td>only USB-UART bridge</td>
-<td>Full server</td>
+<td>only USB-UART bridge and a bit of hardware</td>
+<td>Full server. Tested coverage unclear.</td>
 </tr>
 <tr>
 <td>pyAVRdbg</td>
+<td>Yes</td>
 <td>2020</td>
 <td>Cross-platform (Python)</td>
 <td>UPDI</td>
@@ -193,24 +199,27 @@
 </tr>
 <tr>
 <td>dw-link</td>
+<td></td>
 <td>2021</td>
 <td>Cross-platform (Arduino firmware)</td>
 <td>dw</td>
 <td>all dw targets</td>
 <td>runs on Arduino UNO</td>
-<td>Provides RSP interface over serial line</td>
+<td>Provides RSP interface over serial line, based on dwire-debug and DebugWireDebugger AndProgrammer</td>
 </tr>
 <tr>
 <td>Bloom</td>
+<td></td>
 <td>2021</td>
 <td>Only Linux (POSIX, C++)</td>
 <td>JTAG, dw, PDI, UPDI</td>
 <td>classic ATtinys &amp; ATmegas, Xmegas, all modern parts</td>
 <td>All EDBG-based debuggers</td>
-<td>Coverage as good as Microchip Studio</td>
+<td>Best in terms of chip coverage.</td>
 </tr>
 <tr>
 <td>pyavrdebug</td>
+<td>Yes</td>
 <td>2022</td>
 <td>Cross-platform (Python)</td>
 <td>UPDI</td>
@@ -220,6 +229,7 @@
 </tr>
 <tr>
 <td>gdb-debug-wire-integrated-server</td>
+<td>Yes</td>
 <td>2022</td>
 <td>Cross-platform (Arduino firmware)</td>
 <td>dw</td>
@@ -229,6 +239,7 @@
 </tr>
 <tr>
 <td>updi-gdbserver</td>
+<td>Yes</td>
 <td>2023</td>
 <td>Cross-platform (Scheme)</td>
 <td>UPDI</td>
@@ -238,6 +249,7 @@
 </tr>
 <tr>
 <td>PK5-UPDI-GDB-Server</td>
+<td></td>
 <td>2024</td>
 <td>Cross-platform (Python)</td>
 <td>UPDI</td>
@@ -247,6 +259,7 @@
 </tr>
 <tr>
 <td>dw-gdbserver</td>
+<td></td>
 <td>2025</td>
 <td>Cross-platform (Python)</td>
 <td>dw</td>
@@ -256,6 +269,7 @@
 </tr>
 <tr>
 <td>PyAvrOCD</td>
+<td></td>
 <td>2025</td>
 <td>Cross-platform (Python)</td>
 <td>JTAG, dw</td>

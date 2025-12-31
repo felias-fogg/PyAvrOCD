@@ -98,7 +98,7 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#release-0200">Release 0.20.0</a>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0200">Release v0.20.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0190">Release v0.19.0</a>
     </li>
@@ -161,9 +161,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
-<h2 id="release-0200">Release 0.20.0</h2>
+<h2 id="release-v0200">Release v0.20.0</h2>
 <ul>
-<li>Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows</li>
+<li>Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows for this Python version</li>
 <li>Ctrl-C synchronization with the ordinary GDB packet flow so that interruptions are possible even under heavy single-stepping</li>
 <li>Timer mode issues for JTAG targets has been fixed</li>
 </ul>
@@ -237,9 +237,9 @@
 <li><code>--debug-clock</code> for setting the JTAG clock frequency for debugging</li>
 <li><code>--prog-clock</code> for setting the JTAG clock frequency for programming</li>
 <li><code>--manage</code> in order to specify which fuses and lock bits should be managed by the GDB server</li>
-<li>and all <code>monitor</code> settings can now be done at the command-line, e.g., <code>--timers freeze</code>.</li>
-<li>In addition, you can set options in the file <code>pyavrocd.options</code> that will override the options on the command line.</li>
-<li>Using the notation <code>@file.ext</code>, any arguments in the file <code>file.ext</code> will be spliced into  the command line.</li>
+<li>and all <code>monitor</code> settings can now be used at the command-line, e.g., <code>--timers freeze</code>.</li>
+<li>Using the notation <code>@file.ext</code>, any arguments in the file <code>file.ext</code> will be spliced into  the command line. If the file <code>file.ext</code> does not exist, no error is raised.</li>
+<li>In addition, you can set options in the file <code>pyavrocd.options</code> that will override the options on the command line. The trick is that <code>@pyavrocd.options</code> is always implicitly added at the end.</li>
 <li>The option <code>-g</code>/<code>--gede</code> has been removed since the effect of this option can be achieved with the <code>-s</code> option.</li>
 </ul>
 </li>
