@@ -58,7 +58,8 @@ class XAvrDebugger(AvrDebugger):
         self.housekeeper = None
         self._hwbpnum = None
         self._architecture = None
-        self.use_events_for_run_stop_state = True # we use the polling feature!
+        self.use_events_for_run_stop_state =  False # in order to avoid the timing glitch with ATmega32/Atmel-ICE
+
         # Gather device info
         # moved here so that we have mem + device info before the debug process starts
         try:
@@ -97,6 +98,7 @@ class XAvrDebugger(AvrDebugger):
 
         self.logger.debug("Nvm instance created, iface: %s, HWBPs: %d, arch: %s",
                               self._iface, self._hwbpnum, self._architecture)
+        self.logger.info("Managing fuses: %s", manage)
 
     def get_iface(self):
         """
@@ -146,7 +148,7 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("Switched to programming mode")
         self._verify_target(dev_id)
         self._post_process_after_start()
-        self.logger.info("Post processing finished")
+        self.logger.info("Postprocessing finished")
         self.switch_to_debmode()
         self.logger.info("Switched to debugging mode")
         self._check_stuck_at_one_pc()

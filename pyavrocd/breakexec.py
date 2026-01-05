@@ -332,7 +332,6 @@ class BreakAndExec():
             return SIGTRAP
         # for the remaining instructions,
         # clear I-bit before and set it afterwards (if it was on before)
-        self.logger.debug("Remaining branch instructions")
         sreg = self.dbg.status_register_read()[0]
         self.logger.debug("sreg=0x%X", sreg)
         ibit = sreg & 0x80

@@ -10,8 +10,8 @@ Extending a core to enable it for debugging (using PyAvrOCD) is almost always th
 
      ```
      # Optimization flags for debugging
-     compiler.optimization_flags=-Os -DNDBEUG
-     compiler.optimization_flags.release=-Os -DNDBEUG
+     compiler.optimization_flags=-Os -ggdb3 -DNDBEUG
+     compiler.optimization_flags.release=-Os -ggdb3 -DNDBEUG
      compiler.optimization_flags.debug=-Og -ggdb3 -DDEBUG
      ```
 
@@ -41,6 +41,7 @@ Extending a core to enable it for debugging (using PyAvrOCD) is almost always th
      debug.cortex-debug.custom.overrideGDBServerStartedRegex=Listening on port \d+ for gdb connection
      debug.cortex-debug.custom.objdumpPath={runtime.tools.avr-gcc.path}/bin/avr-objdump
      debug.cortex-debug.custom.serverArgs.0=-s
+     # The nop should be the serverArgs.1 because the programmer simavr may change that!
      debug.cortex-debug.custom.serverArgs.1=nop
      debug.cortex-debug.custom.serverArgs.2=-d
      debug.cortex-debug.custom.serverArgs.3={build.mcu}
@@ -74,7 +75,7 @@ menu.jtag=JTAG pins
 menu.lto=Compiler LTO
 ```
 
-2. Add specifications for the two menu entries above. Add `debug.clkdeb` for each clock entry!
+2. Add specifications for the two menu entries above.
 
 ## `programmers.txt`
 

@@ -41,7 +41,7 @@ dependencies = [
 
 [project.urls]
 repository = "https://github.com/felias-fogg/PyAvrOCD"
-documentation = "https://felias-fogg.github.io/PyAvrOCD/"
+documentation = "https://pyavrocd.io"
 "Bug Tracker" = "https://github.com/felias-fogg/PyAvrOCD/issues"
 
 [project.scripts]
@@ -110,6 +110,7 @@ max-bool-expr=10
 max-nested-blocks=7
 max-line-length=120
 max-module-lines=1200
+max-positional-arguments=7
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

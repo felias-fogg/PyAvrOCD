@@ -1,6 +1,20 @@
 # Changelog
 
-### New
+### 0.21.0
+
+- **Fixed:**
+     - After the change to the timer mode (0.20.0), it became necessary to change the monitor command so that no reset is issued when one only queries the state. In addition, one will now also get a message that the MCU has been reset when timer mode is changed.
+     - The LiveTests had a problem when single-stepping: The status register was queried before the MCU had stopped (although _wait_for_break had returned). This happened only for the JTAGICE3, PowerDebugger, and Atmel-ICE. Changing in _wait_for_break to polling (`use_events_for_run_stop_state = False`) mitigated the problem.
+     - For the combination PICkit4 and ATmega32, it is necessary to 'deactivate' and 'activate the physical' when switching between debug and program mode.  So, this is now done in general.
+     - It was also necessary to introduce some decoupling time between running the test scripts when using PICkit4: 2.5 secs
+- **Added:**
+     - A new field in the `monitor info`  describing the connected debugger.
+     - The manual contains now a link to an udev rules file that can be downloaded and installed.
+- **Changed:**
+     - `stop_debugging` runs gracefully (not spitting out error messages) when debugging had been deactivated before.
+- **Removed**:
+     - The option `--install-udev-rules` has been removed. I trust that Linux users are able to download and install a udev rules file manually, and they probably feel much more confident when doing it this way.
+
 
 
 

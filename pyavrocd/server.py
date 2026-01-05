@@ -25,10 +25,11 @@ class RspServer():
     and responding, and terminating. The important part is calling the handle_data
     method of the handler.
     """
-    def __init__(self, avrdebugger, devicename, args):
+    def __init__(self, avrdebugger, devicename, args, toolname):
         self.avrdebugger = avrdebugger
         self.devicename = devicename
         self.port = args.port
+        self.toolname = toolname
         self.logger = getLogger("pyavrocd.rspserver")
         self.connection = None
         self.gdb_socket = None
@@ -57,7 +58,7 @@ class RspServer():
             self.connection, self.address = self.gdb_socket.accept()
             self.connection.setblocking(0)
             self.logger.info('Connection from %s', self.address)
-            self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args)
+            self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args, self.toolname)
             while not self._terminate:
                 ready = select.select([self.connection], [], [], 0.5)
                 if ready[0]:
@@ -84,7 +85,8 @@ class RspServer():
                   self.handler.mon.is_debugger_active() and \
                   self.handler.mon.is_leaveonexit():
                     self.avrdebugger.dw_disable()
-                self.avrdebugger.stop_debugging(graceful=False)
+                    self.handler.mon.set_debug_mode_active(enable=False)
+                self.avrdebugger.stop_debugging(graceful=True)
                 self.avrdebugger = None
 
 

@@ -128,8 +128,8 @@ Instead of starting a new edit/compile/debug cycle, you may want to call it a da
 
 There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the PyAvrOCD manual.
 
-!!! danger "Warning: Do not source attached circuits through the 5V or 3V pin. Use IOREF!"
+!!! danger "Warning: Do not source attached circuits through the 5V or 3V pin or externally. Use IOREF!"
     If you have any attached circuitry, be it on a breadboard or a shield, use the `IOREF` pin to power it.
 
 
-    The reason for this is that the `IOREF` pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be connected to GND and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode.
+    The reason for this is that the `IOREF` pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be disconnected from power and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode.

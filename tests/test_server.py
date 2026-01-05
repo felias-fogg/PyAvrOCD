@@ -3,7 +3,7 @@ The test suit for server module
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 import logging
-from unittest.mock import  Mock, call, patch, create_autospec
+from unittest.mock import  MagicMock, Mock, call, patch, create_autospec
 from unittest import TestCase
 from types import SimpleNamespace
 
@@ -22,7 +22,7 @@ class TestRspServer(TestCase):
         mock_dbg.device = 'atmega328p'
         args = SimpleNamespace()
         args.port = 2000
-        self.rs = RspServer(mock_dbg, "atemga328p", args)
+        self.rs = RspServer(mock_dbg, "atemga328p", args, "Tool")
         self.rs.logger = Mock()
         self.rs.logger.info = Mock()
         self.rs.logger.getEffectiveLevel.return_value = logging.INFO
@@ -41,7 +41,7 @@ class TestRspServer(TestCase):
         self.set_up()
         mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
         mock_socket.return_value.accept.return_value[0].recv.side_effect = [b'123', b'123', b'']
-        mock_handler.return_value = create_autospec(GdbHandler)
+        mock_handler.return_value = MagicMock(spec=GdbHandler)
         mock_select.side_effect = [(1,0,0), (1,0,0), (1,0,0)]
         self.assertEqual(self.rs.serve(), 0)
         self.rs.logger.info.assert_has_calls([call('Listening on port %s for gdb connection', 2000),

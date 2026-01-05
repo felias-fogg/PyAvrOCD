@@ -17,18 +17,15 @@ all of MCUdude's Mega cores will be added.
 
 Most of the supported Microchip boards have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.
 
-- **ATmega328P** **Xplained Mini**:  [Atmel AVR Xplained-minis (Debug enabled)](supporting-cores.md#atmel-avr-xplained-minis-debug-enabled); no physical modifications or fuse
-  settings necessary,  power-cycling is automatic.
+- **ATmega328P** **Xplained Mini**:  [Atmel AVR Xplained-minis (Debug enabled)](supporting-cores.md#atmel-avr-xplained-minis-debug-enabled); no physical modifications or fuse settings necessary,  power-cycling is automatic.
 
-- **ATmega168PB** **Xplained Mini**: [Atmel AVR Xplained-minis (Debug enabled)](supporting-cores.md#atmel-avr-xplained-minis-debug-enabled); no physical modifications or fuse
-  settings necessary,  power-cycling is automatic.
+- **ATmega168PB** **Xplained Mini**: [Atmel AVR Xplained-minis (Debug enabled)](supporting-cores.md#atmel-avr-xplained-minis-debug-enabled); no physical modifications or fuse settings necessary,  power-cycling is automatic.
 
-- **ATmega328PB** **Xplained Mini**: [Atmel AVR Xplained-minis (Debug enabled)](supporting-cores.md#atmel-avr-xplained-minis-debug-enabled); no physical modifications or fuse
-  settings necessary,  power-cycling is automatic.
+- **ATmega328PB** **Xplained Mini**: [Atmel AVR Xplained-minis (Debug enabled)](supporting-cores.md#atmel-avr-xplained-minis-debug-enabled); no physical modifications or fuse settings necessary,  power-cycling is automatic.
 
-- <u>ATmega324PB Xplained Pro:</u> Serial I/O is routed via
+- **ATmega324PB Xplained Pro:** Serial I/O is routed via
   `Serial1` instead of `Serial`. The LED is connected to digital
-  pin 23. No physical modifications or fuse settings necessary,  power-cycling is automatic.
+  pin 23. No physical modifications or fuse settings necessary.
 - <u>AT90USBKEY2 (AT90USB1287)</u>
 - <u>ATmega256RFR2 Xplained Pro</u>
 - <u>AVR Butterfly (ATmega169)</u>
@@ -44,8 +41,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Arduino UNO Mini:  [MiniCore](supporting-cores.md#minicore), remove capacitor `C3`
 - Arduino Duemilanove:  [MiniCore](supporting-cores.md#minicore), `RESET EN` needs to be cut
 - Arduino Diecimila:  [MiniCore](supporting-cores.md#minicore), [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
-- **Arduino Nano:**
-  [100 nF cap and 1kΩ resistor needs to be removed](board-preparation.md#arduino-nano-and-clones)
+- **Arduino Nano:** [100 nF cap and 1kΩ resistor needs to be removed](board-preparation.md#arduino-nano-and-clones)
 - <u>Arduino Mega</u>
 - <u>Arduino Mega 2560</u>
 - Arduino Mega ADK
@@ -142,7 +138,8 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 - **ATtiny841 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 - **ATtiny1634 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
-- **ATtiny88 breakout board (assembled)**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
+- ATtiny88 breakout board (assembled): [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 - **ATtiny828 breakout board (assembled)**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
-- **ATtiny167 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
+- ATtiny167 dev. board: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 - **ATtiny43 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
+

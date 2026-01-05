@@ -60,13 +60,7 @@ As a result, you find an executable `pyavrocd` (or `pyavrocd.exe`) in the direct
 
 ### Some OS idiosyncrasies
 
-**Linux**: On a Linux installation, users may need to add a few `udev` rules after having installed PyAvrOCD. One can add these `udev` rules manually, following the instructions in the [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Instead, this can also be accomplished by invoking PyAvrOCD once as root with the option `--install-udev-rules` (assuming that `pyavrocd` has been stored somewhere on the `PATH`):
-
-```
-> sudo pyavrocd --install-udev-rules
-```
-
-Alternatively, wait until PyAvrOCD is started and cannot find a debug probe. Then it will tell you what to do.
+**Linux**: On a Linux installation, users may need to add a few `udev` rules after having installed PyAvrOCD. On a Linux installation, users may need to add a few `udev` rules after having installed PyAvrOCD. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
 **Mac**: On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed.  In this case, use the command
 

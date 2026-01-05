@@ -2,17 +2,19 @@
 
 Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino support (so far).
 
-If you want to install a core, in most cases, you first have to add a *package index json* URL to the list of `Additional boards manager URLs`, which you find in the `Preferences` dialog. Once this has been done, you can search in the `Boards Manager` (accessible through the `Tools` menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.
+If you want to install a core, in most cases, you first have to add a *package index JSON* URL to the list of `Additional boards manager URLs`, which you find in the `Preferences` dialog. Once this has been done, you can search in the `Boards Manager` (accessible through the `Tools` menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.
 
 ### [ATTinyCore (Debug enabled)](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
-This is a fork of Spence Konde's ATTinyCore 2.0.0-dev, which covers all classic ATtinys with a debugWire interface. You can install it after including the following URL
+This is a fork of Spence Konde's ATTinyCore version 1.5.2,[^a] which covers all classic ATtinys with a debugWire interface. You can install it after including the following URL
 
 ```
  https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
-in the additional boards manager URLs. As mentioned in the notes, this core is considered to be a development version. However, this appears to apply mainly to the new bootloaders.
+in the additional boards manager URLs.
+
+***Currently, the support for downloading the micronucleus uploaders has been removed because the download website cannot be reached (Jan 1, 2026)***.
 
 ### [Atmel AVR Xplained-minis (Debug enabled)](https://github.com/felias-fogg/avr-xminis-debug-enabled)
 
@@ -71,3 +73,5 @@ https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 ```
 
 The extension of this core is not yet ready.
+
+[^a]: I tried to extend the current development version 2.0.0, but failed. I may give it another try in the near future.

@@ -457,6 +457,7 @@ def startup(command_line, logger):
     # now report startup
     logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
 
+    toolname = "Unknown debug tool"
     if args.tool == "dwlink":
         dwlink.main(args, intf) # if we return, then there is no HW debugger
         no_hw_dbg_error = True
@@ -501,7 +502,9 @@ def startup(command_line, logger):
         try:
             if transport.connect(serial_number=toolconnection.serialnumber,
                                      product=toolconnection.tool_name):
-                logger.info("Connected to %s", transport.hid_device.get_product_string())
+                toolname = transport.hid_device.get_product_string()
+                logger.info("Connected to %s", toolname)
+
             else:
                 logger.critical("Far too many connected tools. Use -t or -s to distinguish!")
                 return 1
@@ -528,7 +531,7 @@ def startup(command_line, logger):
     logger.info("Starting GDB server")
     try:
         avrdebugger = XAvrDebugger(transport, device, intf, args.manage, args.clkprg, args.clkdeb, args.timers[0]=='r')
-        server = RspServer(avrdebugger, device, args)
+        server = RspServer(avrdebugger, device, args, toolname)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
             logger.critical("Fatal Error: %s",e)

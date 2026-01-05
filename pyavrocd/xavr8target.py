@@ -372,15 +372,29 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         """
         Simply detach and enter prog mode
         """
+        self.logger_loc.debug("Detaching...")
         self.protocol.detach()
+        self.logger_loc.debug("Deactivating physical...")
+        self.deactivate_physical()
+        self.logger_loc.debug("Activating physical...")
+        self.activate_physical()
+        self.logger_loc.debug("Entering progmode...")
         self.protocol.enter_progmode()
+        self.logger_loc.debug("Switched to progmode")
 
     def switch_to_debmode(self):
         """
         Simply leave prog mode and attach again
         """
+        self.logger_loc.debug("Leaving progmode...")
         self.protocol.leave_progmode()
+        self.logger_loc.debug("Deactivating physical...")
+        self.deactivate_physical()
+        self.logger_loc.debug("Activating physical...")
+        self.activate_physical()
+        self.logger_loc.debug("Trying to attach...")
         self.protocol.attach()
+        self.logger_loc.debug("Switched to debug mode")
 
     def attach(self):
         """

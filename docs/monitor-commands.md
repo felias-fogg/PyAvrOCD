@@ -16,7 +16,7 @@ PyAvrOCD implements several `monitor` commands. These can be used to control imp
 | `monitor` `rangestepping `[`enable` \| `disable`]            | The GDB range-stepping command is supported or disabled. The default is that it is `enable`d. |
 | `monitor` `reset`                                            | Resets the MCU.                                              |
 | `monitor` `singlestep` [`safe` \| `interruptible`]           | Single-stepping can be performed in a `safe` way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The `safe` option is the default. |
-| `monitor` `timer` [`run` \| `freeze`]                        | Timers can either be `frozen` when execution is stopped, or they can `run` freely. The latter option is helpful when PWM output is crucial, and it is the default. |
+| `monitor` `timer` [`run` \| `freeze`]                        | Timers can either be `frozen` when execution is stopped, or they can `run` freely. The latter option is helpful when PWM output is crucial, and it is the default. Note that changing the timer mode will imply an MCU reset. |
 | `monitor` `verify` [`enable `\|` disable`]                   | Verify flash after loading each flash page. The default setting is for this option to be `enable`d. |
 | `monitor` `version`                                          | Show version of the gdbserver.                               |
 

@@ -32,12 +32,12 @@ class GdbHandler():
     GDB handler
     Maps between incoming GDB requests and AVR debugging protocols (via pymcuprog)
     """
-    def __init__ (self, comsocket, avrdebugger, devicename, args):
+    def __init__ (self, comsocket, avrdebugger, devicename, args, toolname):
         self.packet_size = RECEIVE_BUFFER - 20
         self.logger = logging.getLogger('pyavrocd.handler')
         self.rsp_logger = logging.getLogger('pyavrocd.rsp')
         self.dbg = avrdebugger
-        self.mon = MonitorCommand(self.dbg.get_iface(), args)
+        self.mon = MonitorCommand(self.dbg.get_iface(), args, toolname)
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(self.mon, avrdebugger, self.mem.flash_read_word)
         self._comsocket = comsocket
@@ -493,7 +493,7 @@ class GdbHandler():
             self.logger.critical("Error while connecting to target OCD: %s", e)
             if not self.critical:
                 self.critical = e
-            self.dbg.stop_debugging()
+            self.dbg.stop_debugging(graceful=True)
         self.logger.debug("debugger_active=%d",self.mon.is_debugger_active())
         self.send_packet("PacketSize={0:X};qXfer:memory-map:read+".format(self.packet_size))
 

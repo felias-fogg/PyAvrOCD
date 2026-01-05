@@ -16,17 +16,17 @@ class TestMonitorCommand(TestCase):
         self.moj = None
 
     def set_up(self):
-        self.mo = MonitorCommand('debugwire', options(['-f', 'foo', '-d', 'atmega328p']))
-        self.moj = MonitorCommand('jtag', options(['-f', 'foo', '-d', 'atmega128', '--timer', 'freeze']))
+        self.mo = MonitorCommand('debugwire', options(['-f', 'foo', '-d', 'atmega328p']), "Tool")
+        self.moj = MonitorCommand('jtag', options(['-f', 'foo', '-d', 'atmega128', '--timer', 'freeze']), "Tool")
 
     def test_consistency_failure(self):
         self.set_up()
         monopts['bla'] = [1,2,3]
-        self.assertRaises(FatalError, MonitorCommand, 'jtag', options([ '-d', 'atmega328p']))
+        self.assertRaises(FatalError, MonitorCommand, 'jtag', options([ '-d', 'atmega328p']), "Tool")
         monopts.pop('bla')
         temp = monopts['NoXML']
         del monopts['NoXML']
-        self.assertRaises(FatalError, MonitorCommand, 'jtag', options([ '-d', 'atmega328p']))
+        self.assertRaises(FatalError, MonitorCommand, 'jtag', options([ '-d', 'atmega328p']), "Tool")
         monopts['NoXML'] = temp
 
     def test_defaults_atmega128(self):
@@ -376,11 +376,11 @@ class TestMonitorCommand(TestCase):
     def test_dispatch_timers(self):
         self.set_up()
         self.assertFalse(self.mo._timersfreeze)
-        self.assertEqual(self.mo.dispatch(['timers', 'run']), (1, "Timers will run when execution is stopped"))
+        self.assertEqual(self.mo.dispatch(['timers', 'run']), (1, "MCU reset\nTimers will run when execution is stopped"))
         self.assertFalse(self.mo._timersfreeze)
-        self.assertEqual(self.mo.dispatch(['timers', 'freeze']), (0, "Timers are frozen when execution is stopped"))
+        self.assertEqual(self.mo.dispatch(['timers', 'freeze']), (0, "MCU reset\nTimers are frozen when execution is stopped"))
         self.assertTrue(self.mo._timersfreeze)
-        self.assertEqual(self.mo.dispatch(['timers']), (0, "Timers are frozen when execution is stopped"))
+        self.assertEqual(self.mo.dispatch(['timers']), ("", "Timers are frozen when execution is stopped"))
         self.assertEqual(self.mo.dispatch(['timers', 'bla']), ("", "Unknown argument in 'monitor' command"))
 
 

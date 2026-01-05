@@ -42,9 +42,10 @@ class MonitorCommand():
     the right action. The return value of the dispatch method is
     a pair consisting of an action identifier and the string to be displayed.
     """
-    def __init__(self, iface, args):
+    def __init__(self, iface, args, toolname):
         self._iface = iface
         self._debugger_active = False
+        self._toolname = toolname
         self._debugger_activated_once = False
         self.logger = getLogger('pyavrocd.monitor')
         # state variables (will be set by set_default_values)
@@ -175,11 +176,12 @@ class MonitorCommand():
 
     def set_debug_mode_active(self, enable=True):
         """
-        Sets the debug mode to True and remembers that debug mode has been
+        Sets the debug mode to True (or False) and remembers that debug mode has been
         activated once
         """
         self._debugger_active = enable
-        self._debugger_activated_once = True
+        if enable:
+            self._debugger_activated_once = True
 
     def is_read_before_write(self):
         """
@@ -295,6 +297,8 @@ class MonitorCommand():
         return("", "Ambiguous 'monitor' command string")
 
     def _mon_atexit(self, optix):
+        if self._iface != "debugwire" and 0 <= optix <= 2:
+            return("", "This is not a debugWIRE target")
         if optix == 1 or (optix == 0 and self._leaveonexit is False):
             self._leaveonexit = False
             return("", "MCU will stay in debugWIRE mode on exit")
@@ -310,6 +314,8 @@ class MonitorCommand():
             if self._onlyswbps:
                 return("", "Only software breakpoints")
             if self._onlyhwbps:
+                if self._bpfixed:
+                    return("", "On this MCU, only hardware breakpoints are allowed")
                 return("", "Only hardware breakpoints")
             return("", "All breakpoints are allowed")
         if 1 <= optix <= 3 and self._bpfixed:
@@ -362,10 +368,10 @@ class MonitorCommand():
     def _mon_erase_before_load(self, optix):
         if self._iface == 'debugwire':
             return("", "On debugWIRE targets, flash memory cannot be erased before loading executable")
-        if optix == 1 or (optix == 0 and self._cache is True):
+        if optix == 1 or (optix == 0 and self._erase_before_load is True):
             self._erase_before_load = True
             return("", "Flash memory will be erased before loading executable")
-        if optix == 2 or (optix == 0 and self._cache is False):
+        if optix == 2 or (optix == 0 and self._erase_before_load is False):
             self._erase_before_load = False
             return("", "Flash memory will not be erased before loading executable")
         return self._mon_unknown_arg(None)
@@ -401,10 +407,10 @@ monitor load [readbeforewrite|writeonly|onlycache]
                                      do read-before-write
 monitor onlywhenloaded [enable|disable]
                                    - execute only with loaded executable
-monitor singlestep [safe|interruptible]
-                                   - single stepping mode; safe is default
 monitor rangestepping [enable|disable]
                                    - allow range stepping
+monitor singlestep [safe|interruptible]
+                                   - single stepping mode; safe is default
 monitor timers [run|freeze]        - run (default) or freeze timers when stopped
 monitor verify [enable|disable]    - verify that loading was successful (def.)
 If no parameter is specified, the current setting is returned""")
@@ -412,6 +418,7 @@ If no parameter is specified, the current setting is returned""")
     def _mon_info(self, _):
         return ('info',"""PyAvrOCD version:         """ + importlib.metadata.version("pyavrocd") + """
 Target:                   {}
+Debugger:                 """ + self._toolname + """
 Debugging interface:      """ + self._iface + ((" (leave on exit)" if self._leaveonexit else " (stay on exit)") \
                                                    if self._iface == "debugwire" else "") + """
 Debugging enabled:        """ + ("yes" if self._debugger_active else "no") + """
@@ -479,11 +486,15 @@ Timers:                   """ + ("frozen when stopped"
     def _mon_timers(self, optix):
         if optix == 2 or (optix == 0 and self._timersfreeze is True):
             self._timersfreeze = True
-            return(0, "Timers are frozen when execution is stopped")
-        if optix == 1 or (optix == 0 and self._timersfreeze is False):
+            resp = "Timers are frozen when execution is stopped"
+        elif optix == 1 or (optix == 0 and self._timersfreeze is False):
             self._timersfreeze = False
-            return(1, "Timers will run when execution is stopped")
-        return self._mon_unknown_arg(None)
+            resp = "Timers will run when execution is stopped"
+        else:
+            return self._mon_unknown_arg(None)
+        if optix == 0:
+            return("", resp)
+        return (not self._timersfreeze, "MCU reset\n" + resp)
 
     def _mon_version(self, _):
         return("", "PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))

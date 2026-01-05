@@ -30,6 +30,8 @@ class TestXAvrDebugger(TestCase):
         self.xa.device.avr.protocol = MagicMock(spec=Avr8Protocol)
         self.xa.logger = Mock()
         self.xa.housekeeper = Mock()
+        self.xa._wait_for_break = Mock()
+        self.xa._wait_for_break.return_value = False # after reset: we are stopped
         # a JTAG target
         self.xaj = XAvrDebugger(mock_transport, "atmega644", "jtag", ['bootrst', 'lockbits', 'ocden'], 4000, 500, True)
         self.xaj.logger = MagicMock()
@@ -39,6 +41,8 @@ class TestXAvrDebugger(TestCase):
         self.xaj.device.avr = MagicMock()
         self.xaj.device.avr.protocol = MagicMock(spec=Avr8Protocol)
         self.xaj.housekeeper = Mock()
+        self.xaj._wait_for_break = Mock()
+        self.xaj._wait_for_break.return_value = False
         # a UPDI target
         self.xau = XAvrDebugger(mock_transport, "atmega4809", "updi", ['bootrst', 'lockbits', 'ocden'], 4000, 500, True)
         self.xau.logger = MagicMock()
@@ -48,6 +52,8 @@ class TestXAvrDebugger(TestCase):
         self.xau.device.avr = MagicMock()
         self.xau.device.avr.protocol = MagicMock(spec=Avr8Protocol)
         self.xau.housekeeper = Mock()
+        self.xau._wait_for_break = Mock()
+        self.xau._wait_for_break.return_value = False
 
 
     def test_get_iface(self):

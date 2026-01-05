@@ -42,7 +42,7 @@ class TestGdbHandler(TestCase):
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
         self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p",
-                                 options(['-f', 'foo', '-d', 'atmega328p']))
+                                 options(['-f', 'foo', '-d', 'atmega328p']), "Tool")
         self.gh.mon = create_autospec(MonitorCommand, specSet=True, instance=True)
         self.gh.mon.is_onlycache.return_value = False
         self.gh.mem = create_autospec(Memory, specSet=True, instance=True)

@@ -30,15 +30,15 @@ With the following command, you generate a coverage report in the folder `cov/`
 
 
 
-### Integration tests
+### End-to-end tests
 
-Run integration test in folder `integration` (probably only works on POSIX
+Run end-to-end test (GDB CLI level) in folder `end-to-end` (probably only works on POSIX
 OSs). First start the server in one terminal window:
 
 ```
 serv.sh [<verbosity level>]
 ```
-Then start the integration tests in another window (also in the `integration` folder)
+Then start the end-to-end tests in another window (also in the `end-to-end` folder)
 
 ```shell
 poetry run python3 test.py -d <mcu> -c <clock in MHz>
@@ -56,9 +56,9 @@ The idea with unit tests is clear: Write a test for each and every method and tr
 
 
 
-### Integration tests
+### End-to-end tests
 
-The integration tests test the interaction in the entire system from the MCU over the GDB server to the GDB debugger. It should cover as many cases as possible (and feasible).
+The end-to-end tests test the interaction in the entire system from the MCU over the GDB server to the GDB debugger. It should cover as many cases as possible (and feasible).
 
 
 
@@ -76,7 +76,7 @@ The integration tests test the interaction in the entire system from the MCU ove
 - **eeprom**: Demonstrates loading directly into EEPROM, EEPROM manipulation in the program, and on the debugger level.
 - **fuse:** Demonstrates that including fuses and lockbits is tolerated but ignored. Signatures are compared to the actual MCU, however.
 - **off**: Disables debugWIRE,
-- **dirty:** Script for testing whether MCUs with stuck-at-1 bits are identified. This is the only sk
+- **dirty:** Script for testing whether MCUs with stuck-at-1 bits are identified.
 
 
 

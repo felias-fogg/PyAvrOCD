@@ -1,0 +1,14 @@
+fresh:
+	- avrdude -c atmelice_isp -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c atmelice_jtag -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c jtag3isp -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c jtag3 -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c pickit4_isp -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c pickit4_jtag -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c powerdebugger_isp -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c powerdebugger_jtag -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c snap_isp -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c snap_jtag -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c xplainedpro -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c xplainedmini -p $(MCU) -e -U lock:w:0x00:m
+	- avrdude -c arduino_as_isp -p $(MCU) -e -P $(PORT) -U lock:w:0x00:m
