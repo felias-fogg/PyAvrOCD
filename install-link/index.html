@@ -154,7 +154,7 @@
 <p>Both the installation and configuration of PyAvrOCD are straightforward on Windows, macOS, and Linux machines (see <a href="../supported-platforms/">supported platforms</a>). Mac and Linux users should be aware of some idiosyncrasies, however.</p>
 <div class="admonition info">
 <p class="admonition-title">Linux</p>
-<p>On a Linux installation, users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. One can add these udev rules manually, following the instructions in the <a href="https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems">pyedbglib README</a>. Alternatively, wait until PyAvrOCD is started and cannot find a debug probe. Then it will tell you what to do.</p>
+<p>On a Linux installation, users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. Download https://pyavrocd.io/99-edbg-debuggers.rules, edit if you want, and copy to <code>/etc/udev/rules.d/</code>. </p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">macOS</p>

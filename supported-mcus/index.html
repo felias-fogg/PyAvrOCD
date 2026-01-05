@@ -180,13 +180,13 @@
 <li><strong>ATtiny43U</strong></li>
 <li><strong>ATtiny2313, ATtiny2313A, ATtiny4313</strong></li>
 <li><strong>ATtiny24(A), ATtiny44(A), ATtiny84(A)</strong></li>
-<li>ATtiny441, ATtiny841</li>
+<li><strong>ATtiny441</strong>, <strong>ATtiny841</strong></li>
 <li><strong>ATtiny25, ATtiny45, ATtiny85</strong></li>
-<li>ATtiny261(A), ATtiny461(A), ATtiny861(A)</li>
-<li>ATtiny87, ATtiny167</li>
-<li>ATtiny828</li>
+<li><strong>ATtiny261(A), ATtiny461(A), ATtiny861(A)</strong></li>
+<li><strong>ATtiny87</strong>, <strong>ATtiny167</strong></li>
+<li><strong>ATtiny828</strong></li>
 <li><strong>ATtiny48, ATtiny88</strong></li>
-<li>ATtiny1634</li>
+<li><strong>ATtiny1634</strong></li>
 </ul>
 <h3 id="atmegas-supported-by-minicore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MiniCore"><em>MiniCore</em></a> (soon)</h3>
 <ul>
@@ -200,7 +200,7 @@
 <ul>
 <li><u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u></li>
 <li>ATmega32C1, ATmega64C1, ATmega16M1, <u>ATmega32M1</u>, <u>ATmega64M1</u></li>
-<li>AT90USB82, <u>AT90USB162</u></li>
+<li>AT90USB82, <strong>AT90USB162</strong></li>
 <li>AT90PWM1, <u>AT90PWM2B</u>, AT90PWM3B</li>
 <li><u>AT90PWM81</u>, AT90PWM161</li>
 <li><u>AT90PWM216</u>, AT90PWM316</li>
@@ -213,7 +213,7 @@
 <li><s><strong>ATmega16(A)</strong></s>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
 </ul>
-<p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon appeared on chips labeled with an A-suffix. In any case, all chipsxyAS C with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.</p>
+<p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon also appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.</p>
 <h3 id="atmegas-supported-by-megacore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a> (soon)</h3>
 <ul>
 <li><u>ATmega64(A)</u>, ATmega128(A)</li>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/test-problems/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Problems that occured during end-to-end testing - PyAvrOCD</title>
+    <title>Problems that occurred during end-to-end testing - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Problems that occured during end-to-end testing";
+        var mkdocs_page_name = "Problems that occurred during end-to-end testing";
         var mkdocs_page_input_path = "test-problems.md";
         var mkdocs_page_url = "/test-problems/";
       </script>
@@ -123,7 +123,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Problems that occured during end-to-end testing</li>
+      <li class="breadcrumb-item active">Problems that occurred during end-to-end testing</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/test-problems.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -133,11 +133,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="problems-that-occured-during-end-to-end-testing">Problems that occured during end-to-end testing</h1>
+                <h1 id="problems-that-occurred-during-end-to-end-testing">Problems that occurred during end-to-end testing</h1>
 <p>While running the end-to-end test, I had to make some amends to get them through:</p>
 <ul>
 <li>ATmega32 and PICkit4: I had to introduce a decoupling break between single tests of 2.5 seconds. In addition, I had to extend </li>
-<li>ATtiny13: Sometimes, the lockbits are not set by the Makefile.</li>
+<li>ATtiny13: Sometimes, the lockbits are not set by the Makefile. Actually, this happened with other MCUs as well.</li>
+<li>The new ATTinyCore produced very different code for the ATtiny841. It made the isr.ino sketch undebuggable!  Problems were: Code inlining and a strange handling of interrupts. </li>
 </ul>
               
             </div>
