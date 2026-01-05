@@ -18,6 +18,7 @@ from logging import getLogger
 
 # communication
 import usb
+import usb.core
 
 # debugger modules
 import pymcuprog
@@ -157,11 +158,6 @@ def options(cmd):
                             default=115200,
                             help=argparse.SUPPRESS)
 
-    if platform.system() == 'Linux':
-        parser.add_argument("--install-udev-rules",
-                                help="Install necessary udev rules for Microchip debuggers",
-                                action="store_true")
-
     for option_name, option_type in monopts.items():
         if option_type[0] == 'cli':
             default = option_type[1]
@@ -230,42 +226,6 @@ def options(cmd):
 
     return args
 
-
-def install_udev_rules(logger):
-    """
-    Install the udev rules for all the debuggers. Necessary only under Linux
-    """
-    # These rules are added (under Linux only) when requested by the user"
-    udev_rules= '''# JTAGICE3
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2140", MODE="0666"
-# Atmel-ICE
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2141", MODE="0666"
-# Power Debugger
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2144", MODE="0666"
-# EDBG - debugger on Xplained Pro
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2111", MODE="0666"
-# EDBG - debugger on Xplained Pro (MSD mode)
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2169", MODE="0666"
-# mEDBG - debugger on Xplained Mini
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2145", MODE="0666"
-# PKOB nano (nEDBG) - debugger on Curiosity Nano
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2175", MODE="0666"
-# PKOB nano (nEDBG) in DFU mode - bootloader of debugger on Curiosity Nano
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2fc0", MODE="0666"
-# MPLAB PICkit 4 In-Circuit Debugger
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2177", MODE="0666"
-# MPLAB Snap In-Circuit Debugger
-SUBSYSTEM=="usb", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2180", MODE="0666"'''
-
-    logger.info("Will try to install udev rules")
-    try:
-        with open("/etc/udev/rules.d/99-edbg-debuggers.rules", "w", encoding='utf-8') as f:
-            f.write(udev_rules)
-    except Exception as e:
-        logger.critical("Could not install the udev rules: %s", e)
-        return 1
-    logger.info("Udev rules have been successfully installed")
-    return 0
 
 def setup_logging(args, log_rsp):
     """
@@ -337,9 +297,6 @@ def process_arguments(args, logger): #pylint: disable=too-many-branches
     if args.clkprg < 0 or args.clkdeb < 0:
         print("Negative frequency values are discouraged")
         return 1, None, None
-
-    if hasattr(args, 'install_udev_rules') and args.install_udev_rules:
-        return install_udev_rules(logger), None, None
 
     device = args.dev
 
@@ -425,6 +382,22 @@ def run_server(server, logger):
         raise
     return 0
 
+def check_udev_rules(logger):
+    """
+    Check if the Linux user might need to install udev rules.
+    For this purpose, we will iterate over all connected USB devices
+    and check whether there is one of the debuggers.
+    """
+    for d in usb.core.find(find_all=True):
+        if d.idVendor == 0x3EB:
+            if d.idProduct in (0x2140, 0x2141, 0x2144, 0x2111, 0x2169,
+                               0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180):
+                logger.critical("Perhaps you need to install the udev rules first:")
+                logger.critical("Download https://pyavrocd.io/99-edbg-debuggers.rules,")
+                logger.critical("review, edit, and install under /etc/udev/rules.d/.")
+                return
+
+
 #pylint: disable=too-many-branches
 def startup(command_line, logger):
     """
@@ -506,7 +479,7 @@ def startup(command_line, logger):
                 logger.info("Connected to %s", toolname)
 
             else:
-                logger.critical("Far too many connected tools. Use -t or -s to distinguish!")
+                logger.critical("Too many connected tools. Use -t or -s to distinguish!")
                 return 1
         except OSError as e:
             if str(e) == "open failed":
@@ -515,14 +488,7 @@ def startup(command_line, logger):
                 logger.critical("Could not connect to debug probe: %s", str(e))
             return 1
     elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices)==0:
-        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-            path_to_prog, _ = os.path.split((sys._MEIPASS)[:-1]) #pylint: disable=protected-access
-            path_to_prog +=  '/pyavrocd'
-        else:
-            path_to_prog = 'pyavrocd'
-        logger.critical(("Perhaps you need to install the udev rules first:\n"
-                         "'sudo %s --install-udev-rules'\n" +
-                         "and then unplug and replug the debugger."), path_to_prog)
+        check_udev_rules(logger)
 
     if no_hw_dbg_error or no_backend_error:
         return 1

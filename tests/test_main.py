@@ -10,7 +10,7 @@ from types import SimpleNamespace
 import sys
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
-from pyavrocd.main import _setup_tool_connection, options, install_udev_rules, setup_logging, \
+from pyavrocd.main import _setup_tool_connection, options,  setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup, handle_simavr
 
 class TestMain(TestCase):
@@ -117,12 +117,6 @@ class TestMain(TestCase):
         args = options(["-m", "all", "-m", "nobootrst", "-m=nodwen"])
         self.assertEqual(args.manage, [ "none", "all", "nobootrst", "nodwen"])
         sys.exit.assert_not_called()
-
-    @patch('pyavrocd.main.open', MagicMock())
-    def test_udev(self):
-        logger = MagicMock()
-        self.assertEqual(install_udev_rules(logger), 0)
-
 
     @patch('pyavrocd.main.logging.basicConfig', MagicMock())
     @patch('pyavrocd.main.sys.stdout', MagicMock)

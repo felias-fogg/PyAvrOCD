@@ -9,9 +9,9 @@
      - It was also necessary to introduce some decoupling time between running the test scripts when using PICkit4: 2.5 secs
 - **Added:**
      - A new field in the `monitor info`  describing the connected debugger.
-     - The manual contains now a link to an udev rules file that can be downloaded and installed.
+     - The manual now contains a link to a udev rules file that can be downloaded and installed.
 - **Changed:**
-     - `stop_debugging` runs gracefully (not spitting out error messages) when debugging had been deactivated before.
+     - `stop_debugging` runs gracefully (not spitting out error messages) when debugging is stopped.
 - **Removed**:
      - The option `--install-udev-rules` has been removed. I trust that Linux users are able to download and install a udev rules file manually, and they probably feel much more confident when doing it this way.
 
