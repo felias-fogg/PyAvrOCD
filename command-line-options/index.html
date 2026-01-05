@@ -215,16 +215,12 @@
 <td>Extra arguments for <code>simavr</code>.</td>
 </tr>
 <tr>
-<td><code>--install-udev-rules</code></td>
-<td>Install the udev rules necessary for Microchip's EDBG debuggers. Needs to be run with <code>sudo</code> and is only present under Linux.</td>
-</tr>
-<tr>
 <td><code>--dw-link-baud</code></td>
 <td>Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value.</td>
 </tr>
 </tbody>
 </table>
-<p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options in order to set debugger values already at startup. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code> .</p>
+<p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD in order to set debugger values already at startup. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code> .</p>
 <p>In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.</p>
 <p>The argument <code>@pyavrocd.options</code> is always added to the end of the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will have precedence over the arguments on the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.</p>
               
