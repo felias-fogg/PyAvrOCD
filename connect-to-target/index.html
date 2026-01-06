@@ -43,9 +43,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -59,7 +59,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Connecting to the target</a>
     <ul class="current">
@@ -170,13 +172,7 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link-spi.jpeg" width="70%">
 </p>
 
-<p>If a dw-link shield is used, one can use the standard 6-pin SPI header.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link.jpeg" width="70%">
-</p>
-
 <p>Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.</p>
-<p>Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works.</p>
 <p>If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/pickit4-connect.png" width="70%">
@@ -376,7 +372,6 @@
 </tr>
 </tbody>
 </table>
-<p>With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin SPI programming plug on one end and single Dupont pins on the other.</p>
 <h2 id="connecting-to-a-jtag-target">Connecting to a JTAG target</h2>
 <p>Note that in order to use the JTAG connection, you might first need to enable the JTAG pins by programming the JTAGEN fuse via SPI programming. On chips fresh from the factory, this fuse is programmed. On Arduino boards, JTAGEN is disabled.</p>
 <p>For AVR MCUs, there is a standard pinout as follows.</p>
@@ -554,7 +549,7 @@ Will be treated later when implemented.
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../board-preparation/" class="btn btn-neutral float-left" title="Preparing the target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../fuse-preparation/" class="btn btn-neutral float-left" title="Setting the right fuses"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../command-line-options/" class="btn btn-neutral float-right" title="Invoking the server">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -582,7 +577,7 @@ Will be treated later when implemented.
         </span>
     
     
-      <span><a href="../board-preparation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../fuse-preparation/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../command-line-options/" style="color: #fcfcfc">Next &raquo;</a></span>

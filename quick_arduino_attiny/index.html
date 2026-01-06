@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quickstart-Arduino-IDE2/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_arduino_attiny/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>quickstart Arduino IDE2 - PyAvrOCD</title>
+    <title>Quick arduino attiny - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "quickstart Arduino IDE2";
-        var mkdocs_page_input_path = "quickstart-Arduino-IDE2.md";
-        var mkdocs_page_url = "/quickstart-Arduino-IDE2/";
+        var mkdocs_page_name = "Quick arduino attiny";
+        var mkdocs_page_input_path = "quick_arduino_attiny.md";
+        var mkdocs_page_url = "/quick_arduino_attiny/";
       </script>
     
     <!--[if lt IE 9]>
@@ -43,9 +43,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -59,7 +59,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
@@ -123,9 +125,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">quickstart Arduino IDE2</li>
+      <li class="breadcrumb-item active">Quick arduino attiny</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quickstart-Arduino-IDE2.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_arduino_attiny.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -134,10 +136,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</h2>
-<p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe.</p>
-<h3 id="what-you-need">What you need</h3>
+<p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe.  Instead, we will build our own debug probe.</p>
+<h3 id="required-hardware">Required hardware</h3>
 <ul>
-<li>Computer running Windows, macOS, or Linux (the <em>host</em>)</li>
 <li>Arduino Uno (will become the <em>debug probe</em>)</li>
 <li>USB cable</li>
 <li>ATtiny85 (or any other classic ATtiny or ATmegaX8) as the <em>target</em></li>
@@ -153,22 +154,23 @@
 <h3 id="step-1-install-new-board-manager-files">Step 1: Install new board manager files</h3>
 <p>Open the <code>Preferences</code> dialog of the Arduino IDE and paste the following <code>Board Manager URLs</code> into the list:</p>
 <pre><code>https://downloads.pyavrocd.io/package_debug_enabled_index.json
-https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
-https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 </code></pre>
-<p>Close the <code>Preference</code> dialog with <code>OK</code>. Now, you can install the cores, <code>ATTinyCore (Debug enabled)</code>, <code>MiniCore</code>, and <code>MicroCore</code>.</p>
+<p>Close the <code>Preference</code> dialog with <code>OK</code>. Now, you can install the core, <code>ATTinyCore (Debug enabled)</code>.</p>
 <ul>
 <li>Select <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>Board Managers</code> ... . This will open the Boards Manager dialog.</li>
 <li>In the search field, type <code>ATTinyCore (Debug enabled)</code> and install the most recent version.</li>
 </ul>
 <h3 id="step-2-install-dw-link-firmware-on-an-uno">Step 2: Install <em>dw-link</em> firmware on an Uno</h3>
 <p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
-<p>The simplest way to install the firmware is to download an uploader from the Release assets of the <a href="https://github.com/felias-fogg/dw-link">GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
-<p>Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using the Arduino IDE 2.</p>
-<p><strong>Check:</strong> Open the <code>Serial Monitor</code> (under <code>Tools</code> menu), choose <code>115200 baud</code>,  type  <code>-</code>  (minus sign) into the upper line, and send it. The debug probe should respond with <code>$#00</code>.</p>
+<p>The simplest way to install the firmware is to download an uploader from the <a href="https://github.com/felias-fogg/dw-link/releases/latest">Release assets</a> of the <a href="https://github.com/felias-fogg/dw-link">dw-link GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
 <h3 id="step-3-hardware-setup">Step 3: Hardware setup</h3>
 <p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a debug probe. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
 <p><img alt="ATtiny85-debug" src="../pics/attiny85-debug-new.png" /></p>
+<p>In reality, this could be like in the following photo.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny-breadboard.jpg" width="30%">
+</p>
+
 <p>Here is a table of all connections to check that you have made all the connections.</p>
 <table>
 <thead>
@@ -249,13 +251,14 @@ https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 <li>Open the debug panes by clicking the debug symbol (bug with triangle) in the left sidebar.</li>
 <li>Click the debug symbol in the top row to start debugging. This will start the debugger and the debug server. The activities are logged in the <code>Debug Console</code> and the <code>gdb-server</code> console in the bottom right part of the window.</li>
 <li>You will probably be asked to "power-cycle the target." This means that you need to remove power from the target and then reconnect it, activating the debugWIRE mode.</li>
-<li>After the debugger and gdb-server have been started, the debugger will start executing the program on the target. Execution will stop at the first line of the <code>setup</code> function.</li>
+<li>After the debugger and GDB server have been started, the debugger will start executing the program on the target. Execution will stop at the first line of the <code>main</code> function.</li>
 <li>Now, you are in business and can set breakpoints (clicking left of the line number), continue executing, stop the program asynchronously, inspect and change values, and examine different stack frames. To terminate your debugging session, click the red box in the debug row before terminating the debugging session.</li>
 </ul>
 <p><img alt="debug window" src="../pics/ide2-3.png" /></p>
+<p>A more <a href="#step-4-edit-and-compile-a-sketch">extensive example</a> for a debugging session is given in the quickstart guide about the Xmini board.</p>
 <p>Be aware that after finishing the debug session, the MCU is still in debugWIRE mode! You can change that by typing <code>monitor debugwire disable</code> in the last line of the <code>Debug Console</code>.</p>
 <h3 id="after-debugging-has-finished">After debugging has finished</h3>
-<p>When you are done with debugging, you probably want to disable the debugWIRE mode again, because in debugWIRE mode you cannot use the RESET line or ISP programming. This can be accomplished by using the command <code>monitor debugwire disable</code> before you leave the debugger.</p>
+<p>When you are done with debugging, you probably want to disable the debugWIRE mode again, because in debugWIRE mode, you cannot use the RESET line or ISP programming. This can be accomplished by using the command <code>monitor debugwire disable</code> before you leave the debugger. In addition, you should disable the <code>Optimize for Debugging</code> setting because it will, in general, generate more code.</p>
 <p>So, after everything has been debugged, what do you do with your newly built debug probe? You don't have to throw it away. You can also use it as an ISP programmer (STK500 v1). In the Arduino IDE, such a programmer is called <code>Arduino as ISP</code>.</p>
 <h3 id="what-can-go-wrong">What can go wrong?</h3>
 <p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [WARNING] often tell what went wrong. If the status LED is blinking very fast, it means that the debugger has hit an unrecoverable error. Type <code>monitor info</code> into the last line of the <code>Debug Console</code> in order to find out about the <a href="../troubleshooting/#internal-and-fatal-dw-link-errors">error number</a>. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>

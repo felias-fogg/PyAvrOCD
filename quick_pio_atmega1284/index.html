@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_atmega1284_pio/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_pio_atmega1284/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Quick atmega1284 pio - PyAvrOCD</title>
+    <title>Quick pio atmega1284 - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Quick atmega1284 pio";
-        var mkdocs_page_input_path = "quick_atmega1284_pio.md";
-        var mkdocs_page_url = "/quick_atmega1284_pio/";
+        var mkdocs_page_name = "Quick pio atmega1284";
+        var mkdocs_page_input_path = "quick_pio_atmega1284.md";
+        var mkdocs_page_url = "/quick_pio_atmega1284/";
       </script>
     
     <!--[if lt IE 9]>
@@ -43,9 +43,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -59,7 +59,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
@@ -123,9 +125,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Quick atmega1284 pio</li>
+      <li class="breadcrumb-item active">Quick pio atmega1284</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_atmega1284_pio.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_pio_atmega1284.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -134,7 +136,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h2 id="quickstart-guide-atmel-ice-atmega1284">Quickstart guide: Atmel-ICE &amp; ATmega1284</h2>
-<p>This quickstart guide shows you how to set up a PlatformIO project so that you can debug an ATmega1284 (or any other <a href="../supported-mcus/#atmegas-with-jtag-interface">AVR JTAG Mega</a>) using the debug probe Atmel-ICE (or any other <a href="../supported-debuggers/">EDBG-based debug probe</a>). We will use the <a href="https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/">DIP-40 Arduino-compatible development board</a> to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.</p>
+<p>This quickstart guide shows you how to set up a PlatformIO project for debugging a JTAG target using an EDBG-based debug probe.</p>
+<h3 id="required-hardware">Required hardware</h3>
+<p>We will use an ATmega1284 (but any other <a href="../supported-mcus/#atmegas-with-jtag-interface">AVR JTAG Mega</a> will do) and the debug probe Atmel-ICE  (any other <a href="../supported-debuggers/">EDBG-based debug probe</a> is also OK). In addition, we will use the <a href="https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/">DIP-40 Arduino-compatible development board</a> to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Mighty.png" width="30%">
 </p>
@@ -171,7 +175,7 @@
 </div>
 <div class="admonition info">
 <p class="admonition-title">Linux</p>
-<p>Under Linux, you need to install <code>udev</code> rules so that the debug probes can communicate with the host. Either execute <code>sudo pyavrocd --install-udev-rules</code> once or install these rules manually (see <a href="https://github.com/microchip-pic-avr-tools/pyedbglib#notes-for-linux-systems">pyedbglib README</a>).</p>
+<p>Under Linux, you need to install <code>udev</code> rules so that the debug probes can communicate with the host. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">macOS</p>

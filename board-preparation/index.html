@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/board-preparation/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Preparing the target - PyAvrOCD</title>
+    <title>Preparing the target board - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Preparing the target";
+        var mkdocs_page_name = "Preparing the target board";
         var mkdocs_page_input_path = "board-preparation.md";
         var mkdocs_page_url = "/board-preparation/";
       </script>
@@ -43,9 +43,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -59,39 +59,25 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Preparing the target</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Preparing the target board</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#general-considerations">General considerations</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#preparing-a-debugwire-target">Preparing a debugWIRE target</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#physical-preparations">Physical preparations</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#arduino-uno-and-clones">Arduino Uno and clones</a>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino-uno-and-clones">Arduino Uno and clones</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#arduino-nano-and-clones">Arduino Nano and clones</a>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino-nano-and-clones">Arduino Nano and clones</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#arduino-pro-mini-and-clones">Arduino Pro Mini and clones</a>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino-pro-mini-and-clones">Arduino Pro Mini and clones</a>
     </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually">Fuse settings when fuses are managed manually</a>
+    <li class="toctree-l3"><a class="reference internal" href="#other-atmegax8-boards">Other ATmegaX8 boards</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#preparing-a-jtag-target">Preparing a JTAG target</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#physical-preparation">Physical preparation</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-fuses">Fuse settings when PyAvrOCD manages fuses</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</a>
-    </li>
-        </ul>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
@@ -156,7 +142,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Usage</li>
-      <li class="breadcrumb-item active">Preparing the target</li>
+      <li class="breadcrumb-item active">Preparing the target board</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/board-preparation.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -167,30 +153,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="preparing-a-target-board-for-debugging">Preparing a target board for debugging</h1>
-<p>When you want to debug a program on a target board, usually some modifications of the MCU fuses, the bootloader, and/or hardware are necessary. For this reason, it is a good idea to record the current state and the changes required to enable debugging:</p>
-<ul>
-<li>download the current fuse settings (using avrdude),</li>
-<li>download the currently used bootloader (again using avrdude) or make sure that you are able to reinstall the same bootloader, and</li>
-<li>record necessary physical changes on the target board.</li>
-</ul>
-<p>With that, it will be easy to <a href="../restore-original-state/">restore the original</a> state after debugging, if desired. If you are working in the Arduino context, restoring fuses and the bootloader is something you can delegate to the <code>Burn Bootloader</code> function. However, you should nevertheless record any physical changes.</p>
-<p>You can get some decent development boards from Microchip that contain embedded debuggers, which work well with PyAvrOCD. In this case, preparations and restoring the original state are not an issue at all.</p>
-<h2 id="general-considerations">General considerations</h2>
+<p>When you want to debug a program on a target board, usually some modifications of the hardware is necessary. For this reason, it is a good idea to record the current state and the changes required to enable debugging.</p>
 <p>Depending on the type of debugging interface the MCU provides, different actions must be taken to prepare the target board for debugging. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.</p>
-<p>Sometimes it may be additionally necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>.</p>
-<ul>
-<li><code>Lockbits</code>: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash (and EEPROM) memory, provided PyAvrOCD has been instructed to manage the lockbits by <code>--manage all</code> or <code>--manage lockbits</code>.</li>
-<li><code>BOOTRST</code>: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including <code>bootrst</code> as a fuse to be managed by the server when starting the GDB server from the command line.</li>
-<li><code>DWEN</code>: This fuse needs to be programmed to use the debugWIRE on-chip debugger. PyAvrOCD will program this fuse when asked to do so by the command <code>monitor debugwire enable</code>. After the fuse has been programmed, you must power-cycle the target board to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command <code>monitor debugwire disable</code>, the debugWIRE interface will be disabled, and the <code>DWEN</code> fuse will be unprogrammed. Of course, DWEN programming by PyAvrOCD is only performed if PyAvrOCD is instructed to manage this fuse.</li>
-<li><code>OCDEN</code>: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than <code>DWEN</code>,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterwards. This happens, of course, only if PyAvrOCD has been instructed to manage this fuse.</li>
-<li><code>EESAVE</code>: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM. However, it does not help you when you need to erase your chip because you need to clear the lock bits. If any lock bits are set, it is not possible to change fuses, which means you cannot change the EESAVE fuse temporarily.</li>
-</ul>
-<p>If you want to leave all the fuse management to PyAvrOCD, then specify <code>--manage all</code>, which is the default with Arduino IDE2. If you want to play it safe, you can instead manage these fuses and the lockbits manually using a fuse setting program such as avrdude. Note that changing the set of managed fuses from one invocation to the next will affect debugWIRE targets only when the target is not in debugWIRE mode.</p>
-<p>Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object, or you have to make sure that not the entire flash is erased by using the monitor command <code>monitor erasebeforeload disable</code>.</p>
 <h2 id="preparing-a-debugwire-target">Preparing a debugWIRE target</h2>
-<h3 id="physical-preparations">Physical preparations</h3>
 <p>Since the RESET line is used for communication between the MCU and the debug probe, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
-<h4 id="arduino-uno-and-clones">Arduino Uno and clones</h4>
+<h3 id="arduino-uno-and-clones">Arduino Uno and clones</h3>
 <p>On the <strong>Arduino Uno</strong> and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg" width="50%">
@@ -205,7 +172,7 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png" width="80%">
 </p>
-<h4 id="arduino-nano-and-clones">Arduino Nano and clones</h4>
+<h3 id="arduino-nano-and-clones">Arduino Nano and clones</h3>
 <p>Things are a bit more complicated with <strong>Arduino Nano</strong> boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. The following picture shows the bottom side of an Arduino Nano V3.3. The capacitor to be removed has been marked by a red ellipse, the 1kΩ resistor by a cyan one. Since this resistor is part of a resistor array, one needs to cut the trace instead. If you manage to cut the trace at the point marked by the green line, everything is fine. If you are not able to accomplish that, cutting at the point marked by the blue line is also OK. In this case, the power LED will also be cut off. In any case, after this modification, this board will probably only be usable for debugging purposes.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-cut.png" width="80%">
@@ -215,56 +182,16 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-clone.png" width="80%">
 </p>
-<h4 id="arduino-pro-mini-and-clones">Arduino Pro Mini and clones</h4>
+<h3 id="arduino-pro-mini-and-clones">Arduino Pro Mini and clones</h3>
 <p>The <strong>Arduino Pro Mini</strong> is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png" width="80%">
 </p>
 
+<h3 id="other-atmegax8-boards">Other ATmegaX8 boards</h3>
 <p>For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.</p>
-<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</h3>
-<p>In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the <code>RSTDSBL</code> fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using <a href="../limitations/#high-voltage-programming">high-voltage programming</a>. The same holds when <code>SPIEN</code> (enabling SPI programming) is unprogrammed.</p>
-<p>The <code>DWEN</code> and <code>BOOTRST</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD, if this is permitted (see above). <code>EESAVE</code> is not managed because the only situation where a chip erase can happen is when you clear the lockbits. And in this situation, <code>EESAVE</code> cannot be activated.</p>
-<h3 id="fuse-settings-when-fuses-are-managed-manually">Fuse settings when fuses are managed manually</h3>
-<p>When you want complete control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger:</p>
-<ol>
-<li>
-<p>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This operation will erase any bootloader as well.</p>
-</li>
-<li>
-<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.</p>
-</li>
-<li>
-<p>Program the <code>DWEN</code> fuse. After that, power-cycle the target board.</p>
-</li>
-</ol>
-<p>Now, you should be able to connect to the OCD on the target MCU.</p>
-<p>After you have finished debugging and issued the <code>monitor debugwire disable</code> command, you can connect again with an SPI programmer and unprogram the <code>DWEN</code> fuse. Make sure that, in between, power is always applied to the target board because otherwise you may have switched back to debugWIRE mode.</p>
 <h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
-<h3 id="physical-preparation">Physical preparation</h3>
-<p>JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (<code>TDI</code>, <code>TDO</code>, <code>TMS</code>, <code>TCK</code>) or disconnect those components.</p>
-<h3 id="fuse-settings-when-pyavrocd-manages-fuses">Fuse settings when PyAvrOCD manages fuses</h3>
-<p>Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  <code>JTAGEN</code> fuse before debugging can start. This has to be done using the SPI programming interface. In the Arduino IDE 2, you can achieve this by setting the <code>JTAG</code> attribute in the <code>Tools</code> menu to <code>enabled</code> and then performing the <code>Burn Bootloader</code> action using SPI programming.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
-</p>
-
-<p>From then on, you can connect to the board using the JTAG connector.</p>
-<p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, <a href="../limitations/#high-voltage-programming">high-voltage programming</a> is necessary.</p>
-<p>The <code>OCDEN</code>, <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD (see above).</p>
-<h3 id="fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</h3>
-<p>When you want full control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger. Make sure that the JTAG pins are enabled (see above). Afterward, use avrdude and an SPI programmer as follows:</p>
-<ol>
-<li>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.</li>
-<li>
-<p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0, but in the bootloader area that has been cleared.</p>
-</li>
-<li>
-<p>Program the <code>OCDEN</code> fuse.</p>
-</li>
-</ol>
-<p>Now, you should be able to connect to the OCD on the target MCU.</p>
-<p>After you have finished debugging, you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible.</p>
+<p>JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (<code>TDI</code>, <code>TDO</code>, <code>TMS</code>, <code>TCK</code>).  On an Arduino Mega or Mega 2560, these are the analog pins A4-A7. On an Leonardo, these are the analog pins A0-A3. While physical changes on the board are not necessary, it is very likely that the <a href="../fuse-preparation/">JTAG pins have to be enabled by setting the corresponding fuses</a>.</p>
 <!--
 
 ## Preparing a PDI target
@@ -299,7 +226,7 @@ If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../supporting-cores/" class="btn btn-neutral float-left" title="Arduino cores"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../connect-to-target/" class="btn btn-neutral float-right" title="Connecting to the target">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../fuse-preparation/" class="btn btn-neutral float-right" title="Setting the right fuses">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -329,7 +256,7 @@ If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If
       <span><a href="../supporting-cores/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../connect-to-target/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../fuse-preparation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

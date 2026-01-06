@@ -43,9 +43,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -54,8 +54,6 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Debugging software</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#cli-debugging">CLI debugging</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</a>
@@ -63,6 +61,8 @@
     <li class="toctree-l2"><a class="reference internal" href="#other-ides">Other IDEs</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#a-debug-gui-gede">A debug GUI: Gede</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cli-debugging">CLI debugging</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#a-software-simulator-simavr">A software simulator: simavr</a>
     </li>
@@ -73,7 +73,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
@@ -149,26 +151,12 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="installing-configuring-the-debugging-software">Installing &amp; configuring the debugging software</h1>
-<p>The GDB server PyAvrOCD provides an interface to the debug probe on one side and to the symbolic debugger on the host on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you want more than that.</p>
-<p>Below, we will cover a number of cases ranging from CLI to IDEs. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software.</p>
-<p>In addition to IDEs, we will also cover the <a href="#a-software-simulator-simavr">installation of a software simulator</a>.</p>
-<h2 id="cli-debugging">CLI debugging</h2>
-<p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's <a href="https://github.com/ZakKemble/avr-gcc-build">avr-gcc-build</a> repository. This is particularly useful when you want to run debugging software on a 32-bit system.</p>
-<p>It is not necessary to configure anything when you use avr-gdb. However, I find it very helpful to have the following commands in the global initialization file <code>.gdbinit</code>, which has to be stored in the user directory:</p>
-<pre><code class="language-gdb">define hook-quit
-    set confirm off
-end
-set history save on
-set history size 10000
-set history filename ~/.gdb_history
-set logging overwrite 1
-</code></pre>
-<p>If you are not a fan of a command-line interface, then an integrated development environment (IDE) or a simple graphical user interface (GUI) for avr-gdb is called for.</p>
+<p>The GDB server PyAvrOCD provides an interface to the debug probe on one side. The other side can be an IDE, a debug GUI, or the GDB debugger. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software. In addition, we will also cover the <a href="#a-software-simulator-simavr">installation of a software simulator</a>.</p>
 <h2 id="arduino-ide-2">Arduino IDE 2</h2>
 <p><a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> is probably the most straightforward option. After having installed it, you can extend the IDE's capabilities by <a href="https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE">adding third-party platforms</a>. This is done by adding <a href="https://support.arduino.cc/hc/en-us/articles/360016466340-Add-third-party-platforms-to-the-Boards-Manager-in-Arduino-IDE">additional Board Manager URLs</a> in the preferences dialog, installing a platform, and selecting a board in the Board Manager. For example, you can add the following <code>Board Manager URL</code> :</p>
 <pre><code>https://downloads.pyavrocd.io/package_debug_enabled_index.json
 </code></pre>
-<p>After that, you can install one of the platforms referred to in the index file, e.g., <code>ATTinyCore (Debug enabled)</code>, which is a fork of Spence Konde's  <code>ATTinyCore v2.0.0-dev</code> platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably <a href="../board-preparation/">modify the target board</a>, and you need to <a href="../connect-to-target/">connect the debug probe to the target board</a>.</p>
+<p>After that, you can install one of the platforms referred to in the index file, e.g., <code>ATTinyCore (Debug enabled)</code>, which is a fork of Spence Konde's  <code>ATTinyCore</code> platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably <a href="../board-preparation/">modify the target board</a>, and you need to <a href="../connect-to-target/">connect the debug probe to the target board</a>.</p>
 <p>The set of available cores is covered in the <a href="../supporting-cores/">section on Arduino cores</a>.</p>
 <h2 id="platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</h2>
 <p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple framework professional tool for embedded systems engineers. Installed as an extension to the popular Visual Studio Code, it provides a powerful IDE for embedded programming and debugging. Using the <code>platformio.ini</code> file, integrating an external debugging framework is very easy. If you want to debug a program on an ATmega328P, the <code>platformio.ini</code> file could look as follows. A more elaborate example can be found at <a href="https://github.com/felias-fogg/pio-atmega1284p-example">https://github.com/felias-fogg/pio-atmega1284p-example</a>.</p>
@@ -218,6 +206,17 @@ debug_svd_path = /path/to/svd-file ;; &lt;-- specify path to SVD file
 <p>If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.</p>
 <h2 id="a-debug-gui-gede">A debug GUI: Gede</h2>
 <p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an AVR-GDB client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option <code>--start gede</code> when invoking PyAvrOCD. Configuring Gede is done when you <a href="../debugging/#debugging-using-gede">start the GUI</a>.</p>
+<h2 id="cli-debugging">CLI debugging</h2>
+<p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's <a href="https://github.com/ZakKemble/avr-gcc-build">avr-gcc-build</a> repository. This is particularly useful when you want to run debugging software on a 32-bit system.</p>
+<p>It is not necessary to configure anything when you use avr-gdb. However, I find it very helpful to have the following commands in the global initialization file <code>.gdbinit</code>, which has to be stored in the user directory:</p>
+<pre><code class="language-gdb">define hook-quit
+    set confirm off
+end
+set history save on
+set history size 10000
+set history filename ~/.gdb_history
+set logging overwrite 1
+</code></pre>
 <h2 id="a-software-simulator-simavr">A software simulator: simavr</h2>
 <p>The software simulator <code>simavr</code> is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from the latest <a href="https://github.com/buserror/simavr/actions">Github Actions CI</a> or you can build it from source.</p>
 <p>If you want or need to build simavr from source, clone or download the <a href="https://github.com/buserror/simavr">simavr GitHub repo</a> and make sure that you have avr-gcc, avr-libc, libelf-dev, and freeglut installed (using your preferred package managers). Then call <code>make</code>, perhaps with the DESTDIR argument:</p>

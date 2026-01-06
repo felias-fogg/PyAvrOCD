@@ -43,9 +43,9 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../arduino_quick/">Arduino IDE 2</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../pio_quick/">PlatformIO</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
@@ -59,7 +59,9 @@
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
@@ -147,9 +149,9 @@
 </ul>
 </li>
 </ol>
-<div class="admonition info">
+<div class="admonition warning">
 <p class="admonition-title">Burning the bootloader using the Arduino AVR Boards core</p>
-<p>If you have debugged a board using, e.g., <code>MiniCore</code>, and now want to restore an Uno R3 board to its previous state under the<code>Arduino AVR Boards</code> core as a genuine <code>Arduino Uno</code>, you may encounter problems when using one of the Microchip debug probes. Use a cheap USBasp programmer or something similar instead for burning the boot loader. Alternatively, you may consider staying with MiniCore and employing <a href="https://github.com/stefanrueger/urboot">Urboot</a> as the bootloader.</p>
+<p>If you have debugged a board using, e.g., <code>MiniCore</code>, and now want to restore an Uno R3 board to its previous state under the<code>Arduino AVR Boards</code> core as an <code>Arduino Uno</code>, you may encounter problems when using one of the Microchip debug probes. Use a cheap USBasp programmer or something similar instead for burning the boot loader. Alternatively, you may consider staying with MiniCore and employing <a href="https://github.com/stefanrueger/urboot">Urboot</a> as the bootloader.</p>
 </div>
               
             </div>
