@@ -199,6 +199,10 @@ def main(args, intf):
         sys.stdout.write('[CRITICAL] Could not open serial port {}: {}\n'.format(device, e))
         sys.exit(2)
 
+    # Welcome message
+    sys.stdout.write("[INFO] Connected to dw-link debugger\r\n")
+    sys.stdout.flush()
+
     # send monitor value options + not-to-manage fuses + mcu type
     ser.timeout = 0.2
     send_mon_options(ser, args)
@@ -222,7 +226,6 @@ def main(args, intf):
         if args.prg and args.prg != "nop":
             subprc = subprocess.Popen(args.prg)
 
-        sys.stdout.write("[INFO] Connected to dw-link debugger\r\n")
         sys.stdout.write("[INFO] Listening on port {} for gdb connection\n\r".format(args.port))
         sys.stdout.flush()
 
