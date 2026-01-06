@@ -10,32 +10,10 @@ from types import SimpleNamespace
 import sys
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
-from pyavrocd.main import _setup_tool_connection, options,  setup_logging, \
+from pyavrocd.main import options,  setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup, handle_simavr
 
 class TestMain(TestCase):
-
-    @patch('pyavrocd.main.logging.getLogger', MagicMock())
-    def test_setup_tool_connection_full_spec(self):
-        args = SimpleNamespace()
-        args.serialnumber = "123456"
-        args.tool = "PRODUCT"
-        logger =  logging.getLogger()
-        conn = _setup_tool_connection(args, logger)
-        self.assertEqual(conn.serialnumber, args.serialnumber)
-        self.assertEqual(conn.tool_name, args.tool)
-        logger.info.assert_called_with("Connecting to " + args.tool + " (" + args.serialnumber + ")")
-
-    @patch('pyavrocd.main.logging.getLogger', MagicMock())
-    def test_setup_tool_connection_no_spec(self):
-        args = SimpleNamespace()
-        args.serialnumber = None
-        args.tool = None
-        logger =  logging.getLogger()
-        conn = _setup_tool_connection(args, logger)
-        self.assertEqual(conn.serialnumber, args.serialnumber)
-        self.assertEqual(conn.tool_name, args.tool)
-        logger.info.assert_called_with("Connecting to anything possible")
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
     @patch('pyavrocd.main.sys.exit', MagicMock())
@@ -332,39 +310,62 @@ class TestMain(TestCase):
         self.assertEqual(mock_dwlink.call_count,1)
 
     @patch('pyavrocd.main.importlib.metadata.version')
-    @patch('pyavrocd.main.pymcuprog.backend.Backend')
-    def test_startup_no_backend(self, mock_backend, mock_version):
+    @patch('pyavrocd.main.usb.core.find')
+    def test_startup_no_backend(self, mock_find, mock_version):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        mock_backend.return_value = Mock(connect_to_tool=Mock(side_effect = NoBackendError("")))
+        mock_find.side_effect = NoBackendError("")
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
-        self.assertEqual(mock_backend.call_count,1)
+        mock_find.assert_called_once()
         mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
-        mock_logger.critical.assert_has_calls([call('Could not connect to debug probe: %s', ANY)])
+        mock_logger.critical.assert_has_calls([call('Could not discover debug probes: %s', ANY)])
 
     @patch('pyavrocd.main.dwlink.main')
     @patch('pyavrocd.main.importlib.metadata.version')
-    @patch('pyavrocd.main.pymcuprog.backend.Backend')
-    def test_startup_no_tools(self, mock_backend, mock_version, mock_dwlink):
+    @patch('pyavrocd.main.usb.core.find')
+    def test_startup_no_tools(self, mock_find,  mock_version, mock_dwlink):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=Mock(return_value=[]))
+        t3 = SimpleNamespace()
+        t3.idVendor = 0x3EB
+        t3.idProduct = 0x2139
+        mock_find.return_value=[ t3 ]
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
-        self.assertEqual(mock_backend.call_count,1)
         self.assertEqual(mock_dwlink.call_count,1)
         mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
         mock_logger.critical.assert_has_calls([call('No compatible tool discovered')])
 
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')
-    def test_startup_two_tools(self, mock_backend, mock_version):
+    @patch('pyavrocd.main.usb.core.find')
+    def test_startup_two_tools(self, mock_find, mock_backend, mock_version):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=Mock(return_value=[1,2]))
+        t1 = SimpleNamespace()
+        t1.idVendor = 0x3EB
+        t1.idProduct = 0x2140
+        t1.product_string = "PROD1"
+        t1.serial_number ="S/N01"
+        t2 = SimpleNamespace()
+        t2.idVendor = 0x3EB
+        t2.idProduct = 0x2141
+        t2.product_string = "PROD2"
+        t2.serial_number ="S/N02"
+        t3 = SimpleNamespace()
+        t3.idVendor = 0x3EB
+        t3.idProduct = 0x2139
+        t4 = SimpleNamespace()
+        t4.idVendor = 0x3EC
+        t4.idProduct = 0x2140
+        mock_find.return_value=(t1, t2, t3, t4)
+        mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=MagicMock(return_value=[t1,t2]))
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
         self.assertEqual(mock_backend.call_count,1)
-        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
-        mock_logger.critical.assert_has_calls([call('Too many connected tools. Use -t or -s to distinguish!')])
+        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION'),
+                                               call("Discovered %d debug tools", 2)])
+        mock_logger.critical.assert_has_calls([call('More than one compatible tool! Use -u or -t to distinguish.'),
+                                                   call('> Tool: %s, S/N: %s', 'PROD1', 'S/N01'),
+                                                   call('> Tool: %s, S/N: %s', 'PROD2', 'S/N02')])
 
 
 

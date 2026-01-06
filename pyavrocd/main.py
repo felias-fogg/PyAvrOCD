@@ -24,35 +24,12 @@ import usb.core
 import pymcuprog
 import pymcuprog.backend
 from pyedbglib.hidtransport.hidtransportfactory import hid_transport
-from pymcuprog.toolconnection import ToolUsbHidConnection
 
 from pyavrocd import dwlink
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 from pyavrocd.monitor import monopts
 from pyavrocd.server import RspServer
-
-def _setup_tool_connection(args, logger):
-    """
-    Copied from pymcuprog_main and modified so that no messages printed on the console
-    """
-    toolconnection = None
-
-    usb_serial = args.serialnumber
-    product = args.tool
-    if usb_serial and product:
-        logger.info("Connecting to {0:s} ({1:s})".format(product, usb_serial))
-    else:
-        if usb_serial:
-            logger.info("Connecting to any tool with USB serial number '{0:s}'".\
-                         format(usb_serial))
-        elif product:
-            logger.info("Connecting to any {0:s}".format(product))
-        else:
-            logger.info("Connecting to anything possible")
-    toolconnection = ToolUsbHidConnection(serialnumber=usb_serial, tool_name=product)
-    return toolconnection
-
 
 def options(cmd):
     """
@@ -382,30 +359,37 @@ def run_server(server, logger):
         raise
     return 0
 
-def check_udev_rules(logger):
+def number_of_connected_edbg_tools(logger):
     """
-    Check if the Linux user might need to install udev rules.
-    For this purpose, we will iterate over all connected USB devices
-    and check whether there is one of the debuggers.
+    Find out how many debugging tools are connected
     """
-    for d in usb.core.find(find_all=True):
-        if d.idVendor == 0x3EB:
-            if d.idProduct in (0x2140, 0x2141, 0x2144, 0x2111, 0x2169,
-                               0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180):
-                logger.critical("Perhaps you need to install the udev rules first:")
-                logger.critical("Download https://pyavrocd.io/99-edbg-debuggers.rules,")
-                logger.critical("review, edit, and install under /etc/udev/rules.d/.")
-                return
-
+    num = 0
+    try:
+        for d in usb.core.find(find_all=True):
+            if d.idVendor == 0x3EB:
+                if d.idProduct in (0x2140, 0x2141, 0x2144, 0x2111, 0x2169,
+                                    0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180):
+                    num += 1
+    except usb.core.NoBackendError as e:
+        logger.critical("Could not discover debug probes: %s", e)
+        if platform.system() == 'Darwin':
+            logger.critical("Install libusb: 'brew install libusb'")
+        elif platform.system() == 'Linux':
+            logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
+        else:
+            logger.critical("On Windows, USB should be installed, i.e., this error should not happen!")
+        return -1 # error return
+    if num == 1:
+        logger.info("Discovered 1 debug tool")
+    else:
+        logger.info("Discovered %d debug tools", num)
+    return num
 
 #pylint: disable=too-many-branches
 def startup(command_line, logger):
     """
     Configures the CLI, connects to a tool, and starts debugger
     """
-    no_backend_error = False # will become true when libusb is not found
-    no_hw_dbg_error = False # will become true when no HW debugger is found
-    too_many_hw_dbg_error = False # will become true when too many HW debuggers are discovered
     log_rsp = False # will becomce true when verbosity is 'all'
 
     args = options(command_line)
@@ -429,68 +413,53 @@ def startup(command_line, logger):
 
     # now report startup
     logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
+    # determine number of connected tools
+    num_tools = 0
+    if args.tool != "dwlink":
+        num_tools = number_of_connected_edbg_tools(logger)
 
-    toolname = "Unknown debug tool"
-    if args.tool == "dwlink":
+    if num_tools < -1: # meaning that USB is not there
+        return 1
+
+    if args.tool == "dwlink" or num_tools == 0:
         dwlink.main(args, intf) # if we return, then there is no HW debugger
-        no_hw_dbg_error = True
         logger.critical("No compatible tool discovered")
-        return 1
-    # Use pymcuprog backend for initial connection here
+        return 1 # exit with error code
+
+    # Check whether all connected tools are available as HID devices
     backend = pymcuprog.backend.Backend()
-    toolconnection = _setup_tool_connection(args, logger)
-    try:
-        backend.connect_to_tool(toolconnection)
-    except usb.core.NoBackendError as e:
-        no_backend_error = True
-        logger.critical("Could not connect to debug probe: %s", e)
-        if platform.system() == 'Darwin':
-            logger.critical("Install libusb: 'brew install libusb'")
-            logger.critical("Maybe consult: " +
-                                "https://github.com/greatscottgadgets/cynthion/issues/136")
-        elif platform.system() == 'Linux':
-            logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
+    if len(backend.get_available_hid_tools()) != num_tools:
+        if platform.system() == 'Linux':
+            logger.critical("Perhaps you need to install the udev rules first:")
+            logger.critical("Download https://pyavrocd.io/99-edbg-debuggers.rules,")
+            logger.critical("review, edit, and install under /etc/udev/rules.d/.")
         else:
-            logger.critical("This error should not happen!")
-    except pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError:
-        available = backend.get_available_hid_tools(serialnumber_substring=toolconnection.serialnumber,
-                                                            tool_name=toolconnection.tool_name)
-        logger.debug("Available HW debugers: %d", len(available))
-        if not available:
-            if args.tool is None and args.serialnumber is None:
-                dwlink.main(args, intf)
-            no_hw_dbg_error = True
-        elif len(available) > 1:
-            too_many_hw_dbg_error = True
-    finally:
-        backend.disconnect_from_tool()
+            print(num_tools, backend.get_available_hid_tools())
+            logger.error("Not all discovered tools are available")
 
-    if too_many_hw_dbg_error:
-        logger.critical("Too many connected tools. Use -t or -s to distinguish!")
-        return 1
-    if no_hw_dbg_error:
+    available = backend.get_available_hid_tools(serialnumber_substring=args.serialnumber, tool_name=args.tool)
+    print(available)
+    if len(available) == 0:
         logger.critical("No compatible tool discovered")
+        return 1 # exit with error code
+    if len(available) > 1:
+        logger.critical("More than one compatible tool! Use -u or -t to distinguish.")
+        for d in available:
+            logger.critical("> Tool: %s, S/N: %s", d.product_string, d.serial_number)
+        return 1 # exit with error code
+
     transport = hid_transport()
-    if not no_backend_error and not no_hw_dbg_error:
-        try:
-            if transport.connect(serial_number=toolconnection.serialnumber,
-                                     product=toolconnection.tool_name):
-                toolname = transport.hid_device.get_product_string()
-                logger.info("Connected to %s", toolname)
-
-            else:
-                logger.critical("Too many connected tools. Use -t or -s to distinguish!")
-                return 1
-        except OSError as e:
-            if str(e) == "open failed":
-                logger.critical("Debug probe busy, cannot connect")
-            else:
-                logger.critical("Could not connect to debug probe: %s", str(e))
-            return 1
-    elif platform.system() == 'Linux' and no_hw_dbg_error and len(transport.devices)==0:
-        check_udev_rules(logger)
-
-    if no_hw_dbg_error or no_backend_error:
+    # Now try to connect
+    try:
+        if transport.connect(serial_number=args.serialnumber,
+                             product=args.tool):
+            toolname = transport.hid_device.get_product_string()
+            logger.info("Connected to %s", toolname)
+    except OSError as e:
+        if str(e) == "open failed":
+            logger.critical("Debug probe busy, cannot connect")
+        else:
+            logger.critical("Could not connect to debug probe: %s", str(e))
         return 1
 
     # tool is connected, now we can start
