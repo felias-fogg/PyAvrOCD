@@ -55,12 +55,17 @@ class RspServer():
         self.gdb_socket.bind(("127.0.0.1", self.port))
         try:
             self.gdb_socket.listen()
-            self.connection, self.address = self.gdb_socket.accept()
+            self.gdb_socket.settimeout(0.5) # necessary in order to allow for Ctrl-C under Windows
+            while self.connection is None:
+                try:
+                    self.connection, self.address = self.gdb_socket.accept()
+                except socket.timeout:
+                    pass
             self.connection.setblocking(0)
             self.logger.info('Connection from %s', self.address)
             self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args, self.toolname)
             while not self._terminate:
-                ready = select.select([self.connection], [], [], 0.5)
+                ready = select.select([self.connection], [], [], 0.2)
                 if ready[0]:
                     data = self.connection.recv(RECEIVE_BUFFER)
                     if len(data) > 0:
@@ -77,6 +82,9 @@ class RspServer():
             return 0
         except KeyboardInterrupt: # caused by user interrupt
             self.logger.info("Terminated by Ctrl-C")
+            return 1
+        except Exception as e:
+            self.logger.critical("Forced exit: %s", e)
             return 1
         finally:
             self.logger.info("Leaving GDB server")

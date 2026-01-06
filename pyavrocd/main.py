@@ -363,13 +363,13 @@ def number_of_connected_edbg_tools(logger):
     """
     Find out how many debugging tools are connected
     """
-    num = 0
+    prodids = (0x2140, 0x2141, 0x2144, 0x2111, 0x2169, 0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180)
     try:
-        for d in usb.core.find(find_all=True):
-            if d.idVendor == 0x3EB:
-                if d.idProduct in (0x2140, 0x2141, 0x2144, 0x2111, 0x2169,
-                                    0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180):
-                    num += 1
+        if platform.system() == 'Windows':
+            return len([d for d in pymcuprog.backend.Backend().get_available_hid_tools() if
+                        d.vendor_id == 0x3EB and d.product_id in prodids ])
+        return len([d for d in usb.core.find(find_all=True) if
+                        d.idVendor == 0x3EB and d.idProduct in prodids])
     except usb.core.NoBackendError as e:
         logger.critical("Could not discover debug probes: %s", e)
         if platform.system() == 'Darwin':
@@ -377,13 +377,8 @@ def number_of_connected_edbg_tools(logger):
         elif platform.system() == 'Linux':
             logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
         else:
-            logger.critical("On Windows, USB should be installed, i.e., this error should not happen!")
+            logger.critical("On Windows, USB core is not used, i.e., this error should not happen!")
         return -1 # error return
-    if num == 1:
-        logger.info("Discovered 1 debug tool")
-    else:
-        logger.info("Discovered %d debug tools", num)
-    return num
 
 #pylint: disable=too-many-branches
 def startup(command_line, logger):
@@ -418,7 +413,7 @@ def startup(command_line, logger):
     if args.tool != "dwlink":
         num_tools = number_of_connected_edbg_tools(logger)
 
-    if num_tools < -1: # meaning that USB is not there
+    if num_tools < 0: # meaning that USB is not there
         return 1
 
     if args.tool == "dwlink" or num_tools == 0:
@@ -438,7 +433,6 @@ def startup(command_line, logger):
             logger.error("Not all discovered tools are available")
 
     available = backend.get_available_hid_tools(serialnumber_substring=args.serialnumber, tool_name=args.tool)
-    print(available)
     if len(available) == 0:
         logger.critical("No compatible tool discovered")
         return 1 # exit with error code

@@ -361,8 +361,7 @@ class TestMain(TestCase):
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=MagicMock(return_value=[t1,t2]))
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
         self.assertEqual(mock_backend.call_count,1)
-        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION'),
-                                               call("Discovered %d debug tools", 2)])
+        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
         mock_logger.critical.assert_has_calls([call('More than one compatible tool! Use -u or -t to distinguish.'),
                                                    call('> Tool: %s, S/N: %s', 'PROD1', 'S/N01'),
                                                    call('> Tool: %s, S/N: %s', 'PROD2', 'S/N02')])

@@ -72,10 +72,10 @@ class SerialToNet(serial.threaded.Protocol):
         if exc:
             sys.stdout.write('[ERROR] ' +  repr(exc) + '\n\r')
             sys.stdout.write('[INFO] Serial connection lost, will exit\n\r')
-            time.sleep(0.2)
+            time.sleep(0.5)
         else:
             sys.stdout.write('[INFO] Serial connection closed\n\r')
-            os._exit(0)
+        os._exit(0)
 
 def build_packet(message, args):
     """
