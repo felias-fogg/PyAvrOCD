@@ -37,7 +37,7 @@ Once you have downloaded the archive and uncompressed it, you need to decide whe
     On Windows, use `rmdir` instead of `rm -rf` above.
 
 !!! info "Linux"
-    Under Linux, you need to install `udev` rules so that the debug probes can communicate with the host. Either execute `sudo pyavrocd --install-udev-rules` once or install these rules manually (see [pyedbglib README](https://github.com/microchip-pic-avr-tools/pyedbglib#notes-for-linux-systems)).
+    Under Linux, you need to install `udev` rules so that the debug probes can communicate with the host. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
 !!! warning "macOS"
     On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command `xattr -d com.apple.quarantine FILE` in order to remove the extended attribute `com.apple.quarantine` from the binary executable FILE.

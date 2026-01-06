@@ -12,23 +12,21 @@ This means that you need two UNO boards to try out debugging. Of course, any oth
 
 - Two Arduino UNO R3,
 - one USB cable (for the connection to the host),
-- a pushbutton,
+- a pushbutton that can be plugged into the UNO header,
 - 6 jumper wires (male-male),
 - a 10 µF electrolyte capacitor (optionally), and
 - an LED with a 200 Ω resistor soldered to one leg (optionally).
 
 ## Step 1: Turning an UNO into a debug probe
 
-The simplest way to install the firmware is to download an uploader from the Release assets of the [GitHub repo](https://github.com/felias-fogg/dw-link). The uploader should fit your architecture, e.g., `dw-uploader-windows-intel64` for Windows. Under *Linux* and *macOS*, open a terminal window, go to the download folder, and set the executable permission using `chmod +x`. Afterward, execute the program. Under *Windows*, it is enough to start the program after downloading by double-clicking on it.
-
-Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using the Arduino IDE 2.
+The simplest way to install the firmware is to download an uploader from the [Release assets](https://github.com/felias-fogg/dw-link/releases/latest) of the [dw-link GitHub repo](https://github.com/felias-fogg/dw-link). The uploader should fit your architecture, e.g., `dw-uploader-windows-intel64` for Windows. Under *Linux* and *macOS*, open a terminal window, go to the download folder, and set the executable permission using `chmod +x`. Afterward, execute the program. Under *Windows*, it is enough to start the program after downloading by double-clicking on it.
 
 From now on, you can use this board as a debug probe. In order to make it easier to use, plug the (optional) electrolyte capacitor into the RESET and GND header (the negative pin goes into GND). This will make sure that the board does not go into RESET when the host contacts the debug probe. In addition, put the LED with the soldered-on resistor into the header 6 and 7, 6 being used as GND. The LED tells you the internal state of the debug probe:
 
 1. debugWIRE mode disabled (LED is off),
 2. waiting for power-cycling the target (LED flashes every second for 0.1 sec)
 3. debugWIRE mode enabled (LED is on),
-4. ISP programming (LED is blinking slowly),
+4. ISP programming (LED is blinking slowly, 0.5 sec on, 0.5 sec off),
 5. error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).
 
 The completed board setup may then look as follows.
@@ -58,7 +56,7 @@ Now select the field with the additional board manager URLs.
 Type the following URL into a new line:
 
 ```
-https://downloads.pyavrocd.io/package_debug_enabled_index.json
+https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
 <p align="center">
@@ -68,24 +66,20 @@ https://downloads.pyavrocd.io/package_debug_enabled_index.json
 
 You close the dialog by clicking on two `OK` buttons in succession.
 
-## Step 3: Install the debug-enabled Arduino AVR Boards core
+## Step 3: Install the debug-enabled MiniCore
 
-Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "Debug" into the search line (2). After that, all cores with the word "Debug" in their description are displayed. Scroll down until you see one with the title "Arduino AVR Boards (Debug enabled)". This is a fork of the official Arduino AVR core, containing all the changes to make debugging possible. Install this core by clicking on `Install` (3). For the expert: You can also employ [MiniCore](https://github.com/MCUdude/MiniCore), which has support for the 328P and built-in debug support.
+Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "MiniCore" into the search line (2). Install this core by clicking on `Install` (3).
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino.png" width="90%"></p>
 
 Loading the core and all the necessary tools might take a while.
 
 !!! info "Linux systems"
-    After the installation, users of Linux systems will need to add `udev` rules, which can be done [manually](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Alternatively, when the IDE does not find a debug probe, it will tell you what to do in order to install the rules using `pyavrocd`.
-
-In order to avoid confusion, it is a good idea to remove the original core. Otherwise, you have boards that are named identically in two different cores. So activate the boards manager again and remove the core named `Arduino AVR Boards by Arduino` (it is the first one in the list when you open the boards manager). Removing this core is not a problem since the debug-enabled core has the same functionality when no debugging is selected. And you can install the original core at any point in time anyway.
-
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-Arduino-1.png" width="90%"></p>
+    After the installation, users of Linux systems will need to add `udev` rules. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
 ## Step 4: Prepare the target board for debugging
 
-If you are going to debug an Arduino with an ATmega328P or similar, you have to alter the board physically in most cases before debugging is possible. The reason is a capacitor that is connected to the RESET line of the MCU, which is responsible for issuing a RESET when a connection to the board is established. On an original UNO board, you need to cut a solder bridge labeled `RESET EN`.
+On an original UNO board, you need to cut a solder bridge labeled `RESET EN` in order to disconnect the auto-RESET enabling capacitor.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg" width="60%">
@@ -93,7 +87,7 @@ If you are going to debug an Arduino with an ATmega328P or similar, you have to 
 On other boards, [similar modifications are most likely necessary](https://debugwire.de/board-modifications/).
 
 !!! Warning
-    Not disconnecting the capacitor (or other loads) from the RESET line of the MCU may lead to the situation that debugWIRE mode is activated on a MCU, but it is impossible to communicate with the MCU. In particular, one cannot leave debugWIRE mode anymore.
+    Not disconnecting the capacitor (or other loads) from the RESET line of the MCU may lead to the situation that debugWIRE mode is activated on the MCU, but it is impossible to communicate with the MCU. In particular, one cannot leave debugWIRE mode anymore.
 
 In addition to these physical modifications, we also want to add a pushbutton, with one pin going into digital header slot 2 of the board. The other pin needs to be connected to GND. In my case, I use the header slot 4, which then has to be an output, which is `LOW`.
 
@@ -119,7 +113,7 @@ After having set up the hardware, you have to select the right board. First, cli
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-board.png" width="20%"></p>
 
-Then type "uno" in the search field (1), select the right board (2), and finally click the `OK` button. We do not care much about the serial port. However, we might as well select the serial that is connected with our debug probe.
+Then type "328" in the search field (1), select the right board (2), and finally click the `OK` button. We do not care much about the serial port. However, we might as well select the serial line that is connected with our debug probe.
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/select-other-uno.png" width="50%"></p>
 

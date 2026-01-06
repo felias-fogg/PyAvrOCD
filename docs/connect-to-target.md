@@ -19,15 +19,7 @@ The [dw-link](https://felias-fogg.github.io/dw-link) debugger uses the header on
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link-spi.jpeg" width="70%">
 </p>
 
-If a dw-link shield is used, one can use the standard 6-pin SPI header.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link.jpeg" width="70%">
-</p>
-
 Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
-
-Depending on which debugging interface the target has, the target board may provide a standard debugging header for this interface. I very much prefer to work with target boards that have the appropriate debugging headers on board. Otherwise, you may easily confuse a connection, and then nothing works.
 
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
@@ -103,7 +95,7 @@ When you want to connect a **dw-link** debugger without a dw-link probe shield t
 | 5V (if powered by debugger) | Vcc               | 2       |
 | GND                         | GND               | 6       |
 
-With a dw-link probe shield, it is best to construct or buy a cable with a 6-pin SPI programming plug on one end and single Dupont pins on the other.
+
 
 ## Connecting to a JTAG target
 

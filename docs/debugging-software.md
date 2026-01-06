@@ -1,28 +1,6 @@
 # Installing & configuring the debugging software
 
-The GDB server PyAvrOCD provides an interface to the debug probe on one side and to the symbolic debugger on the host on the other side. That means that in addition to PyAvrOCD, you need to install a symbolic debugger, which in our case means avr-gdb. However, perhaps you want more than that.
-
-Below, we will cover a number of cases ranging from CLI to IDEs. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software.
-
-In addition to IDEs, we will also cover the [installation of a software simulator](#a-software-simulator-simavr).
-
-## CLI debugging
-
-The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's [avr-gcc-build](https://github.com/ZakKemble/avr-gcc-build) repository. This is particularly useful when you want to run debugging software on a 32-bit system.
-
-It is not necessary to configure anything when you use avr-gdb. However, I find it very helpful to have the following commands in the global initialization file `.gdbinit`, which has to be stored in the user directory:
-
-```gdb
-define hook-quit
-    set confirm off
-end
-set history save on
-set history size 10000
-set history filename ~/.gdb_history
-set logging overwrite 1
-```
-
-If you are not a fan of a command-line interface, then an integrated development environment (IDE) or a simple graphical user interface (GUI) for avr-gdb is called for.
+The GDB server PyAvrOCD provides an interface to the debug probe on one side. The other side can be an IDE, a debug GUI, or the GDB debugger. Installation of the software is usually straightforward when you follow the instructions on the respective webpages, where you can download the software. In addition, we will also cover the [installation of a software simulator](#a-software-simulator-simavr).
 
 ## Arduino IDE 2
 
@@ -32,7 +10,7 @@ If you are not a fan of a command-line interface, then an integrated development
 https://downloads.pyavrocd.io/package_debug_enabled_index.json
 ```
 
-After that, you can install one of the platforms referred to in the index file, e.g., `ATTinyCore (Debug enabled)`, which is a fork of Spence Konde's  `ATTinyCore v2.0.0-dev` platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
+After that, you can install one of the platforms referred to in the index file, e.g., `ATTinyCore (Debug enabled)`, which is a fork of Spence Konde's  `ATTinyCore` platform. And this is all! Now, you can press the debug button and start debugging. Well, before you can do that, you must probably [modify the target board](board-preparation.md), and you need to [connect the debug probe to the target board](connect-to-target.md).
 
 The set of available cores is covered in the [section on Arduino cores](supporting-cores.md).
 
@@ -95,6 +73,22 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 ## A debug GUI: Gede
 
 [Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an AVR-GDB client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option `--start gede` when invoking PyAvrOCD. Configuring Gede is done when you [start the GUI](debugging.md#debugging-using-gede).
+
+## CLI debugging
+
+The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's [avr-gcc-build](https://github.com/ZakKemble/avr-gcc-build) repository. This is particularly useful when you want to run debugging software on a 32-bit system.
+
+It is not necessary to configure anything when you use avr-gdb. However, I find it very helpful to have the following commands in the global initialization file `.gdbinit`, which has to be stored in the user directory:
+
+```gdb
+define hook-quit
+    set confirm off
+end
+set history save on
+set history size 10000
+set history filename ~/.gdb_history
+set logging overwrite 1
+```
 
 ## A software simulator: simavr
 

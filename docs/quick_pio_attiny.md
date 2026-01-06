@@ -1,7 +1,7 @@
 
 ## Quickstart guide: dw-link & ATtiny85
 
-This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a debug probe.
+This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe. Instead, we will build our own debug probe.
 
  It explains
 
@@ -129,7 +129,7 @@ After having done that, the ATtiny is in debugWIRE mode, the executable will be 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-4.png" width="90%">
 </p>
-From here on, I believe, you know your way around. Otherwise, consult, e.g., the [debugging section of another quickstart guide](quick_atmega1284_pio.md#step-5-debug-the-program).
+From here on, I believe, you know your way around. Otherwise, consult, e.g., the [debugging section of another quickstart guide](#step-5-debug-the-program).
 
 ### Step 7: Start over or terminate the debugging session
 

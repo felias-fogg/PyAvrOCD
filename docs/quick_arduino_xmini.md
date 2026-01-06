@@ -1,13 +1,17 @@
 ## Quickstart guide: ATmega328P Xplained Mini
 
-This quickstart guide explains how to set up the [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) so that you can use its debugging feature on an [Atmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini) board. This development board is ideal for making a first experience with embedded debugging because it already contains an onboard debugger.  This means you do not have to bother with preparing the board for debugging, connecting the debug probe to the board, choosing a programmer/debugger, and setting the proper fuses. It is simply plug-and-play.
+This quickstart guide explains how to set up the [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) so that you can use its debugging feature on an [Atmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini) board. This development board is ideal for making a first experience with embedded debugging because it already contains an onboard debugger.  This means you do not have to bother with preparing the board for debugging, connecting the debug probe to the board, choosing a programmer/debugger, and setting the proper fuses. It is simply plug-and-play. In addition, this development board has an Arduino UNO R3 footprint. If you solder headers (at the right place) on the board, then it is possible to plug ordinary Uno shields into the headers. And if you need more I/O power, there is also an Xplained Mini board with the ATmega328**PB** for the same price. By the way, these boards are not overly expensive.
+
+### Required hardware
+
+The only thing you need is the XPlained Mini board and a USB cable to connect it to your computer.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/xplained.png" width="35%">
 </p>
 
 
-In addition, this development board has an Arduino UNO R3 footprint. If you solder headers (at the right place) on the board, then it is possible to plug ordinary Uno shields into the headers. And if you need more I/O power, there is also an Xplained Mini board with the ATmega328**PB** for the same price. By the way, these boards are not overly expensive.
+
 
 ### Step 1: Extend the list of boards manager URLs
 
@@ -46,7 +50,7 @@ Now you need to activate the `boards manager` by clicking on the board symbol in
 Loading the core and all the necessary tools might take a while.
 
 !!! info "Linux systems"
-    After the installation, users of Linux systems will need to add `udev` rules, which can be done [manually](https://github.com/microchip-pic-avr-tools/pyedbglib/blob/main/README.md#notes-for-linux-systems). Alternatively, when the IDE does not find a debug probe, it will tell you what to do in order to install the rules using `pyavrocd`.
+    After the installation, users of Linux systems will need to add `udev` rules. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
 ### Step 3: Connect the board and select the board type and port in the boards manager
 

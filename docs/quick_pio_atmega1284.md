@@ -1,10 +1,15 @@
 ## Quickstart guide: Atmel-ICE & ATmega1284
 
-This quickstart guide shows you how to set up a PlatformIO project so that you can debug an ATmega1284 (or any other [AVR JTAG Mega](supported-mcus.md#atmegas-with-jtag-interface)) using the debug probe Atmel-ICE (or any other [EDBG-based debug probe](supported-debuggers.md)). We will use the [DIP-40 Arduino-compatible development board](https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/) to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.
+This quickstart guide shows you how to set up a PlatformIO project for debugging a JTAG target using an EDBG-based debug probe.
+
+### Required hardware
+
+We will use an ATmega1284 (but any other [AVR JTAG Mega](supported-mcus.md#atmegas-with-jtag-interface) will do) and the debug probe Atmel-ICE  (any other [EDBG-based debug probe](supported-debuggers.md) is also OK). In addition, we will use the [DIP-40 Arduino-compatible development board](https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/) to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Mighty.png" width="30%">
 </p>
+
 
 In the following, I will assume that PlatformIO, as an extension of VSCode, has been installed already and that you are somewhat familiar with it.
 
