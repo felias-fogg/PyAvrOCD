@@ -4,6 +4,7 @@ GDB Server module
 # args, logging
 import logging
 import signal
+import platform
 from logging import getLogger
 
 
@@ -90,6 +91,8 @@ class RspServer():
             self.logger.info("Leaving GDB server")
             if self.avrdebugger and self.avrdebugger.device:
                 if self.avrdebugger.get_iface() == "debugwire" and \
+                  self.handler is not None and \
+                  self.handler.mon is not None and \
                   self.handler.mon.is_debugger_active() and \
                   self.handler.mon.is_leaveonexit():
                     self.avrdebugger.dw_disable()
@@ -111,7 +114,8 @@ class RspServer():
                 pass
         finally:
             # sleep 0.5 seconds before closing in order to allow the client to close first
-            time.sleep(0.5)
+            if platform.system() != "Windows":
+                time.sleep(0.5) # under Windows, a system exception is raised
             if self.connection:
                 self.connection.close()
                 self.logger.info("Connection closed")

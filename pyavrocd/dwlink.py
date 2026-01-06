@@ -67,7 +67,7 @@ class SerialToNet(serial.threaded.Protocol):
     def connection_lost(self, exc):
         """
         What to do when the connection is lost: Complain when caused by an exception,
-        otherwise tell the serial connection is closed.
+        otherwise tell the serial connection is closed and then terminate the program.
         """
         if exc:
             sys.stdout.write('[ERROR] ' +  repr(exc) + '\n\r')

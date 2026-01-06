@@ -7,6 +7,9 @@
      - The LiveTests had a problem when single-stepping: The status register was queried before the MCU had stopped (although _wait_for_break had returned). This happened only for the JTAGICE3, PowerDebugger, and Atmel-ICE. Changing in _wait_for_break to polling (`use_events_for_run_stop_state = False`) mitigated the problem.
      - For the combination PICkit4 and ATmega32, it is necessary to 'deactivate' and 'activate the physical' when switching between debug and program mode.  So, this is now done in general.
      - It was also necessary to introduce some decoupling time between running the test scripts when using PICkit4: 2.5 secs
+     - In dw-link in the connection_lost method, the os._exit(0) call will now always be made, terminating the entire process when the serial connection is lost.
+     - In server.py, in the `__del__` method, the `time.sleep(0.5)` will only be done on non-Windows machines because Windows chokes on this call.
+     - An annoying error message about `Nonetype` not having the attribute `mon` when shutting down has been eliminated in the same `__del__` method.
 - **Added:**
      - A new field in the `monitor info`  describing the connected debugger.
      - The manual now contains a link to a udev rules file that can be downloaded and installed.
