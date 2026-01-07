@@ -28,9 +28,10 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--verbose` <br>`-v`                                         | Specify verbosity level. Possible values are `all`, `debug`, `info`, `warning`, `error`, or `critical`. The option value `all` means that, in addition to the `debug` output, all communication with GDB is logged. The default is `info`. |
 | `--version` <br>`-V`                                         | Print PyAvrOCD version number and exit.                      |
 | `--xargs`<br> `-x`                                           | Extra arguments for `simavr`.                                |
+| --reboot-debugger                                            | Will reboot the debugger before starting the debug session. It can take up to 10 seconds on a PICkit4. |
 | `--dw-link-baud`                                             | Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value. |
 
-You can also use the [monitor command options](monitor-commands.md) as command-line options when invoking PyAvrOCD in order to set debugger values already at startup. For example, you may specify `--verify enable,` which has the same effect as issuing the command `monitor verify enable` in the debugger at startup. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--veri e` .
+You can also use the [monitor command options](monitor-commands.md) as command-line options when invoking PyAvrOCD. For example, you may specify `--verify enable,` which has the same effect as issuing the command `monitor verify enable` in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--veri e`.
 
 In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.
 

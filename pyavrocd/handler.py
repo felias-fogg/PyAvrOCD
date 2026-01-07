@@ -40,15 +40,17 @@ class GdbHandler():
         self.mon = MonitorCommand(self.dbg.get_iface(), args, toolname)
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(self.mon, avrdebugger, self.mem.flash_read_word)
+        self._dw_start = bool(args.debugwire and args.debugwire[0])
         self._comsocket = comsocket
         self._devicename = devicename
         self.last_sigval = 0
         self._lastmessage = ""
         self._extended_remote_mode = False
         self._vflashdone = False # set to True after vFlashDone received
-        self.critical = None
+        self.critical = None # first critical error
         self._live_tests = LiveTests(self)
-        self._interrupt = False
+        self._interrupt = False # interrupt received from GDB
+        self._init_done = False # initialization sequence from GDB has finished
         self.packettypes = {
             '.'           : self._ctrlc_interrupt,
             '!'           : self._extended_remote_handler,
@@ -59,7 +61,7 @@ class GdbHandler():
             'g'           : self._get_register_handler,
             'G'           : self._set_register_handler,
             'H'           : self._set_thread_handler,
-          # 'k'           : kill - never used because vKill is supported
+          # 'k'           : self._kill_handler # kill - never used because vKill is supported
             'm'           : self._get_memory_handler,
             'M'           : self._set_memory_handler,
             'p'           : self._get_one_register_handler,
@@ -85,7 +87,7 @@ class GdbHandler():
             'X'           : self._set_binary_memory_handler,
             'z'           : self._remove_breakpoint_handler,
             'Z'           : self._add_breakpoint_handler,
-            None          : self._set_binary_memory_handler_finalize, # None is returned when timing out
+            None          : self._timeout_handler, # None is returned when timing out
             }
 
 
@@ -93,7 +95,7 @@ class GdbHandler():
         """
         Dispatches command to the right handler
         """
-        if self._interrupt and cmd in ['vCont', None]:
+        if self._interrupt and cmd in ['vCont', None]: # synchronize Ctrl-C with the flow of commands
             self._interrupt = False
             cmd = '.'
         try:
@@ -483,7 +485,7 @@ class GdbHandler():
         self.logger.debug("Will answer 'PacketSize=%X;qXfer:memory-map:read+'",
                               self.packet_size)
         # Try to start a debugging session. If we are unsuccessful,
-        # one has to use the 'monitor debugwire on' command later on
+        # one has to use the 'monitor debugwire enable' command later on
         # If a fatal error is raised, we will remember that and print it again
         # when a request for enabling debugWIRE is made
         try:
@@ -510,6 +512,7 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: subsequent thread info query, will answer 'l'")
         self.send_packet("l") # the previously given thread was the last one
+        self._init_done = True # initialization has been completed
 
     def _memory_map_handler(self, packet):
         """
@@ -740,7 +743,7 @@ class GdbHandler():
 
     def _set_binary_memory_handler_finalize(self, _):
         """
-        This method is called when the server function times out after 1 second or
+        This method is called when the server function times out after or
         when mem.lazy_loading == True and a non-X record is received.
         If in this case mem.lazy_loading == True, this means there is an executable
         loaded using the X-records and everything has been read, so that we need to
@@ -786,6 +789,20 @@ class GdbHandler():
         else:
             self.logger.error("Breakpoint type %s not supported", breakpoint_type)
             self.send_packet("")
+
+    def _timeout_handler(self, _):
+        """
+        This method is always called when the server receive function times out.
+        Such a timeout can be used to trigger a debugWIRE initialization after
+        the GDB init sequence has finished or one checks whether a load operation
+        is still in progress.
+        """
+        if self._init_done and self._dw_start:
+            self._dw_start = False
+            self.logger.info("Trying early switch to debugWIRE")
+            self._monitor_cmd_handler(";642065")
+            return
+        self._set_binary_memory_handler_finalize(None)
 
     def poll_events(self):
         """

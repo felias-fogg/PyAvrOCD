@@ -13,6 +13,7 @@ import logging
 import shutil
 import subprocess
 import contextlib
+import time
 from logging import getLogger
 
 
@@ -23,7 +24,8 @@ import usb.core
 # debugger modules
 import pymcuprog
 import pymcuprog.backend
-from pyedbglib.hidtransport.hidtransportfactory import hid_transport
+from pymcuprog.toolconnection import ToolUsbHidConnection
+from pymcuprog.pymcuprog_errors import PymcuprogToolConnectionError
 
 from pyavrocd import dwlink
 from pyavrocd.xavrdebugger import XAvrDebugger
@@ -135,6 +137,12 @@ def options(cmd):
                             default=115200,
                             help=argparse.SUPPRESS)
 
+    parser.add_argument("--reboot-debugger",
+                            dest='reboot',
+                            action='store_true',
+                            help=argparse.SUPPRESS)
+
+
     for option_name, option_type in monopts.items():
         if option_type[0] == 'cli':
             default = option_type[1]
@@ -217,14 +225,14 @@ def setup_logging(args, log_rsp):
     logging.basicConfig(stream=sys.stdout,level=args.verbose.upper(), format = form)
 
     if args.verbose.lower() == "debug":
-        getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
+        getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.CRITICAL)
         getLogger('pyedbglib.protocols.housekeepingprotocol').setLevel(logging.INFO)
         getLogger('pyedbglib.protocols.jtagice3protocol').setLevel(logging.INFO)
         if not log_rsp:
             getLogger('pyavrocd.rsp').setLevel(logging.CRITICAL)
     if args.verbose.lower() != "debug":
         # suppress messages from hidtransport
-        getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.ERROR)
+        getLogger('pyedbglib.hidtransport.hidtransportbase').setLevel(logging.CRITICAL)
         # suppress spurious error messages from pyedbglib
         getLogger('pyedbglib.protocols').setLevel(logging.CRITICAL)
         # suppress errors of not connecting: It is intended!
@@ -380,6 +388,28 @@ def number_of_connected_edbg_tools(logger):
             logger.critical("On Windows, USB core is not used, i.e., this error should not happen!")
         return -1 # error return
 
+def reboot(backend, tool, logger):
+    """
+    Reboots tool and waits for it to reappear.
+    In case it takes too long (> 5sec), False is returned, otherwise True.
+    """
+    logger.info("Rebooting debugger...")
+    backend.reboot_tool()
+    timeout = 200
+    while timeout > 0:
+        try:
+            backend.connect_to_tool(tool)
+            break
+        except (PymcuprogToolConnectionError, ValueError):
+            pass
+        time.sleep(0.1)
+        timeout -= 1
+    if timeout == 0:
+        logger.critical("... could not reconnect")
+        return False
+    logger.info("Reconnected to %s", backend.transport.hid_device.get_product_string())
+    return True
+
 #pylint: disable=too-many-branches
 def startup(command_line, logger):
     """
@@ -442,24 +472,33 @@ def startup(command_line, logger):
             logger.critical("> Tool: %s, S/N: %s", d.product_string, d.serial_number)
         return 1 # exit with error code
 
-    transport = hid_transport()
+    tool = ToolUsbHidConnection(serialnumber=args.serialnumber, tool_name=args.tool)
     # Now try to connect
     try:
-        if transport.connect(serial_number=args.serialnumber,
-                             product=args.tool):
-            toolname = transport.hid_device.get_product_string()
-            logger.info("Connected to %s", toolname)
+        toolname = "Unknown tool"
+        backend.connect_to_tool(tool)
+        toolname = backend.transport.hid_device.get_product_string()
+        tool.serialnumber = backend.transport.hid_device.get_serial_number_string()
+        logger.info("Connected to %s", toolname)
     except OSError as e:
         if str(e) == "open failed":
             logger.critical("Debug probe busy, cannot connect")
         else:
             logger.critical("Could not connect to debug probe: %s", str(e))
-        return 1
+            return 1
+
+    if args.reboot:
+        if not reboot(backend, tool, logger):
+            return 1
 
     # tool is connected, now we can start
     logger.info("Starting GDB server")
     try:
-        avrdebugger = XAvrDebugger(transport, device, intf, args.manage, args.clkprg, args.clkdeb, args.timers[0]=='r')
+        avrdebugger = XAvrDebugger(backend.transport, device, intf, args.manage, args.clkprg, args.clkdeb,
+                                       args.timers[0]=='r')
+        if args.debugwire and args.debugwire[0] == 'd' and intf == 'debugwire':
+            avrdebugger.cold_dw_disable()
+            return 0
         server = RspServer(avrdebugger, device, args, toolname)
     except Exception as e:
         if logger.getEffectiveLevel() != logging.DEBUG:
@@ -473,8 +512,12 @@ def main():
     """
     This generates the root logger and forwards it as well as the arguments to the startup function
     """
-    logger = getLogger()
-    return startup(sys.argv[1:], logger)
+    try:
+        logger = getLogger()
+        return startup(sys.argv[1:], logger)
+    except KeyboardInterrupt:
+        logger.info("Terminated by Ctrl-C")
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main())

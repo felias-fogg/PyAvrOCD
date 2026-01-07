@@ -17,7 +17,7 @@ from pyavrocd.errors import FatalError
 monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwire', 'leavedebugwire']],
             'breakpoints'     : ['cli', 'all', [None, 'all', 'software', 'hardware']],
             'caching'         : ['cli', 'enable', [None, 'enable', 'disable']],
-            'debugwire'       : [None, None, [None, 'enable', 'disable']],
+            'debugwire'       : ['cli', None, [None, 'enable', 'disable']],
             'erasebeforeload' : ['cli', 'enable', [None, 'enable', 'disable']],
             'help'            : [None, None, [None]],
             'info'            : [None, None, [None]],

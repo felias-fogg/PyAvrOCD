@@ -96,9 +96,11 @@ class XAvrDebugger(AvrDebugger):
             self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info, manage=manage)
             self._hwbpnum = 4
 
-        self.logger.debug("Nvm instance created, iface: %s, HWBPs: %d, arch: %s",
+        self.logger.info("Nvm instance created, iface: %s, HWBPs: %d, arch: %s",
                               self._iface, self._hwbpnum, self._architecture)
-        self.logger.info("Managing fuses: %s", manage)
+        if manage == []:
+            manage = [ 'none' ]
+        self.logger.info("Managing fuses: %s", ", ".join(manage))
 
     def get_iface(self):
         """
@@ -555,7 +557,7 @@ class XAvrDebugger(AvrDebugger):
                 last_message = time.monotonic()
             if read_target_voltage(self.housekeeper) < 0.5:
                 wait_start = time.monotonic()
-                self.logger.info("Power-cycling recognized")
+                self.logger.info("*** Power-down recognized. Apply power again! ***")
                 if recognition:
                     recognition()
                 while  read_target_voltage(self.housekeeper) < 1.5 and \
@@ -622,6 +624,19 @@ class XAvrDebugger(AvrDebugger):
         self.housekeeper.end_session()
         self.logger.info("Signed off from tool")
         self.logger.info("... disabling debugWIRE mode done")
+
+    def cold_dw_disable(self):
+        """
+        Disable debugWIRE mode without connecting to a debugger. This will only be successful if
+        we can access the chip using the debugWIRE protocol.
+        """
+        if self._iface != 'debugwire':
+            raise FatalError("This is not a debugWIRE target!")
+        if not self.start_debugging(warmstart=True):
+            self.logger.error("Cannot connect to target using the debugWIRE command")
+            self.logger.error("MCU is probably already in normal state")
+            return
+        self.dw_disable()
 
     def switch_to_debmode(self):
         """

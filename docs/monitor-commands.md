@@ -20,7 +20,9 @@ PyAvrOCD implements several `monitor` commands. These can be used to control imp
 | `monitor` `verify` [`enable `\|` disable`]                   | Verify flash after loading each flash page. The default setting is for this option to be `enable`d. |
 | `monitor` `version`                                          | Show version of the gdbserver.                               |
 
-All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`. If you use a command without an argument, the current setting is printed. All state-changing commands (except `debugwire`) can also be specified as command-line options when invoking PyAvrOCD, e.g., `--verify disable`.
+All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`. If you use a command without an argument, the current setting is printed.
+
+All state-changing commands can also be specified as command-line options when invoking PyAvrOCD, e.g., `--verify disable`. These options will have the same effect as issuing the corresponding monitor command after a connection to the GDB server has been established. The only exception is `--debugwire disable`. If this option is given, then PyAvrOCD will disable debugWIRE mode and then exit immediately without waiting for a GDB connection.
 
 Commands marked with **(+)** are not implemented in dw-link.
 
