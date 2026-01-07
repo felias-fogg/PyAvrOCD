@@ -37,7 +37,7 @@ The completed board setup may then look as follows.
 
 ### Step 2: Extend the list of boards manager URLs
 
-You first have to extend the list of `Additional boards manager URLs`. Start the `Preferences` dialog, which you find, depending on your operating system,  either in the `Arduino IDE` or the `File` menu.
+Since the stock Arduino AVR Boards core does not support debugging, we need to shop elsewhere. [MiniCore](https://github.com/MCUdude/MiniCore) brings support for ATmega328(P)(B) and a few other chips, and is, in addition, debug-enabled. The first step to install it is to extend the list of `Additional boards manager URLs`. Start the `Preferences` dialog, which you find, depending on your operating system,  either in the `Arduino IDE` or the `File` menu.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
@@ -68,14 +68,11 @@ You close the dialog by clicking on two `OK` buttons in succession.
 
 ### Step 3: Install the debug-enabled MiniCore
 
-Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "MiniCore" into the search line (2). Install this core by clicking on `Install` (3).
+Now you need to activate the `boards manager` by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "MiniCore" into the search line (2). Install MiniCore by clicking on `Install` (3).
 
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager.png" width="90%"></p>
 
-Loading the core and all the necessary tools might take a while.
-
-!!! info "Linux systems"
-    After the installation, users of Linux systems will need to add `udev` rules. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
+Loading MiniCore and all the necessary tools might take a while.
 
 ### Step 4: Prepare the target board for debugging
 
