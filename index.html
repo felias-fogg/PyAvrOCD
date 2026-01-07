@@ -137,7 +137,7 @@
               
                 <h1 id="pyavrocd">PyAvrOCD</h1>
 <p>PyAvrOCD<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> is a Python GDB server<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> for 8-bit AVR MCUs (currently only classic debugWIRE and JTAG ATtinys and ATmegas), enabling you to debug programs running on these MCUs using the <a href="https://www.sourceware.org/gdb/">GNU Project Debugger GDB</a>. PyAvrOCD communicates with Microchip's debug probes, such as <a href="https://www.microchip.com/en-us/development-tool/atatmel-ice">Atmel-ICE</a> and <a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap</a>, using the software infrastructure provided by <a href="https://github.com/microchip-pic-avr-tools/pymcuprog">pymcuprog</a> and <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedgblib</a>. In addition, it provides a pass-through service for the UNO-based debug probe <a href="https://felias-fogg.github.io/dw-link">dw-link</a> and the simulation tool <a href="https://github.com/buserror/simavr">simavr</a>.</p>
-<p>Why another open-source GDB server for AVR MCUs (others are <a href="https://github.com/avrdudes/avarice">AVaRICE</a> and <a href="https://github.com/bloombloombloom/Bloom">Bloom</a>)? The main intention is to provide a <em>cross-platform</em> AVR GDB server. In other words, it is <em>the missing AVR debugging solution</em> for  <a href="https://www.arduino.cc/en/software/">Arduino IDE 2</a> and <a href="https://platformio.org">PlatformIO</a>. In particular, the integration into the Arduino IDE 2 is quite deep, allowing one to start debugging without much hassle (see <a href="quick_arduino/">quickstart guide</a>).</p>
+<p>Why another open-source GDB server for AVR MCUs (others are <a href="https://github.com/avrdudes/avarice">AVaRICE</a> and <a href="https://github.com/bloombloombloom/Bloom">Bloom</a>)? The main intention is to provide a <em>cross-platform</em> AVR GDB server. In other words, it is <em>the missing AVR debugging solution</em> for  <a href="https://www.arduino.cc/en/software/">Arduino IDE 2</a> and <a href="https://platformio.org">PlatformIO</a>. In particular, the integration with the Arduino IDE 2 is pretty tight, allowing one to start debugging without much hassle (see <a href="quick_arduino/">quickstart guides</a>).</p>
 <p><img alt="ide2-6" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-6.png" /></p>
 <p>In addition to being cross-platform, PyAvrOCD offers some enhancements over its "competitors", particularly in terms of <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/">flash wear</a> and <a href="https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/">single-stepping</a>.</p>
 <p>After <a href="install-link/">installing the package</a>, the following steps are necessary for successful debugging:</p>
@@ -210,5 +210,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2026-01-06 14:22:07.337174+00:00
+Build Date UTC : 2026-01-07 13:30:44.640599+00:00
 -->

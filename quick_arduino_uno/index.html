@@ -168,7 +168,7 @@
 </p>
 
 <h3 id="step-2-extend-the-list-of-boards-manager-urls">Step 2: Extend the list of boards manager URLs</h3>
-<p>You first have to extend the list of <code>Additional boards manager URLs</code>. Start the <code>Preferences</code> dialog, which you find, depending on your operating system,  either in the <code>Arduino IDE</code> or the <code>File</code> menu.</p>
+<p>Since the stock Arduino AVR Boards core does not support debugging, we need to shop elsewhere. <a href="https://github.com/MCUdude/MiniCore">MiniCore</a> brings support for ATmega328(P)(B) and a few other chips, and is, in addition, debug-enabled. The first step to install it is to extend the list of <code>Additional boards manager URLs</code>. Start the <code>Preferences</code> dialog, which you find, depending on your operating system,  either in the <code>Arduino IDE</code> or the <code>File</code> menu.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
 </p>
@@ -187,14 +187,10 @@
 
 <p>You close the dialog by clicking on two <code>OK</code> buttons in succession.</p>
 <h3 id="step-3-install-the-debug-enabled-minicore">Step 3: Install the debug-enabled MiniCore</h3>
-<p>Now you need to activate the <code>boards manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "MiniCore" into the search line (2). Install this core by clicking on <code>Install</code> (3).</p>
+<p>Now you need to activate the <code>boards manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type "MiniCore" into the search line (2). Install MiniCore by clicking on <code>Install</code> (3).</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager.png" width="90%"></p>
 
-<p>Loading the core and all the necessary tools might take a while.</p>
-<div class="admonition info">
-<p class="admonition-title">Linux systems</p>
-<p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
-</div>
+<p>Loading MiniCore and all the necessary tools might take a while.</p>
 <h3 id="step-4-prepare-the-target-board-for-debugging">Step 4: Prepare the target board for debugging</h3>
 <p>On an original UNO board, you need to cut a solder bridge labeled <code>RESET EN</code> in order to disconnect the auto-RESET enabling capacitor.</p>
 <p align="center">
