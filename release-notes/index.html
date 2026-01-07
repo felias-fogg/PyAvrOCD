@@ -100,6 +100,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0210">Release v0.21.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0200">Release v0.20.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0190">Release v0.19.0</a>
@@ -163,6 +165,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v0210">Release v0.21.0</h2>
+<ul>
+<li>New CLI option: <code>--reboot-debugger</code> will reboot before starting the debug session (can be slow)</li>
+<li><code>--debugwire enable</code> and <code>--debugwire disable</code> is now also possible</li>
+<li>End-to-end tests for ATTinyCore/MiniCore and MightCore finished</li>
+<li><code>udev rule</code> handling changed. <code>--install-udev-rules</code> has been removed, and the user is now asked to download and manually copy the rule file instead of relying on a command that has to be prefixed by sudo</li>
+<li>Some small fixes</li>
+</ul>
 <h2 id="release-v0200">Release v0.20.0</h2>
 <ul>
 <li>Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows for this Python version</li>
