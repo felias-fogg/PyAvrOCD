@@ -17,7 +17,7 @@
      - New CLI option `--reboot-debugger`. Will reboot before a connection is established. Note that this can take up to 10 seconds (PICkit4).
 - **Changed:**
      - `stop_debugging` runs gracefully (not spitting out error messages) when debugging is stopped.
-     - The critical error message about udev rules is now only given when a debugger is connected via USB.
+     - The error message about udev rules is now only given when a debugger is connected via USB, but cannot be reached as a HID device.
      - Instead of referring to an installation command, the Linux user is asked to download a rule file that needs to be installed manually.
      - Refactored `startup` to simplify the logic and to make testing easier.
 - **Removed**:

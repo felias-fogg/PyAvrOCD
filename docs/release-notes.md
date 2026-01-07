@@ -1,5 +1,13 @@
 # Release Notes
 
+## Release v0.21.0
+
+- New CLI option: `--reboot-debugger` will reboot before starting the debug session (can be slow)
+- `--debugwire enable` and `--debugwire disable` is now also possible
+- End-to-end tests for ATTinyCore/MiniCore and MightCore finished
+- `udev rule` handling changed. `--install-udev-rules` has been removed, and the user is now asked to download and manually copy the rule file instead of relying on a command that has to be prefixed by sudo
+- Some small fixes
+
 ## Release v0.20.0
 
 - Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows for this Python version

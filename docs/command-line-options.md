@@ -28,7 +28,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--verbose` <br>`-v`                                         | Specify verbosity level. Possible values are `all`, `debug`, `info`, `warning`, `error`, or `critical`. The option value `all` means that, in addition to the `debug` output, all communication with GDB is logged. The default is `info`. |
 | `--version` <br>`-V`                                         | Print PyAvrOCD version number and exit.                      |
 | `--xargs`<br> `-x`                                           | Extra arguments for `simavr`.                                |
-| --reboot-debugger                                            | Will reboot the debugger before starting the debug session. It can take up to 10 seconds on a PICkit4. |
+| `--reboot-debugger`                                          | Will reboot the debugger before starting the debug session. This can take up to 10 seconds on a PICkit4. |
 | `--dw-link-baud`                                             | Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value. |
 
 You can also use the [monitor command options](monitor-commands.md) as command-line options when invoking PyAvrOCD. For example, you may specify `--verify enable,` which has the same effect as issuing the command `monitor verify enable` in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to `--veri e`.
