@@ -140,7 +140,9 @@
 <ul>
 <li>ATmega32 and PICkit4: I had to introduce a decoupling break between single tests of 2.5 seconds. In addition, I had to extend</li>
 <li>ATtiny13: Sometimes, the lockbits are not set by the Makefile. Actually, this happened with other MCUs as well.</li>
-<li>The new ATTinyCore produced very different code for the ATtiny841. It made the isr.ino sketch undebuggable!  Problems were: Code inlining and a strange handling of interrupts.</li>
+<li>The new ATTinyCore produced very different code for the ATtiny841. It made the isr.ino sketch undebuggable!  Problems were: Code inlining and a strange handling of interrupts. So, I switched back to the old core.</li>
+<li>ATmega2561 and Atmel-ICE: After a few tests, the MCU gives the error "Debug session not started: AVR8_FAILURE_NO_DEVICE_FOUND: no devices detected". This happens when "Error while connecting to target OCD:". However, no problem with SNAP.</li>
+<li>Turned out that ATmega64 also has a stuck-at-one bit in the PC, </li>
 </ul>
               
             </div>

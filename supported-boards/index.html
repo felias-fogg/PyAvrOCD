@@ -155,15 +155,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-boards">Supported boards</h1>
-<p>Almost all boards equipped with one of the supported chips can be used
-in one way or another. Tested boards are marked in boldface, and those
-known not to work are struck out. The ones that are underlined are
-sitting on my desk and are waiting to be tested. If no core is
-mentioned, then there is no support yet.</p>
-<p>In addition, the board packages supporting the boards, possible board
-modifications, and other information are mentioned.</p>
-<p>Currently, there are only a few cores operational. In the near future,
-all of MCUdude's Mega cores will be added.</p>
+<p>Almost all boards equipped with one of the supported chips can be used in one way or another. Tested boards are marked in boldface, and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested. If no core is mentioned, then there is no support yet.</p>
+<p>In addition, the board packages supporting the boards, possible board modifications, and other information are mentioned.</p>
+<p>Currently, there are only a few cores operational. In the near future, all of MCUdude's cores will be added.</p>
 <h2 id="microchip-boards">Microchip boards</h2>
 <p>Most of the supported Microchip boards have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.</p>
 <ul>
@@ -194,10 +188,10 @@ all of MCUdude's Mega cores will be added.</p>
 <li>Arduino Duemilanove:  <a href="../supporting-cores/#minicore">MiniCore</a>, <code>RESET EN</code> needs to be cut</li>
 <li>Arduino Diecimila:  <a href="../supporting-cores/#minicore">MiniCore</a>, <a href="https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/">remove 100nF capacitor</a></li>
 <li><strong>Arduino Nano:</strong> <a href="../board-preparation/#arduino-nano-and-clones">100 nF cap and 1kΩ resistor needs to be removed</a></li>
-<li><u>Arduino Mega</u></li>
-<li><u>Arduino Mega 2560</u></li>
+<li><strong>Arduino Mega</strong>: JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
+<li><strong>Arduino Mega 2560:</strong> JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
 <li>Arduino Mega ADK</li>
-<li><u>Arduino Leonardo</u></li>
+<li><strong>Arduino Leonardo</strong>: JTAG pins are A0-A3, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a></li>
 <li>Arduino Leonardo ETH</li>
 <li><u>Arduino Micro</u></li>
 <li><s>Arduino Esplora</s></li>
@@ -248,10 +242,10 @@ all of MCUdude's Mega cores will be added.</p>
 <li>Metro (ATmega328P):  <a href="../supporting-cores/#minicore">MiniCore</a>, cut <code>RESET EN</code> solder bridge</li>
 <li>Metro Mini V2:  <a href="../supporting-cores/#minicore">MiniCore</a>, you have to figure out which cap to remove</li>
 <li>Circuit Playground Classic (ATmega32U4)</li>
-<li>Pro Trinket 5V/16MHz (USB): MicroCore</li>
-<li>Pro Trinket 3V/12MHz (USB): MicroCore</li>
-<li>Pro Trinket 5V/16MHz (FTDI): MicroCore</li>
-<li>Pro Trinket 3V/12MHz (FTDI): MicroCore</li>
+<li>Pro Trinket 5V/16MHz (USB): MiniCore</li>
+<li>Pro Trinket 3V/12MHz (USB): MiniCore</li>
+<li>Pro Trinket 5V/16MHz (FTDI): MiniCore</li>
+<li>Pro Trinket 3V/12MHz (FTDI): MiniCore</li>
 <li>ItsyBitsy 32u4 (3V)</li>
 <li>ItsyBitsy 32u4 (5V)</li>
 <li>Bluefruit Micro</li>
@@ -266,16 +260,16 @@ all of MCUdude's Mega cores will be added.</p>
 <ul>
 <li>Olimex-328: <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>Olimex-32u4</li>
-<li>eduArdu</li>
+<li><s>eduArdu</s>: JTAG pins are not accessible</li>
 <li>Olimex-Nano: <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>RGB-Glasses</li>
 <li>Olimexino-2560</li>
-<li><u>AVR-CAN (AT90CAN128)</u></li>
+<li><strong>AVR-CAN (AT90CAN128)</strong></li>
 <li>AVR-GSM (ATMega32)</li>
 <li><s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with a stuck-at-one bit</li>
-<li><u>AVR-MT128 (ATmega128)</u>: only hardware breakpoints (!)</li>
+<li><strong>AVR-MT128 (ATmega128)</strong>: only hardware breakpoints (!)</li>
 <li>AVR-USB-STK (AT90USB162)</li>
-<li><u>AVR-USB-162 (AT90USB162)</u></li>
+<li><strong>AVR-USB-162 (AT90USB162)</strong></li>
 </ul>
 <h2 id="seeed-studio-boards">Seeed Studio boards</h2>
 <ul>
@@ -290,9 +284,9 @@ all of MCUdude's Mega cores will be added.</p>
 <ul>
 <li><strong>ATtiny841 dev. board</strong>: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
 <li><strong>ATtiny1634 dev. board</strong>: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
-<li>ATtiny88 breakout board (assembled): <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
+<li><strong>ATtiny88 breakout board (assembled)</strong>: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
 <li><strong>ATtiny828 breakout board (assembled)</strong>: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
-<li>ATtiny167 dev. board: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
+<li><strong>ATtiny167 dev. board</strong>: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
 <li><strong>ATtiny43 dev. board</strong>: <a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></li>
 </ul>
               
