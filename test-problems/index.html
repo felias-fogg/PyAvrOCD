@@ -142,7 +142,8 @@
 <li>ATtiny13: Sometimes, the lockbits are not set by the Makefile. Actually, this happened with other MCUs as well.</li>
 <li>The new ATTinyCore produced very different code for the ATtiny841. It made the isr.ino sketch undebuggable!  Problems were: Code inlining and a strange handling of interrupts. So, I switched back to the old core.</li>
 <li>ATmega2561 and Atmel-ICE: After a few tests, the MCU gives the error "Debug session not started: AVR8_FAILURE_NO_DEVICE_FOUND: no devices detected". This happens when "Error while connecting to target OCD:". However, no problem with SNAP.</li>
-<li>Turned out that ATmega64 also has a stuck-at-one bit in the PC, </li>
+<li>Turned out that ATmega64 also has a stuck-at-one bit in the PC</li>
+<li>I added in <code>_activate_interface</code> (in xavrdebug) to the call <code>self.device.avr.protocol.activate_physical()</code>  the parameter <code>use_reset=False</code>. This will try to reset the chip in order to gain control of JTAG again, when this has been disabled with the JTD bit  This is OK as long as we do not have a EDBG debugger! In this case, we get the error message "AVR8_FAILURE_TIMEOUT: It just took too long"</li>
 </ul>
               
             </div>
