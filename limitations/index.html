@@ -284,11 +284,19 @@ IN R2, PINB
 <p>ATmega88,</p>
 </li>
 <li>
-<p>ATmega16, and</p>
+<p>ATmega16(A)</p>
 </li>
-<li>Atmega16A.</li>
+<li>
+<p>ATmega64(A)</p>
+</li>
+<li>
+<p>ATmega329(P)(A)</p>
+</li>
+<li>
+<p>ATmega3250(P)(A)</p>
+</li>
 </ul>
-<p>These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips additionally suffer from the Hotel California syndrome (you can always check in, but never check out), and they have the same chip signature as their cousins with an A-suffix, PyAvrOCD goes to some length to recognize those chips and reject them before they get "bricked" by switching them into debugWIRE mode.</p>
+<p>These MCUs have a non-zero unused bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips additionally suffer from the Hotel California syndrome (you can always check in, but never check out), and they have the same chip signature as their cousins with an A-suffix, PyAvrOCD goes to some length to recognize those chips and reject them before they get "bricked" by switching them into debugWIRE mode. For the other MCUs, you can try to run PyAvrOCD with the option <code>--force-debug</code>. Your mileage may vary.</p>
 <p>Finally, we have the ATmega128(A), which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to <code>software_breakpoint_set</code> throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode.</p>
 <h2 id="debugwire-can-brick-mcus">DebugWIRE can brick MCUs</h2>
 <p>DebugWIRE can be dangerous to the health of your MCU.</p>

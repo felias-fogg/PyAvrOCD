@@ -145,8 +145,14 @@
 <p>If one do not want to rely on a GDB bugfix, one could try to identify the cases when GDB tries to retrieve a program address (return address) from the stack. GDB does that, for instance, for the purpose of figuring out where to place a temporary breakpoint after single stepping led to a function call. Another prupose is stack access and manipulation, e.g., backtrace, up, down, finish, ...</p>
 <p>When not to mask:
 - Everything below the stack pointer is never a return address</p>
-<p>When definitely to mask:
+<p>When to definitely mask:
 - After a single (or range) step, when we stop, and GDB examines the stack, it looks for the return address in order to decide where to place a temporary breakpoint</p>
+<p>General strategy:</p>
+<ul>
+<li>When we stop, the first stack access afterward is most often (?) the retrieval of a return address</li>
+<li>Later, GDB retrieves prologues in order to decide how the stack frame is structured and then accesses the return address next. </li>
+<li>The question is, what does accessing local variables look like?</li>
+</ul>
               
             </div>
           </div><footer>

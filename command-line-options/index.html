@@ -224,6 +224,10 @@
 <td><code>--dw-link-baud</code></td>
 <td>Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value.</td>
 </tr>
+<tr>
+<td><code>--force-debug</code></td>
+<td>This option will enable debugging on some of the MCUs that have non-zero unused bits in their program counter.</td>
+</tr>
 </tbody>
 </table>
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code>.</p>
