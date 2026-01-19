@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/non-zero-unused-pc-bits/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/gdb-fixes/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Non-zero unused PC bits - PyAvrOCD</title>
+    <title>GDB Fixes - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Non-zero unused PC bits";
-        var mkdocs_page_input_path = "non-zero-unused-pc-bits.md";
-        var mkdocs_page_url = "/non-zero-unused-pc-bits/";
+        var mkdocs_page_name = "GDB Fixes";
+        var mkdocs_page_input_path = "gdb-fixes.md";
+        var mkdocs_page_url = "/gdb-fixes/";
       </script>
     
     <!--[if lt IE 9]>
@@ -125,9 +125,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Non-zero unused PC bits</li>
+      <li class="breadcrumb-item active">GDB Fixes</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/non-zero-unused-pc-bits.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/gdb-fixes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -135,27 +135,79 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="non-zero-unused-pc-bits">Non-zero unused PC bits</h1>
-<p>Such bits are found in:
-- ATmega16
-- ATmega64
-- ATmega329
-- ATmega3250</p>
-<p>The former two have concealed non-zero bits, i.e., you only notice them in return addresses (on the stack).</p>
-<p>If one do not want to rely on a GDB bugfix, one could try to identify the cases when GDB tries to retrieve a program address (return address) from the stack. GDB does that, for instance, for the purpose of figuring out where to place a temporary breakpoint after single stepping led to a function call. Another prupose is stack access and manipulation, e.g., backtrace, up, down, finish, ...</p>
-<p>When not to mask:
-- Everything below the stack pointer is never a return address</p>
-<p>When to definitely mask:
-- After a single (or range) step, when we stop, and GDB examines the stack, it looks for the return address in order to decide where to place a temporary breakpoint</p>
-<p>General strategy:</p>
-<ul>
-<li>When we stop, the first stack access afterward is most often (?) the retrieval of a return address</li>
-<li>Later, GDB retrieves prologues in order to decide how the stack frame is structured and then accesses the return address next. </li>
-<li>The question is, what does accessing local variables look like?<ul>
-<li>The first time a local var is accessed, first the registers are queried with a <code>g</code> command. </li>
-</ul>
-</li>
-</ul>
+                <h1 id="gdb-fixes">GDB Fixes</h1>
+<p>Getting avr-gdb compiled on macOS:</p>
+<ol>
+<li>Downloaded the sources, e.g., from https://ftpmirror.gnu.org/gnu/gdb/gdb-17.1.tar.xz</li>
+<li>Extract archive</li>
+<li><code>cd</code> into the folder</li>
+<li><code>mkdir build</code></li>
+<li><code>cd build</code></li>
+<li><code>export CFLAGS="-g -O2 -Wno-error"</code></li>
+<li><code>export CXXFLAGS="-g -O2 -Wno-error"</code></li>
+<li><code>../configure --prefix=/usr/local --with-system-zlib --without-python --target=avr --with-gmp=/opt/homebrew/Cellar/gmp/6.3.0 --with-mpfr=/opt/homebrew/Cellar/mpfr/4.2.2 --with-lzma=/opt/homebrew/Cellar/xz/5.8.1 --disable-binutiles --without-guile</code></li>
+<li><code>make -j5</code></li>
+<li>You find gdb under <code>./gdb/gdb</code></li>
+</ol>
+<h3 id="problems-solvable-in-avr-tdepc">Problems solvable in avr-tdep.c</h3>
+<h5 id="backtrace-problem-when-a-function-has-local-variables-that-are-on-the-stack">Backtrace problem when a function has local variables that are on the stack</h5>
+<pre><code class="language-diff">-- avr-tdep.c~  2025-12-20 03:53:21
++++ avr-tdep.c  2026-01-16 17:25:54
+@@ -829,7 +829,9 @@
+      vpc += 2;
+      insn = extract_unsigned_integer (&amp;prologue[vpc], 2, byte_order);
+      vpc += 2;
+-     locals_size += ((insn &amp; 0xf) | ((insn &amp; 0xf00) &gt;&gt; 4)) &lt;&lt; 8;
++     /* Here we need to check for &quot;sbc r29, r1&quot; as well! */
++     if (insn != 0x09d1) 
++       locals_size += ((insn &amp; 0xf) | ((insn &amp; 0xf00) &gt;&gt; 4)) &lt;&lt; 8;
+    }
+       else
+    return pc_beg + vpc;
+</code></pre>
+<h5 id="masking-out-the-unused-pc-bit-when-retrieving-return-addresses-from-the-stack">Masking out the unused PC bit when retrieving return addresses from the stack</h5>
+<pre><code class="language-diff">--- avr-tdep.c~ 2025-12-20 03:53:21
++++ avr-tdep.c  2026-01-17 17:13:27
+@@ -38,6 +38,7 @@
+ #include &quot;objfiles.h&quot;
+ #include &lt;algorithm&gt;
+ #include &quot;gdbarch.h&quot;
++#include &quot;memattr.h&quot;
+
+ /* AVR Background:
+
+@@ -240,12 +241,28 @@
+   return builtin_type (gdbarch)-&gt;builtin_uint8;
+ }
+
++/* Apply a mask to mask out unused bits in the program counter.
++   This needs to be done for ATmega16, ATmega64, ATmega329, and ATmega3250.
++   It works only when the memory map is supplied by the remote server, though.
++   In other words, older servers or GDB compiled without expat will have a problem. */
++
++static CORE_ADDR avr_pc_mask(void)
++{
++  static CORE_ADDR pcmask = 0;
++  if (pcmask == 0) {
++    struct mem_region *m = lookup_mem_region(0);
++    pcmask = m-&gt;hi-1;
++  }
++  return pcmask;
++}
++
++
+ /* Instruction address checks and conversions.  */
+
+ static CORE_ADDR
+ avr_make_iaddr (CORE_ADDR x)
+ {
+-  return ((x) | AVR_IMEM_START);
++  return ((x &amp; avr_pc_mask()) | AVR_IMEM_START);
+ }
+
+ /* FIXME: TRoth: Really need to use a larger mask for instructions.  Some
+
+</code></pre>
               
             </div>
           </div><footer>
