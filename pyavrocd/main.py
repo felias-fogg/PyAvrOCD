@@ -142,6 +142,11 @@ def options(cmd):
                             action='store_true',
                             help=argparse.SUPPRESS)
 
+    parser.add_argument("--memory-map-disable",
+                            dest='nomm',
+                            action='store_true',
+                            help=argparse.SUPPRESS)
+
 
     for option_name, option_type in monopts.items():
         if option_type[0] == 'cli':
@@ -494,8 +499,7 @@ def startup(command_line, logger):
     # tool is connected, now we can start
     logger.info("Starting GDB server")
     try:
-        avrdebugger = XAvrDebugger(backend.transport, device, intf, args.manage, args.clkprg, args.clkdeb,
-                                       args.timers[0]=='r')
+        avrdebugger = XAvrDebugger(backend.transport, device, intf, args)
         if args.debugwire and args.debugwire[0] == 'd' and intf == 'debugwire':
             avrdebugger.cold_dw_disable()
             return 0

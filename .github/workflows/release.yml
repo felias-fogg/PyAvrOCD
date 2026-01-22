@@ -61,7 +61,7 @@ jobs:
     strategy:
       matrix:
       # If you change something in the list of OSs, you also have to do it further down!
-       os: [ "ubuntu-22.04", "macos-15-intel", "windows-2022",  "windows-2025", "ubuntu-22.04-arm",  "macos-15" ]
+       os: [ "ubuntu-24.04", "macos-15-intel", "windows-2022",  "windows-2025", "ubuntu-24.04-arm",  "macos-15" ]
     defaults:
       run:
         shell: bash
@@ -107,8 +107,8 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-      - name: Upload as artifact (Linux Arm = ubuntu-22.04-arm)
-        if: matrix.os == 'ubuntu-22.04-arm'
+      - name: Upload as artifact (Linux Arm = ubuntu-24.04-arm)
+        if: matrix.os == 'ubuntu-24.04-arm'
         uses: actions/upload-artifact@v4
         with:
           name: aarch64-linux-gnu
@@ -147,8 +147,8 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-      - name: Upload artifact (Linux Intel = ubuntu-22.04)
-        if: matrix.os == 'ubuntu-22.04'
+      - name: Upload artifact (Linux Intel = ubuntu-24.04)
+        if: matrix.os == 'ubuntu-24.04'
         uses: actions/upload-artifact@v4
         with:
           name: x86_64-linux-gnu

@@ -87,28 +87,28 @@ class TestHardwareBP(TestCase):
     def test_set_succ(self):
         self.set_up()
         self.hbp._hwbplist = [ 100, None, 200 ]
-        self.assertEqual(self.hbp.set(999), 1)
+        self.assertEqual(self.hbp.set(998), 1)
         self.assertEqual(self.hbp.available(), 0)
 
     def test_set_fail(self):
         self.set_up()
         self.hbp._hwbplist = [ 100, 200, 300 ]
-        self.assertEqual(self.hbp.set(999), None)
+        self.assertEqual(self.hbp.set(998), None)
         self.assertEqual(self.hbp.available(), 0)
 
     def test_set_temp_imposs(self):
         self.set_up()
         self.hbp._hwbplist = [ 100, 200, 300 ]
-        self.assertEqual(self.hbp.set_temp([1,2,3,4]), None)
+        self.assertEqual(self.hbp.set_temp([2,4,6,8]), None)
         self.assertEqual(self.hbp._hwbplist, [ 100, 200, 300 ])
         self.assertEqual(self.hbp._tempalloc, None)
 
     def test_set_temp_poss2(self):
         self.set_up()
         self.hbp._hwbplist = [ 100, 200, 300 ]
-        self.assertEqual(self.hbp.set_temp([1,2]), [ 300, 200 ])
-        self.assertEqual(self.hbp._hwbplist, [ 100, 2, 1 ])
+        self.assertEqual(self.hbp.set_temp([4, 2]), [ 300, 200 ])
         self.assertEqual(self.hbp._tempalloc, [2, 1])
+        self.assertEqual(self.hbp._hwbplist, [ 100, 2, 4 ])
 
     def test_clear_temp(self):
         self.set_up()

@@ -1,5 +1,30 @@
 # Changelog
 
+### NEW:
+
+- **Goal reached:**
+     - The e2e tests are now successful on all MCUs I have on my desk, which covers almost all ATTinyCore, MiniCore, MightyCore, MegaCore, and MajorCore MCUs. It is soon time to publish v1.0.0! But before we do that, PyAvrOCD will be tested as part of Mighty-/Mega-/MajorCore (also on different platforms).
+- **Fixed:**
+     - The change in 0.21.0 to deactivate and activate the physical led to problems when running the e2e tests on the combination ATmega2560 and Atmel-ICE. After a while, the chip did not respond any more over JTAG. For this reason, I changed that back. PICkit4 and ATmega32 now work like a charm! So, I have no idea what caused the initial problem.
+     - Unused PC bits are now masked inside xavrdebug.
+     - The option value for `monitor load` is changed from `noinitialload` to its default value when the MCU needs to be erased before debugging can start.
+     - Two fixes in avr-gdb:
+          - Unused bits in return addresses are masked out in GDB
+          - When local variables on the stack used between more then 63 but less than 256 bytes, backtracing failed
+- **Removed:**
+     - The special case method `_check_atmega16` is not needed anymore.
+     - The monitor option `NoXML`has been removed because we have now the CLI option `--memory-map-disable` .
+- **Changed:**
+     - The option value `onlycaching`has been changed to `noinitialload`.
+     - The stuck-at-1 PC bit routine has been simplified because of a fix submitted to GDB. Unused bits in return addresses are now masked out in GDB.
+- **Added**:
+     - Non-zero unused PC bit are now stored in `dbg.bad_pc_bit_mask` .
+     - This bit is added when setting hardware breakpoints in `xavrdebug` and when calling `run_to` in `xavrdebug`. The complement is used to mask out the bit in `program_counter_read` in `xavrdebug`.
+     - New CLI option `--memory-map-disable` for testing purposes.
+     - The patched avr-gdb 1.17 version is now made available through my  GitHub repo avr-gdb.
+
+
+
 ### 0.21.0
 
 - **Fixed:**

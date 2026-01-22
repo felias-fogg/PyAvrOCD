@@ -5,17 +5,25 @@
 #
 #usage: call the script from the root folder; version will be deduced from pyavrocd -V
 
-chmod +x extras/binaries/arm64-apple-darwin/pyavrocd
-chmod +x extras/binaries/aarch64-linux-gnu/pyavrocd
-chmod +x extras/binaries/x86_64-apple-darwin/pyavrocd
-chmod +x extras/binaries/x86_64-linux-gnu/pyavrocd
+if [ -f extras/binaries/arm64-apple-darwin/pyavrocd ]; then
+    chmod +x extras/binaries/arm64-apple-darwin/pyavrocd
+fi
+if [ -f extras/binaries/aarch64-linux-gnu/pyavrocd ]; then
+    chmod +x extras/binaries/aarch64-linux-gnu/pyavrocd
+fi
+if [ -f extras/binaries/x86_64-apple-darwin/pyavrocd ]; then
+    chmod +x extras/binaries/x86_64-apple-darwin/pyavrocd
+fi
+if [ -f  extras/binaries/x86_64-linux-gnu/pyavrocd ]; then
+    chmod +x extras/binaries/x86_64-linux-gnu/pyavrocd
+fi
 
 #assume that we are running on an Intel (compatible) runner
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    typestr="x86_64-linux-gnu"
+    typestr=`arch`"-linux-gnu"
 elif
    [[ "$OSTYPE" == "darwin"* ]]; then
-    typestr="x86_64-apple-darwin"
+    typestr=`arch`"-apple-darwin"
 else
     echo "Incompatible runner"
     exit 1
@@ -40,17 +48,22 @@ mkdir avrocd-tools
 
 for dir in binaries/*; do
     if [ -d $dir ]; then
-	if  [ -f $dir/avr-gdb -o -f $dir/avr-gdb.exe ]; then
-	    if [ -f $dir/pyavrocd -o -f $dir/pyavrocd.exe ]; then
-		if [ -d $dir/pyavrocd-util ]; then
-		    type=${dir##*/}
-		    echo "Packing tools for: $type"
-		    rm -rf tools
-		    mkdir tools
-		    cp -r $dir/* tools/
-		    tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
-		    rm -rf tools
-		fi
+	if [ -f $dir/pyavrocd -o -f $dir/pyavrocd.exe ]; then
+	    if [ -d $dir/pyavrocd-util ]; then
+		type=${dir##*/}
+		echo "Packing tools for: $type"
+		rm -rf tools
+		mkdir tools
+                if [ ! -f $dir/avr-gdb ] && [ ! -f $dir/avr-gdb.exe ]; then
+                    pushd $dir
+                    wget https://github.com/felias-fogg/avr-gdb/releases/latest/download/${type}.tar.gz
+                    tar xvzf ${type}.tar.gz
+                    rm -f ${type}.tar.gz
+                    popd
+                fi
+		cp -r $dir/* tools/
+		tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
+		rm -rf tools
 	    fi
 	fi
     fi

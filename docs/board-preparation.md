@@ -31,7 +31,7 @@ On clone boards with a CH340 serial converter chip, you may have to remove the c
 </p>
 ### Arduino Nano and clones
 
-Things are a bit more complicated with **Arduino Nano** boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. The following picture shows the bottom side of an Arduino Nano V3.3. The capacitor to be removed has been marked by a red ellipse, the 1kΩ resistor by a cyan one. Since this resistor is part of a resistor array, one needs to cut the trace instead. If you manage to cut the trace at the point marked by the green line, everything is fine. If you are not able to accomplish that, cutting at the point marked by the blue line is also OK. In this case, the power LED will also be cut off. In any case, after this modification, this board will probably only be usable for debugging purposes.
+Things are a bit more complicated with **Arduino Nano** boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. The following picture shows the bottom side of an Arduino Nano V3.3. The capacitor to be removed has been marked by a red ellipse, the 1kΩ resistor by a magenta one. Since this resistor is part of a resistor array, one needs to cut the trace instead. If you manage to cut the trace at the point marked by the green line, everything is fine. If you are not able to accomplish that, cutting at the point marked by the blue line is also OK. In this case, the power LED will also be cut off. In any case, after this modification, this board will probably only be usable for debugging purposes.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-cut.png" width="80%">
@@ -42,6 +42,8 @@ For Arduino Nano clones (those using a CH340 as the serial converter), one can r
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-clone.png" width="80%">
 </p>
+Note, however, that there are many different versions of Nanos on the market. Verify that making the changes will indeed accomplish what you are after: Removing the capacitive and resistive load from the RESET line.
+
 ### Arduino Pro Mini and clones
 
 The **Arduino Pro Mini** is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.
@@ -57,9 +59,7 @@ For other boards with ATmega168 and ATmega328 chips, the situation is similar. F
 
 ## Preparing a JTAG target
 
-JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (`TDI`, `TDO`, `TMS`, `TCK`).  On an Arduino Mega or Mega 2560, these are the analog pins A4-A7. On an Leonardo, these are the analog pins A0-A3. While physical changes on the board are not necessary, it is very likely that the [JTAG pins have to be enabled by setting the corresponding fuses](fuse-preparation.md).
-
-
+JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (`TDI`, `TDO`, `TMS`, `TCK`).  On an Arduino Mega or Mega 2560, these are the analog pins A4-A7. On a Leonardo, these are the analog pins A0-A3. While physical changes on the board are not necessary, it is very likely that the [JTAG pins have to be enabled by setting the corresponding fuses](fuse-preparation.md). It also means that one should disconnect anything from those lines.
 
 <!--
 

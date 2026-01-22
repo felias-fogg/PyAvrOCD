@@ -250,7 +250,7 @@ class Memory():
         This out of the way, we program. Optionally, after writing, we check whether
         we were successful.
         """
-        if self.mon.is_onlycache(): # if loading is set to filling the cache only, we do not flash
+        if self.mon.is_noinitialload(): # if loading is set to filling the cache only, we do not flash
             return
         startaddr = (self._flashmem_start_prog // self._multi_page_size) * self._multi_page_size
         if self.lazy_loading:

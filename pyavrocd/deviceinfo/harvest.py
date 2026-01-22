@@ -379,6 +379,36 @@ def capture_ocden_from_register_group(element):
                 return off
     return None
 
+def capture_cs0_from_register_group(element):
+    """
+    Capture the base address of the register containing CS0 (it is usually TCCR0B)
+
+    :param element: element with tag='register-group'
+    :type element: xml.etree.ElementTree.Element instance
+    :return: register address where CS0 or CS00 is located
+    :rtype: int
+    """
+    for reg in element.findall('register'):
+        off = reg.attrib['offset']
+        for bf in reg.findall('bitfield'):
+            if bf.attrib['name'].lower() in ['cs0', 'cs00']:
+                return off
+    return None
+
+def capture_toie0_from_register_group(element):
+    """
+    Capture the base address of the register containing TOIE0
+    :param element: element with tag='register-group'
+    :type element: xml.etree.ElementTree.Element instance
+    :return: register address where TOIE0 is located
+    :rtype: int
+    """
+    for reg in element.findall('register'):
+        off = reg.attrib['offset']
+        for bf in reg.findall('bitfield'):
+            if bf.attrib['name'].lower() == 'toie0':
+                return off
+    return None
 
 def get_flash_offset(element):
     """
@@ -506,6 +536,10 @@ def harvest_from_file(filename):
     bootrst_mask = None
     eesave_base = None
     eesave_mask = None
+    tcnt0_base = None
+    toie0_base = None
+    toie0_mask = None
+    cs0_base = None
     buf_per_page = None
 
     memories = {}
@@ -542,6 +576,8 @@ def harvest_from_file(filename):
                     masked.append(int(ocd_base,16) + 0x20)
                 buf_per_page = get_buf_per_page(elem)
             if elem.tag == 'register':
+                if elem.attrib['name'].lower() in ['tcnt0', 'tcnt0l']:
+                    tcnt0_base = int(elem.attrib['offset'],16)
                 if elem.attrib['name'].lower() in ['eear', 'eearl']:
                     eear_base = int(elem.attrib['offset'],16) - 0x20
                     eear_size = int(elem.attrib['size'])
@@ -569,6 +605,8 @@ def harvest_from_file(filename):
                                                         'UEDATX', 'UPDATX', 'DAC', 'DACL', 'DACH']:
                         crit_fields.append(elem.attrib['name'] + "-R/W")
             if elem.tag == 'bitfield':
+                if elem.attrib['name'].lower() == 'toie0':
+                    toie0_mask = elem.attrib['mask']
                 if elem.attrib['name'].lower() == 'dwen':
                     dwen_mask = elem.attrib['mask']
                 if elem.attrib['name'].lower() == 'ocden':
@@ -587,6 +625,10 @@ def harvest_from_file(filename):
                     ocden_base = capture_ocden_from_register_group(elem)
                 if capture_eesave_from_register_group(elem) is not None:
                     eesave_base = capture_eesave_from_register_group(elem)
+                if capture_cs0_from_register_group(elem) is not None:
+                    cs0_base = capture_cs0_from_register_group(elem)
+                if capture_toie0_from_register_group(elem) is not None:
+                    toie0_base = capture_toie0_from_register_group(elem)
 
 
     extra_fields += capture_field('address_size', determine_address_size(progmem_offset))
@@ -639,6 +681,14 @@ def harvest_from_file(filename):
         extra_fields += "    'eesave_base' : " + "%s" % eesave_base + ",\n"
     if eesave_mask:
         extra_fields += "    'eesave_mask' : " + "%s" % eesave_mask + ",\n"
+    if tcnt0_base:
+        extra_fields += "    'tcnt0_base' : " + "0x%02X" % tcnt0_base + ",\n"
+    if cs0_base:
+        extra_fields += "    'cs0_base' : " + "%s" % cs0_base + ",\n"
+    if toie0_base:
+        extra_fields += "    'toie0_base' : " + "%s" % toie0_base + ",\n"
+    if toie0_mask:
+        extra_fields += "    'toie0_mask' : " + "%s" % toie0_mask + ",\n"
     if buf_per_page:
         extra_fields += "    'buffers_per_flash_page' : " + "%s" % buf_per_page + ",\n"
     if masked:

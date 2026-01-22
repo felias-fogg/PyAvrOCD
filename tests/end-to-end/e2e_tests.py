@@ -72,7 +72,7 @@ def main():
     mcu_name = args.dev.lower()
     mcu_clocks, tag_list, fqbn, test_board = test_devices[mcu_name]
     if args.clock in mcu_clocks:
-        clock = mcu_clocks[args.clock]
+        aclock, cclock = mcu_clocks[args.clock]
     else:
         logger.critical("Clock frequency %s MHz is not supported for end-to-end tests on %s",
                             args.clock, mcu_name)
@@ -103,14 +103,15 @@ def main():
                 logger.info("Program %s already compiled", script[1])
             else:
                 if os.path.exists("sketches/" + script[1] + "/" + script[1] + ".ino"): # Arduino sketch
-                    logger.info("Compile '%s.ino' for '%s' clock on %s", script[1], clock, mcu_name)
-                    cmd = "arduino-cli compile -b " + fqbn + clock + \
-                    ' -e --build-property="build.extra_flags=-Og -ggdb3 ' + script[2] + '" --output-dir ' + \
+                    logger.info("Compile '%s.ino' for '%s' clock on %s", script[1], args.clock, mcu_name)
+                    cmd = "arduino-cli compile -b " + fqbn + aclock + \
+                    ' -e --build-property="compiler.c.extra_flags=-Og -ggdb3 ' + script[2] + '"' + \
+                    ' --build-property="compiler.cpp.extra_flags=-Og -ggdb3 ' + script[2] + '" --output-dir ' + \
                     "sketches/" + script[1] + " sketches/" + script[1]
                 else: # C/C++-program
-                    logger.info("Compile C/C++ program '%s' for clock '%s' on %s", script[1], clock, mcu_name)
+                    logger.info("Compile C/C++ program '%s' for clock '%s' on %s", script[1], args.clock, mcu_name)
                     cmd = "make -C sketches/" + script[1] + " PORT=" + args.port + " MCU=" + \
-                      mcu_name + " F_CPU=" + args.clock + "000000UL fresh"
+                      mcu_name + " F_CPU=" + cclock + " fresh"
                 logger.debug("Compile command: '%s'", cmd)
                 cmd_out, exit_status =  pexpect.run(cmd, withexitstatus=1)
                 if exit_status != 0:
@@ -126,7 +127,7 @@ def main():
             logger.error("Failed to run script '%s'", sn)
             failed_scripts += [ sn ]
         else:
-            logger.info("Succeeded: %s", sn)
+            logger.info("Success: %s", sn)
         sleep(2.5)
     logger.info("All tests:           %s", len(all_scripts))
     logger.info("Test runs:           %s", tests_done)

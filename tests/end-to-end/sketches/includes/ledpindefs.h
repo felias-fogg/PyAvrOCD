@@ -211,7 +211,7 @@
 // Builtin LED in MegaCore
  #define LED2_PORT PORTB
  #define LED2_DDR  DDRB
- #define LED2      PB47
+ #define LED2      PB7
 #elif defined(__AVR_ATmega162__)
 // SCK
  #define LED1_PORT PORTB

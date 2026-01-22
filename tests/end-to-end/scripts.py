@@ -212,6 +212,7 @@ all_scripts = {
      ("delete 1", ""),
      ("break loop", "Breakpoint 2"),
      ("cont", "LedOn"),
+     ("del 2", ""), # necessary so that HWBP-only MCUs succeed
      ("next", "LedOff"),
      ("next", "$SKIP"),
      ("$SLEEP", 1),
@@ -330,7 +331,7 @@ all_scripts = {
          "Flash memory will be erased before loading executable",
          "On debugWIRE targets, flash memory cannot be erased before loading executable",
          "Not implemented"),
-     ("monitor load onlycache", "Only reading, but no flashing", "Only caching when loading"),
+     ("monitor load noinitialload", "Only reading, but no flashing", "Only caching when loading"),
      ("monitor load", "Only reading, but no flashing", "Only caching when loading"),
      ("monitor load readbeforewrite", "Reading before writing when loading"),
      ("monitor load", "Reading before writing when loading"),
@@ -373,14 +374,14 @@ all_scripts = {
          'noautopc'),
     "",
     "",
-    "--atexit=l --break=s --cach d --era d --load onlycache --onlywhen=d --ra=d --single=i --ti f --verify disable",
-    (("set logging file log/blink.log", ""),) + prolog + \
+    "--atexit=l --break=s --cach d --era d --load noinitialload --onlywhen=d --ra=d --single=i --ti f --verify disable",
+    (("set logging file log/monitor-options.log", ""),) + prolog + \
     (("monitor atexit",  "MCU will leave debugWIRE mode on exit", "Leave debugWIRE at exit",
           "This is not a debugWIRE target"),
      ("monitor atexit stay", "MCU will stay in debugWIRE mode on exit", "Stay in debugWIRE at exit",
           "This is not a debugWIRE target"),
      ("monitor breakpoints", "Only software breakpoints",
-          "Breakpoint mode cannot be changed on this MCU"),
+          "On this MCU, only hardware breakpoints are allowed"),
      ("monitor caching", "Flash memory will not be cached",
          "Not implemented"),
      ("monitor erasebeforeload",
@@ -631,17 +632,15 @@ all_scripts = {
     "",
     (("set logging file log/tictactoe.log", ""),) + prolog + \
     (("load", "Start address 0x"),
-     ("b tictactoe.ino:211","line 211"),
+     ("b tictactoe.ino:210","line 210"),
      ("b tictactoe.ino:176","line 176"),
      ("b minimax", "Breakpoint 3"),
-     ("c", "211"),
-     ("set key='Y'", ""),
-     ("p key", "$1 = 89 'Y'"),
-     ("n", "215"),
-     ("n", "219"),
-     ("c", "211"),
+     ("c", "210"),
+     ("set key='y'", ""),
+     ("p key", "$1 = 121 'y'"),
+     ("n", "211"),
+     ("p key", "$2 = 89 'Y'"),
      ("n", "212"),
-     ("n", "return LEFTKEY"),
      ("c", "176"),
      ("set key='9'", ""), # we play 9
      ("c", "Breakpoint 3, minimax (player=1"),
@@ -651,9 +650,9 @@ all_scripts = {
      ("set key='3'", ""), # we play 3
      ("c", "176"), # player played 6
      ("set key='1'", ""), # we play 1
-     ("c", "211"), # player playd 4 -- and won
+     ("c", "210"), # player played 4 -- and won
      ("set key='N'", ""), # we do not want play any longer
-     ("c", "211")) + epilog),
+     ("c", "210")) + epilog),
 
 # tests safe and interruptible single-step execution
 # INT 0 is enabled and switched active by setting the IRQ pin as an output
@@ -764,7 +763,7 @@ all_scripts = {
     "",
     (("set logging file log/dirty.log", ""),) + prolog[0:6] + \
     (("monitor debugwire enable",  "Fatal error:", "This is not a debugWIRE target"),
-     ("monitor info", "MCU cannot be debugged because of stuck-at-1 bit")) + epilog),
+     ("monitor info", "stuck-at-1 bit", "Stuck-at-1 bit")) + epilog),
 
 # switch off debugWIRE mode (if applicable)
 # this test script should be run last in each sequence in order to disable debugWIRE

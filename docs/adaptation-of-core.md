@@ -97,26 +97,26 @@ simavr.program.extra_params=
 
 #### ISP programmer / debugger
 
-atmel_ice_isp.name=Atmel-ICE (AVR) ISP
-atmel_ice_isp.communication=usb
-atmel_ice_isp.protocol=atmelice_isp
-atmel_ice_isp.program.protocol=atmelice_isp
-atmel_ice_isp.program.tool=avrdude
-atmel_ice_isp.program.extra_params=
+atmel_ice.name=Atmel-ICE (AVR) ISP
+atmel_ice.communication=usb
+atmel_ice.protocol=atmelice_isp
+atmel_ice.program.protocol=atmelice_isp
+atmel_ice.program.tool=avrdude
+atmel_ice.program.extra_params=
 
-atmel_powerdebugger_isp.name=Power Debugger (AVR) ISP
-atmel_powerdebugger_isp.communication=usb
-atmel_powerdebugger_isp.protocol=powerdebugger_isp
-atmel_powerdebugger_isp.program.protocol=powerdebugger_isp
-atmel_powerdebugger_isp.program.tool=avrdude
-atmel_powerdebugger_isp.program.extra_params=
+atmel_powerdebugger.name=Power Debugger (AVR) ISP
+atmel_powerdebugger.communication=usb
+atmel_powerdebugger.protocol=powerdebugger_isp
+atmel_powerdebugger.program.protocol=powerdebugger_isp
+atmel_powerdebugger.program.tool=avrdude
+atmel_powerdebugger.program.extra_params=
 
-atmel_jtagice3_isp.name=JTAGICE3 ISP
-atmel_jtagice3_isp.communication=usb
-atmel_jtagice3_isp.protocol=jtag3isp
-atmel_jtagice3_isp.program.protocol=jtag3isp
-atmel_jtagice3_isp.program.tool=avrdude
-atmel_jtagice3_isp.program.extra_params=
+atmel_jtagice3.name=JTAGICE3 ISP
+atmel_jtagice3.communication=usb
+atmel_jtagice3.protocol=jtag3isp
+atmel_jtagice3.program.protocol=jtag3isp
+atmel_jtagice3.program.tool=avrdude
+atmel_jtagice3.program.extra_params=
 
 pickit4_isp.name=PICkit4 ISP
 pickit4_isp.communication=usb
@@ -132,12 +132,12 @@ snap_isp.program.protocol=snap_isp
 snap_isp.program.tool=avrdude
 snap_isp.program.extra_params=
 
-medbg_isp.name=Xplained Mini (mEDBG) ISP
-medbg_isp.communication=usb
-medbg_isp.protocol=xplainedmini_isp
-medbg_isp.program.protocol=xplainedmini_isp
-medbg_isp.program.tool=avrdude
-medbg_isp.program.extra_params=
+xplainedmini.name=Xplained Mini (mEDBG) ISP
+xplainedmini.communication=usb
+xplainedmini.protocol=xplainedmini_isp
+xplainedmini.program.protocol=xplainedmini_isp
+xplainedmini.program.tool=avrdude
+xplainedmini.program.extra_params=
 
 ### JTAG programmer / debugger
 
@@ -177,12 +177,12 @@ snap_jtag.program.protocol=snap_jtag
 snap_jtag.program.tool=avrdude
 snap_jtag.program.extra_params=
 
-edbg_jtag.name=Xplained Pro (EDBG) JTAG
-edbg_jtag.communication=usb
-edbg_jtag.protocol=xplainedpro_jtag
-edbg_jtag.program.protocol=xplainedpro_jtag
-edbg_jtag.program.tool=avrdude
-edbg_jtag.program.extra_params=
+xplainedpro.name=Xplained Pro (EDBG) JTAG
+xplainedpro.communication=usb
+xplainedpro.protocol=xplainedpro_jtag
+xplainedpro.program.protocol=xplainedpro_jtag
+xplainedpro.program.tool=avrdude
+xplainedpro.program.extra_params=
 
 ### UPDI programmer / debugger
 

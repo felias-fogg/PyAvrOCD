@@ -42,7 +42,7 @@ class XAvrDebugger(AvrDebugger):
     :type use_events_for_run_stop_state: boolean
     """
     #pylint: disable=super-init-not-called,too-many-positional-arguments
-    def __init__(self, transport, devicename, iface, manage, clkprg, clkdeb, timers_run):
+    def __init__(self, transport, devicename, iface, args):
         """
         We do not want to make use of the base class' init method,
         because all startup code is collected in the start_debugging method!
@@ -51,11 +51,13 @@ class XAvrDebugger(AvrDebugger):
         self.transport = transport
         self._devicename = devicename
         self._iface = iface
-        self.manage = manage
-        self.clkprg = clkprg
-        self.clkdeb = clkdeb
-        self.timers_run = timers_run
+        self.manage = args.manage
+        self.clkprg = args.clkprg
+        self.clkdeb = args.clkdeb
+        self.timers_run = args.timers[0]=='r'
+        self.args = args
         self.housekeeper = None
+        self.bad_pc_bit_mask = 0
         self._hwbpnum = None
         self._architecture = None
         self.use_events_for_run_stop_state =  False # in order to avoid the timing glitch with ATmega32/Atmel-ICE
@@ -93,14 +95,14 @@ class XAvrDebugger(AvrDebugger):
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info)
             self._hwbpnum = 1
         elif iface == "jtag" and self._architecture =="avr8":
-            self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info, manage=manage)
+            self.device = XNvmAccessProviderCmsisDapMegaAvrJtag(self.transport, self.device_info, manage=self.manage)
             self._hwbpnum = 4
 
         self.logger.info("Nvm instance created, iface: %s, HWBPs: %d, arch: %s",
                               self._iface, self._hwbpnum, self._architecture)
-        if manage == []:
-            manage = [ 'none' ]
-        self.logger.info("Managing fuses: %s", ", ".join(manage))
+        if self.manage == []:
+            self.manage = [ 'none' ]
+        self.logger.info("Managing fuses: %s", ", ".join(self.manage))
 
     def get_iface(self):
         """
@@ -154,7 +156,6 @@ class XAvrDebugger(AvrDebugger):
         self.switch_to_debmode()
         self.logger.info("Switched to debugging mode")
         self._check_stuck_at_one_pc()
-        self.logger.info("Checked for dirty PC")
         self.logger.info("... debug session startup done")
         return True
 
@@ -273,7 +274,11 @@ class XAvrDebugger(AvrDebugger):
                 # pretends to be a 168P, but is 168
                 (not (sig == 0x1E940B and self.device_info['device_id'] == 0x1E9406)) and
                 # pretends to be a 328P, but is 328
-                (not (sig == 0x1E950F and self.device_info['device_id'] == 0x1E9514))):
+                (not (sig == 0x1E950F and self.device_info['device_id'] == 0x1E9514)) and
+                # pretends to be a 328PB, but is a 328
+                (not (sig == 0x1E9516 and self.device_info['device_id'] == 0x1E9514)) and
+                # pretends to be a 328PB, but is a 328P
+                (not (sig == 0x1E95016 and self.device_info['device_id'] == 0x1E950F))):
                 raise FatalError("Wrong MCU: '%s', expected: '%s'" %
                         (dev_name.get(sig,"Unknown"),
                         dev_name[self.device_info['device_id']]))
@@ -282,70 +287,36 @@ class XAvrDebugger(AvrDebugger):
     def _check_stuck_at_one_pc(self):
         """
         Check that the connected MCU does not suffer from stuck-at-1-bits in the program counter.
-        There are only very few MCUs with this issue and GDB cannot deal with it at all. Since for the
-        MCUs with debugWIRE OCD  (ATmega48, ATmega88), this also lead to other issues,
-        we try to terminate debugWIRE mode immediately and then initiate a shutdown sequence.
-        For some JTAG MCUs (ATmega16), the OCD apparently masks out the stuck bits, but
-        the stuck bits show when the return address is pushed onto the stack.
-        """
-        self.reset()
-        pc = self.program_counter_read()
-        self.logger.debug("PC(word)=%X",pc)
-        if pc << 1 >= self.memory_info.memory_info_by_name('flash')['size']:
-            if self._iface == 'debugwire':
-                self.device.avr.protocol.debugwire_disable()
-            raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
-        # special purpose check for ATmega16 (and we try it also for fun an ATmega32)
-        if self.device_info['device_id'] in [ 0x1E9403, 0x1E9502 ]:
-            self._check_atmega16()
+        Currently, I only know of ATmega48, ATmega88, ATmega329, and ATmega3250. The two
+        former ones cause other issues as well and are therefore considered undebuggable.
+        For the latter two (and perhaps others), we simply remember the stuck bits
+        and either apply when (when setting a hardeware breakpoint) or mask them out
+        otherwise.
 
-    def _check_atmega16(self):
+        There are a few others, such as ATmega16 and ATmega64, which push non-zero
+        unused PC bits on the stack, but this will now be handled by GDB. So, when
+        GDB retrieves return addresses from the stack, it will always mask out unused bits,
+        provided the memory map has been communicated to GDB.
         """
-        Single out the ATmega16 without an A-suffix. In theory that should be possible
-        via the revision code present in the JTAG id code. However, unfortunately,
-        the data sheets are not conclusive. For this reason, we use the test of
-        setting the stack pointer, raising an interrupt, making a single step,
-        and then examine the stack.
-        """
-        self.logger.debug("Check ATmega16 for dirty PC")
-        self.reset()
-        sp = self.memory_info.memory_info_by_name('internal_sram')['size'] + \
-          self.memory_info.memory_info_by_name('internal_sram')['address'] - 1
-        self.logger.debug("New stack pointer: 0x%X", sp)
-        # set stack pointer to top of SRAM
-        self.stack_pointer_write(sp.to_bytes(2,byteorder='little'))
-        # set INT0 to low level static interrupt
-        self.sram_write(0x55, bytearray([0x00]))
-        # enable INT0 in GICR
-        self.sram_write(0x5B, bytearray([0x40]))
-        # enable interrupts in SREG
-        self.status_register_write(bytearray([0x80]))
-        # set DDR PD2 bit
-        self.sram_write(0x31, bytearray([0x04]))
-        # now set PD2 = LOW, IRQs are raised now
-        self.sram_write(0x32, bytearray([0x00]))
-        # make a single step (at 0, instruction does not matter!)
-        self.step()
-        # PC is pushed to stack
-        sp -= 2
-        if sp != int.from_bytes(self.stack_pointer_read(),byteorder='little'):
-            self.logger.error("IRQ has not been raised!")
-            self.reset()
-            return
-        # now check return address
-        retpc = int.from_bytes(self.sram_read(sp+1, 2), byteorder='big')
-        self.logger.debug("Return address: 0x%X", retpc)
-        if retpc << 1 > self.memory_info.memory_info_by_name('flash')['size']:
-            raise FatalError("MCU cannot be debugged because of stuck-at-1 bit in the PC")
-        self.reset()
+        self.logger.info("Check for stuck bits in PC")
+        pc = (super().program_counter_read()) << 1
+        self.logger.debug("PC(byte)=%X",pc)
+        mask = self.memory_info.memory_info_by_name('flash')['size'] - 1
+        self.logger.debug("Mask for testing: 0x%X", mask)
+        self.bad_pc_bit_mask = pc - (mask & pc)
+        self.logger.debug("Bad pc bit mask: 0x%X", self.bad_pc_bit_mask)
+        if self.bad_pc_bit_mask:
+            self.logger.warning("MCU has non-zero unused bit in PC: 0x%X", self.bad_pc_bit_mask)
 
     def _activate_interface(self, graceful=False):
         """
         Activate physical interface (perhaps trying twice)
 
         """
+
         try:
-            dev_id = self.device.avr.activate_physical()
+            not_edbg = 'edbg' not in self.transport.device.product_string.lower()
+            dev_id = self.device.avr.protocol.activate_physical(use_reset=not_edbg)
             dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
             self.logger.info("Physical interface activated: 0x%X", dev_code)
         except Jtagice3ResponseError as error:
@@ -354,7 +325,7 @@ class XAvrDebugger(AvrDebugger):
                 self.logger.warning("Physical state out of sync. Retrying.")
                 self.device.avr.deactivate_physical()
                 self.logger.info("Physical interface deactivated")
-                dev_id = self.device.avr.activate_physical()
+                dev_id = self.device.avr.protocol.activate_physical(use_reset=not_edbg)
                 dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
                 self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)
             elif error.code == Avr8Protocol.AVR8_FAILURE_DW_PHY_ERROR:
@@ -364,7 +335,7 @@ class XAvrDebugger(AvrDebugger):
                   from error
             elif error.code == Avr8Protocol.AVR8_FAILURE_CLOCK_ERROR:
                 self.logger.warning("Communication clock failure. Retrying.")
-                dev_id = self.device.avr.activate_physical()
+                dev_id = self.device.avr.protocol.activate_physical(use_reset=not_edbg)
                 dev_code = (dev_id[3]<<24) + (dev_id[2]<<16) + (dev_id[1]<<8) + dev_id[0]
                 self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)
             else:
@@ -415,6 +386,11 @@ class XAvrDebugger(AvrDebugger):
                 self.logger.debug("Lockbits after write: 0x%X", lockbits[0])
                 assert lockbits[0] == 0xFF, "Lockbits could not be cleared"
                 self.logger.info("MCU has been erased and lockbits have been cleared.")
+                if self.args.load[0] == 'n':     # the 'no initial load' option value
+                    if self._iface == 'debugwire':
+                        self.args.load = 'r'     # for dbugWIRE, the right one is 'read before write'
+                    elif self._iface == 'jtag':
+                        self.args.load = 'w'
             else:
                 self.logger.warning("PyAvrOCD is not allowed to clear lockbits.")
                 self.logger.warning("This must be done manually by erasing the chip.")
@@ -504,6 +480,9 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("Test for dirty PC on ATmega48/88")
         # erase flash (and maybe EEPROM)
         self.spidevice.isp.erase()
+        # change option value of 'load' option if necessary
+        if self.args.load[0] == 'n': # the 'no initial load' option value
+            self.args.load = 'r'     # for dbugWIRE, the right one is 'read before write'
         # program flash with test program, depending on MCU type
         if device_id == 0x1E9205: # ATmega48(A)
             self.spidevice.write(self.memory_info.memory_info_by_name('flash'), 0,
@@ -668,7 +647,7 @@ class XAvrDebugger(AvrDebugger):
         """
         Set a hardware breakpoint at address
         """
-        return self.device.avr.hardware_breakpoint_set(ix, address)
+        return self.device.avr.hardware_breakpoint_set(ix, address | self.bad_pc_bit_mask)
 
     #pylint: disable=arguments-differ
     #we actually need the extra argument when more than one HWBP is there
@@ -809,3 +788,14 @@ class XAvrDebugger(AvrDebugger):
         return self.device.read(self.memory_info.memory_info_by_name('flash'),
                                     address, numbytes, prog_mode=prog_mode)
 
+    def program_counter_read(self):
+        """
+        Apply the bad PC bit mask (which is for addressing bates, so shift one one to the right)
+        """
+        return super().program_counter_read() & ~(self.bad_pc_bit_mask >> 1)
+
+    def run_to(self, address):
+        """
+        Apply bad bit (if present) when starting execution
+        """
+        super().run_to(address | self.bad_pc_bit_mask)

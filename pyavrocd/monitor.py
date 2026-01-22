@@ -21,7 +21,7 @@ monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwi
             'erasebeforeload' : ['cli', 'enable', [None, 'enable', 'disable']],
             'help'            : [None, None, [None]],
             'info'            : [None, None, [None]],
-            'load'            : ['cli', None, [None, 'readbeforewrite', 'writeonly', 'onlycache']],
+            'load'            : ['cli', None, [None, 'readbeforewrite', 'writeonly', 'noinitialload']],
             'onlywhenloaded'  : ['cli', 'enable', [None, 'enable', 'disable']],
             'rangestepping'   : ['cli', 'enable', [None, 'enable', 'disable']],
             'reset'           : [None, None, [None, '*']],
@@ -29,7 +29,6 @@ monopts = { 'atexit'          : ['cli', 'stayindebugwire', [None, 'stayindebugwi
             'timers'          : ['cli', 'run', [None, 'run', 'freeze']],
             'verify'          : ['cli', 'enable', [None, 'enable', 'disable']],
             'version'         : [None, None, [None]],
-            'NoXML'           : ['full', None, [None]],
             'OldExecution'    : ['full', None, [None]],
             'Target'          : ['full', None, [None, 'on', 'off', 'query']],
             'LiveTests'       : ['full', None, [None]],
@@ -60,7 +59,6 @@ class MonitorCommand():
         self._safe = None # safe single-stepping
         self._verify = None # verify flash after load
         self._timersfreeze = None # freeze timers when execution is stopped
-        self._noxml = None # disallow XML (only for tests needed)
         self._power = None # power state
         self._old_exec = None # use old-style execution (only for tests needed)
         self._range = None # range-stepping is allowed
@@ -86,7 +84,6 @@ class MonitorCommand():
             'timers'          : self._mon_timers,
             'verify'          : self._mon_flash_verify,
             'version'         : self._mon_version,
-            'NoXML'           : self._mon_noxml,
             'OldExecution'    : self._mon_old_execution,
             'Target'          : self._mon_target,
             'LiveTests'       : self._mon_live_tests,
@@ -123,7 +120,6 @@ class MonitorCommand():
         self._erase_before_load = self._iface != 'debugwire' and \
           self._args.erasebeforeload[0] != 'd'               # default: enable on non-dw targets, on dw targets
                                                              # it is always false!
-        self._noxml = False
         self._power = True
         self._old_exec = False
         # The ATmega128 special case:
@@ -132,13 +128,13 @@ class MonitorCommand():
             self._onlyswbps = False
             self._bpfixed = True
 
-    def is_onlycache(self):
+    def is_noinitialload(self):
         """
         Returns value of self._only_cache
         """
         return self._only_cache
 
-    def disable_onlycache(self):
+    def disable_noinitialload(self):
         """
         Disables only caching after first load
         """
@@ -224,12 +220,6 @@ class MonitorCommand():
         Returns True iff the traditional Exec style is used.
         """
         return self._old_exec
-
-    def is_noxml(self):
-        """
-        Returns True iff GDB is supposed to not accept XML queries
-        """
-        return self._noxml
 
     def is_power(self):
         """
@@ -399,7 +389,7 @@ monitor debugwire [enable|disable] - activate/deactivate debugWIRE mode,
 monitor erasebeforeload [enable|disable]
                                    - erase flash memory before load (default)
                                      except for debugWIRE
-monitor load [readbeforewrite|writeonly|onlycache]
+monitor load [readbeforewrite|writeonly|noinitialload]
                                    - optimize loading by first reading flash
                                      before writing (default only for
                                      debugWIRE), write blindly, or fill only
@@ -500,10 +490,6 @@ Timers:                   """ + ("frozen when stopped"
         return("", "PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd")))
 
     # The following commands are for internal purposes
-    def _mon_noxml(self, _):
-        self._noxml = True
-        return("", "XML disabled")
-
     def _mon_old_execution(self, _):
         self._old_exec = True
         return("", "Old execution mode")

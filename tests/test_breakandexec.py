@@ -621,8 +621,8 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.insert_breakpoint(100)
-        self.bp.dbg.program_counter_read.return_value = 10
-        code = [ BREAKCODE, 0xef2f, 0xee81, 0xe094, BREAKCODE ]
+        self.bp.dbg.program_counter_read.return_value = 5
+        code = [ BREAKCODE, 0xef2f, 0xee81, 0xe094, BREAKCODE, BREAKCODE ]
         self.bp._read_flash_word.side_effect = code
         self.assertEqual(self.bp.range_step(10,16), SIGILL)
         self.bp.dbg.step.assert_not_called()
@@ -636,14 +636,14 @@ class TestBreakAndExec(TestCase):
         self.bp.mon.is_onlyhwbps.return_value = False
         self.bp.mon.is_onlyswbps.return_value = False
         self.bp.insert_breakpoint(100)
-        self.bp.dbg.program_counter_read.return_value = 10
-        code = [ SLEEPCODE, 0xef2f, 0xee81, 0xe094, SLEEPCODE ]
+        self.bp.dbg.program_counter_read.return_value = 5
+        code = [ SLEEPCODE, 0xef2f, 0xee81, 0xe094, SLEEPCODE, SLEEPCODE ]
         self.bp._read_flash_word.side_effect = code
         self.assertEqual(self.bp.range_step(10,16), None)
         self.bp.dbg.program_counter_write.assert_not_called()
         self.bp.dbg.step.assert_not_called()
         self.bp.dbg.run.assert_not_called()
-        self.bp.dbg.run_to.assert_called_with(22)
+        self.bp.dbg.run_to.assert_called_with(12)
 
     def test_range_step_race_to_branch(self):
         self.set_up()

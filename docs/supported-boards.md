@@ -1,16 +1,10 @@
 # Supported boards
 
-Almost all boards equipped with one of the supported chips can be used
-in one way or another. Tested boards are marked in boldface, and those
-known not to work are struck out. The ones that are underlined are
-sitting on my desk and are waiting to be tested. If no core is
-mentioned, then there is no support yet.
+Almost all boards equipped with one of the supported chips can be used in one way or another. Tested boards are marked in boldface, and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested. If no core is mentioned, then there is no support yet.
 
-In addition, the board packages supporting the boards, possible board
-modifications, and other information are mentioned.
+In addition, the board packages supporting the boards, possible board modifications, and other information are mentioned.
 
-Currently, there are only a few cores operational. In the near future,
-all of MCUdude's Mega cores will be added.
+Currently, there are only a few cores operational. In the near future, all of MCUdude's cores will be added.
 
 
 ## Microchip boards
@@ -28,7 +22,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
   pin 23. No physical modifications or fuse settings necessary.
 - <u>AT90USBKEY2 (AT90USB1287)</u>
 - <u>ATmega256RFR2 Xplained Pro</u>
-- <u>AVR Butterfly (ATmega169)</u>
+- **AVR Butterfly (ATmega169)**
 - <u>MEGA-1284P Xplained</u>
 
 
@@ -42,10 +36,10 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Arduino Duemilanove:  [MiniCore](supporting-cores.md#minicore), `RESET EN` needs to be cut
 - Arduino Diecimila:  [MiniCore](supporting-cores.md#minicore), [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
 - **Arduino Nano:** [100 nF cap and 1kΩ resistor needs to be removed](board-preparation.md#arduino-nano-and-clones)
-- <u>Arduino Mega</u>
-- <u>Arduino Mega 2560</u>
+- **Arduino Mega**: JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
+- **Arduino Mega 2560:** JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
 - Arduino Mega ADK
-- <u>Arduino Leonardo</u>
+- **Arduino Leonardo**: JTAG pins are A0-A3, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag)
 - Arduino Leonardo ETH
 - <u>Arduino Micro</u>
 - <s>Arduino Esplora</s>
@@ -96,10 +90,10 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Metro (ATmega328P):  [MiniCore](supporting-cores.md#minicore), cut `RESET EN` solder bridge
 - Metro Mini V2:  [MiniCore](supporting-cores.md#minicore), you have to figure out which cap to remove
 - Circuit Playground Classic (ATmega32U4)
-- Pro Trinket 5V/16MHz (USB): MicroCore
-- Pro Trinket 3V/12MHz (USB): MicroCore
-- Pro Trinket 5V/16MHz (FTDI): MicroCore
-- Pro Trinket 3V/12MHz (FTDI): MicroCore
+- Pro Trinket 5V/16MHz (USB): MiniCore
+- Pro Trinket 3V/12MHz (USB): MiniCore
+- Pro Trinket 5V/16MHz (FTDI): MiniCore
+- Pro Trinket 3V/12MHz (FTDI): MiniCore
 - ItsyBitsy 32u4 (3V)
 - ItsyBitsy 32u4 (5V)
 - Bluefruit Micro
@@ -114,16 +108,16 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 - Olimex-328: [MiniCore](supporting-cores.md#minicore)
 - Olimex-32u4
-- eduArdu
+- <s>eduArdu</s>: JTAG pins are not accessible
 - Olimex-Nano: [MiniCore](supporting-cores.md#minicore)
 - RGB-Glasses
 - Olimexino-2560
-- <u>AVR-CAN (AT90CAN128)</u>
+- **AVR-CAN (AT90CAN128)**
 - AVR-GSM (ATMega32)
 - <s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with a stuck-at-one bit
-- <u>AVR-MT128 (ATmega128)</u>: only hardware breakpoints (!)
+- **AVR-MT128 (ATmega128)**: only hardware breakpoints (!)
 - AVR-USB-STK (AT90USB162)
-- <u>AVR-USB-162 (AT90USB162)</u>
+- **AVR-USB-162 (AT90USB162)**
 
 ## Seeed Studio boards
 
@@ -138,8 +132,8 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 - **ATtiny841 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 - **ATtiny1634 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
-- ATtiny88 breakout board (assembled): [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
+- **ATtiny88 breakout board (assembled)**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 - **ATtiny828 breakout board (assembled)**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
-- ATtiny167 dev. board: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
+- **ATtiny167 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 - **ATtiny43 dev. board**: [ATTinyCore (Debug enabled)](supporting-cores.md#attinycore-debug-enabled)
 

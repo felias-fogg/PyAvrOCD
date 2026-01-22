@@ -44,7 +44,7 @@ class TestGdbHandler(TestCase):
         self.gh = GdbHandler(mock_socket, mock_dbg, "atmega328p",
                                  options(['-f', 'foo', '-d', 'atmega328p']), "Tool")
         self.gh.mon = create_autospec(MonitorCommand, specSet=True, instance=True)
-        self.gh.mon.is_onlycache.return_value = False
+        self.gh.mon.is_noinitialload.return_value = False
         self.gh.mem = create_autospec(Memory, specSet=True, instance=True)
         self.gh.mem.lazy_loading = False
         self.gh.mem.programming_mode = False
@@ -547,14 +547,12 @@ class TestGdbHandler(TestCase):
 
     def test_memory_map_handler(self):
         self.set_up()
-        self.gh.mon.is_noxml.return_value = False
         self.gh.mem.memory_map.return_value="map"
         self.gh.dispatch('qXfer', b':memory-map:read::0,1000')
         self.gh.mem.memory_map.assert_called_once()
 
     def test_no_memory_map_handler(self):
         self.set_up()
-        self.gh.mon.is_noxml.return_value = False
         self.gh.dispatch('qXfer', b':huhu')
         self.gh.mem.memory_map.assert_not_called()
         self.gh._comsocket.sendall.assert_called_with(rsp(""))
@@ -643,15 +641,15 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.dispatch('vFlashDone', b'')
         self.gh.mem.flash_pages.assert_called_once()
-        self.gh.mon.disable_onlycache.assert_not_called()
+        self.gh.mon.disable_noinitialload.assert_not_called()
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
-    def test_flashDoneHandler_onlycache(self):
+    def test_flashDoneHandler_noinitialload(self):
         self.set_up()
-        self.gh.mon.is_onlycache.return_value = True
+        self.gh.mon.is_noinitialload.return_value = True
         self.gh.dispatch('vFlashDone', b'')
         self.gh.mem.flash_pages.assert_called_once()
-        self.gh.mon.disable_onlycache.assert_called_once()
+        self.gh.mon.disable_noinitialload.assert_called_once()
         self.gh._comsocket.sendall.assert_called_with(rsp("OK"))
 
     def test_flashDoneHandler_error(self):
@@ -772,16 +770,16 @@ class TestGdbHandler(TestCase):
         self.gh.mem.lazy_loading = False
         self.assertEqual(self.gh.dispatch(None,None), None)
         self.gh.mem.flash_pages.assert_not_called()
-        self.gh.mon.disable_onlycache.assert_not_called()
+        self.gh.mon.disable_noinitialload.assert_not_called()
 
     def test_set_binary_memory_handler_finalize_finish_action(self):
         self.set_up()
-        self.gh.mon.is_onlycache.return_value = True
+        self.gh.mon.is_noinitialload.return_value = True
         self.gh.mem.lazy_loading = True
         self.assertEqual(self.gh.dispatch(None,None), None)
         self.gh.mem.flash_pages.assert_called_once()
         self.assertFalse(self.gh.mem.lazy_loading)
-        self.gh.mon.disable_onlycache.assert_called_once()
+        self.gh.mon.disable_noinitialload.assert_called_once()
 
     def test_remove_breakpoint_handler_impossible(self):
         self.set_up()

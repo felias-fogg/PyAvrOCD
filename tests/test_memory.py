@@ -17,7 +17,7 @@ class TestMemory(TestCase):
     def set_up(self):
         mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
         mock_mon = create_autospec(MonitorCommand, specSet=True, instance=True)
-        mock_mon.is_onlycache.return_value = False
+        mock_mon.is_noinitialload.return_value = False
         mock_dbg.memory_info = MagicMock()
         mock_dbg.device_info = MagicMock()
         mock_dbg.transport = MagicMock()
@@ -227,7 +227,7 @@ class TestMemory(TestCase):
 
     def test_no_flash_pages_write_only_cached(self):
         self.set_up()
-        self.mem.mon.is_onlycache.return_value = True
+        self.mem.mon.is_noinitialload.return_value = True
         self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem._flash = bytearray(range(4))
         self.mem.mon.is_read_before_write.return_value = True

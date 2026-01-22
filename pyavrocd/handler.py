@@ -41,6 +41,7 @@ class GdbHandler():
         self.mem = Memory(avrdebugger, self.mon)
         self.bp = BreakAndExec(self.mon, avrdebugger, self.mem.flash_read_word)
         self._dw_start = bool(args.debugwire and args.debugwire[0])
+        self._nomm = args.nomm
         self._comsocket = comsocket
         self._devicename = devicename
         self.last_sigval = 0
@@ -482,8 +483,10 @@ class GdbHandler():
         we will try to establish a connection to the target OCD
         """
         self.logger.debug("RSP packet: qSupported query.")
-        self.logger.debug("Will answer 'PacketSize=%X;qXfer:memory-map:read+'",
-                              self.packet_size)
+        answer = 'PacketSize=%X' % self.packet_size
+        if not self._nomm:
+            answer += ';qXfer:memory-map:read+'
+        self.logger.debug("Will answer '%s'", answer)
         # Try to start a debugging session. If we are unsuccessful,
         # one has to use the 'monitor debugwire enable' command later on
         # If a fatal error is raised, we will remember that and print it again
@@ -497,7 +500,7 @@ class GdbHandler():
                 self.critical = e
             self.dbg.stop_debugging(graceful=True)
         self.logger.debug("debugger_active=%d",self.mon.is_debugger_active())
-        self.send_packet("PacketSize={0:X};qXfer:memory-map:read+".format(self.packet_size))
+        self.send_packet(answer)
 
     def _first_thread_info_handler(self, _):
         """
@@ -518,7 +521,7 @@ class GdbHandler():
         """
         'qXfer:memory-map:read' - provide info about memory map so that the vFlash commands are used
         """
-        if ":memory-map:read" in packet and not self.mon.is_noxml():
+        if ":memory-map:read" in packet and not self._nomm:
             self.logger.debug("RSP packet: memory map query")
             mmap = self.mem.memory_map()
             self.send_packet(mmap)
@@ -600,9 +603,9 @@ class GdbHandler():
             self.dbg.switch_to_debmode()
             self.mem.programming_mode = False
             self.logger.info("Programming mode stopped")
-            if self.mon.is_onlycache():
+            if self.mon.is_noinitialload():
                 self.logger.info("Only cached, not flashed!")
-                self.mon.disable_onlycache() # after the first load operation, load physically again
+                self.mon.disable_noinitialload() # after the first load operation, load physically again
             self.dbg.device.avr.reactivate()
         self.send_packet("OK")
 
@@ -758,9 +761,9 @@ class GdbHandler():
         self.mem.programming_mode = False
         self.logger.info("Programming mode stopped")
         self.dbg.device.avr.reactivate()
-        if self.mon.is_onlycache():
+        if self.mon.is_noinitialload():
             self.logger.info("Only cached, not flashed!")
-            self.mon.disable_onlycache() # after the first load operation, load physically again
+            self.mon.disable_noinitialload() # after the first load operation, load physically again
 
     def _remove_breakpoint_handler(self, packet):
         """

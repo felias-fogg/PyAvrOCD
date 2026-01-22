@@ -1,13 +1,16 @@
 #pylint: disable=missing-module-docstring
 # Clock combinations and naming
-micro_clock = {'1.2' : '1M2', '9.6' : '9M6', '16' : '16M'}
-mini_clock = {'1' : '1MHz_internal', '8' : '8MHz_internal', '16' : '16MHz_external'}
-new_attiny_rc_clock = {'1' : 'internal_1m', '8' : 'internal_8m'}
-attiny_rc_clock = {'1' : '1internal', '8' : '8internal'}
-new_attiny_clock = {'1' : 'internal_1m', '8' : 'internal_8m', '16' : 'external_16m'}
-attiny_clock = {'1' : '1internal', '8' : '8internal', '16': '16external'}
+micro_clock = {'1.2' : ('1M2', '1200000UL'), '9.6' : ('9M6', '9600000UL'),
+                   '16' : ('16M', '16000000UL')}
+mini_clock = {'1' : ('1MHz_internal', '1000000UL'), '8' : ('8MHz_internal', '8000000UL'),
+                  '16' : ('16MHz_external', '16000000UL')}
+new_attiny_rc_clock = {'1' : ('internal_1m', '1000000UL'), '8' : ('internal_8m', '8000000UL')}
+attiny_rc_clock = {'1' : ('1internal', '1000000UL'), '8' : ('8internal', '8000000UL')}
+new_attiny_clock = {'1' : ('internal_1m', '1000000UL'), '8' : ('internal_8m', '8000000UL'),
+                        '16' : ('external_16m', '16000000UL')}
+attiny_clock = {'1' : ('1internal', '1000000UL'), '8' : ('8internal', '8000000UL'), '16': ('16external', '16000000')}
 c_clock = {'1' : '1000000UL', '8' : '8000000UL', '16' : '16000000UL'}
-no_clock = {'none' : ''}
+no_clock = {'none' : ('', '16000000UL')}
 
 # Tag list: for each tag in the list for one device, this tag has to be present in the script tag list
 # Example: For attiny13 only scripts are selected that have  'small', 'arduino', 'dw'. and 'noadc' in their description
@@ -141,16 +144,58 @@ test_devices = {"attiny13" : (micro_clock, ('small', 'arduino', 'dw', 'noadc', '
                 "atmega1280": (mini_clock, ('huge',   'jtag'),
                                    "MegaCore:avr:1280:bootloader=no_bootloader,clock=",
                                    "Arduino Mega 1280"),
-                "atmega169P": (mini_clock, ('large',   'jtag'),
+                "atmega169p": (mini_clock, ('large',   'jtag'),
                                    "MegaCore:avr:169:variant=modelP,bootloader=no_bootloader,clock=",
-                                   "Butterfly"),
-
+                                   "Enplas socket"),
+                "atmega329p": (mini_clock, ('dirty',   'jtag'),
+                                   "MegaCore:avr:329:variant=model329P,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega649a": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:649:variant=model649,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega3290a": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:329:variant=model3290,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega6490a": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:649:variant=model6490,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega64": (mini_clock, ('dirty', 'jtag'),
+                                   "MegaCore:avr:64:bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
                 "atmega128": (mini_clock, ('huge',   'jtag'),
                                    "MegaCore:avr:128:bootloader=no_bootloader,clock=",
-                                   "Olimex AVR-MT-128"),
+                                   "Olimex AVR-MT-128 or Enplas socket"),
+                "atmega1281": (mini_clock, ('huge',   'jtag'),
+                                   "MegaCore:avr:1281:bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega2561": (mini_clock, ('huge',   'jtag'),
+                                   "MegaCore:avr:2561:bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "at90can32": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:can32:bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "at90can128": (mini_clock, ('huge',   'jtag'),
+                                   "MegaCore:avr:can128:bootloader=no_bootloader,clock=",
+                                   "Olimex AVR-CAN"),
+                "atmega165pa": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:165:variant=modelP,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega325a": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:325:variant=model325,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega645a": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:645:variant=model645,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega3250pa": (mini_clock, ('dirty', 'jtag'),
+                                   "MegaCore:avr:325:variant=model3250P,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+                "atmega6450a": (mini_clock, ('large',   'jtag'),
+                                   "MegaCore:avr:645:variant=model6450,bootloader=no_bootloader,clock=",
+                                   "Enplas socket"),
+
 
                 # JTAG targets: MajorCore
-                "atmega162": (mini_clock, ('large',  'jtag'),
+                "atmega162": (mini_clock, ('large',  'jtag', 'noadc'),
                                    "MajorCore:avr:162:bootloader=no_bootloader,clock=",
                                    "Butterfly"),
 

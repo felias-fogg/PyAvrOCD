@@ -142,17 +142,13 @@ It may be enough to start a new debugging session and reflash the program. Howev
 
 Some AVR MCUs are not debuggable or offer only limited debug support.
 
-MCUs without a debugging interface (e.g., ATtiny15, ATmega8) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by GDB. These are:
+MCUs without a debugging interface (e.g., **ATtiny15**, **ATmega8**) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by open source software. These are **ATmega48** and **ATmega88** (without the A-suffix).
 
-- ATmega48,
-- ATmega88,
+These MCUs suffer from the Hotel California Syndrome (You can check out any time you like. But you can never leave!) when one uses open-source software. Since they have the same chip signature as their cousins with an A-suffix, PyAvrOCD goes to some length to recognize those chips and reject them before they get "bricked" by switching them into debugWIRE mode. The Microchip debugging solutions have apparently found a solution around it.
 
-- ATmega16, and
-- Atmega16A.
+Then there are some MCUs that have [non-zero unused bits in their program counter](https://arduino-craft-corner.de/index.php/2026/01/19/when-unused-program-counter-bits-go-rogue/), such as **ATmega16(A)**, **ATmega64 (A)**, **ATmega329(P)**, and **ATmega3250(P)**. PyAvrOCD masks these bits, but if you use an older version of GDB, you may encounter the phenomenon that the stack backtrace is empty and that stepping over a function is not possible.
 
-These MCUs have a stuck-at-1 bit in their program counter, which confuses GDB. The Microchip debugging solutions have apparently found a solution around it. Since the ATmega48 and ATmega88 chips additionally suffer from the Hotel California syndrome (you can always check in, but never check out), and they have the same chip signature as their cousins with an A-suffix, PyAvrOCD goes to some length to recognize those chips and reject them before they get "bricked" by switching them into debugWIRE mode.
-
-Finally, we have the ATmega128(A), which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the `BREAK` instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to `software_breakpoint_set` throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode.
+Finally, we have the **ATmega128(A)**, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the `BREAK` instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). And a call to `software_breakpoint_set` throws indeed an exception. For this reason, PyAvrOCD will automatically select the 'hardware breakpoint only' mode.
 
 ## DebugWIRE can brick MCUs
 
@@ -177,6 +173,12 @@ One possible way to exit debugWIRE mode is to employ avrdude (version 8.0 or mor
 2. Connect it to one of the debug probes (and to power).
 3. Try to burn fuses or upload a program using avrdude (perhaps through the Arduino IDE 2) using ISP programming mode. Avrdude will then try to exit debugWIRE mode if it cannot connect using ISP programming. If it is successful, it will report it.
 4. Burn the default fuses (in particular, disable the DWEN fuse).
+
+Another possible way is to use pyavrocd with the option `--debugwire disable`. First, carry out steps 1 and 2 from above. Then type into a terminal window (\<mcu\> being the name of the MCU):
+
+```
+pyavrocd --manage all --debugwire disable --device <mcu>
+```
 
 ### High-voltage programming
 

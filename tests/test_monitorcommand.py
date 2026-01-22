@@ -24,10 +24,10 @@ class TestMonitorCommand(TestCase):
         monopts['bla'] = [1,2,3]
         self.assertRaises(FatalError, MonitorCommand, 'jtag', options([ '-d', 'atmega328p']), "Tool")
         monopts.pop('bla')
-        temp = monopts['NoXML']
-        del monopts['NoXML']
+        temp = monopts['LiveTests']
+        del monopts['LiveTests']
         self.assertRaises(FatalError, MonitorCommand, 'jtag', options([ '-d', 'atmega328p']), "Tool")
-        monopts['NoXML'] = temp
+        monopts['LiveTests'] = temp
 
     def test_defaults_atmega128(self):
         self.set_up()
@@ -47,17 +47,17 @@ class TestMonitorCommand(TestCase):
         self.assertFalse(self.mo._erase_before_load)
         self.assertTrue(self.mo._read_before_write)
 
-    def test_is_onlycache(self):
+    def test_is_noinitialload(self):
         self.set_up()
         self.mo._only_cache = False
-        self.assertEqual(self.mo.is_onlycache(), self.mo._only_cache)
+        self.assertEqual(self.mo.is_noinitialload(), self.mo._only_cache)
         self.mo._only_cache = True
-        self.assertEqual(self.mo.is_onlycache(), self.mo._only_cache)
+        self.assertEqual(self.mo.is_noinitialload(), self.mo._only_cache)
 
-    def test_disable_onlycache(self):
+    def test_disable_noinitialload(self):
         self.set_up()
         self.mo._only_cache = True
-        self.mo.disable_onlycache()
+        self.mo.disable_noinitialload()
         self.assertFalse(self.mo._only_cache)
 
     def test_is_leaveonexit(self):
@@ -155,13 +155,6 @@ class TestMonitorCommand(TestCase):
         self.assertEqual(self.mo.is_old_exec(), self.mo._old_exec)
         self.mo._old_exec = True
         self.assertEqual(self.mo.is_old_exec(), self.mo._old_exec)
-
-    def test_is_noxml(self):
-        self.set_up()
-        self.mo._noxml = False
-        self.assertEqual(self.mo.is_noxml(), self.mo._noxml)
-        self.mo._noxml = True
-        self.assertEqual(self.mo.is_noxml(), self.mo._noxml)
 
     def test_is_power(self):
         self.set_up()
@@ -331,7 +324,7 @@ class TestMonitorCommand(TestCase):
         self.assertFalse(self.mo._read_before_write)
         self.assertEqual(self.mo.dispatch(['load', 'read']),  ("", "Reading before writing when loading"))
         self.assertTrue(self.mo._read_before_write)
-        self.assertEqual(self.mo.dispatch(['load', 'onlycache']),  ("", "Only caching when loading"))
+        self.assertEqual(self.mo.dispatch(['load', 'noinitialload']),  ("", "Only caching when loading"))
         self.assertTrue(self.mo._only_cache)
         self.assertEqual(self.mo.dispatch(['load', 'bla']), ("", "Unknown argument in 'monitor' command"))
 
@@ -391,11 +384,6 @@ class TestMonitorCommand(TestCase):
         except importlib.metadata.PackageNotFoundError:
             return
         self.assertEqual(self.mo.dispatch(['version']), ("", "PyAvrOCD version {}".format(importlib.metadata.version("pyavrocd"))))
-
-    def test_dispatch_noxml(self):
-        self.set_up()
-        self.assertEqual(self.mo.dispatch(['NoXML']), ("", "XML disabled"))
-        self.assertTrue(self.mo._noxml)
 
     def test_dispatch_oldExec_ok(self):
         self.set_up()

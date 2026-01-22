@@ -39,16 +39,16 @@ class TestXAvr8TargetJtag(TestCase):
         self.set_up()
         self.xa.switch_to_progmode()
         self.xa.protocol.detach.assert_called_once()
-        self.xa.protocol.deactivate_physical.assert_called_once()
-        self.xa.protocol.activate_physical.assert_called_once()
+        self.xa.protocol.deactivate_physical.assert_not_called()
+        self.xa.protocol.activate_physical.assert_not_called()
         self.xa.protocol.enter_progmode.assert_called_once()
 
     def test_switch_to_debmode(self):
         self.set_up()
         self.xa.switch_to_debmode()
         self.xa.protocol.attach.assert_called_once()
-        self.xa.protocol.deactivate_physical.assert_called_once()
-        self.xa.protocol.activate_physical.assert_called_once()
+        self.xa.protocol.deactivate_physical.assert_not_called()
+        self.xa.protocol.activate_physical.assert_not_called()
         self.xa.protocol.leave_progmode.assert_called_once()
 
     def test_setup_config(self):

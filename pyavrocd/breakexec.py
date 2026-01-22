@@ -15,9 +15,9 @@ from pyavrocd.errors import FatalError
 # Hardware breakpoints
 from pyavrocd.hardwarebp import HardwareBP
 
-# special opcodes
-BREAKCODE = 0x9598
-SLEEPCODE = 0x9588
+# Instruction codes
+from pyavrocd.instructions import BREAKCODE, SLEEPCODE, CLICODE, SEICODE
+
 
 # signal codes
 NOSIG   = 0     # no signal
@@ -25,7 +25,7 @@ SIGHUP  = 1     # no connection
 SIGINT  = 2     # Interrupt  - user interrupted the program (UART ISR)
 SIGILL  = 4     # Illegal instruction (BREAK or undefined)
 SIGTRAP = 5     # Trace trap  - stopped on a breakpoint
-SIGABRT = 6     # Abort because of a fatal error
+SIGABRT = 6     # Abort because of a serious error
 SIGBUS = 10     # Access to undefined portion of memory means in our case stack overflow
 SIGSEGV = 11    # Invalid memory reference means executable not loaded
 SIGSYS = 12     # Bad system call means in our case "Too many breakpoints"
@@ -71,7 +71,7 @@ class BreakAndExec():
 
     def insert_breakpoint(self, address):
         """
-        Generate a new breakpoint at given address, do not allocate flash or hwbp yet
+        Generate a new breakpoint at given (byte) address, do not allocate flash or hwbp yet
         This method will be called before GDB starts executing or single-stepping.
         """
         if address % 2 != 0:
@@ -451,12 +451,12 @@ class BreakAndExec():
             return False
         # BCLR/BSET
         if self._bit_clear_or_set_in_sreg_instr(opcode):
-            if opcode == 0x94F8: # CLI
+            if opcode == CLICODE:
                 sreg = self.dbg.status_register_read()[0]
                 sreg &= ~0x80
                 self.dbg.status_register_write(bytearray([sreg]))
                 return self._sim_done(addr)
-            if opcode == 0x9478: # SEI
+            if opcode == SEICODE:
                 sreg = self.dbg.status_register_read()[0]
                 sreg |= 0x80
                 self.dbg.status_register_write(bytearray([sreg]))
@@ -514,7 +514,7 @@ class BreakAndExec():
 
     def range_step(self, start, end):
         """
-        range stepping: Break only if we leave the interval start-end. If we can cover all
+        Range stepping: Break only if we leave the interval start-end. If we can cover all
         exit points, we watch them. If it is an inside point (e.g., RET), we single-step on it.
         In order to do so, we allocate temporarily some hardware breakpoints. These get released
         when we do an ordinary 'continue' or 'step'.
@@ -535,13 +535,13 @@ class BreakAndExec():
             self.logger.debug("Empty range: Simply single step")
             return self.single_step(None)
         addr = self.dbg.program_counter_read() << 1
+        if addr < start or addr >= end: # starting outside of range, should not happen!
+            self.logger.error("PC 0x%X is not in range 0x%X-0x%X for range stepping", addr, start, end)
+            return SIGABRT
         new_range = self._build_range(start, end)
         if not self._update_breakpoints(addr, release_temp=new_range):
             return SIGSYS
         if self.maxbpnum() == self._bpactive:
-            return self.single_step(None)
-        if addr < start or addr >= end: # starting outside of range, should not happen!
-            self.logger.error("PC 0x%X outside of range boundary", addr)
             return self.single_step(None)
         if (addr in self._range_exit or # starting at possible exit point inside range
             self._read_filtered_flash_word(addr) in { BREAKCODE, SLEEPCODE } or # special opcode
@@ -557,7 +557,7 @@ class BreakAndExec():
             if len(self._range_exit) <= available: # allocate enough HWBPs
                 reserve = self._range_exit
             else:
-                reserve = [ -1 ]
+                reserve = [ -2 ]
             for reassign in self.hwbp.set_temp(reserve):
                 if not self.dbg.software_breakpoint_set(reassign):
                     self.logger.error("Could not reassgin HWBPs to SWBPs in range-step")

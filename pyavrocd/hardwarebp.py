@@ -7,7 +7,7 @@ import logging
 class HardwareBP():
     """
     This class manages the hardware breakpoints with some basic methods (including starting
-    execution with the temporary breakpoint).
+    execution with the temporary breakpoint). All addresses are byte addresses into flash space.
     """
 
     def __init__(self, dbg):
@@ -73,6 +73,10 @@ class HardwareBP():
         -- provided there is a free hardware breakpoint. Otherwise, None is returned.
         """
         self.logger.debug("Trying to allocate HWBP for addr 0x%X", addr)
+        if addr % 2 != 0:
+            self.logger.error("Breakpoint at odd address: 0x%X", addr)
+            return None
+
         for ix in range(self._numhwbp):
             if self._hwbplist[ix] is None:
                 self._hwbplist[ix] = addr
@@ -87,7 +91,7 @@ class HardwareBP():
         """
         Try to set all HWBPs for all addresses in templist. Returns None if impossible or
         returns a list of addresses that needs to become software breakpoints. This function
-        is used to support range-stepping. In self._tempalloc we remember, which HWBPs
+        is used to support range-stepping. In self._tempalloc we remember, which HWBPs (index!)
         have been allocated temporarily.
         """
         self.logger.debug("Trying to allocate %d temp HWBPs", len(templist))

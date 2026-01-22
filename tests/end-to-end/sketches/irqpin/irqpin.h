@@ -32,7 +32,7 @@
 // Mega pinout (default)
 #define IRQPIN 21
 #elif defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) || \
-  defined(__AVR_ATmega128__) || defined(__AVR_ATmega2560__) ||	 \
+  defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2561__) ||	 \
   defined(__AVR_AT90CAN32__) || defined(__AVR_AT90CAN64__) || defined(__AVR_AT90CAN128__)
 #define IRQPIN 18
 #elif defined(__AVR_ATmega169__) || defined(__AVR_ATmega169A__) || \
