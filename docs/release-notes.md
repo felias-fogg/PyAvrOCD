@@ -1,9 +1,10 @@
 # Release Notes
 
-## NEW:
+## Release v0.22.0
 
 - All e2e tests are passed on all MCUs on my desk using all the different debuggers.
-- New way to handle non-zero unused PC bits. By now, these do not pose any problems anymore, provided one uses the patched GDB version, which I have to make available.
+- New way to handle non-zero unused PC bits. If an MCU returns non-zero unused PC bits, these are masked out in PyAvrOCD.
+- Non-zero unused bits in return addresses (which disturb line-stepping and backtracing) are now handled with a patch in AVR-GDB. I make the patched version available in the repo [avr-gdb](https://github.com/felias-fogg/avr-gdb), and it is distributed in the debug-enabled cores.
 - The option `onlycaching` of the command `monitor load` has been renamed to `noinitialload`
 
 ## Release v0.21.0
