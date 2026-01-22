@@ -162,8 +162,8 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
 </p>
-
 <p>When you are done with debugging, you may want to re-enable the original functionality, which means that you should employ the <code>Burn Bootloader</code> action---with JTAG disabled, if it is a JTAG target. When you are dealing with a debugWIRE target, you have to remember to type the line <code>monitor debugwire disable</code> into the Debug Console before you terminate the debugger. And then you can also use the <code>Burn Bootloader</code> action.</p>
+<p>And this is all you have to know when you use the Arduino IDE 2. In general, the story is a bit more complex, however.</p>
 <h2 id="general-considerations">General considerations</h2>
 <p>Sometimes it may be necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>. One can also specify individually which resources to manage. There are the following resources:</p>
 <ul>

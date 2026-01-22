@@ -146,7 +146,7 @@
 <li><code>export CFLAGS="-g -O2 -Wno-error"</code></li>
 <li><code>export CXXFLAGS="-g -O2 -Wno-error"</code></li>
 <li><code>../configure --prefix=/usr/local --with-system-zlib --without-python --target=avr --with-gmp=/opt/homebrew/Cellar/gmp/6.3.0 --with-mpfr=/opt/homebrew/Cellar/mpfr/4.2.2 --with-lzma=/opt/homebrew/Cellar/xz/5.8.1 --disable-binutiles --without-guile</code></li>
-<li><code>make -j5</code></li>
+<li><code>make -j$(proc)</code></li>
 <li>You find gdb under <code>./gdb/gdb</code></li>
 </ol>
 <h3 id="problems-solvable-in-avr-tdepc">Problems solvable in avr-tdep.c</h3>
@@ -159,7 +159,7 @@
       vpc += 2;
 -     locals_size += ((insn &amp; 0xf) | ((insn &amp; 0xf00) &gt;&gt; 4)) &lt;&lt; 8;
 +     /* Here we need to check for &quot;sbc r29, r1&quot; as well! */
-+     if (insn != 0x09d1) 
++     if (insn != 0x09d1)
 +       locals_size += ((insn &amp; 0xf) | ((insn &amp; 0xf00) &gt;&gt; 4)) &lt;&lt; 8;
     }
        else

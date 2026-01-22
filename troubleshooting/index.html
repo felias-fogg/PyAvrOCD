@@ -89,6 +89,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#backtraces-are-distorted">Backtraces are distorted</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#signals-and-error-messages">Signals and error messages</a>
@@ -192,6 +194,8 @@
 <p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
 <h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
 <p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file <code>platform.local.txt</code> into the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards">platform folder</a> of your core and write the line <code>compiler.path=/path/to/bin-folder/</code> into it.</p>
+<h3 id="backtraces-are-distorted">Backtraces are distorted</h3>
+<p>This sometimes happens when AVR-GDB is not able to figure out the stack frame. I am working on it.</p>
 <h2 id="signals-and-error-messages">Signals and error messages</h2>
 <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
 <table>
