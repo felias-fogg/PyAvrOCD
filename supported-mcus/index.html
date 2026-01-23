@@ -197,7 +197,7 @@
 <li><strong>ATmega168,</strong> <strong>ATmega168A</strong>, <strong>ATmega168P</strong>, ATmega168PA, <strong>ATmega168PB</strong>,</li>
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
-<p>The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from stuck-at-one bits in the program counter and are, therefore, not debuggable by GDB. They also act strangely when trying to switch to debugWIRE mode or back (you can easily brick them this way). I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
+<p>The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to dbugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
 <h3 id="other-atmegas">Other ATmegas</h3>
 <ul>
 <li><u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u></li>
@@ -212,22 +212,22 @@
 <p>The MCUs in the lists below are all supported by PyAvrOCD. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.</p>
 <h3 id="atmegas-supported-by-mightycore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a> (soon)</h3>
 <ul>
-<li><s><strong>ATmega16(A)</strong></s>, <strong>ATmega32(A)</strong></li>
+<li><strong>ATmega16(A)</strong>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
 </ul>
-<p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which does not show when reading the program counter in the debugger. But when retrieving return addresses from the stack, it is apparent. Since this confuses GDB, this MCU cannot be debugged. The datasheet seems to suggest that the variant with an A-suffix does not suffer from this feat. However, interestingly, the same phenomenon also appeared on chips labeled with an A-suffix. In any case, all chips with this signature will be tested for stuck-at-one-bits and rejected if they have a stuck-at-one-bit.</p>
+<p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of the avr-gdb repo</a>.</p>
 <h3 id="atmegas-supported-by-megacore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a> (soon)</h3>
 <ul>
-<li><s><strong>ATmega64(A)</strong></s>, <strong>ATmega128(A)</strong></li>
+<li><strong>ATmega64(A)</strong>, <strong>ATmega128(A)</strong></li>
 <li>ATmega640, <strong>ATmega1280</strong>, <strong>ATmega2560</strong></li>
 <li><strong>ATmega1281</strong>, <strong>ATmega2561</strong></li>
 <li><strong>ATmega165(P)(A)</strong>, <strong>ATmega325(P)(A)</strong>, <strong>ATmega645(P)(A)</strong></li>
-<li><strong>ATmega169(P)(A)</strong>, <s><strong>ATmega329(P)(A)</strong></s>, <strong>ATmega649(P)(A)</strong></li>
-<li><s><strong>ATmega3250(P)(A)</strong></s>, <strong>ATmega6450(P)(A)</strong></li>
+<li><strong>ATmega169(P)(A)</strong>, <strong>ATmega329(P)(A)</strong>, <strong>ATmega649(P)(A)</strong></li>
+<li><strong>ATmega3250(P)(A)</strong>, <strong>ATmega6450(P)(A)</strong></li>
 <li><strong>ATmega3290(P)(A)</strong>, <strong>ATmega6490A</strong></li>
 <li><strong>AT90CAN32</strong>, AT90CAN64, <strong>AT90CAN128</strong></li>
 </ul>
-<p>The Atmega64(A) MCUs have a stuck-at-one-bit in the program counter when the PC is put on the stack. The ATmega329(P)(A) and ATmega3250(P)(A) MCUs also have stuck-at-one-bit, and this even shows when reading the PC. Perhaps one should file a feature request with the GDB folks.</p>
+<p>The Atmega64(A), ATmega329(P)(A), and ATmega3250(P)(A) MCUs have stuck-at-one-bit in their PCs, which might lead to the same problem as for the ATmega16s mentioned above.</p>
 <p>The ATmega128(A) MCUs do not allow for software breakpoints. This means that you can use only four hardware breakpoints.</p>
 <h3 id="atmega-supported-by-majorcore-soon">ATmega supported by <a href="https://github.com/MCUdude/MajorCore"><em>MajorCore</em></a> (soon)</h3>
 <ul>

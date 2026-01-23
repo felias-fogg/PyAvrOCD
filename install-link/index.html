@@ -171,7 +171,7 @@
 <p>Store all of it somewhere in the same folder and preferably include this folder in your <code>PATH</code> variable. My preference for such a folder is <code>~/.local/bin</code> , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):</p>
 <pre><code class="language-sh">mv tools/* ~/.local/bin
 </code></pre>
-<p>The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.</p>
+<p>The avr-gdb debugger has version 17.1, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is strongly advised to use this version since it contains a few patches.</p>
 <p>Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
 <h3 id="pypi">PyPI</h3>
 <p>I assume you already installed a recent Python version (&gt;=3.10). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a> will bring you the most recent version of PyAvrOCD to your computer.</p>
@@ -180,7 +180,7 @@
 &gt; pipx ensurepath
 </code></pre>
 <p>After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code>.</p>
-<p>Not that the folder with SVD files is not part of the PyPI installation. If you want to download this folder, it has to be downloaded separately from the GitHub repo. It is a release asset called <code>svd.tar.gz</code>.</p>
+<p>Note that the folder with <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">SVD</a> files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the <a href="https://github.com/felias-fogg/PyAvrOCD/releases/tag/v0.22.0">release page</a> of the GitHub repo. The release asset is called <code>svd.tar.gz</code>.</p>
 <h3 id="github">GitHub</h3>
 <p>Alternatively, you can download or clone the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub repository</a>. Additionally, you need to install a Python package manager, for instance, <a href="https://python-poetry.org">Poetry</a>:</p>
 <pre><code class="language-bash">&gt; pipx install poetry
@@ -195,8 +195,8 @@
 <p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those two to a place in your <code>PATH</code>.</p>
 <h2 id="configuration">Configuration</h2>
 <p>It is not necessary to set up any configuration file before you can use PyAvrOCD.</p>
-<p>However, sometimes, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
-<p>Let us assume, <code>file.ext</code> contains the following lines:</p>
+<p>However, sometimes, it may be convenient to store some <a href="../command-line-options/">options</a> in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
+<p>sLet us assume, <code>file.ext</code> contains the following lines:</p>
 <pre><code>--manage
 eesave
 --prog=3000
