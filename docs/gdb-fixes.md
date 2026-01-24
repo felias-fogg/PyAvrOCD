@@ -10,7 +10,7 @@ Getting avr-gdb compiled on macOS:
 6. `export CFLAGS="-g -O2 -Wno-error"`
 7. `export CXXFLAGS="-g -O2 -Wno-error"`
 8. `../configure --prefix=/usr/local --with-system-zlib --without-python --target=avr --with-gmp=/opt/homebrew/Cellar/gmp/6.3.0 --with-mpfr=/opt/homebrew/Cellar/mpfr/4.2.2 --with-lzma=/opt/homebrew/Cellar/xz/5.8.1 --disable-binutiles --without-guile`
-9. `make -j$(proc)`
+9. `make -j$(nproc)`
 10. You find gdb under `./gdb/gdb`
 
 

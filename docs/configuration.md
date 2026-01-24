@@ -2,9 +2,9 @@
 
 It is not necessary to set up any configuration file before you can use PyAvrOCD.
 
-However, sometimes, it may be convenient to store some options in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the `@` notation is very helpful. If you place the string `@file.ext` on the command line, then arguments are read from `file.ext` and spliced into the command line. These arguments are read line by line.
+However, sometimes, it may be convenient to store some [options](command-line-options.md) in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the `@` notation is very helpful. If you place the string `@file.ext` on the command line, then arguments are read from `file.ext` and spliced into the command line. These arguments are read line by line.
 
-Let us assume, `file.ext` contains the following lines:
+sLet us assume, `file.ext` contains the following lines:
 
 ```
 --manage

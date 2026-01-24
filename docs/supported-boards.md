@@ -114,7 +114,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Olimexino-2560
 - **AVR-CAN (AT90CAN128)**
 - AVR-GSM (ATMega32)
-- <s>AVR-IO-M16 (ATmega16)</s>: MCU has a PC with a stuck-at-one bit
+- AVR-IO-M16 (ATmega16): MCU has a PC with a stuck-at-one bit
 - **AVR-MT128 (ATmega128)**: only hardware breakpoints (!)
 - AVR-USB-STK (AT90USB162)
 - **AVR-USB-162 (AT90USB162)**

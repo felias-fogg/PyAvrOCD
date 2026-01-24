@@ -60,9 +60,9 @@ debug_svd_path = /path/to/svd-file ;; <-- specify path to SVD file
 
 Note that debugging in the IDE can only start when the debug environment is made the current environment.
 
-Recently, PyAvrOCD has been extended to [deal with *System View Description* files](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/), which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to copy the right SVD file from the [SVD folder of the GitHub repo](https://github.com/felias-fogg/PyAvrOCD/tree/main/svd) to the PlatformIO project folder, or you can also access it in the `pyavrocd-util` folder, which is stored alongside `pyavrocd`. The SVD files are all stored in the directory `pyavrocd-util/svd`.
+Recently, PyAvrOCD has been extended to [deal with *System View Description* files](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/), which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to download the set of SVD files from the [latest release of PyAvrOCD](https://github.com/felias-fogg/PyAvrOCD/releases/latest) and copy the appropriate SVD file to the PlatformIO project folder, or you can also access it in the `pyavrocd-util` folder, which is stored alongside `pyavrocd`. The SVD files are all stored in the directory `pyavrocd-util/svd`.
 
-I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or use the version shipped with the PyAvrOCD binary. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
+I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or, better yet, use the version shipped with the PyAvrOCD binary, which contains some important patches. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
 
 ## Other IDEs
 
@@ -76,7 +76,7 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 
 ## CLI debugging
 
-The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries or the version already installed on your system. If avr-gdb is not installed, use your preferred package manager on Linux, Homebrew on macOS, or download a version from Zak's [avr-gcc-build](https://github.com/ZakKemble/avr-gcc-build) repository. This is particularly useful when you want to run debugging software on a 32-bit system.
+The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries, which contains a few important patches for AVR MCUs.
 
 It is not necessary to configure anything when you use avr-gdb. However, I find it very helpful to have the following commands in the global initialization file `.gdbinit`, which has to be stored in the user directory:
 

@@ -7,8 +7,9 @@ One thing you have to be aware of is that it may be necessary to enable the JTAG
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
 </p>
-
 When you are done with debugging, you may want to re-enable the original functionality, which means that you should employ the `Burn Bootloader` action---with JTAG disabled, if it is a JTAG target. When you are dealing with a debugWIRE target, you have to remember to type the line `monitor debugwire disable` into the Debug Console before you terminate the debugger. And then you can also use the `Burn Bootloader` action.
+
+And this is all you have to know when you use the Arduino IDE 2. In general, the story is a bit more complex, however.
 
 ## General considerations
 

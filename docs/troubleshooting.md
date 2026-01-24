@@ -49,6 +49,10 @@ Again, this might be because you forgot to activate the optimization option for 
 
 This [happened to me recently](https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9). The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file `platform.local.txt` into the [platform folder](https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards) of your core and write the line `compiler.path=/path/to/bin-folder/` into it.
 
+### Backtraces are distorted
+
+This sometimes happens when AVR-GDB is not able to figure out the stack frame. I am working on it.
+
 ## Signals and error messages
 
 {!signals_and_errors.md!}

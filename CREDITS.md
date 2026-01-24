@@ -7,13 +7,14 @@ This project owes its success to the following people and organizations:
 - [@maxgerhard](https://github.com/maxgerhardt)
 
 
-## Third-party libraries
+## Third-party libraries & systems
 
 - [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib): The low-level implementation of the EDBG protocol, which is the essential component to establish communication with EDBG debuggers.
 - [pymcuprog](https://github.com/microchip-pic-avr-tools/pymcuprog): This package provides the base for the GDB server. Without it, I probably would have never started to write PyAvrOCD. Great job by Microchip to publish these two packages!
 - [PyUSB](https://github.com/pyusb/pyusb): The essential library for communicating over USB.
 - [PyInstaller](https://github.com/pyinstaller/pyinstaller): The package that can create executables from Python packages.
 - [simavr](https://github.com/buserror/simavr): The AVR simulation package.
+- [GDB](https://sourceware.org/gdb/): The GNU Project Debugger
 - [MkDocs](https://github.com/mkdocs/mkdocs): Generates gorgeous online documentation.
 
 ## Financial support

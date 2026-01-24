@@ -36,7 +36,7 @@ Extending a core to enable it for debugging (using PyAvrOCD) is almost always th
      debug.server=openocd
      debug.server.openocd.path={debug.toolchain.path}/pyavrocd
      #next doesn't matter, but should be specified so that cortex-debug is happy
-     debug.server.openocd.script=doesnotmatter
+     debug.server.openocd.script=nix
      debug.cortex-debug.custom.gdbPath={debug.toolchain.path}/avr-gdb
      debug.cortex-debug.custom.overrideGDBServerStartedRegex=Listening on port \d+ for gdb connection
      debug.cortex-debug.custom.objdumpPath={runtime.tools.avr-gcc.path}/bin/avr-objdump
@@ -52,6 +52,10 @@ Extending a core to enable it for debugging (using PyAvrOCD) is almost always th
      # The next two lines are for boards with auto-power-cycle capabilities
      #debug.cortex-debug.custom.serverArgs.8=--atexit
      #debug.cortex-debug.custom.serverArgs.9=leavedebugwire
+     # For JTAG MCUs the next one is a good thing
+     debug.cortex-debug.custom.serverArgs.8=--progclk
+     debug.cortex-debug.custom.serverArgs.9=2000
+     # The next line is only necessary for debugWIRE targets (but will not hurt)
      debug.cortex-debug.custom.preLaunchCommands.0=monitor debugwire enable
      debug.cortex-debug.custom.runToEntryPoint=main
      debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd

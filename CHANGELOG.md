@@ -1,6 +1,11 @@
 # Changelog
 
-### NEW:
+### 1.0.0 (24-Jan-2022)
+
+- Final e2e test on ATmega162 successful
+- In general, the system appears very stable, so it is time to declare that the system has reached production level
+
+### 0.22.0 (22-Jan-2026)
 
 - **Goal reached:**
      - The e2e tests are now successful on all MCUs I have on my desk, which covers almost all ATTinyCore, MiniCore, MightyCore, MegaCore, and MajorCore MCUs. It is soon time to publish v1.0.0! But before we do that, PyAvrOCD will be tested as part of Mighty-/Mega-/MajorCore (also on different platforms).
@@ -25,7 +30,7 @@
 
 
 
-### 0.21.0
+### 0.21.0 (07-Jan-2026)
 
 - **Fixed:**
      - After the change to the timer mode (0.20.0), it became necessary to change the timer monitor command so that no reset is issued when one only queries the state. In addition, one will now also get a message that the MCU has been reset when timer mode is changed.

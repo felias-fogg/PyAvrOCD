@@ -109,9 +109,9 @@ class MonitorCommand():
         self._onlyswbps = self._args.breakpoints[0] == 's'   # default all
         self._read_before_write = (self._iface == 'debugwire' and \
                                        (not self._args.load or self._args.load[0] != 'w')) or \
-                                       (self._args.load and self._args.load[0] in ['r', 'o'])
+                                       (self._args.load and self._args.load[0] in ['r', 'n'])
                                        # default: readbeforewrite when debugWIRE, otherwise: writeonly
-        self._only_cache = self._args.load and self._args.load[0] == 'o' # 'only cache' only if explicitly requested
+        self._only_cache = self._args.load and self._args.load[0] == 'n' # 'only cache' only if explicitly requested
         self._cache = self._args.caching[0] != 'd'           # default: enable
         self._safe = self._args.singlestep[0] != 'i'         # default: safe
         self._verify = self._args.verify[0] != 'd'           # default: enable

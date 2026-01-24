@@ -1,8 +1,8 @@
 # Installing a debug-enabled Arduino core
 
-Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino support (so far).
+Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino IDE support (so far).
 
-If you want to install a core, in most cases, you first have to add a *package index JSON* URL to the list of `Additional boards manager URLs`, which you find in the `Preferences` dialog. Once this has been done, you can search in the `Boards Manager` (accessible through the `Tools` menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.
+If you want to install a core, in most cases, you first have to add a *package index*  URL to the list of `Additional boards manager URLs`, which you find in the `Preferences` dialog. Once this has been done, you can search in the `Boards Manager` (accessible through the `Tools` menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.
 
 ### [ATTinyCore (Debug enabled)](https://github.com/felias-fogg/ATTinyCore-debug-enabled)
 
@@ -13,8 +13,6 @@ This is a fork of Spence Konde's ATTinyCore version 1.5.2,[^a] which covers all 
 ```
 
 in the additional boards manager URLs.
-
-***Currently, the support for downloading the micronucleus uploaders has been removed because the download website cannot be reached (Jan 1, 2026)***.
 
 ### [Atmel AVR Xplained-minis (Debug enabled)](https://github.com/felias-fogg/avr-xminis-debug-enabled)
 

@@ -16,7 +16,7 @@ Store all of it somewhere in the same folder and preferably include this folder 
 mv tools/* ~/.local/bin
 ```
 
-The avr-gdb debugger has version 16.3, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is up to you to decide whether you want to use this version or the one that is already installed on your system.
+The avr-gdb debugger has version 17.1, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is strongly advised to use this version since it contains a few patches.
 
 Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.
 
@@ -33,7 +33,7 @@ It is possible to install PyAvrOCD using [pip](https://packaging.python.org/en/l
 
 After restarting the shell, you should be able to start the GDB server. The binary is stored under `~/.local/bin/`.
 
-Not that the folder with SVD files is not part of the PyPI installation. If you want to download this folder, it has to be downloaded separately from the GitHub repo. It is a release asset called `svd.tar.gz`.
+Note that the folder with [SVD](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/) files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the [release page](https://github.com/felias-fogg/PyAvrOCD/releases/tag/v0.22.0) of the GitHub repo. The release asset is called `svd.tar.gz`.
 
 ### GitHub
 

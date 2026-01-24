@@ -112,10 +112,10 @@ test_devices = {"attiny13" : (micro_clock, ('small', 'arduino', 'dw', 'noadc', '
                                     "AVR-USB-162 Olimex board"),
 
                 # JTAG targets: MightyCore
-                "atmega16" : (mini_clock, ('dirty', 'jtag'),
+                "atmega16" : (mini_clock, ('large', 'jtag'),
                                      "MightyCore:avr:16:bootloader=no_bootloader,clock=",
                                      "MightyCore development board"),
-                "atmega16a" : (mini_clock, ('dirty', 'jtag'),
+                "atmega16a" : (mini_clock, ('large', 'jtag'),
                                      "MightyCore:avr:16:bootloader=no_bootloader,clock=",
                                      "MightyCore development board"),
                 "atmega32" : (mini_clock, ('large', 'jtag'),
@@ -147,7 +147,7 @@ test_devices = {"attiny13" : (micro_clock, ('small', 'arduino', 'dw', 'noadc', '
                 "atmega169p": (mini_clock, ('large',   'jtag'),
                                    "MegaCore:avr:169:variant=modelP,bootloader=no_bootloader,clock=",
                                    "Enplas socket"),
-                "atmega329p": (mini_clock, ('dirty',   'jtag'),
+                "atmega329p": (mini_clock, ('large',   'jtag'),
                                    "MegaCore:avr:329:variant=model329P,bootloader=no_bootloader,clock=",
                                    "Enplas socket"),
                 "atmega649a": (mini_clock, ('large',   'jtag'),
@@ -159,7 +159,7 @@ test_devices = {"attiny13" : (micro_clock, ('small', 'arduino', 'dw', 'noadc', '
                 "atmega6490a": (mini_clock, ('large',   'jtag'),
                                    "MegaCore:avr:649:variant=model6490,bootloader=no_bootloader,clock=",
                                    "Enplas socket"),
-                "atmega64": (mini_clock, ('dirty', 'jtag'),
+                "atmega64": (mini_clock, ('large', 'jtag'),
                                    "MegaCore:avr:64:bootloader=no_bootloader,clock=",
                                    "Enplas socket"),
                 "atmega128": (mini_clock, ('huge',   'jtag'),
@@ -186,7 +186,7 @@ test_devices = {"attiny13" : (micro_clock, ('small', 'arduino', 'dw', 'noadc', '
                 "atmega645a": (mini_clock, ('large',   'jtag'),
                                    "MegaCore:avr:645:variant=model645,bootloader=no_bootloader,clock=",
                                    "Enplas socket"),
-                "atmega3250pa": (mini_clock, ('dirty', 'jtag'),
+                "atmega3250pa": (mini_clock, ('large', 'jtag'),
                                    "MegaCore:avr:325:variant=model3250P,bootloader=no_bootloader,clock=",
                                    "Enplas socket"),
                 "atmega6450a": (mini_clock, ('large',   'jtag'),
@@ -197,7 +197,7 @@ test_devices = {"attiny13" : (micro_clock, ('small', 'arduino', 'dw', 'noadc', '
                 # JTAG targets: MajorCore
                 "atmega162": (mini_clock, ('large',  'jtag', 'noadc'),
                                    "MajorCore:avr:162:bootloader=no_bootloader,clock=",
-                                   "Butterfly"),
+                                   "Breadboard"),
 
                 # JTAG targets: Arduino AVR Core
                 "atmega32u4": (no_clock, ('large', 'jtag'),
