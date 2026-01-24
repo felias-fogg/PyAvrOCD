@@ -80,29 +80,33 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">MCUs</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#mcus-with-debugwire-interface">MCUs with debugWIRE interface</a>
+    <li class="toctree-l2"><a class="reference internal" href="#classic-attinys">Classic ATtinys</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by Atmel AVR Xplained-minis (Debug enabled)</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#attiny-supported-by-microcore-soon">ATtiny supported by MicroCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-attinycore-debug-enabled">ATtinys supported by ATTinyCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore-soon">ATmegas supported by MiniCore (soon)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas">Other ATmegas</a>
+    <li class="toctree-l3"><a class="reference internal" href="#other-attinys-without-a-debug-interface">Other ATtinys without a debug interface</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#atmegas-with-jtag-interface">ATmegas with JTAG interface</a>
+    <li class="toctree-l2"><a class="reference internal" href="#classic-atmegas">Classic ATmegas</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore-soon">ATmegas supported by MiniCore (soon)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by Atmel AVR Xplained-minis (Debug enabled)</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore-soon">ATmegas supported by MightyCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore-soon">ATmegas supported by MegaCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-majorcore-soon">ATmega supported by MajorCore (soon)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas_1">Other ATmegas</a>
+    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</a>
     </li>
         </ul>
     </li>
@@ -165,14 +169,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Some of them are supported by more than one core. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
-<h2 id="mcus-with-debugwire-interface">MCUs with debugWIRE interface</h2>
-<h3 id="atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by <a href="https://github.com/felias-fogg/avr-xminis-debug-enabled"><em>Atmel AVR Xplained-minis (Debug enabled)</em></a></h3>
-<ul>
-<li><strong>ATmega328P</strong></li>
-<li><strong>ATmega168PB</strong></li>
-<li><strong>ATmega328PB</strong></li>
-</ul>
+<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2 (but will be soon). </p>
+<p>MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
+<h2 id="classic-attinys">Classic ATtinys</h2>
 <h3 id="attiny-supported-by-microcore-soon">ATtiny supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a> (soon)</h3>
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
@@ -190,32 +189,47 @@
 <li><strong>ATtiny48, ATtiny88</strong></li>
 <li><strong>ATtiny1634</strong></li>
 </ul>
+<h3 id="other-attinys-without-a-debug-interface">Other ATtinys without a debug interface</h3>
+<ul>
+<li>
+<p><s>ATtiny4, ATtiny5, ATtiny9, ATtiny10</s></p>
+</li>
+<li>
+<p><s>ATtiny11, ATtiny12, ATtiny15</s></p>
+</li>
+<li><s>ATtiny20</s></li>
+<li><s>ATtiny26</s></li>
+<li><s>ATtiny40</s></li>
+</ul>
+<h2 id="classic-atmegas">Classic ATmegas</h2>
 <h3 id="atmegas-supported-by-minicore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MiniCore"><em>MiniCore</em></a> (soon)</h3>
 <ul>
-<li><strong><s>ATmega48</s>,</strong> <strong>ATmega48A,</strong> ATmega48P, <strong>ATmega48PA,</strong> ATmega48PB,</li>
+<li>
+<p><s>ATmega8</s></p>
+</li>
+<li>
+<p><strong><s>ATmega48</s>,</strong> <strong>ATmega48A,</strong> ATmega48P, <strong>ATmega48PA,</strong> ATmega48PB,</p>
+</li>
 <li><strong><s>ATmega88</s>,</strong> <strong>ATmega88A,</strong> ATmega88P, <strong>ATmega88PA,</strong> Atmega88PB,</li>
 <li><strong>ATmega168,</strong> <strong>ATmega168A</strong>, <strong>ATmega168P</strong>, ATmega168PA, <strong>ATmega168PB</strong>,</li>
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
+<p>The ATmega8 does not possess a debug interface.</p>
 <p>The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to dbugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
-<h3 id="other-atmegas">Other ATmegas</h3>
+<h3 id="atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by <a href="https://github.com/felias-fogg/avr-xminis-debug-enabled"><em>Atmel AVR Xplained-minis (Debug enabled)</em></a></h3>
 <ul>
-<li><u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u></li>
-<li>ATmega32C1, ATmega64C1, ATmega16M1, <u>ATmega32M1</u>, <u>ATmega64M1</u></li>
-<li>AT90USB82, <strong>AT90USB162</strong></li>
-<li>AT90PWM1, <u>AT90PWM2B</u>, AT90PWM3B</li>
-<li><u>AT90PWM81</u>, AT90PWM161</li>
-<li><u>AT90PWM216</u>, AT90PWM316</li>
-<li><u>ATmega8HVA</u>, ATmega16HVA, <u>ATmega16HVB</u>, ATmega32HVB, ATmega32HVBrevB, ATmega64HVE2</li>
+<li><strong>ATmega328P</strong></li>
+<li><strong>ATmega168PB</strong></li>
+<li><strong>ATmega328PB</strong></li>
 </ul>
-<h2 id="atmegas-with-jtag-interface">ATmegas with JTAG interface</h2>
-<p>The MCUs in the lists below are all supported by PyAvrOCD. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2. Again, the MCUs marked in bold face have been actually tested to work, and the struck-out MCUs are known not to work. Underlined MCUs are already sitting on the desk and are waiting to be tested.</p>
 <h3 id="atmegas-supported-by-mightycore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a> (soon)</h3>
 <ul>
 <li><strong>ATmega16(A)</strong>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
+<li><s><strong>ATmega8535</strong></s></li>
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of the avr-gdb repo</a>.</p>
+<p>The ATmega8535 does not possess a debug interface.</p>
 <h3 id="atmegas-supported-by-megacore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a> (soon)</h3>
 <ul>
 <li><strong>ATmega64(A)</strong>, <strong>ATmega128(A)</strong></li>
@@ -227,13 +241,15 @@
 <li><strong>ATmega3290(P)(A)</strong>, <strong>ATmega6490A</strong></li>
 <li><strong>AT90CAN32</strong>, AT90CAN64, <strong>AT90CAN128</strong></li>
 </ul>
-<p>The Atmega64(A), ATmega329(P)(A), and ATmega3250(P)(A) MCUs have stuck-at-one-bit in their PCs, which might lead to the same problem as for the ATmega16s mentioned above.</p>
+<p>The Atmega64(A), ATmega329(P)(A), and ATmega3250(P)(A) MCUs have stuck-at-one-bit in their PCs, which might lead to the same problem as for the ATmega16s mentioned above when an older, unpatched AVR-GDB version is used.</p>
 <p>The ATmega128(A) MCUs do not allow for software breakpoints. This means that you can use only four hardware breakpoints.</p>
 <h3 id="atmega-supported-by-majorcore-soon">ATmega supported by <a href="https://github.com/MCUdude/MajorCore"><em>MajorCore</em></a> (soon)</h3>
 <ul>
-<li><u>ATmega162</u></li>
+<li><strong>ATmega162</strong></li>
+<li><s>ATmega8515</s></li>
 </ul>
-<h3 id="other-atmegas_1">Other ATmegas</h3>
+<p>The ATmega8515 does not have a debug interface.</p>
+<h3 id="other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</h3>
 <ul>
 <li>AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287</li>
 <li>ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2</li>
@@ -241,6 +257,20 @@
 <li>ATmega128rfa1</li>
 <li>ATmega16U4, <strong>ATmega32U4</strong></li>
 <li>ATmega406</li>
+</ul>
+<h3 id="other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</h3>
+<ul>
+<li><u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u></li>
+<li>ATmega32C1, ATmega64C1, ATmega16M1, <u>ATmega32M1</u>, <u>ATmega64M1</u></li>
+<li>AT90USB82, <strong>AT90USB162</strong></li>
+<li>AT90PWM1, <u>AT90PWM2B</u>, AT90PWM3B</li>
+<li><u>AT90PWM81</u>, AT90PWM161</li>
+<li><u>AT90PWM216</u>, AT90PWM316</li>
+<li><u>ATmega8HVA</u>, ATmega16HVA, <u>ATmega16HVB</u>, ATmega32HVB, ATmega32HVBrevB, ATmega64HVE2</li>
+</ul>
+<h3 id="other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</h3>
+<ul>
+<li><s>ATmega163</s></li>
 </ul>
               
             </div>

@@ -146,7 +146,7 @@
 <li><code>export CFLAGS="-g -O2 -Wno-error"</code></li>
 <li><code>export CXXFLAGS="-g -O2 -Wno-error"</code></li>
 <li><code>../configure --prefix=/usr/local --with-system-zlib --without-python --target=avr --with-gmp=/opt/homebrew/Cellar/gmp/6.3.0 --with-mpfr=/opt/homebrew/Cellar/mpfr/4.2.2 --with-lzma=/opt/homebrew/Cellar/xz/5.8.1 --disable-binutiles --without-guile</code></li>
-<li><code>make -j$(proc)</code></li>
+<li><code>make -j$(nproc)</code></li>
 <li>You find gdb under <code>./gdb/gdb</code></li>
 </ol>
 <h3 id="problems-solvable-in-avr-tdepc">Problems solvable in avr-tdep.c</h3>
