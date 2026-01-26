@@ -1,7 +1,0 @@
-# Non-zero unused PC bits
-
-Such bits are found in:
-- ATmega16
-- ATmega64
-- ATmega329
-- ATmega3250
