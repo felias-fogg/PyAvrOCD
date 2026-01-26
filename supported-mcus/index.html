@@ -102,9 +102,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-majorcore-soon">ATmega supported by MajorCore (soon)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</a>
     </li>
@@ -214,8 +214,7 @@
 <li><strong>ATmega168,</strong> <strong>ATmega168A</strong>, <strong>ATmega168P</strong>, ATmega168PA, <strong>ATmega168PB</strong>,</li>
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
-<p>The ATmega8 does not possess a debug interface.</p>
-<p>The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to dbugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
+<p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
 <h3 id="atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by <a href="https://github.com/felias-fogg/avr-xminis-debug-enabled"><em>Atmel AVR Xplained-minis (Debug enabled)</em></a></h3>
 <ul>
 <li><strong>ATmega328P</strong></li>
@@ -226,7 +225,7 @@
 <ul>
 <li><strong>ATmega16(A)</strong>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
-<li><s><strong>ATmega8535</strong></s></li>
+<li><s>ATmega8535</s></li>
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of the avr-gdb repo</a>.</p>
 <p>The ATmega8535 does not possess a debug interface.</p>
@@ -249,15 +248,6 @@
 <li><s>ATmega8515</s></li>
 </ul>
 <p>The ATmega8515 does not have a debug interface.</p>
-<h3 id="other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</h3>
-<ul>
-<li>AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287</li>
-<li>ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2</li>
-<li>ATmega64rfr2, ATmega128rfr2, <u>ATmega256rfr2</u></li>
-<li>ATmega128rfa1</li>
-<li>ATmega16U4, <strong>ATmega32U4</strong></li>
-<li>ATmega406</li>
-</ul>
 <h3 id="other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</h3>
 <ul>
 <li><u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u></li>
@@ -267,6 +257,15 @@
 <li><u>AT90PWM81</u>, AT90PWM161</li>
 <li><u>AT90PWM216</u>, AT90PWM316</li>
 <li><u>ATmega8HVA</u>, ATmega16HVA, <u>ATmega16HVB</u>, ATmega32HVB, ATmega32HVBrevB, ATmega64HVE2</li>
+</ul>
+<h3 id="other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</h3>
+<ul>
+<li>ATmega16U4, <strong>ATmega32U4</strong></li>
+<li>AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287</li>
+<li>ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2</li>
+<li>ATmega64rfr2, ATmega128rfr2, <u>ATmega256rfr2</u></li>
+<li>ATmega128rfa1</li>
+<li>ATmega406</li>
 </ul>
 <h3 id="other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</h3>
 <ul>
