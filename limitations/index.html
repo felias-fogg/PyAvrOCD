@@ -305,7 +305,7 @@ IN R2, PINB
 <li>Try to burn fuses or upload a program using avrdude (perhaps through the Arduino IDE 2) using ISP programming mode. Avrdude will then try to exit debugWIRE mode if it cannot connect using ISP programming. If it is successful, it will report it.</li>
 <li>Burn the default fuses (in particular, disable the DWEN fuse).</li>
 </ol>
-<p>Another possible way is to use pyavrocd with the option <code>--debugwire disable</code>. First, carry out steps 1 and 2 from above. Then type into a terminal window (\&lt;mcu&gt; being the name of the MCU):</p>
+<p>Another possible way is to use pyavrocd with the option <code>--debugwire disable</code>. First, carry out steps 1 and 2 from above. Then type into a terminal window (&lt;mcu&gt; being the name of the MCU):</p>
 <pre><code>pyavrocd --manage all --debugwire disable --device &lt;mcu&gt;
 </code></pre>
 <h3 id="high-voltage-programming">High-voltage programming</h3>
