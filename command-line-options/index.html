@@ -67,6 +67,10 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Invoking the server</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#command-line-options">Command line options</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#additional-command-line-options-derived-from-monitor-commands">Additional command line options derived from monitor commands</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -144,6 +148,7 @@
 </code></pre>
 <p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.</p>
 <p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a <a href="../install-link/#configuration">configuration file</a>.</p>
+<h2 id="command-line-options">Command line options</h2>
 <table>
 <thead>
 <tr>
@@ -159,6 +164,10 @@
 <tr>
 <td><code>--webhelp</code><br/><code>-H</code></td>
 <td>Opens web page with help text.</td>
+</tr>
+<tr>
+<td><code>--attach</code><br/><code>-a</code></td>
+<td>Connect to the target without a <code>RESET</code>, if possible. This does not work when one connects to a target initially. However, if one had a debugging session before, and one has not disconnected with <code>atexit leave</code> or with <code>debugwire disable</code>, then one should be able to attach to the running process.</td>
 </tr>
 <tr>
 <td><code>--command</code><br><code>-c</code></td>
@@ -226,10 +235,15 @@
 </tr>
 <tr>
 <td><code>--memory-map-disable</code></td>
-<td>This option will disable the usage of the XML memory map. This option is only there for testing purposes.</td>
+<td>This option, which does not take a value, will disable the usage of the XML memory map. This option is only there for testing purposes.</td>
+</tr>
+<tr>
+<td><code>--skip-signature-verification</code></td>
+<td>Do not perform chip signature verification. This is another option for testing purposes.</td>
 </tr>
 </tbody>
 </table>
+<h2 id="additional-command-line-options-derived-from-monitor-commands">Additional command line options derived from monitor commands</h2>
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code>.</p>
 <p>In addition to options, one can specify file names prefixed with a '@'-sign. Such files can contain additional arguments. Arguments read from such a file must be one per line and are treated as if they were in the same place as the original file referencing argument on the command line. If the file does not exist, no error is raised.</p>
 <p>The argument <code>@pyavrocd.options</code> is always added to the end of the command line. In other words, if there is such a file in the folder where the GDB server is invoked, then the arguments in this file will have precedence over the arguments on the command line. This is the way to override options on a per-project basis in an IDE, where the IDE invokes the GDB server.</p>
