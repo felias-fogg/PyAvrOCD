@@ -204,7 +204,7 @@
 <ol>
 <li>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.</li>
 <li>
-<p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0x000, but in the bootloader area that has been cleared.</p>
+<p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.</p>
 </li>
 <li>
 <p>Program the <code>OCDEN</code> fuse.</p>

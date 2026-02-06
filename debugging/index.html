@@ -87,6 +87,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#debugging-with-a-command-line-interface">Debugging with a command-line interface</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#persistent-debugging">Persistent Debugging</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
@@ -245,6 +247,9 @@ Note: automatically using hardware breakpoints for read-only addresses.
 </code></pre>
 <p>If you have reached this point, I trust that you are familiar with GDB and know how to proceed.</p>
 <p>Note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command <code>monitor debugwire disable</code>.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.</p>
+<h2 id="persistent-debugging">Persistent Debugging</h2>
+<p>Most of the time, one-shot debugging will be enough to locate a problem. This means that you start the debugger, switch the MCU into debugging mode, upload the program, start it, and then try to find the bug. After you have located and fixed the bug, the MCU will then be brought into the normal mode again.</p>
+<p>Sometimes, however, you may want to have a more persistent debugging scenario. If a bug shows up only after some time, you may want to leave the MCU running without the debug probe connected to it until the point that something goes wrong, and then <em>attach</em> to the MCU without going through the motion of setting fuses and resetting the MCU. This is supported by the monitor command <code>monitor atexit stay</code> and the command-line option <code>--attach</code>. With the mentioned monitor command, PyAvrOCD is instructed not to leave the debugging mode (which is the default for debugWIRE targets) when the debugger and the GDB server are terminated. When later PyAvrOCD is started with the command line option <code>--attach</code>, it will try to connect to the on-chip debugging module without setting any fuses and without a reset. If successful, you can then inspect the state of the program, change things, and continue execution.</p>
               
             </div>
           </div><footer>
