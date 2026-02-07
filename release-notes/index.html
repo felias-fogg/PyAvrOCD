@@ -100,6 +100,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v110">Release v1.1.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v100">Release v1.0.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v0220">Release v0.22.0</a>
@@ -169,6 +171,16 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v110">Release v1.1.0</h2>
+<ul>
+<li>Fixed a bug in avr-gdb 17.1.1 which made display of SRAM contents in the UI impossible</li>
+<li>Fixed a problem in the webbrowser call so that webhelp (<code>-H</code>) also works with Python &lt; 3.14</li>
+<li><code>--debugwire enable</code> and <code>--debugwire disable</code> work now with dw-link as well</li>
+<li>Added the option <code>--attach,</code> which makes it possible to re-attach to an MCU that is in debugging mode</li>
+<li>In connection with that, the <code>atexit</code> monitor command has been generalized from debugWIRE targets to all targets. One can now specify <code>monitor atexit stay</code> meaning that when PyAvrOCD is terminated, debugging mode will not be stopped, so that later on one can re-attach.</li>
+<li>An explicit test to distinguish between ATtiny2313 and ATtiny2313, which have the same chip signature but have their OCD register at a different location. This leads to strange errors when one ignores that.</li>
+<li>Added all possible alternative chip signatures MCUs may present when in debugging mode. For instance, an ATmega1284 pretends to be an ATmega1284P when in debugging mode. This became necessary because when re-attaching to an MCU, one cannot switch to programming mode in order to read out the true chip signature, but one must rely on the device ID returned by <code>activate_physical</code>.</li>
+</ul>
 <h2 id="release-v100">Release v1.0.0</h2>
 <ul>
 <li>First stable release (covering all classic parts)</li>
