@@ -145,8 +145,8 @@
 <li>
 <p>Add the following section under <code># AVR compile variables</code>:</p>
 <p><code># Optimization flags for debugging
- compiler.optimization_flags=-Os -ggdb3 -DNDBEUG
- compiler.optimization_flags.release=-Os -ggdb3 -DNDBEUG
+ compiler.optimization_flags=-Os -ggdb3 -DNDEBUG
+ compiler.optimization_flags.release=-Os -ggdb3 -DNDEBUG
  compiler.optimization_flags.debug=-Og -ggdb3 -DDEBUG</code></p>
 </li>
 <li>
@@ -185,7 +185,7 @@
  #debug.cortex-debug.custom.serverArgs.8=--atexit
  #debug.cortex-debug.custom.serverArgs.9=leavedebugwire
  # For JTAG MCUs the next one is a good thing
- debug.cortex-debug.custom.serverArgs.8=--progclk
+ debug.cortex-debug.custom.serverArgs.8=--prog-clock
  debug.cortex-debug.custom.serverArgs.9=2000
  # The next line is only necessary for debugWIRE targets (but will not hurt)
  debug.cortex-debug.custom.preLaunchCommands.0=monitor debugwire enable
@@ -205,11 +205,11 @@
 <ol>
 <li>The following menus are necessary (if appropriate):</li>
 </ol>
-<pre><code>menu.jtag=JTAG pins
+<pre><code>menu.JTAG=JTAG pins
 menu.lto=Compiler LTO
 </code></pre>
 <ol>
-<li>Add specifications for the two menu entries above.</li>
+<li>Add specifications for the two menu entries above. For JTAG, fuse bits must be set or cleared. For LTO, compiler switches need to be set.</li>
 </ol>
 <h2 id="programmerstxt"><code>programmers.txt</code></h2>
 <p>Depending on the debugging interface, the following programmers should
