@@ -96,7 +96,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by Atmel AVR Xplained-minis (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore-soon">ATmegas supported by MightyCore (soon)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore">ATmegas supported by MightyCore</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore-soon">ATmegas supported by MegaCore (soon)</a>
     </li>
@@ -208,10 +208,10 @@
 <p><s>ATmega8</s></p>
 </li>
 <li>
-<p><strong><s>ATmega48</s>,</strong> <strong>ATmega48A,</strong> <strong>ATmega48P</strong>, <strong>ATmega48PA,</strong> ATmega48PB,</p>
+<p><strong><s>ATmega48</s>,</strong> <strong>ATmega48A,</strong> <strong>ATmega48P</strong>, <strong>ATmega48PA,</strong> <strong>ATmega48PB</strong>,</p>
 </li>
-<li><strong><s>ATmega88</s>,</strong> <strong>ATmega88A,</strong> ATmega88P, <strong>ATmega88PA,</strong> Atmega88PB,</li>
-<li><strong>ATmega168,</strong> <strong>ATmega168A</strong>, <strong>ATmega168P</strong>, ATmega168PA, <strong>ATmega168PB</strong>,</li>
+<li><strong><s>ATmega88</s>,</strong> <strong>ATmega88A,</strong> <strong>ATmega88P</strong>, <strong>ATmega88PA,</strong> <strong>Atmega88PB</strong>,</li>
+<li><strong>ATmega168,</strong> <strong>ATmega168A</strong>, <strong>ATmega168P</strong>, <strong>ATmega168PA</strong>, <strong>ATmega168PB</strong>,</li>
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
@@ -221,13 +221,13 @@
 <li><strong>ATmega168PB</strong></li>
 <li><strong>ATmega328PB</strong></li>
 </ul>
-<h3 id="atmegas-supported-by-mightycore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a> (soon)</h3>
+<h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a></h3>
 <ul>
 <li><strong>ATmega16(A)</strong>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
 <li><s>ATmega8535</s></li>
 </ul>
-<p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of the avr-gdb repo</a>.</p>
+<p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of my avr-gdb repo</a>.</p>
 <p>The ATmega8535 does not possess a debug interface.</p>
 <h3 id="atmegas-supported-by-megacore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a> (soon)</h3>
 <ul>
