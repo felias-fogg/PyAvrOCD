@@ -159,13 +159,12 @@
 </li>
 <li>
 <p>In the end, add the following section</p>
-<p>```
- # Debugger configuration (general options)
+<p><code># Debugger configuration (general options)
  # ----------------------------------------
  debug.executable={build.path}/{build.project_name}.elf
  debug.toolchain=gcc
- debug.toolchain.path={runtime.tools.avrocd-tools.path}</p>
-<p>debug.server=openocd
+ debug.toolchain.path={runtime.tools.avrocd-tools.path}
+ debug.server=openocd
  debug.server.openocd.path={debug.toolchain.path}/pyavrocd
  #next doesn't matter, but should be specified so that cortex-debug is happy
  debug.server.openocd.script=nix
@@ -190,8 +189,7 @@
  # The next line is only necessary for debugWIRE targets (but will not hurt)
  debug.cortex-debug.custom.preLaunchCommands.0=monitor debugwire enable
  debug.cortex-debug.custom.runToEntryPoint=main
- debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd
- ```</p>
+ debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd</code></p>
 </li>
 <li>
 <p>If JTAG boards are debugged and there are no individual clock settings in <code>board.txt</code>, then you may want to add (depending on the lowest possible CPU clock):</p>
