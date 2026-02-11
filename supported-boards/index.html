@@ -86,9 +86,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#arduino-boards">Arduino boards</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#supported-sparkfun-boards">Supported Sparkfun boards</a>
+    <li class="toctree-l2"><a class="reference internal" href="#sparkfun-boards">Sparkfun boards</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#supported-adafruit-boards">Supported Adafruit boards</a>
+    <li class="toctree-l2"><a class="reference internal" href="#adafruit-boards">Adafruit boards</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#teensy-boards">Teensy boards</a>
     </li>
@@ -155,9 +155,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-boards">Supported boards</h1>
-<p>Almost all boards equipped with one of the supported chips can be used in one way or another. Tested boards are marked in boldface, and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested. If no core is mentioned, then there is no support yet.</p>
-<p>In addition, the board packages supporting the boards, possible board modifications, and other information are mentioned.</p>
-<p>Currently, there are only a few cores operational. In the near future, all of MCUdude's cores will be added.</p>
+<p>Almost all boards equipped with one of the supported chips can be used in one way or another. Tested boards are marked in boldface, and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested. If no core is mentioned, then there is no support through an Arduino core yet, but PyAvrOCD nevertheless supports debugging the chip.</p>
+<p>In addition, for supported boards, possible board modifications, and other information are mentioned.</p>
 <h2 id="microchip-boards">Microchip boards</h2>
 <p>Most of the supported Microchip boards have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.</p>
 <ul>
@@ -171,14 +170,14 @@
 <p><strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: <a href="../supporting-cores/#atmel-avr-xplained-minis-debug-enabled">Atmel AVR Xplained-minis (Debug enabled)</a>; no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
 </li>
 <li>
-<p><strong>ATmega324PB Xplained Pro:</strong> Serial I/O is routed via
+<p><strong>ATmega324PB Xplained Pro:</strong> <a href="https://github.com/MCUdude/MightyCore">MightyCore</a>; serial I/O is routed via
   <code>Serial1</code> instead of <code>Serial</code>. The LED is connected to digital
   pin 23. No physical modifications or fuse settings necessary.</p>
 </li>
 <li><u>AT90USBKEY2 (AT90USB1287)</u></li>
 <li><u>ATmega256RFR2 Xplained Pro</u></li>
-<li><strong>AVR Butterfly (ATmega169)</strong></li>
-<li><u>MEGA-1284P Xplained</u></li>
+<li><strong>AVR Butterfly (ATmega169)</strong>: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
+<li><u>MEGA-1284P Xplained</u>: <a href="https://github.com/MCUdude/MightyCore">MightyCore</a></li>
 </ul>
 <h2 id="arduino-boards">Arduino boards</h2>
 <ul>
@@ -188,22 +187,22 @@
 <li>Arduino Duemilanove:  <a href="../supporting-cores/#minicore">MiniCore</a>, <code>RESET EN</code> needs to be cut</li>
 <li>Arduino Diecimila:  <a href="../supporting-cores/#minicore">MiniCore</a>, <a href="https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/">remove 100nF capacitor</a></li>
 <li><strong>Arduino Nano:</strong> <a href="../board-preparation/#arduino-nano-and-clones">100 nF cap and 1kΩ resistor needs to be removed</a></li>
-<li><strong>Arduino Mega</strong>: JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
-<li><strong>Arduino Mega 2560:</strong> JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
-<li>Arduino Mega ADK</li>
+<li><strong>Arduino Mega</strong>: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a>; JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
+<li><strong>Arduino Mega 2560:</strong> <a href="https://github.com/MCUdude/MegaCore">MegaCore</a>; JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
+<li>Arduino Mega ADK: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
 <li><strong>Arduino Leonardo</strong>: JTAG pins are A0-A3, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a></li>
 <li>Arduino Leonardo ETH</li>
 <li><u>Arduino Micro</u></li>
 <li><s>Arduino Esplora</s></li>
-<li>Arduino Mini</li>
-<li>Arduino Ethernet</li>
-<li><u>Arduino Fio</u>:  do not connect DTR pin of FTDI header and do not connect XBee</li>
-<li>Arduino BT:  remove capacitor <code>C1</code></li>
+<li>Arduino Mini: <a href="../supporting-cores/#minicore">MiniCore</a> (if Mini 05); do not connect DTR pin of FTDI header</li>
+<li>Arduino Ethernet: <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>Arduino Fio</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header and do not connect XBee</li>
+<li>Arduino BT:  <a href="../supporting-cores/#minicore">MiniCore</a>; remove capacitor <code>C1</code> (which you do not have to resolder after debugging)</li>
 <li><s>LilyPad Arduino USB</s>: JTAG pins are not accessible</li>
-<li><u>LilyPad Arduino</u>:  do not connect DTR pin of FTDI header</li>
-<li><u>Arduino Pro</u>:  do not connect DTR pin of FTDI header</li>
-<li><u>Arduino Pro Mini</u>:  do not connect DTR pin of FTDI header</li>
-<li>Arduino NG (ATmega168):  no modifications necessary</li>
+<li><u>LilyPad Arduino</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>Arduino Pro</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>Arduino Pro Mini</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li>Arduino NG (ATmega168):  <a href="../supporting-cores/#minicore">MiniCore</a>; no modifications necessary</li>
 <li><s>Arduino NG (ATmega8)</s>: no debugging interface</li>
 <li>Arduino Robot Control</li>
 <li>Arduino Robot Motor</li>
@@ -212,26 +211,26 @@
 <li>Arduino Yún Mini</li>
 <li>Arduino Industrial 101</li>
 <li>Arduino Linino One</li>
-<li>Arduino UNO WiFi (Rev 1):  cut <code>RESET EN</code> solder bridge</li>
+<li>Arduino UNO WiFi (Rev 1):  <a href="../supporting-cores/#minicore">MiniCore</a>; cut <code>RESET EN</code> solder bridge</li>
 </ul>
-<h2 id="supported-sparkfun-boards">Supported Sparkfun boards</h2>
+<h2 id="sparkfun-boards">Sparkfun boards</h2>
 <ul>
 <li>RedBoard (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a>, remove <code>C8</code></li>
 <li><u>Pro Micro 3.3V (ATmega32U4)</u></li>
 <li><u>Pro Micro 5V (ATmega32U4)</u></li>
 <li>Fio v3</li>
 <li>Qduino Mini (ATmega32U4)</li>
-<li>Mega Pro 3.3V</li>
-<li>Mega Pro 5V</li>
-<li>RedBot (ATmega328P)</li>
-<li><u>Serial-7-Segment-Display</u> (ATmega328P)</li>
+<li>Mega Pro 3.3V: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
+<li>Mega Pro 5V: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
+<li>RedBot (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li><u>Serial-7-Segment-Display</u> (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>ATmega128RFA1 Development board</li>
 <li>LilyPad USB Plus</li>
 <li>SerLcd</li>
-<li>Digital Sandbox (ATmega328P)</li>
-<li>Microview (ATmega328P)</li>
+<li>Digital Sandbox (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li>Microview (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 </ul>
-<h2 id="supported-adafruit-boards">Supported Adafruit boards</h2>
+<h2 id="adafruit-boards">Adafruit boards</h2>
 <ul>
 <li><s>Flora (ATmega32U4)</s>: JTAG pins are not accessible</li>
 <li>Feather 32U4</li>
@@ -242,10 +241,10 @@
 <li>Metro (ATmega328P):  <a href="../supporting-cores/#minicore">MiniCore</a>, cut <code>RESET EN</code> solder bridge</li>
 <li>Metro Mini V2:  <a href="../supporting-cores/#minicore">MiniCore</a>, you have to figure out which cap to remove</li>
 <li>Circuit Playground Classic (ATmega32U4)</li>
-<li>Pro Trinket 5V/16MHz (USB): MiniCore</li>
-<li>Pro Trinket 3V/12MHz (USB): MiniCore</li>
-<li>Pro Trinket 5V/16MHz (FTDI): MiniCore</li>
-<li>Pro Trinket 3V/12MHz (FTDI): MiniCore</li>
+<li>Pro Trinket 5V/16MHz (USB): <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li>Pro Trinket 3V/12MHz (USB): <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li>Pro Trinket 5V/16MHz (FTDI): <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li>Pro Trinket 3V/12MHz (FTDI): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>ItsyBitsy 32u4 (3V)</li>
 <li>ItsyBitsy 32u4 (5V)</li>
 <li>Bluefruit Micro</li>
@@ -263,22 +262,23 @@
 <li><s>eduArdu</s>: JTAG pins are not accessible</li>
 <li>Olimex-Nano: <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>RGB-Glasses</li>
-<li>Olimexino-2560</li>
-<li><strong>AVR-CAN (AT90CAN128)</strong></li>
-<li>AVR-GSM (ATMega32)</li>
-<li>AVR-IO-M16 (ATmega16)</li>
-<li><strong>AVR-MT128 (ATmega128)</strong></li>
+<li>Olimexino-2560: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
+<li><strong>AVR-CAN (AT90CAN128)</strong>: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
+<li>AVR-GSM (ATMega32): <a href="https://github.com/MCUdude/MightyCore">MightyCore</a></li>
+<li>AVR-IO-M16 (ATmega16): <a href="https://github.com/MCUdude/MightyCore">MightyCore</a></li>
+<li><strong>AVR-MT128 (ATmega128)</strong>: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
 <li>AVR-USB-STK (AT90USB162)</li>
 <li><strong>AVR-USB-162 (AT90USB162)</strong></li>
 </ul>
 <h2 id="seeed-studio-boards">Seeed Studio boards</h2>
 <ul>
 <li>Seeeduino V3.0: <a href="../supporting-cores/#minicore">MiniCore</a></li>
-<li><u>Seeeduino v4</u>:  remove <code>C14</code> and RESET LED (next to RESET button)</li>
-<li><u>Stalker</u>: do not connect DTR</li>
-<li>Seeeduino Lotus</li>
+<li><u>Seeeduino v4</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; remove <code>C14</code> and RESET LED (next to RESET button)</li>
+<li><u>Stalker</u>: <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR</li>
+<li>Seeeduino Lotus: <a href="../supporting-cores/#minicore">MiniCore</a>; remove <code>C6</code> and RESET LED (next to RESET button)</li>
 <li>Seeeduino Lite</li>
-<li>Seeeduino Nano</li>
+<li>Seeeduino Nano: <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li>Seeeduino Mega 2560: <a href="https://github.com/MCUdude/MegaCore">MegaCore</a></li>
 </ul>
 <h2 id="azduino-boards-by-spence-konde">Azduino boards by Spence Konde</h2>
 <ul>
