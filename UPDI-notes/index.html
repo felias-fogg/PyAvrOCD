@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/license-link/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/UPDI-notes/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>License - PyAvrOCD</title>
+    <title>Notes about extending PyAvrOCD to UPDI - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "License";
-        var mkdocs_page_input_path = "license-link.md";
-        var mkdocs_page_url = "/license-link/";
+        var mkdocs_page_name = "Notes about extending PyAvrOCD to UPDI";
+        var mkdocs_page_input_path = "UPDI-notes.md";
+        var mkdocs_page_url = "/UPDI-notes/";
       </script>
     
     <!--[if lt IE 9]>
@@ -95,8 +95,8 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">License</a>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
                   </li>
@@ -125,10 +125,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">About</li>
-      <li class="breadcrumb-item active">License</li>
+      <li class="breadcrumb-item active">Notes about extending PyAvrOCD to UPDI</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/license-link.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/UPDI-notes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -136,37 +135,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <pre><code class="language-text">MIT License
-
-Copyright (c) 2025-2026 Bernhard Nebel
-Copyright (c) 2022 mraardvark
-Copyright (c) 2020 Ole Sivert Aarhaug
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the &quot;Software&quot;), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-</code></pre>
+                <h1 id="notes-about-extending-pyavrocd-to-updi">Notes about extending PyAvrOCD to UPDI</h1>
+<h2 id="general-registers-and-io-registers">General registers and I/O registers</h2>
+<p>For UPDI targets, addressing of general registers and I/O registers is a bit different from that of JTAG/dw targets:</p>
+<ol>
+<li>General registers are not addressable as SRAM locations</li>
+<li>I/O registers are addressed in the usual way in In/Out instructions. However, for ordinary LD/ST direct and indirect addressing, the -0x20 offset does not apply!</li>
+</ol>
+<p>This means</p>
+<ul>
+<li>
+<p>that in <code>_filter_unsafe_instruction</code> in <code>breakexec.py</code>, <code>SREGADDR</code> needs to be different and the -0x20 does not apply.</p>
+</li>
+<li>
+<p>set SREGADDR according to device type</p>
+</li>
+<li>
+<p>set IO_offset according to device type</p>
+</li>
+<li>
+<p>Check for all places where we use SRAM reads/writes to read/write registers</p>
+</li>
+<li>
+<p>We need to have special read/write register functions in xavrdebug, which will "buffer" reads and writes and in the background use register file_read and _write (just before execution/singlestepping starts)</p>
+</li>
+</ul>
+<p>The lower end of the user SRAM (and therefore stack) for UPDI targets is much higher than that of JTAG/dw, i.e.,</p>
+<ul>
+<li><code>_stack_pointer_legal</code> should test against a much higher address. Perhaps, we can just ignore it.</li>
+</ul>
+<p>The role of shadow regs in the OCD area is not entirely clear! Do we have to write to them in order to change the regs? I believe not. But this needs to be tested.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../limitations/" class="btn btn-neutral float-left" title="Limitations"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../release-notes/" class="btn btn-neutral float-right" title="Release notes">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -192,10 +193,6 @@ SOFTWARE.
         </span>
     
     
-      <span><a href="../limitations/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../release-notes/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
