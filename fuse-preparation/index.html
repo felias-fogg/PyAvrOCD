@@ -165,7 +165,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="setting-the-right-fuses-to-enable-debugging">Setting the right fuses to enable debugging</h1>
-<p>The good news for Arduino IDE 2 users: You do not have to worry about fuses. All the fuse setting details are taken care of by the IDE.</p>
+<p>The good news for Arduino IDE 2 users: You do not have to worry about fuses. Almost all the fuse setting details are taken care of by the IDE.</p>
 <p>One thing you have to be aware of is that it may be necessary to enable the JTAG pins on targets with the JTAG interface. This is done by choosing <code>JTAG pins: JTAG enabled</code> in the  <code>Tools</code> menu, followed by the <code>Burn Bootloader</code> action using an SPI programmer (because the JTAG pins are not yet active!).</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
@@ -177,7 +177,7 @@
 <p>When you are done with debugging, you may want to re-enable the original functionality, which means that you should employ the <code>Burn Bootloader</code> action---with JTAG disabled, if it is a JTAG target. When you are dealing with a debugWIRE target, you have to remember to type the line <code>monitor debugwire disable</code> into the Debug Console before you terminate the debugger. And then you can also use the <code>Burn Bootloader</code> action.</p>
 <p>And this is all you have to know when you use the Arduino IDE 2. In general, the story is a bit more complex, however.</p>
 <h2 id="general-considerations">General considerations</h2>
-<p>Sometimes it may be necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>. One can also specify individually which resources to manage. There are the following resources:</p>
+<p>Sometimes it may be necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>. One can also specify individually which resources to manage:</p>
 <ul>
 <li><code>Lockbits</code>: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash and EEPROM memory, provided PyAvrOCD has been instructed to manage the lockbits by <code>--manage all</code> or <code>--manage lockbits</code>.</li>
 <li><code>BOOTRST</code>: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including <code>bootrst</code> as a fuse to be managed by the server when starting the GDB server from the command line.</li>
@@ -188,8 +188,8 @@
 <p>If you want to leave all the fuse management to PyAvrOCD, then specify <code>--manage all</code>, which is the default with Arduino IDE2. If you want to play it safe, you can instead manage these fuses and the lockbits manually using a fuse setting program such as avrdude. Note that changing the set of managed fuses from one invocation to the next will affect debugWIRE targets only when the target is not in debugWIRE mode.</p>
 <p>Finally, as already mentioned above, bootloaders will be deleted, so they need to be reinstalled after debugging has finished. Additionally, one cannot use the services some bootloaders offer, e.g., writing to flash memory. If you want to debug such a program, you need to set up a mock object, or you have to make sure that not the entire flash is erased by using the monitor command <code>monitor erasebeforeload disable</code>.</p>
 <h2 id="preparing-a-debugwire-target">Preparing a debugWIRE target</h2>
-<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</h3>
 <p>In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the <code>RSTDSBL</code> fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using <a href="../limitations/#high-voltage-programming">high-voltage programming</a>. The same holds when <code>SPIEN</code> (enabling SPI programming) is unprogrammed.</p>
+<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</h3>
 <p>The <code>DWEN</code> and <code>BOOTRST</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD, if this is permitted (see above). <code>EESAVE</code> is not managed because the only situation where a chip erase can happen is when you clear the lockbits. And in this situation, <code>EESAVE</code> cannot be activated.</p>
 <h3 id="fuse-settings-when-fuses-are-managed-manually">Fuse settings when fuses are managed manually</h3>
 <p>When you want complete control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger:</p>
@@ -207,9 +207,9 @@
 <p>Now, you should be able to connect to the OCD on the target MCU.</p>
 <p>After you have finished debugging and issued the <code>monitor debugwire disable</code> command, you can connect again with an SPI programmer and unprogram the <code>DWEN</code> fuse. Make sure that, in between, power is always applied to the target board because otherwise you may have switched back to debugWIRE mode.</p>
 <h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
-<h3 id="fuse-settings-when-pyavrocd-manages-fuses">Fuse settings when PyAvrOCD manages fuses</h3>
 <p>Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  <code>JTAGEN</code> fuse before debugging can start. This has to be done using the SPI programming interface. From then on, you can connect to the board using the JTAG connector.</p>
 <p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled, this does not matter because the JTAG pins are all that is needed. If not, <a href="../limitations/#high-voltage-programming">high-voltage programming</a> is necessary.</p>
+<h3 id="fuse-settings-when-pyavrocd-manages-fuses">Fuse settings when PyAvrOCD manages fuses</h3>
 <p>The <code>OCDEN</code>, <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD.</p>
 <h3 id="fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</h3>
 <p>When you want complete control over the fuses, make sure that the fuses are set as follows before you invoke the debugger. Make sure that the JTAG pins are enabled. Afterward, use avrdude and a JTAG programmer as follows:</p>
@@ -225,12 +225,14 @@
 <p>Now, you should be able to connect to the OCD on the target MCU.</p>
 <p>After you have finished debugging, you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible.</p>
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
-<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse_1">Fuse settings when PyAvrOCD manages the fuse</h3>
 <p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If it is a pin with UPDI/GPIO/RESET functionality and the UPDI functionality has been disabled,  things become a bit complicated. </p>
-<p>In this case, a high-voltage pulse is necessary to activate the UPDI functionality of the pin, which will need a RESET impulse beforehand, which in turn needs manual or automatic power-cycling. Worse yet, after each RESET, power toggle, and programming mode termination, this procedure needs to be repeated. Adding to this, one of the compatible debug probes by Microchip is able to perform high-voltage programming.</p>
+<p>In this case, a high-voltage pulse is necessary to activate the UPDI functionality of the pin, which will need a RESET impulse beforehand, which in turn needs manual or automatic power-cycling. Worse yet, after each RESET, power toggle, and programming mode termination, this procedure needs to be repeated. Adding to this, only one of the compatible debug probes by Microchip is able to perform high-voltage programming.</p>
 <p>For this reason, PyAvrOCD does not support high-voltage programming. The advice is to use a dedicated <a href="https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6">high-voltage UPDI programmer</a> for changing the respective fuse so that UPDI functionality is restored for the shared pin. Even better: Do not use the UPDI pin for RESET or GPIO purposes from the beginning.</p>
+<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse_1">Fuse settings when PyAvrOCD manages the fuse</h3>
+<p>Since UPDI targets do not have a special debugging fuse, you only need to care about <code>lockbits</code>. The bootloader setting can mostly be ignored. Either it has been erased when the lockbits are cleared, in which case the MCU will skip over this section, or it is still there, which implies that the bootloader will jump to the application program.  </p>
+<p>In other words, for UPDI targets, PyAvrOCD will manage the <code>EESAVE</code> fuse and the <code>lockbits</code> for you.</p>
 <h3 id="fuse-settings-when-fuses-are-managed-manually_2">Fuse settings when fuses are managed manually</h3>
-<p>Since UPDI targets do not have a special debugging fuse, you only need to care about <code>lockbits</code>. ,</p>
+<p>When you want complete control over the fuses, you only have to make sure that the <code>lockbits</code> are cleared. You may also want to set the <code>EESAVE</code> fuse.</p>
               
             </div>
           </div><footer>
