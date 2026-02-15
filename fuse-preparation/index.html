@@ -171,8 +171,8 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
 </p>
 <div class="admonition warning">
-<p class="admonition-title">Make sure that all parameters are correct before using the Burn Bootloader command</p>
-<p>When you use the <code>Burn Bootloader</code> command, all fuses corresponding to the specified parameters in the <code>Tools</code> menu are set. In particular, the <code>Clock</code> parameter is crucial because setting it to an External clock source while you use the internal RC oscillator means that your chip will not respond to the outside world any longer. You need to provide an external clock to reanimate your chip!</p>
+<p class="admonition-title">Make sure that all option values are correct before using the Burn Bootloader command</p>
+<p>When you use the <code>Burn Bootloader</code> command, all fuses corresponding to the specified options in the <code>Tools</code> menu are set. In particular, the <code>Clock</code> parameter is crucial because setting it to an External clock source while you use the internal RC oscillator means that your chip will not respond to the outside world any longer. You need to provide an external clock to reanimate your chip!</p>
 </div>
 <p>When you are done with debugging, you may want to re-enable the original functionality, which means that you should employ the <code>Burn Bootloader</code> action---with JTAG disabled, if it is a JTAG target. When you are dealing with a debugWIRE target, you have to remember to type the line <code>monitor debugwire disable</code> into the Debug Console before you terminate the debugger. And then you can also use the <code>Burn Bootloader</code> action.</p>
 <p>And this is all you have to know when you use the Arduino IDE 2. In general, the story is a bit more complex, however.</p>
