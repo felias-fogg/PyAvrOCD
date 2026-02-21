@@ -65,6 +65,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -163,7 +165,7 @@
 <tr>
 <td><code>SIGTRAP</code></td>
 <td></td>
-<td>This is not an error signal. Instead, it is issued when execution stops at a place where a BREAK instruction has been placed, and it is not a breakpoint.</td>
+<td>This is not an error signal. Instead, it is issued when execution stops at a place where a BREAK instruction has been placed, and it is not a breakpoint. From this point it is not possible to continue execution.</td>
 </tr>
 <tr>
 <td><code>SIGABRT</code></td>

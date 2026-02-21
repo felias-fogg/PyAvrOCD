@@ -93,6 +93,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -172,9 +174,8 @@
 </p>
 <div class="admonition warning">
 <p class="admonition-title">Make sure that all option values are correct before using the Burn Bootloader command</p>
-<p>When you use the <code>Burn Bootloader</code> command, all fuses corresponding to the specified options in the <code>Tools</code> menu are set. In particular, the <code>Clock</code> parameter is crucial because setting it to an External clock source while you use the internal RC oscillator means that your chip will not respond to the outside world any longer. You need to provide an external clock to reanimate your chip!</p>
+<p>When you use the <code>Burn Bootloader</code> command, all fuses corresponding to the specified options in the <code>Tools</code> menu are set. In particular, the <code>Clock</code> parameter is crucial because setting it to an External clock source while you use the internal RC oscillator means that your chip will not respond to the outside world any longer. In this case, you need to provide an external clock to reanimate your chip!</p>
 </div>
-<p>When you are done with debugging, you may want to re-enable the original functionality, which means that you should employ the <code>Burn Bootloader</code> action---with JTAG disabled, if it is a JTAG target. When you are dealing with a debugWIRE target, you have to remember to type the line <code>monitor debugwire disable</code> into the Debug Console before you terminate the debugger. And then you can also use the <code>Burn Bootloader</code> action.</p>
 <p>And this is all you have to know when you use the Arduino IDE 2. In general, the story is a bit more complex, however.</p>
 <h2 id="general-considerations">General considerations</h2>
 <p>Sometimes it may be necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>. One can also specify individually which resources to manage:</p>
@@ -225,7 +226,7 @@
 <p>Now, you should be able to connect to the OCD on the target MCU.</p>
 <p>After you have finished debugging, you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible.</p>
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
-<p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If it is a pin with UPDI/GPIO/RESET functionality and the UPDI functionality has been disabled,  things become a bit complicated. </p>
+<p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. If it is a pin with UPDI/GPIO/RESET shared functionality, and the UPDI functionality has been disabled,  things become a bit complicated. </p>
 <p>In this case, a high-voltage pulse is necessary to activate the UPDI functionality of the pin, which will need a RESET impulse beforehand, which in turn needs manual or automatic power-cycling. Worse yet, after each RESET, power toggle, and programming mode termination, this procedure needs to be repeated. Adding to this, only one of the compatible debug probes by Microchip is able to perform high-voltage programming.</p>
 <p>For this reason, PyAvrOCD does not support high-voltage programming. The advice is to use a dedicated <a href="https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6">high-voltage UPDI programmer</a> for changing the respective fuse so that UPDI functionality is restored for the shared pin. Even better: Do not use the UPDI pin for RESET or GPIO purposes from the beginning.</p>
 <h3 id="fuse-settings-when-pyavrocd-manages-the-fuse_1">Fuse settings when PyAvrOCD manages the fuse</h3>
