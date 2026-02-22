@@ -243,7 +243,7 @@
 <p>All these problems disappear when link-time optimization is disabled. However, in this case, much more code space may be needed.</p>
 <h2 id="link-time-jump-relaxation">Link-time jump relaxation</h2>
 <p>When using the optimization option <code>-mrelax</code>, the line number information gets distorted.</p>
-<p>The optimization option <code>-mrelax</code> is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible. </p>
+<p>The optimization option <code>-mrelax</code> is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible.</p>
 <h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
 <p>Breakpoints in interrupt routines can throw off the timing of time-critical code.</p>
 <p>It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone.</p>

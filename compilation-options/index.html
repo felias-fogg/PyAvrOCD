@@ -152,7 +152,7 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png" width="70%">
 </p>
 
-<p>Before doing that, it is advisable to select the <code>Optimize for Debugging</code> option. </p>
+<p>Before doing that, it is advisable to select the <code>Optimize for Debugging</code> option.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
 
 <p>This will select the compilation option -<code>Og</code> and will disable <em>link time optimization</em> in order to make the debugging experience smoother. Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth can be up to 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>

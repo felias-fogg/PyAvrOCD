@@ -195,7 +195,7 @@
 <h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</h3>
 <p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
 <h3 id="when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</h3>
-<p>Probably the same reason as above. </p>
+<p>Probably the same reason as above.</p>
 <h3 id="single-stepping-takes-forever">Single-stepping takes forever</h3>
 <p>You requested a single step, and the debugger seems to take forever to complete this single step. There are two possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. The debugger will return from it, either when an interrupt wakes up the MCU or when you interrupt execution using Ctrl-C. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown. In order to recover, interrupt execution, set a breakpoint somewhere after this line, and then request to continue execution.</p>
 <h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
