@@ -155,7 +155,7 @@
 <p>Before doing that, it is advisable to select the <code>Optimize for Debugging</code> option.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
 
-<p>This will select the compilation option -<code>Og</code> and will disable <em>link time optimization</em> in order to make the debugging experience smoother. Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth can be up to 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>
+<p>This will select the compilation option -<code>Og</code> and will disable <em>link time optimization</em> in order to make the debugging experience smoother.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth is usually around 20%, but can be as bad as 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable. </p>
 <p>Once this option has been activated, it will also be enabled for other projects. You have to explicitly disable this option in order to get smaller binary files again.</p>
 <h2 id="compiling-in-other-environments">Compiling in other environments</h2>
 <p>In most IDEs and, of course, on the command line, you usually have full control over all the compiler and linker settings. The following ones are critical when debugging:</p>
@@ -165,6 +165,14 @@
 <li><em>Link time jump relaxation</em> is triggered by the compiler and linker option <code>-mrelax</code>. This will try to replace <code>JMP</code> and <code>CALL</code> instructions with <code>RJMP</code> and <code>RCALL</code> at link time. While this sounds like a reasonable and easy optimization, its implementation is unfortunately buggy when it comes to the generation of debugging information. The line number information is completely garbled, at least in version AVR-GCC v7.3. So this option should never be used when debugging.</li>
 <li><em>Including debugging information</em> is triggered by the compiler option <code>-g</code>. This may enlarge the size of the object file in ELF format, but does not lead to larger binaries. So, this option can always be used at no cost. Using <code>-g3</code> or <code>-ggdb3</code>  instead of <code>-g</code> promises to record more debugging information, which might be helpful for the debugging process.</li>
 </ul>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Some cores might still allow disabling LTO in the <code>Tools</code> menu. In this case, one needs to disable LTO separately.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>
