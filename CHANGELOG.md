@@ -5,6 +5,7 @@
 - **Fixed:**
      - In `set_one_register_handler` in `handler.py`, there were two errors when setting a single register. First, there was no conversion to strings, and second, the register numbers can be a single hex digits.
      - Now, `sram_masked_read` and `sram_masked_write` will read from registers/write to registers when the address is < `iooffset`. This means that for targets with general registers in the SRAM area below `iooffset` (i.e., 0x20), there is a consistent source and destination for memory transfers created by the debugger.
+     - EEPROM access through the GDB `0x81xxxx` memory segment now works for UPDI devices with nonzero EEPROM base addresses. The `Memory` layer keeps EEPROM offsets relative, and the transport-specific backend adds the physical base once.
 
 - **Added:**
      - UPDI functionality

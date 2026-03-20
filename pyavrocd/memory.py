@@ -472,16 +472,15 @@ class Memory():
         Read EEPROM content from the AVR
         Needs to be handled here because depending on programm_mode, different memtypes have to be used
 
-        :param address: absolute address to start reading from
+        :param address: EEPROM-relative offset to start reading from
         :param numbytes: number of bytes to read
         """
         self.logger.debug("Reading %d bytes from EEPROM at %X", numbytes, address)
-        # The debugger protocols (via pymcuprog) use memory-types with zero-offsets
-        # So the offset is subtracted here (and added later in the debugger)
+        # GDB's 0x81 memory segment already provides an EEPROM-relative offset.
+        # The transport-specific NVM providers add the physical EEPROM base.
         if self.dbg.memory_info is None:
             raise FatalError("No memory info available")
-        offset : int = (self.dbg.memory_info.memory_info_by_name('eeprom'))['address']
-        return self.dbg.device.read(self.dbg.memory_info.memory_info_by_name('eeprom'), address-offset,
+        return self.dbg.device.read(self.dbg.memory_info.memory_info_by_name('eeprom'), address,
                                         numbytes, self.programming_mode)
 
     def eeprom_write(self, address : int , data : bytes) -> None:
@@ -489,14 +488,13 @@ class Memory():
         Write EEPROM content to the AVR
         Needs to be handled here because depending on programm_mode, different memtypes have to be used
 
-        :param address: absolute address in EEPROM to start writing
+        :param address: EEPROM-relative offset to start writing at
         :param data: content to store to EEPROM
         """
         self.logger.debug("Writing %d bytes to EEPROM at %X", len(data), address)
-        # The debugger protocols (via pymcuprog) use memory-types with zero-offsets
-        # So the offset is subtracted here (and added later in the debugger)
+        # GDB's 0x81 memory segment already provides an EEPROM-relative offset.
+        # The transport-specific NVM providers add the physical EEPROM base.
         if self.dbg.memory_info is None:
             raise FatalError("No memory info available")
-        offset : int = (self.dbg.memory_info.memory_info_by_name('eeprom'))['address']
-        return self.dbg.device.write(self.dbg.memory_info.memory_info_by_name('eeprom'), address-offset,
+        return self.dbg.device.write(self.dbg.memory_info.memory_info_by_name('eeprom'), address,
                                          data, self.programming_mode)
