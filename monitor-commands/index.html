@@ -65,8 +65,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -141,9 +139,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="monitor-commands">Monitor commands</h1>
-<p>PyAvrOCD implements several <code>monitor</code> commands. These can be used to control important aspects of the GDB server. Two important commands are the <code>monitor debugwire enable</code> and <code>monitor debugwire disable</code> commands, which enable and disable, respectively, debugWIRE mode on MCUs supporting this interface. When using Arduino IDE 2, you can type such commands into the last line of the <code>Debug Console</code>.</p>
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="70%"></p>
-
+<p>PyAvrOCD implements several <code>monitor</code> commands. These can be used to control important aspects of the GDB server. One important command is the <code>monitor debugwire enable</code> command, which enables debugWIRE mode on MCUs supporting this interface.</p>
 <table>
 <thead>
 <tr>

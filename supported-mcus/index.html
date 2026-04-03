@@ -65,8 +65,6 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -84,7 +82,7 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#classic-attinys">Classic ATtinys</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#attiny-supported-by-microcore">ATtiny supported by MicroCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#attiny-supported-by-microcore-soon">ATtiny supported by MicroCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-attinycore-debug-enabled">ATtinys supported by ATTinyCore (Debug enabled)</a>
     </li>
@@ -94,15 +92,15 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#classic-atmegas">Classic ATmegas</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore">ATmegas supported by MiniCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore-soon">ATmegas supported by MiniCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by Atmel AVR Xplained-minis (Debug enabled)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore">ATmegas supported by MightyCore</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore">ATmegas supported by MegaCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacore-soon">ATmegas supported by MegaCore (soon)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-majorcore">ATmega supported by MajorCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-majorcore-soon">ATmega supported by MajorCore (soon)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</a>
     </li>
@@ -171,10 +169,10 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core. </p>
+<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core. However, not all potential cores have been extended yet to allow for debugging with the Arduino IDE 2 (but will be soon).</p>
 <p>MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
-<h3 id="attiny-supported-by-microcore">ATtiny supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a></h3>
+<h3 id="attiny-supported-by-microcore-soon">ATtiny supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a> (soon)</h3>
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
 </ul>
@@ -204,7 +202,7 @@
 <li><s>ATtiny40</s></li>
 </ul>
 <h2 id="classic-atmegas">Classic ATmegas</h2>
-<h3 id="atmegas-supported-by-minicore">ATmegas supported by <a href="https://github.com/MCUdude/MiniCore"><em>MiniCore</em></a></h3>
+<h3 id="atmegas-supported-by-minicore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MiniCore"><em>MiniCore</em></a> (soon)</h3>
 <ul>
 <li>
 <p><s>ATmega8</s></p>
@@ -231,7 +229,7 @@
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of my avr-gdb repo</a>.</p>
 <p>The ATmega8535 does not possess a debug interface.</p>
-<h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a></h3>
+<h3 id="atmegas-supported-by-megacore-soon">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a> (soon)</h3>
 <ul>
 <li><strong>ATmega64(A)</strong>, <strong>ATmega128(A)</strong></li>
 <li><strong>ATmega640</strong>, <strong>ATmega1280</strong>, <strong>ATmega2560</strong></li>
@@ -244,7 +242,7 @@
 </ul>
 <p>The Atmega64(A), ATmega329(P)(A), and ATmega3250(P)(A) MCUs have a stuck-at-one-bit in the PC, which might lead to the same problem as for the ATmega16s mentioned above when an older, unpatched AVR-GDB version is used.</p>
 <p>The ATmega128(A) MCUs do not allow for software breakpoints. This means that you can use only four hardware breakpoints.</p>
-<h3 id="atmega-supported-by-majorcore">ATmega supported by <a href="https://github.com/MCUdude/MajorCore"><em>MajorCore</em></a></h3>
+<h3 id="atmega-supported-by-majorcore-soon">ATmega supported by <a href="https://github.com/MCUdude/MajorCore"><em>MajorCore</em></a> (soon)</h3>
 <ul>
 <li><strong>ATmega162</strong></li>
 <li><s>ATmega8515</s></li>

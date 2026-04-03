@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/compilation-options/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/generate-new-version/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Compiling the program - PyAvrOCD</title>
+    <title>How to Generate a New Version - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Compiling the program";
-        var mkdocs_page_input_path = "compilation-options.md";
-        var mkdocs_page_url = "/compilation-options/";
+        var mkdocs_page_name = "How to Generate a New Version";
+        var mkdocs_page_input_path = "generate-new-version.md";
+        var mkdocs_page_url = "/generate-new-version/";
       </script>
     
     <!--[if lt IE 9]>
@@ -58,20 +58,12 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
-                  </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Compiling the program</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#compiling-an-arduino-sketch-in-the-arduino-ide-2">Compiling an Arduino sketch in the Arduino IDE 2</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#compiling-in-other-environments">Compiling in other environments</a>
-    </li>
-    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
@@ -133,10 +125,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Usage</li>
-      <li class="breadcrumb-item active">Compiling the program</li>
+      <li class="breadcrumb-item active">How to Generate a New Version</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/compilation-options.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/generate-new-version.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -144,48 +135,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="compiling-the-program">Compiling the program</h1>
-<p>A necessary prerequisite for debugging a program is that you compile it.</p>
-<h2 id="compiling-an-arduino-sketch-in-the-arduino-ide-2">Compiling an Arduino sketch in the Arduino IDE 2</h2>
-<p>Compiling the Arduino sketch is done by clicking on the Verify button in the top right.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png" width="70%">
-</p>
-
-<p>Before doing that, it is advisable to select the <code>Optimize for Debugging</code> option.</p>
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
-
-<p>This will select the compilation option -<code>Og</code> and will disable <em>link time optimization</em> in order to make the debugging experience smoother.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth is usually around 20%, but can be as bad as 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>
-<p>As an alternative to disabling the <code>Optimize for Debugging</code> option when the binary code gets too large, you may consider conditionally disabling parts of your code. When the <code>Optimize for Debugging</code> option is active, the compile-time constant <code>DEBUG</code> is defined. If the option is disabled, the constant <code>NDEBUG</code> is defined. So you can enclose parts of your code by</p>
-<pre><code class="language-C++">#ifndef DEBUG
-...
-#endif
-</code></pre>
-<p>in order to deactivate this part of your code when the <code>Optimize for Debugging</code> option is enabled.</p>
-<p>Once <code>Optimize for Debugging</code> has been activated, it will also be enabled for other projects. You have to explicitly disable this option in order to get smaller binary files again.</p>
-<h2 id="compiling-in-other-environments">Compiling in other environments</h2>
-<p>In most IDEs and, of course, on the command line, you usually have full control over all the compiler and linker settings. The following ones are critical when debugging:</p>
-<ul>
-<li>The <em>compiler optimization level</em> for MCUs is usually <code>-Os</code>, meaning that the needed space in flash memory should be minimized. For debugging, one should choose <code>-Og</code> instead, which optimizes for space but tries to keep the control flow as similar as possible to the source text, i.e., no inlining or code re-ordering. Of course, the produced binary will be bigger than when using <code>-Os</code>.</li>
-<li><em>Link time optimization</em>, triggered by <code>-flto</code> for compilation and linking, will prune away unused library code. In addition, it may also do code inlining across compilation units. Further, it seems to prune debugging information, such as information about global variables and class structures. For this reason, it is advisable to disable link time optimization when debugging.  Again, this will increase the size of the binary.</li>
-<li><em>Link time jump relaxation</em> is triggered by the compiler and linker option <code>-mrelax</code>. This will try to replace <code>JMP</code> and <code>CALL</code> instructions with <code>RJMP</code> and <code>RCALL</code> at link time. While this sounds like a reasonable and easy optimization, its implementation is unfortunately buggy when it comes to the generation of debugging information. The line number information is completely garbled, at least in version AVR-GCC v7.3. So this option should never be used when debugging.</li>
-<li><em>Including debugging information</em> is triggered by the compiler option <code>-g</code>. This may enlarge the size of the object file in ELF format, but does not lead to larger binaries. So, this option can always be used at no cost. Using <code>-g3</code> or <code>-ggdb3</code>  instead of <code>-g</code> promises to record more debugging information, which might be helpful for the debugging process.</li>
-</ul>
-<div class="footnote">
-<hr />
+                <h1 id="how-to-generate-a-new-version">How to Generate a New Version</h1>
 <ol>
-<li id="fn:1">
-<p>Some cores might still allow disabling LTO in the <code>Tools</code> menu. In this case, one needs to disable LTO separately.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<li>Inside <code>PyAvrOCD</code>:</li>
+<li>Bump version number in <code>pyproject.toml</code></li>
+<li>git commit -a -m "\&lt;version number&gt;"</li>
+<li>git push</li>
+<li>Goto web page and make new release (use correct version number for tag and version!). This will trigger a workflow that will do the following:<ul>
+<li>check for correct version number</li>
+<li>run unit-tests</li>
+<li>build the binaries</li>
+<li>upload assets to new release</li>
+<li>deploy the new binaries to the download site</li>
+<li>install everything on PyPI</li>
+</ul>
 </li>
+<li>Change into xCore</li>
+<li>Change version number for <code>AVROCDTOOLS_VERSION</code> in Add_avrocd-tools-release.sh</li>
+<li>Change <code>AVROCDTOOLSVERSION</code> number in <code>Boads_manager_release.sh</code></li>
+<li>create PR</li>
 </ol>
-</div>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../connect-to-target/" class="btn btn-neutral float-left" title="Connecting to the target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../command-line-options/" class="btn btn-neutral float-right" title="Invoking the server">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -211,10 +183,6 @@
         </span>
     
     
-      <span><a href="../connect-to-target/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../command-line-options/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
