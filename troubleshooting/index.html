@@ -65,6 +65,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -82,6 +84,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#single-stepping-takes-forever">Single-stepping takes forever</a>
     </li>
@@ -190,6 +194,8 @@
 <p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <em>JTAG</em>, the situation is much better. The default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
 <h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</h3>
 <p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
+<h3 id="when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</h3>
+<p>Probably the same reason as above.</p>
 <h3 id="single-stepping-takes-forever">Single-stepping takes forever</h3>
 <p>You requested a single step, and the debugger seems to take forever to complete this single step. There are two possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. The debugger will return from it, either when an interrupt wakes up the MCU or when you interrupt execution using Ctrl-C. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown. In order to recover, interrupt execution, set a breakpoint somewhere after this line, and then request to continue execution.</p>
 <h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
@@ -227,7 +233,7 @@
 <tr>
 <td><code>SIGTRAP</code></td>
 <td></td>
-<td>This is not an error signal. Instead, it is issued when execution stops at a place where a BREAK instruction has been placed, and it is not a breakpoint.</td>
+<td>This is not an error signal. Instead, it is issued when execution stops at a place where a BREAK instruction has been placed, and it is not a breakpoint. From this point it is not possible to continue execution.</td>
 </tr>
 <tr>
 <td><code>SIGABRT</code></td>

@@ -65,6 +65,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -154,8 +156,8 @@
 <p>If you have debugged a board using, e.g., <code>MiniCore</code>, and now want to restore an Uno R3 board to its previous state under the<code>Arduino AVR Boards</code> core as an <code>Arduino Uno</code>, you may encounter problems when using one of the Microchip debug probes. Use a cheap USBasp programmer or something similar instead for burning the boot loader. Alternatively, you may consider staying with MiniCore and employing <a href="https://github.com/stefanrueger/urboot">Urboot</a> as the bootloader.</p>
 </div>
 <div class="admonition warning">
-<p class="admonition-title">Burning the bootloader on JTAG Mega targets</p>
-<p>If you have debugged a JTAG mega target, e.g., the ATmega2560, and you want to disable the JTAG pins, you must set all relevant parameters in the <code>Tools</code> menu before using the <code>Burn Bootloader</code> command. In particular, make sure that the right <code>Clock</code> value is selected! Otherwise, it can happen that you need to apply an external clock to reanimate your chip.</p>
+<p class="admonition-title">Burning the bootloader when there are many user-selectable options</p>
+<p>If you have debugged a target for which the <code>Tools</code> menu offers many different options, make sure that all relevant options have the correct value before you use the <code>Burn Bootloader</code> command. In particular, make sure that the right <code>Clock</code> value is selected! Otherwise, it can happen that you need to apply an external clock to reanimate your chip.</p>
 </div>
               
             </div>

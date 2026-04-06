@@ -65,6 +65,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -136,7 +138,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="how-to-enable-a-core-for-debugging">How to enable a core for debugging</h1>
-<p>Extending a core to enable it for debugging (using PyAvrOCD) is almost always the same. There are a few variations, though.</p>
+<p>Extending a core to enable it for debugging (using PyAvrOCD) is almost always the same.</p>
 <h2 id="platformtxt"><code>platform.txt</code></h2>
 <ol>
 <li>
@@ -145,9 +147,9 @@
 <li>
 <p>Add the following section under <code># AVR compile variables</code>:</p>
 <p><code># Optimization flags for debugging
- compiler.optimization_flags=-Os -ggdb3 -DNDEBUG
- compiler.optimization_flags.release=-Os -ggdb3 -DNDEBUG
- compiler.optimization_flags.debug=-Og -ggdb3 -DDEBUG</code></p>
+ compiler.optimization_flags=-Os -ggdb3 -flto -DNDEBUG
+ compiler.optimization_flags.release=-Os -ggdb3 -flto -DNDEBUG
+ compiler.optimization_flags.debug=-Og -ggdb3 -fno-lto -DDEBUG</code></p>
 </li>
 <li>
 <p>Change any <code>-Os</code>  or equivalent to <code>{compiler.optimization_flags}</code> in the section under <code># Default "compiler.path" is correct ...</code></p>
@@ -204,10 +206,10 @@
 <li>The following menus are necessary (if appropriate):</li>
 </ol>
 <pre><code>menu.JTAG=JTAG pins
-menu.lto=Compiler LTO
 </code></pre>
 <ol>
-<li>Add specifications for the two menu entries above. For JTAG, fuse bits must be set or cleared. For LTO, compiler switches need to be set.</li>
+<li>Add specifications for the menu entry above. For JTAG, fuse bits must be set or cleared.</li>
+<li>If LTO is a menu entry, remove it.</li>
 </ol>
 <h2 id="programmerstxt"><code>programmers.txt</code></h2>
 <p>Depending on the debugging interface, the following programmers should

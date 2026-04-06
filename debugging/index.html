@@ -65,6 +65,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Debugging on the target</a>
@@ -160,24 +162,15 @@
               
                 <h1 id="debugging-on-a-target">Debugging on a target</h1>
 <h2 id="debugging-using-the-arduino-ide-2">Debugging using the Arduino IDE 2</h2>
-<p>You must load the sketch you want to debug into the editor and select a board as usual. Before you can debug your code, you need to compile it, which will be done when you click on the Verify button in the upper left corner of the Arduino IDE window (see below).</p>
-<p><img alt="ide2-1" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-1.png" /></p>
-<p>Before clicking the <code>Verify</code> button in the upper left corner, choose <code>Optimize for Debugging</code> in the <code>Sketch</code> menu.</p>
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
-
-<p>This is necessary so that the compiler optimizes the code in a way that makes debugging straightforward. Otherwise, the compiler may rearrange source code lines, which can be confusing when single-stepping through the code.</p>
+<p>Before you start debugging, you first need to <a href="../compilation-options/#compiling-an arduino-sketch-in-the-arduino-ide-2">compile the sketch</a>, preferably with the <code>Optimize for Debugging</code> option enabled.</p>
 <h3 id="simulating-or-connecting-to-a-target">Simulating or connecting to a target</h3>
-<p>As mentioned, instead of connecting to a target, it is also possible to run a simulator (for some MCU types). This is done by choosing <code>Simulator (simavr)</code> as the <code>Programmer</code> in the <code>Tools</code> menu.  When you request to start debugging (see below), the simulator is chosen instead of making a connection to the target board.</p>
+<p>Instead of connecting to a target, it is also possible to run a simulator (for some MCU types). This is done by choosing <code>Simulator (simavr)</code> as the <code>Programmer</code> in the <code>Tools</code> menu.  When you request to start debugging (see below), the simulator is chosen instead of making a connection to the target board.</p>
 <h3 id="starting-the-debugger">Starting the debugger</h3>
-<p>After compiling the sketch, it is time to start debugging by clicking the debug button in the top row. This will start the GDB server.</p>
+<p>After c<a href="../compilation-options/#compiling-an arduino-sketch-in-the-arduino-ide-2">ompiling the sketch</a>, it is time to start debugging by clicking the debug button in the top row. This will start the GDB server.</p>
 <p>Instead of the message shown in the following screenshot, an error message "No compatible tool" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="../install-link/#installation">installation instructions</a>). Or maybe you forgot to connect a debug probe altogether.</p>
 <p><img alt="ide2-2" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png" /></p>
 <p>If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the GDB server will not stop at this point.</p>
-<div class="admonition warning">
-<p class="admonition-title">Power-Cycle: Remove all potential power sources</p>
-<p>Note that for a successful power-down, you need to remove all external connection that could deliver power, even potentially through input pins. For example, you also need to disconnect serial connections or any other input lines.</p>
-</div>
-<p>After power-cycling the target, the symbolic debugger starts. Eventually, execution is stopped in the first line of the internal <code>main</code> function at an initial internal breakpoint, indicated by the yellow triangle left of line 35 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.</p>
+<p>After power-cycling the target, the symbolic debugger starts. Eventually, execution is stopped in the first line of the internal <code>main</code> function at an initial internal breakpoint, indicated by the yellow triangle (not on Windows) left of line 35 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.</p>
 <p>After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch and other relevant source files on the right. It will also switch from displaying the <code>gdb-server</code> console to the <code>Debug Console</code>, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol<code>&gt;</code> is shown, where you can enter any GDB command, in particular the <a href="../monitor-commands/"><code>monitor</code> commands</a> to control the GDB server.</p>
 <p><img alt="ide2-3" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3-new.png" /></p>
 <p>Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13 in the picture below.</p>
@@ -215,8 +208,7 @@
 <p><img alt="Gede section" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-window.png" /></p>
 <h2 id="debugging-with-a-command-line-interface">Debugging with a command-line interface</h2>
 <p>If you are more into command-line interface programming, simply using avr-gdb may be the right approach for you.</p>
-<p>After compiling your program, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When invoking the compiler, you should provide the following two options: <code>-Og</code> and <code>-ggdb3</code>. The first one optimizes for debugging (instead of size or speed), the second requires including as many symbols from the source program as possible.</p>
-<p>When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../fuse-preparation/#general-considerations">Setting the right fuses</a>):</p>
+<p>After <a href="compilation-otions.md#compiling-in-other-environments">compiling your program</a>, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../fuse-preparation/#general-considerations">Setting the right fuses</a>):</p>
 <pre><code class="language-log">&gt; pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP

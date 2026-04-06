@@ -65,6 +65,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -82,7 +84,7 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#classic-attinys">Classic ATtinys</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#attiny-supported-by-microcore">ATtiny supported by MicroCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-microcore">ATtinys supported by MicroCore</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-tinycore">ATtinys supported by TinyCore</a>
     </li>
@@ -107,6 +109,12 @@
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modern-atmegas">Modern ATmegas</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacorex">Atmegas supported by MegaCoreX</a>
     </li>
         </ul>
     </li>
@@ -169,14 +177,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core. </p>
+<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core.</p>
 <p>MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
-<h3 id="attiny-supported-by-microcore">ATtiny supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a></h3>
+<h3 id="attinys-supported-by-microcore">ATtinys supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a></h3>
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
 </ul>
-<h3 id="attinys-supported-by-tinycore">ATtinys supported by <a href="https://github.com/MCUdude/TinyCore"><em>TinyCore</em></a></h3>
+<h3 id="attinys-supported-by-tinycore">ATtinys supported by <a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
 <li><strong>ATtiny2313, ATtiny2313A, ATtiny4313</strong></li>
@@ -270,6 +278,12 @@
 <h3 id="other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</h3>
 <ul>
 <li><s>ATmega163</s></li>
+</ul>
+<h2 id="modern-atmegas">Modern ATmegas</h2>
+<h3 id="atmegas-supported-by-megacorex">Atmegas supported by MegaCoreX</h3>
+<ul>
+<li><u>ATmega808</u>, ATmega1608, <u>ATmega3208</u>, <u>ATmega4808</u></li>
+<li><u>ATmega809</u>, ATmega1609, ATmega3209, <u>ATmega4809</u></li>
 </ul>
               
             </div>

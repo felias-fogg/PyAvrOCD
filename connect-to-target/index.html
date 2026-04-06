@@ -85,6 +85,8 @@
     </li>
     </ul>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
@@ -181,7 +183,7 @@
 <p>In this case, it is essential to consult the user guide of the programmer and the <a href="https://pinouts.de">pinout of the MCU</a> in the datasheet or the documentation of the respective core to make the correct connections.</p>
 <h2 id="connecting-to-a-debugwire-target">Connecting to a debugWIRE target</h2>
 <p>In principle, only two wires are necessary to connect your debug probe to a target chip or board: the debugWIRE line, which is the target chip's RESET line, and GND. Since the debugger also needs to know which voltage the target board uses, the Vcc line is also necessary. Note that none of the commercial debuggers source the target. They only have voltage-sensing lines to drive the level-shifting hardware.</p>
-<p>Since one also wants to change into and out of debugWIRE mode, change fuses, or upload firmware, it is necessary to connect all 6 SPI programming lines to the target: VTG, GND, RESET, MOSI, MISO, and SCK. For this reason, using all SPI programming lines makes a lot of sense. Moreover, most of the time, an SPI connector is already on the target board.</p>
+<p>Since one also wants to change into and out of debugWIRE mode, change fuses, or upload firmware, it is necessary to connect all 6 SPI programming lines to the target: VTG, GND, RESET, MOSI, MISO, and SCK. For this reason, using all SPI programming lines makes a lot of sense. Moreover, most of the time, an SPI connector is already on the target board. Note, however, that all debug probes have the tendency to occupy the SPI lines, so that they cannot be used reliably by other devices.</p>
 <h3 id="spi-programming-header">SPI programming header</h3>
 <p>There are two types of SPI programming connectors. The more recent type has six pins, and the older type has 10 pins, as shown in the following diagram (based on a diagram from <a href="https://commons.wikimedia.org/wiki/File:Isp_headers.svg">Wikipedia</a>), which provides a top view of the headers on a PCB.</p>
 <p align="center">
@@ -550,7 +552,7 @@ Will be treated later when implemented.
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../fuse-preparation/" class="btn btn-neutral float-left" title="Setting the right fuses"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../command-line-options/" class="btn btn-neutral float-right" title="Invoking the server">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../compilation-options/" class="btn btn-neutral float-right" title="Compiling the program">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -580,7 +582,7 @@ Will be treated later when implemented.
       <span><a href="../fuse-preparation/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../command-line-options/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../compilation-options/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

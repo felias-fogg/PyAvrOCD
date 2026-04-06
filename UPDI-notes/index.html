@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/generate-new-version/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/UPDI-notes/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>How to Generate a New Version - PyAvrOCD</title>
+    <title>Notes about extending PyAvrOCD to UPDI - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "How to Generate a New Version";
-        var mkdocs_page_input_path = "generate-new-version.md";
-        var mkdocs_page_url = "/generate-new-version/";
+        var mkdocs_page_name = "Notes about extending PyAvrOCD to UPDI";
+        var mkdocs_page_input_path = "UPDI-notes.md";
+        var mkdocs_page_url = "/UPDI-notes/";
       </script>
     
     <!--[if lt IE 9]>
@@ -64,6 +64,8 @@
                   <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
                   </li>
@@ -125,9 +127,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">How to Generate a New Version</li>
+      <li class="breadcrumb-item active">Notes about extending PyAvrOCD to UPDI</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/generate-new-version.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/UPDI-notes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -135,26 +137,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="how-to-generate-a-new-version">How to Generate a New Version</h1>
+                <h1 id="notes-about-extending-pyavrocd-to-updi">Notes about extending PyAvrOCD to UPDI</h1>
+<h2 id="eeprom">EEPROM</h2>
+<p>EEPROM access does not work - check!</p>
+<h2 id="memory-access-api">Memory access API</h2>
+<p>Memory access API does not seem to work in the way described in the document.</p>
+<h2 id="general-registers-and-io-registers">General registers and I/O registers</h2>
+<p>For UPDI targets, addressing of general registers and I/O registers is a bit different from that of JTAG/dw targets:</p>
 <ol>
-<li>Inside <code>PyAvrOCD</code>:</li>
-<li>Bump version number in <code>pyproject.toml</code></li>
-<li>git commit -a -m "\&lt;version number&gt;"</li>
-<li>git push</li>
-<li>Goto web page and make new release (use correct version number for tag and version!). This will trigger a workflow that will do the following:<ul>
-<li>check for correct version number</li>
-<li>run unit-tests</li>
-<li>build the binaries</li>
-<li>upload assets to new release</li>
-<li>deploy the new binaries to the download site</li>
-<li>install everything on PyPI</li>
-</ul>
-</li>
-<li>Change into xCore</li>
-<li>Change version number for <code>AVROCDTOOLS_VERSION</code> in Add_avrocd-tools-release.sh</li>
-<li>Change <code>AVROCDTOOLSVERSION</code> number in <code>Boads_manager_release.sh</code></li>
-<li>create PR</li>
+<li>General registers are not addressable as SRAM locations DONE</li>
+<li>I/O registers are addressed in the usual way in In/Out instructions. However, for ordinary LD/ST direct and indirect addressing, the -0x20 offset for I/O instructions does not apply! DONE</li>
 </ol>
+<p>This means</p>
+<ul>
+<li>
+<p>that in <code>_filter_unsafe_instruction</code> in <code>breakexec.py</code>, <code>SREGADDR</code> needs to be different and the -0x20 does not apply. DONE</p>
+</li>
+<li>
+<p>set SREGADDR according to device type DONE</p>
+</li>
+<li>
+<p>set IO_offset according to device type DONE</p>
+</li>
+<li>
+<p>Check for all places where we use SRAM reads/writes to read/write registers DONE</p>
+</li>
+<li>
+<p>We need to have special read/write register functions in xavrdebug, which will "buffer" reads and writes and in the background use register file_read and _write (just before execution/singlestepping starts) DONE</p>
+</li>
+</ul>
+<p>The lower end of the user SRAM (and therefore stack) for UPDI targets is much higher than that of JTAG/dw, i.e.,</p>
+<ul>
+<li><code>_stack_pointer_legal</code> should test against a much higher address. Perhaps, we can just ignore it.</li>
+</ul>
+<p>The role of shadow regs in the OCD area is not entirely clear! Do we have to write to them in order to change the regs? I believe not. But this needs to be tested.</p>
               
             </div>
           </div><footer>
