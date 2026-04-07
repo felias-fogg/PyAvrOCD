@@ -155,12 +155,12 @@
 </ul>
 <h3 id="step-1-install-new-board-manager-files">Step 1: Install new board manager files</h3>
 <p>Open the <code>Preferences</code> dialog of the Arduino IDE and paste the following <code>Board Manager URLs</code> into the list:</p>
-<pre><code>https://downloads.pyavrocd.io/package_debug_enabled_index.json
+<pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
-<p>Close the <code>Preference</code> dialog with <code>OK</code>. Now, you can install the core, <code>ATTinyCore (Debug enabled)</code>.</p>
+<p>Close the <code>Preference</code> dialog with <code>OK</code>. Now, you can install the core, <code>TinyCore</code>.</p>
 <ul>
 <li>Select <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>Board Managers</code> ... . This will open the Boards Manager dialog.</li>
-<li>In the search field, type <code>ATTinyCore (Debug enabled)</code> and install the most recent version.</li>
+<li>In the search field, type <code>TinyCore</code> and install the most recent version.</li>
 </ul>
 <h3 id="step-2-install-dw-link-firmware-on-an-uno">Step 2: Install <em>dw-link</em> firmware on an Uno</h3>
 <p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
@@ -245,8 +245,8 @@
 </ol>
 <h3 id="step-4-start-debugging">Step 4: Start Debugging</h3>
 <ul>
-<li>Load the sketch you want to debug  (e.g., <code>dw-link-x.y.z/examples/varblink/varblink.ino</code>) into the IDE by choosing <code>Open...</code> in the <code>File</code> menu.</li>
-<li>Select <code>ATtiny25/45/85 (no bootloader)</code> as the board under <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>ATTinyCore</code>.</li>
+<li>Load the sketch you want to debug into the IDE by choosing <code>Open...</code> in the <code>File</code> menu.</li>
+<li>Select <code>ATtiny25/45/85</code> as the board under <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>TinyCore</code>.</li>
 <li>In the <code>Tools</code> menu,  choose <code>1 MHz (internal)</code> as the <code>Clock Source</code>  (assuming that the ATtiny is as it comes from the factory and no fuse has been changed).</li>
 <li>In the <code>Sketch</code> menu, select <code>Optimize for Debugging</code>.</li>
 <li>Compile the code by clicking the <code>Verify</code> button in the upper left corner.</li>
