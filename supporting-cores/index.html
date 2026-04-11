@@ -58,13 +58,13 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#atmel-avr-xplained-minis-debug-enabled">Atmel AVR Xplained-minis (Debug enabled)</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#tinycore">TinyCore</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#microcore">MicroCore</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#minicore">MiniCore</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#xminicore">XMiniCore</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#mightycore">MightyCore</a>
     </li>
@@ -162,16 +162,11 @@
 <p>Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino IDE support (so far).</p>
 <p>If you want to install a core, in most cases, you first have to add a <em>package index</em>  URL to the list of <code>Additional boards manager URLs</code>, which you find in the <code>Preferences</code> dialog. Once this has been done, you can search in the <code>Boards Manager</code> (accessible through the <code>Tools</code> menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.</p>
 <h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore-debug-enabled">ATTinyCore (Debug enabled)</a></h3>
-<p>This is my fork of Spence Konde's ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. With the advent of TinyCore (see below), it is now deprecated. You can install it after including the following URL:</p>
-<pre><code> https://downloads.pyavrocd.io/package_debug_enabled_index.json
+<p>This is my fork of Spence Konde's ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. With the advent of TinyCore (see below), it is deprecated. You can install it after including the following URL:</p>
+<pre><code>https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 </code></pre>
-<h3 id="atmel-avr-xplained-minis-debug-enabled"><a href="https://github.com/felias-fogg/avr-xminis-debug-enabled">Atmel AVR Xplained-minis (Debug enabled)</a></h3>
-<p>This is a debug-enabled Arduino core for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the similarly named core in the official Arduino distribution, which is already 10 years old and does not really work. The new core is a stripped-down and adapted version of MCUdude's MiniCore. The boards, together with PyAvrOCD, work very smoothly. It is just plug-and-play. The only thing one must be aware of is that one should power the application circuit attached to the board through the <code>IOREF</code> pin (pin 2 of J202 on the Xplained Mini board). Otherwise, the automatic power-cycle feature might not work. Again, you can install this core through the boards manager URL:</p>
-<pre><code>https://downloads.pyavrocd.io/package_debug_enabled_index.json
-</code></pre>
-<p>If you had installed the original core <code>Atmel AVR Xplained-minis</code>, you should definitely remove it.</p>
 <h3 id="tinycore"><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
-<p>This is a fork of Spence Konde's ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  You can install it after including the following URL:</p>
+<p>This is a fork of Spence Konde's ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not support the micronucleus bootloader, however. You can install it after including the following URL:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
@@ -181,6 +176,10 @@
 <h3 id="minicore"><a href="https://github.com/MCUdude/MiniCore">MiniCore</a></h3>
 <p>This is the core for the small ATmegas with a debugWIRE interface, aka, ATmegaX8.  You can make it installable by adding the following boards manager URL:</p>
 <pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+</code></pre>
+<h3 id="xminicore"><a href="https://github.com/felias-fogg/XMiniCore">XMiniCore</a></h3>
+<p>This is a debug-enabled Arduino core for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the <em>Atmel AVR Xplained-minis</em> board package of the official Arduino distribution, which is already 10 years old and does not really work. The new core is a stripped-down and adapted version of MCUdude's MiniCore. The boards, together with PyAvrOCD, work very smoothly. It is just plug-and-play:</p>
+<pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 </code></pre>
 <h3 id="mightycore"><a href="https://github.com/MCUdude/MightyCore">MightyCore</a></h3>
 <p>An Arduino core for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8353 does not have a debugging interface. You can make it installable by adding the following boards manager URL:</p>
