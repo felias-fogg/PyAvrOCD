@@ -230,7 +230,7 @@
 <div class="admonition danger">
 <p class="admonition-title">Warning: Do not source attached circuits through the 5V or 3V pin or externally. Use IOREF!</p>
 <p>If you have any attached circuitry, be it on a breadboard or a shield, use the <code>IOREF</code> pin to power it.</p>
-<p>The reason for this is that the <code>IOREF</code> pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be disconnected from power and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode.</p>
+<p>The reason for this is that the <code>IOREF</code> pin is under the switching control of the onboard debugger. So, if a power cycle is necessary to bring the MCU into debugWIRE mode, then the MCU as well as IOREF will be disconnected from power and then powered again. The 5V/3V pins are not switched and deliver always power. This could lead to the situation that the MCU will be powered through its I/O pins, which is not healthy for the chip and will also prohibit that the MCU switches to debugWIRE mode. If this is unavoidable, check out the <a href="https://github.com/felias-fogg/XMiniCore?tab=readme-ov-file#powering-external-circuitry"><code>README</code> file of XminiCore for a solution</a>.</p>
 </div>
               
             </div>
