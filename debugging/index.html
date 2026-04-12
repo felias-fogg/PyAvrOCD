@@ -81,6 +81,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#correcting-the-bug-and-starting-over">Correcting the bug and starting over</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#finishing-the-debug-session">Finishing the debug session</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#debugging-using-platformiovsc">Debugging using PlatformIO/VSC</a>
@@ -195,7 +197,9 @@
 <li>Click again on the <code>Verify</code> button to start a new compilation.</li>
 <li>Restart the debugger by clicking on the <code>Debugging</code> button in the top line in order to try out your correction.</li>
 </ol>
+<h3 id="finishing-the-debug-session">Finishing the debug session</h3>
 <p>If everything now works out, you may consider calling it a day and stopping work on the program. If you were debugging on a debugWIRE target, consider typing the command <code>monitor debugwire disable</code> into the last line of the <code>Debug Console</code> before terminating the debugger.  This is necessary to bring the target chip back into normal mode, where it accepts SPI programming.</p>
+<p>You may finally want to disable the <code>Optimize for Debugging</code> option in the <code>Sketch</code> menu. If you leave it enabled, then all future compilation actions will use this option and produce much larger code than necessary.</p>
 <h2 id="debugging-using-platformiovsc">Debugging using PlatformIO/VSC</h2>
 <p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the <code>platformio.ini</code> configuration file and support for disassembled code. However, it may not be the proper IDE for beginners.</p>
 <p>In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  <code>platform.ini</code>  that can be used to integrate PyAvrOCD and to start the debugger is provided <a href="../debugging-software/#platformio-and-visual-studio-code">here</a>. In addition, examples are provided in the PlatformIO quickstart guides about debugging an <a href="../quick_pio/#step-5-debug-the-program">ATmega1284P using Atmel-ICE</a> and an <a href="../quick_pio/#step-6-debug-the-program">ATtiny85 using dw-link</a>.</p>
