@@ -86,7 +86,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-microcore">ATtinys supported by MicroCore</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-tinycore">ATtinys supported by TinyCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by TinyCore and ATTinyCore (Debug enabled)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-attinys-without-a-debug-interface">Other ATtinys without a debug interface</a>
     </li>
@@ -96,7 +96,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore">ATmegas supported by MiniCore</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by Atmel AVR Xplained-minis (Debug enabled)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-xminicore">ATmegas supported by XMiniCore</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-mightycore">ATmegas supported by MightyCore</a>
     </li>
@@ -184,7 +184,7 @@
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
 </ul>
-<h3 id="attinys-supported-by-tinycore">ATtinys supported by <a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
+<h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <em><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></em> and <em><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore (Debug enabled)</a></em></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
 <li><strong>ATtiny2313, ATtiny2313A, ATtiny4313</strong></li>
@@ -223,11 +223,11 @@
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
-<h3 id="atmegas-supported-by-atmel-avr-xplained-minis-debug-enabled">ATmegas supported by <a href="https://github.com/felias-fogg/avr-xminis-debug-enabled"><em>Atmel AVR Xplained-minis (Debug enabled)</em></a></h3>
+<h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="https://github.com/felias-fogg/XMiniCore"><em>XMiniCore</em></a></h3>
 <ul>
-<li><strong>ATmega328P</strong></li>
-<li><strong>ATmega168PB</strong></li>
-<li><strong>ATmega328PB</strong></li>
+<li><strong>ATmega328P</strong> (Xplained Mini board)</li>
+<li><strong>ATmega168PB</strong> (Xplained Mini board)</li>
+<li><strong>ATmega328PB</strong> (Xplained Mini board)</li>
 </ul>
 <h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a></h3>
 <ul>
@@ -280,7 +280,7 @@
 <li><s>ATmega163</s></li>
 </ul>
 <h2 id="modern-atmegas">Modern ATmegas</h2>
-<h3 id="atmegas-supported-by-megacorex-work-in-progress">Atmegas supported by MegaCoreX <em>(work in progress)</em></h3>
+<h3 id="atmegas-supported-by-megacorex-work-in-progress">Atmegas supported by <em><a href="https://github.com/felias-fogg/MegaCoreX">MegaCoreX (work in progress)</a></em></h3>
 <p>The following MCUs are not yet fully supported, but PyAvrOCD is in the process of being extended to also cover these MCUs (see updi branch).</p>
 <ul>
 <li><u>ATmega808</u>, ATmega1608, <u>ATmega3208</u>, <u>ATmega4808</u></li>
