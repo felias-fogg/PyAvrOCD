@@ -212,7 +212,7 @@
 <p><img alt="Gede section" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-window.png" /></p>
 <h2 id="debugging-with-a-command-line-interface">Debugging with a command-line interface</h2>
 <p>If you are more into command-line interface programming, simply using avr-gdb may be the right approach for you.</p>
-<p>After <a href="compilation-otions.md#compiling-in-other-environments">compiling your program</a>, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../fuse-preparation/#general-considerations">Setting the right fuses</a>):</p>
+<p>After <a href="../compilation-options/#compiling-in-other-environments">compiling your program</a>, e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option <code>-m all</code>, so that the GDB server manages the debug-related fuses (see <a href="../fuse-preparation/#general-considerations">Setting the right fuses</a>):</p>
 <pre><code class="language-log">&gt; pyavrocd -d atmega328p -m all
 [INFO] Connecting to anything possible
 [INFO] Connected to Atmel-ICE CMSIS-DAP

@@ -139,9 +139,11 @@
               
                 <h1 id="notes-about-extending-pyavrocd-to-updi">Notes about extending PyAvrOCD to UPDI</h1>
 <h2 id="eeprom">EEPROM</h2>
-<p>EEPROM access does not work - check!</p>
+<p>EEPROM access does not work - check! </p>
+<p>The problem was that I had copied over the subtraction of the memory segment starting from the SRAM access in the avrdebugger module (without understanding it).  For JTAG and dw, it did not make a difference. However, for UPDI it makes a big difference. Here, we have to add it!</p>
+<p>The big question is now, what does it mean for SRAM in the UPDI setting?</p>
 <h2 id="memory-access-api">Memory access API</h2>
-<p>Memory access API does not seem to work in the way described in the document.</p>
+<p>The memory access API does not seem to work in the way described in the document. Well, they do actually. However, when accessing memory, one has to add the MEMTYPE_address_byte, except when we access flash.</p>
 <h2 id="general-registers-and-io-registers">General registers and I/O registers</h2>
 <p>For UPDI targets, addressing of general registers and I/O registers is a bit different from that of JTAG/dw targets:</p>
 <ol>
