@@ -72,7 +72,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#majorcore">MajorCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#megacorex-work-in-progress">MegaCoreX (work in progress)</a>
+    <li class="toctree-l2"><a class="reference internal" href="#megacorex">MegaCoreX</a>
     </li>
     </ul>
                   </li>
@@ -161,7 +161,7 @@
                 <h1 id="installing-a-debug-enabled-arduino-core">Installing a debug-enabled Arduino core</h1>
 <p>Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino IDE support (so far).</p>
 <p>If you want to install a core, in most cases, you first have to add a <em>package index</em>  URL to the list of <code>Additional boards manager URLs</code>, which you find in the <code>Preferences</code> dialog. Once this has been done, you can search in the <code>Boards Manager</code> (accessible through the <code>Tools</code> menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.</p>
-<h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore-debug-enabled">ATTinyCore (Debug enabled)</a></h3>
+<h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore (Debug enabled)</a></h3>
 <p>This is my fork of Spence Konde's ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. With the advent of TinyCore (see below), it is deprecated. You can install it after including the following URL:</p>
 <pre><code>https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 </code></pre>
@@ -193,11 +193,11 @@
 <p>This core covers just ATmega8515 and ATmega162, of which only the latter possesses a debugging interface. The additional board manager URL is:</p>
 <pre><code>https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 </code></pre>
-<h3 id="megacorex-work-in-progress"><a href="https://github.com/MCUdude/MegaCoreX">MegaCoreX</a> <em>(work in progress)</em></h3>
-<p>This is a fork of the core for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can install an experimental core using the following URL:</p>
+<h3 id="megacorex"><a href="https://github.com/MCUdude/MegaCoreX">MegaCoreX</a></h3>
+<p>This is an <strong>experimental</strong> fork of the core for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can install the core (note: <strong>this is a work in progress!</strong>) using the following URL:</p>
 <pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 </code></pre>
-<p>Note that the debug support for this core is not bug-free. In particular, access to the EEPROM does not work yet. But other functionality might also be hampered. If you spot a bug, please report it.</p>
+<p>The debug support for this core is not bug-free (no pun intended). If you spot a bug, please report it.</p>
               
             </div>
           </div><footer>

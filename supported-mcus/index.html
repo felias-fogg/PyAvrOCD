@@ -180,11 +180,11 @@
 <p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core.</p>
 <p>MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
-<h3 id="attinys-supported-by-microcore">ATtinys supported by <a href="https://github.com/MCUdude/MicroCore"><em>MicroCore</em></a></h3>
+<h3 id="attinys-supported-by-microcore">ATtinys supported by <a href="../supporting-cores/#microcore">MicroCore</a></h3>
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
 </ul>
-<h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <em><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></em> and <em><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore (Debug enabled)</a></em></h3>
+<h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <em><a href="../supporting-cores/#tinycore">TinyCore</a></em> and <em><a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></em></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
 <li><strong>ATtiny2313, ATtiny2313A, ATtiny4313</strong></li>
@@ -210,7 +210,7 @@
 <li><s>ATtiny40</s></li>
 </ul>
 <h2 id="classic-atmegas">Classic ATmegas</h2>
-<h3 id="atmegas-supported-by-minicore">ATmegas supported by <a href="https://github.com/MCUdude/MiniCore"><em>MiniCore</em></a></h3>
+<h3 id="atmegas-supported-by-minicore">ATmegas supported by <a href="../supporting-cores/#minicore"><em>MiniCore</em></a></h3>
 <ul>
 <li>
 <p><s>ATmega8</s></p>
@@ -223,13 +223,13 @@
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
-<h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="https://github.com/felias-fogg/XMiniCore"><em>XMiniCore</em></a></h3>
+<h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-cores/#xminicore"><em>XMiniCore</em></a></h3>
 <ul>
 <li><strong>ATmega328P</strong> (Xplained Mini board)</li>
 <li><strong>ATmega168PB</strong> (Xplained Mini board)</li>
 <li><strong>ATmega328PB</strong> (Xplained Mini board)</li>
 </ul>
-<h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="https://github.com/MCUdude/MightyCore"><em>MightyCore</em></a></h3>
+<h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="../supporting-cores/#mightycore"><em>MightyCore</em></a></h3>
 <ul>
 <li><strong>ATmega16(A)</strong>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
@@ -237,7 +237,7 @@
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of my avr-gdb repo</a>.</p>
 <p>The ATmega8535 does not possess a debug interface.</p>
-<h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="https://github.com/MCUdude/MegaCore"><em>MegaCore</em></a></h3>
+<h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="../supporting-cores/#megacore"><em>MegaCore</em></a></h3>
 <ul>
 <li><strong>ATmega64(A)</strong>, <strong>ATmega128(A)</strong></li>
 <li><strong>ATmega640</strong>, <strong>ATmega1280</strong>, <strong>ATmega2560</strong></li>
@@ -250,7 +250,7 @@
 </ul>
 <p>The Atmega64(A), ATmega329(P)(A), and ATmega3250(P)(A) MCUs have a stuck-at-one-bit in the PC, which might lead to the same problem as for the ATmega16s mentioned above when an older, unpatched AVR-GDB version is used.</p>
 <p>The ATmega128(A) MCUs do not allow for software breakpoints. This means that you can use only four hardware breakpoints.</p>
-<h3 id="atmega-supported-by-majorcore">ATmega supported by <a href="https://github.com/MCUdude/MajorCore"><em>MajorCore</em></a></h3>
+<h3 id="atmega-supported-by-majorcore">ATmega supported by <a href="../supporting-cores/#majorcore"><em>MajorCore</em></a></h3>
 <ul>
 <li><strong>ATmega162</strong></li>
 <li><s>ATmega8515</s></li>
@@ -280,7 +280,7 @@
 <li><s>ATmega163</s></li>
 </ul>
 <h2 id="modern-atmegas">Modern ATmegas</h2>
-<h3 id="atmegas-supported-by-megacorex-work-in-progress">Atmegas supported by <em><a href="https://github.com/felias-fogg/MegaCoreX">MegaCoreX (work in progress)</a></em></h3>
+<h3 id="atmegas-supported-by-megacorex-work-in-progress">Atmegas supported by <em><a href="../supporting-cores/#megacorex">MegaCoreX (work in progress)</a></em></h3>
 <p>The following MCUs are not yet fully supported, but PyAvrOCD is in the process of being extended to also cover these MCUs (see updi branch).</p>
 <ul>
 <li><u>ATmega808</u>, ATmega1608, <u>ATmega3208</u>, <u>ATmega4808</u></li>
