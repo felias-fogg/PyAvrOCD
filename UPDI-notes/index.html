@@ -139,7 +139,7 @@
               
                 <h1 id="notes-about-extending-pyavrocd-to-updi">Notes about extending PyAvrOCD to UPDI</h1>
 <h2 id="eeprom">EEPROM</h2>
-<p>EEPROM access does not work - check! </p>
+<p>EEPROM access does not work - check!</p>
 <p>The problem was that I had copied over the subtraction of the memory segment starting from the SRAM access in the avrdebugger module (without understanding it).  For JTAG and dw, it did not make a difference. However, for UPDI it makes a big difference. Here, we have to add it!</p>
 <p>The big question is now, what does it mean for SRAM in the UPDI setting?</p>
 <h2 id="memory-access-api">Memory access API</h2>

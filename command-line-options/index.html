@@ -174,8 +174,12 @@
 <td>Connect to the target without a <code>RESET</code>, if possible. This works only if the debugging mode has been activated in a previous session, i.e., you need to have terminated the previous session with <code>monitor atexit stay</code>, or fuses are not managed by PyAvrOCD.</td>
 </tr>
 <tr>
-<td><code>--command</code><br><code>-c</code></td>
-<td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2 interface. This is an alternative to the <code>--port</code> option.</td>
+<td><code>-c</code></td>
+<td>Command to set the gdb port (OpenOCD style), which is used in the Arduino IDE 2 debugging interface by using. e.g., <code>-c "gdb_port 50000"</code>. This is an alternative to the <code>--port</code> option.</td>
+</tr>
+<tr>
+<td><code>--comm-speed</code><br><code>-C</code></td>
+<td>communication speed for (U)PDI in kbps. The recommended maximal communication speed is less than <code>F_CPU</code>/17777 kbps. Default is min(900,<code>F_CPU</code>/17777). Since the F_CPU default is 1,000,000, the default is 56 kbps if no value for <code>F_CPU</code> is provided.</td>
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
@@ -184,6 +188,10 @@
 <tr>
 <td><code>--debug-clock</code><br><code>-D</code></td>
 <td>JTAG clock frequency for debugging in kHz. This value should be less than a quarter of the MCU clock frequency. The default is min(2000, <code>F_CPU</code>/5000) in kHz.</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>OpenOCD command line option used by the Arduino IDE 2 debugging interface, which is ignored by PyAvrOCD.</td>
 </tr>
 <tr>
 <td><code>--F_CPU</code><br><code>-F</code></td>
