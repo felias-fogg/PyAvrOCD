@@ -177,7 +177,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. Currently, only the classic parts are covered, but MCUs with PDI and UPDI debugging interfaces will follow soon. Some of the MCUs are supported by more than one core.</p>
+<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. This list is extended continuously. Some of the MCUs are supported by more than one core.</p>
 <p>MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
 <h3 id="attinys-supported-by-microcore">ATtinys supported by <a href="../supporting-cores/#microcore">MicroCore</a></h3>
@@ -224,6 +224,7 @@
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
 <h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-cores/#xminicore"><em>XMiniCore</em></a></h3>
+<p>The following MCUs are already supported by MiniCore. However, XMiniCore goes a long way to make it easier to deal with these MCUs sitting on Microchip Xplained Mini development boards. </p>
 <ul>
 <li><strong>ATmega328P</strong> (Xplained Mini board)</li>
 <li><strong>ATmega168PB</strong> (Xplained Mini board)</li>
