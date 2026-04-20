@@ -212,7 +212,12 @@ The `SPIEN` fuse could be disabled. In this case, the above comments apply. Othe
 
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
 <p>Again, UPDI targets are easy to deal with. Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible.</p>
-<p>On the <strong>Nano Every</strong>, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin. On the <strong>Uno WIFI Rev2</strong>, again, the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.</p>
+<p>On the <strong>Nano Every</strong>, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-every.png" width="60%">
+</p>
+
+<p>On the <strong>Uno WIFI Rev2</strong>, again, the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect to this debugger.</p>
 <p>Problems arise when the UPDI pin is used as a GPIO or a RESET line. For this, consult the <a href="../fuse-preparation/#preparing-a-updi-target">section on fuse preparations for UPDI targets</a>.</p>
               
             </div>

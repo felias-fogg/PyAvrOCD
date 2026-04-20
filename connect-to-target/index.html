@@ -83,6 +83,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#connecting-to-updi-targets">Connecting to UPDI targets</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
@@ -540,13 +542,123 @@
 </tr>
 </tbody>
 </table>
-<!--
-
-## Connecting to UPDI and PDI
-
-Will be treated later when implemented.
-
--->
+<h2 id="connecting-to-updi-targets">Connecting to UPDI targets</h2>
+<p>There are a number of UPDI boards with an embedded debugger on board. For instance, all the AVR Curiosity Nano boards, as well as the Arduino Uno WiFi Rev2, have a hardware debugger on board. In all these cases, it is enough to plug in the USB cable.</p>
+<p>However, even without a debugger on board, connecting to a UPDI target is very easy because you need only three lines: <code>UPDI</code>, <code>VTG</code>, and <code>GND</code>. For the MPLAB debuggers SNAP and PICkit4, this looks as follows.</p>
+<table>
+<thead>
+<tr>
+<th>MBLAP Debugger</th>
+<th>Pin #</th>
+<th>Target pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pin 1 (TVPP)</td>
+<td>1</td>
+<td>NC&nbsp;</td>
+</tr>
+<tr>
+<td>Pin 2 (TVDD)</td>
+<td>2</td>
+<td>VTG</td>
+</tr>
+<tr>
+<td>Pin 3 (GND)</td>
+<td>3</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>Pin 4 (PGD)</td>
+<td>4</td>
+<td>UPDI</td>
+</tr>
+<tr>
+<td>Pin 5 (PGC)</td>
+<td>5</td>
+<td>NC</td>
+</tr>
+<tr>
+<td>Pin 6 (TAUX)</td>
+<td>6</td>
+<td>NC</td>
+</tr>
+<tr>
+<td>Pin 7 (TTDI)</td>
+<td>7</td>
+<td>NC</td>
+</tr>
+<tr>
+<td>Pin 8 (TTMS)</td>
+<td>8</td>
+<td>NC&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>For the UPDI v2 interface, PIn1 has to be connected to RESET on the target. However, this is only necessary if one could use this pin to initiate a high-voltage pulse, which none of the considered Microchip debuggers are able to do.</p>
+<p>For the Atmel debuggers JTAGICE3, PowerDebugger, and Atmel-ICE, we have the following pinout.</p>
+<table>
+<thead>
+<tr>
+<th>Atmel Debugger</th>
+<th>Mini-squid pin = JTAG pin</th>
+<th>Target pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pin 1 (TCK)</td>
+<td>1</td>
+<td>NC</td>
+</tr>
+<tr>
+<td>Pin 2 (GND)</td>
+<td>2</td>
+<td>GND</td>
+</tr>
+<tr>
+<td>Pin 3 (TDO)</td>
+<td>3</td>
+<td>UPDI</td>
+</tr>
+<tr>
+<td>Pin 4 (VTG)</td>
+<td>4</td>
+<td>VTG</td>
+</tr>
+<tr>
+<td>Pin 5 (TMS)</td>
+<td>5</td>
+<td>NC&nbsp;</td>
+</tr>
+<tr>
+<td>Pin 6 (nSRST)</td>
+<td>6</td>
+<td>NC</td>
+</tr>
+<tr>
+<td>Pin  7 (N.C.)</td>
+<td>7&nbsp;</td>
+<td>NC&nbsp;</td>
+</tr>
+<tr>
+<td>Pin 8 (nTRST)</td>
+<td>8</td>
+<td>NC&nbsp;</td>
+</tr>
+<tr>
+<td>Pin 9 (TDI)</td>
+<td>9</td>
+<td>NC</td>
+</tr>
+<tr>
+<td>Pin 10 (GND)</td>
+<td>0</td>
+<td>NC&nbsp;</td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>
