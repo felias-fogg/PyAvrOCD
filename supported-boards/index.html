@@ -100,6 +100,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#azduino-boards-by-spence-konde">Azduino boards by Spence Konde</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#miscellaneous-boards">Miscellaneous boards</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
@@ -196,7 +198,7 @@
 <li><strong>Arduino Leonardo</strong>: JTAG pins are A0-A3, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a></li>
 <li>Arduino Leonardo ETH</li>
 <li><u>Arduino Micro</u></li>
-<li><s>Arduino Esplora</s></li>
+<li><s>Arduino Esplora</s>: JTAG pins are not accessible</li>
 <li>Arduino Mini: <a href="../supporting-cores/#minicore">MiniCore</a> (if Mini 05); do not connect DTR pin of FTDI header</li>
 <li>Arduino Ethernet: <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
 <li><u>Arduino Fio</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header and do not connect XBee</li>
@@ -216,7 +218,7 @@
 <li>Arduino Linino One</li>
 <li>Arduino UNO WiFi (Rev 1):  <a href="../supporting-cores/#minicore">MiniCore</a>; cut <code>RESET EN</code> solder bridge</li>
 <li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
-<li><strong>Arduino Nano Every:</strong> <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
+<li><strong>Arduino Nano Every:</strong> <a href="../supporting-cores/#megacorex">MegaCoreX</a>; UPDI pad on the backside</li>
 </ul>
 <h2 id="sparkfun-boards">Sparkfun boards</h2>
 <ul>
@@ -251,9 +253,10 @@
 <li>Pro Trinket 5V/16MHz (FTDI): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>Pro Trinket 3V/12MHz (FTDI): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>ItsyBitsy 32u4 (3V)</li>
-<li>ItsyBitsy 32u4 (5V)</li>
+<li><u>ItsyBitsy 32u4 (5V)</u></li>
 <li>Bluefruit Micro</li>
 <li>ATmega32u4 Breakout Board</li>
+<li><u>SEESAW Breakout ATtiny817</u></li>
 </ul>
 <h2 id="teensy-boards">Teensy boards</h2>
 <ul>
@@ -293,6 +296,15 @@
 <li><strong>ATtiny828 breakout board (assembled)</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><strong>ATtiny167 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><strong>ATtiny43 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
+<li><u>ATtiny3217 breakout board (assembled)</u></li>
+</ul>
+<h2 id="miscellaneous-boards">Miscellaneous boards</h2>
+<ul>
+<li><u>MH-ET LIVE (ATtiny88)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
+<li><u>Digispark (ATtiny85)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
+<li><u>Digispark Pro (ATtiny167)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
+<li><u>Pololu A-Star 328PB Micro</u>: <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li><u>Thinary Nano Every (ATmega4808)</u>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
 </ul>
               
             </div>
