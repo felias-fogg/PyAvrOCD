@@ -92,6 +92,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modern-attinys">Modern ATtinys</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#classic-atmegas">Classic ATmegas</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-minicore">ATmegas supported by MiniCore</a>
@@ -108,8 +110,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</a>
-    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#modern-atmegas">Modern ATmegas</a>
@@ -117,6 +117,10 @@
     <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacorex">Atmegas supported by MegaCoreX</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#avr-dx-devices">AVR-Dx devices</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#xmegas">XMegas</a>
     </li>
     </ul>
                   </li>
@@ -177,13 +181,15 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. This list is extended continuously. Some of the MCUs are supported by more than one core.</p>
+<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. This list is extended continuously as development of PyAvrOCD proceeds.</p>
 <p>MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested.</p>
+<p>The list is structured by the Arduino cores that support the chips, where some of the MCUs are supported by more than one core.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
-<h3 id="attinys-supported-by-microcore">ATtinys supported by <a href="../supporting-cores/#microcore">MicroCore</a></h3>
+<h3 id="attinys-supported-by-microcore">ATtinys supported by <em><a href="../supporting-cores/#microcore">MicroCore</a></em></h3>
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
 </ul>
+<p>Because of its limited flash memory, debugging a sketch on this MCU is rather challenging.</p>
 <h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <em><a href="../supporting-cores/#tinycore">TinyCore</a></em> and <em><a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></em></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
@@ -199,16 +205,16 @@
 </ul>
 <h3 id="other-attinys-without-a-debug-interface">Other ATtinys without a debug interface</h3>
 <ul>
-<li>
-<p><s>ATtiny4, ATtiny5, ATtiny9, ATtiny10</s></p>
-</li>
-<li>
-<p><s>ATtiny11, ATtiny12, ATtiny15</s></p>
-</li>
-<li><s>ATtiny20</s></li>
+<li><s>ATtiny4, ATtiny5, ATtiny9, ATtiny10</s></li>
+<li><s>ATtiny11, ATtiny12, ATtiny15</s></li>
+<li><s>ATtiny20 </s>, <s>ATtiny40</s></li>
+<li><s>ATtiny22</s></li>
 <li><s>ATtiny26</s></li>
-<li><s>ATtiny40</s></li>
+<li><s>ATtiny28</s></li>
+<li><s>ATtiny102, ATtiny104</s></li>
 </ul>
+<h2 id="modern-attinys">Modern ATtinys</h2>
+<p>There is no support for the tinyAVR 0-, 1-, and 2-series devices yet. But this will change shortly.</p>
 <h2 id="classic-atmegas">Classic ATmegas</h2>
 <h3 id="atmegas-supported-by-minicore">ATmegas supported by <a href="../supporting-cores/#minicore"><em>MiniCore</em></a></h3>
 <ul>
@@ -224,7 +230,7 @@
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
 <h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-cores/#xminicore"><em>XMiniCore</em></a></h3>
-<p>The following MCUs are already supported by MiniCore. However, XMiniCore goes a long way to make it easier to deal with these MCUs sitting on Microchip Xplained Mini development boards. </p>
+<p>The following MCUs are already supported by MiniCore. However, XMiniCore goes some way to make it easier to deal with the Microchip Xplained Mini development boards so that debugging becomes plug-and-play.</p>
 <ul>
 <li><strong>ATmega328P</strong> (Xplained Mini board)</li>
 <li><strong>ATmega168PB</strong> (Xplained Mini board)</li>
@@ -276,17 +282,17 @@
 <li>ATmega128rfa1</li>
 <li>ATmega406</li>
 </ul>
-<h3 id="other-atmegas-without-a-debug-interface">Other ATmegas without a debug interface</h3>
-<ul>
-<li><s>ATmega163</s></li>
-</ul>
 <h2 id="modern-atmegas">Modern ATmegas</h2>
 <h3 id="atmegas-supported-by-megacorex">Atmegas supported by <em><a href="../supporting-cores/#megacorex">MegaCoreX</a></em></h3>
-<p>This is the megaAVR 0-series. The ATmega4809 also made it on some Arduino boards.</p>
+<p>This is the megaAVR 0-series. The ATmega4809 made it on some Arduino boards.</p>
 <ul>
 <li><u>ATmega808</u>, ATmega1608, <u>ATmega3208</u>, <strong>ATmega4808</strong></li>
 <li><u>ATmega809</u>, ATmega1609, ATmega3209, <strong>ATmega4809</strong></li>
 </ul>
+<h2 id="avr-dx-devices">AVR-Dx devices</h2>
+<p>No support yet.</p>
+<h2 id="xmegas">XMegas</h2>
+<p>There is no support yet for XMegas yet. Since they are not supported by any active Arduino core and do not have any support in PlatformIO, the chances are not very high that I will dive into that.</p>
               
             </div>
           </div><footer>
