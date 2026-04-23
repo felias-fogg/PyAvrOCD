@@ -257,7 +257,6 @@
 <li>Now, you are in business and can set breakpoints (clicking left of the line number), continue executing, stop the program asynchronously, inspect and change values, and examine different stack frames. To terminate your debugging session, click the red box in the debug row before terminating the debugging session.</li>
 </ul>
 <p><img alt="debug window" src="../pics/ide2-3.png" /></p>
-<p>A more <a href="#step-4-edit-and-compile-a-sketch">extensive example</a> for a debugging session is given in the quickstart guide about the Xmini board.</p>
 <p>Be aware that after finishing the debug session, the MCU is still in debugWIRE mode! You can change that by typing <code>monitor debugwire disable</code> in the last line of the <code>Debug Console</code>.</p>
 <h3 id="after-debugging-has-finished">After debugging has finished</h3>
 <p>When you are done with debugging, you probably want to disable the debugWIRE mode again, because in debugWIRE mode, you cannot use the RESET line or ISP programming. This can be accomplished by using the command <code>monitor debugwire disable</code> before you leave the debugger. In addition, you should disable the <code>Optimize for Debugging</code> setting because it will, in general, generate more code.</p>
