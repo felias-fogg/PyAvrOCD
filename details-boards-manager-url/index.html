@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/configuration/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/details-boards-manager-url/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Configuration - PyAvrOCD</title>
+    <title>Details boards manager url - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Configuration";
-        var mkdocs_page_input_path = "configuration.md";
-        var mkdocs_page_url = "/configuration/";
+        var mkdocs_page_name = "Details boards manager url";
+        var mkdocs_page_input_path = "details-boards-manager-url.md";
+        var mkdocs_page_url = "/details-boards-manager-url/";
       </script>
     
     <!--[if lt IE 9]>
@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -127,9 +127,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Configuration</li>
+      <li class="breadcrumb-item active">Details boards manager url</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/configuration.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/details-boards-manager-url.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -137,24 +137,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="configuration">Configuration</h1>
-<p>It is not necessary to set up any configuration file before using PyAvrOCD.</p>
-<p>However, sometimes, it may be convenient to store some <a href="../command-line-options/">options</a> in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
-<p>Let us assume, <code>file.ext</code> contains the following lines:</p>
-<pre><code>--manage
-eesave
---prog=3000
---to
-atmelice
---veri=e
-</code></pre>
-<p>When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>, then this is expanded into</p>
-<pre><code>pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e
-</code></pre>
-<p>With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to</p>
-<pre><code>pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
-</code></pre>
-<p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
+                <details>
+  <summary><b>How to enter a new boards manager URL</b></summary>
+<p></p>
+  <p>First you need to open the <code>Preferences</code> dialog, which you find either in the <code>Arduino IDE</code> or the <code>File</code> menu. </p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+<p>
+Next you have to open the field <code>Additional boards manager URLs</code> and type in the package index URL, finishing with clicking on two <code>OK</code>  buttons in succession.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+<p>
+Now type in the package index URL.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls-xmini.png" width="50%">
+</p>
+</details>
+<p></p>
               
             </div>
           </div><footer>

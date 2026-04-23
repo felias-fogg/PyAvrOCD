@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -165,24 +165,22 @@
 <p>Most of the supported Microchip boards have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.</p>
 <ul>
 <li>
-<p><strong>ATmega328P</strong> <strong>Xplained Mini</strong>:  <a href="../supporting-cores/#xminicore">XMiniCore</a>; no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
+<p><strong>ATmega328P</strong> <strong>Xplained Mini</strong>:  <a href="../supporting-cores/#xminicore">XMiniCore</a>; onboard debugger, no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
 </li>
 <li>
-<p><strong>ATmega168PB</strong> <strong>Xplained Mini</strong>: <a href="../supporting-cores/#xminicore">XMiniCore</a>; no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
+<p><strong>ATmega168PB</strong> <strong>Xplained Mini</strong>: <a href="../supporting-cores/#xminicore">XMiniCore</a>; onboard debugger, no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
 </li>
 <li>
-<p><strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: <a href="../supporting-cores/#xminicore">XMiniCore</a>; no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
+<p><strong>ATmega328PB</strong> <strong>Xplained Mini</strong>: <a href="../supporting-cores/#xminicore">XMiniCore</a>; onboard debugger, no physical modifications or fuse settings necessary,  power-cycling is automatic.</p>
 </li>
 <li>
-<p><strong>ATmega324PB Xplained Pro:</strong> <a href="../supporting-cores/#mightycore">MightyCore</a>; serial I/O is routed via
-  <code>Serial1</code> instead of <code>Serial</code>. The LED is connected to digital
-  pin 23. No physical modifications or fuse settings necessary.</p>
+<p><strong>ATmega324PB Xplained Pro:</strong> <a href="../supporting-cores/#mightycore">MightyCore</a>; onboard debugger, serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code>. The LED is connected to digital pin 23. No physical modifications or fuse settings necessary.</p>
 </li>
 <li><u>AT90USBKEY2 (AT90USB1287)</u></li>
 <li><u>ATmega256RFR2 Xplained Pro</u></li>
 <li><strong>AVR Butterfly (ATmega169)</strong>: <a href="../supporting-cores/#megacore">MegaCore</a></li>
 <li><u>MEGA-1284P Xplained</u>: <a href="../supporting-cores/#mightycore">MightyCore</a></li>
-<li><strong>ATmega4809 Curiosity Nano</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
+<li><strong>ATmega4809 Curiosity Nano</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; onboard debugger</li>
 </ul>
 <h2 id="arduino-boards">Arduino boards</h2>
 <ul>
@@ -199,14 +197,14 @@
 <li>Arduino Leonardo ETH</li>
 <li><u>Arduino Micro</u></li>
 <li><s>Arduino Esplora</s>: JTAG pins are not accessible</li>
-<li>Arduino Mini: <a href="../supporting-cores/#minicore">MiniCore</a> (if Mini 05); do not connect DTR pin of FTDI header</li>
-<li>Arduino Ethernet: <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
-<li><u>Arduino Fio</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header and do not connect XBee</li>
+<li>Arduino Mini: <a href="../supporting-cores/#minicore">MiniCore</a> (if Mini 05); do not connect the DTR pin of the FTDI header</li>
+<li>Arduino Ethernet: <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
+<li><u>Arduino Fio</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header, and do not connect an XBee</li>
 <li>Arduino BT:  <a href="../supporting-cores/#minicore">MiniCore</a>; remove capacitor <code>C1</code> (which you do not have to resolder after debugging)</li>
 <li><s>LilyPad Arduino USB</s>: JTAG pins are not accessible</li>
-<li><u>LilyPad Arduino</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
-<li><u>Arduino Pro</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
-<li><u>Arduino Pro Mini</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect DTR pin of FTDI header</li>
+<li><u>LilyPad Arduino</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
+<li><u>Arduino Pro</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
+<li><u>Arduino Pro Mini</u>:  <a href="../supporting-cores/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
 <li>Arduino NG (ATmega168):  <a href="../supporting-cores/#minicore">MiniCore</a>; no modifications necessary</li>
 <li><s>Arduino NG (ATmega8)</s>: no debugging interface</li>
 <li>Arduino Robot Control</li>
@@ -217,8 +215,8 @@
 <li>Arduino Industrial 101</li>
 <li>Arduino Linino One</li>
 <li>Arduino UNO WiFi (Rev 1):  <a href="../supporting-cores/#minicore">MiniCore</a>; cut <code>RESET EN</code> solder bridge</li>
-<li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
-<li><strong>Arduino Nano Every:</strong> <a href="../supporting-cores/#megacorex">MegaCoreX</a>; UPDI pad on the backside</li>
+<li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; board has an onboard debugger</li>
+<li><strong>Arduino Nano Every:</strong> <a href="../supporting-cores/#megacorex">MegaCoreX</a>; <a href="../board-preparation/#preparing-a-updi-target">UPDI pad on the backside</a></li>
 </ul>
 <h2 id="sparkfun-boards">Sparkfun boards</h2>
 <ul>
@@ -231,7 +229,7 @@
 <li>Mega Pro 5V: <a href="../supporting-cores/#megacore">MegaCore</a></li>
 <li>RedBot (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li><u>Serial-7-Segment-Display</u> (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
-<li>ATmega128RFA1 Development board</li>
+<li>ATmega128RFA1 Development Board</li>
 <li>LilyPad USB Plus</li>
 <li>SerLcd</li>
 <li>Digital Sandbox (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
@@ -290,21 +288,38 @@
 </ul>
 <h2 id="azduino-boards-by-spence-konde">Azduino boards by Spence Konde</h2>
 <ul>
-<li><strong>ATtiny841 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
-<li><strong>ATtiny1634 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
-<li><strong>ATtiny88 breakout board (assembled)</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
-<li><strong>ATtiny828 breakout board (assembled)</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
-<li><strong>ATtiny167 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
-<li><strong>ATtiny43 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
-<li><u>ATtiny3217 breakout board (assembled)</u></li>
+<li>
+<p><strong>ATtiny841 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></p>
+</li>
+<li>
+<p><strong>ATtiny1634 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></p>
+</li>
+<li>
+<p><strong>ATtiny88 breakout board (assembled)</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></p>
+</li>
+<li>
+<p><strong>ATtiny828 breakout board (assembled)</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></p>
+</li>
+<li>
+<p><strong>ATtiny167 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></p>
+</li>
+<li>
+<p><strong>ATtiny43 dev. board</strong>: <a href="../supporting-cores/#tinycore">TinyCore</a></p>
+</li>
 </ul>
+<!--
+
+- <u>ATtiny3217 breakout board (assembled)</u>
+
+-->
+
 <h2 id="miscellaneous-boards">Miscellaneous boards</h2>
 <ul>
 <li><u>MH-ET LIVE (ATtiny88)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><u>Digispark (ATtiny85)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><u>Digispark Pro (ATtiny167)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><u>Pololu A-Star 328PB Micro</u>: <a href="../supporting-cores/#minicore">MiniCore</a></li>
-<li><u>Thinary Nano Every (ATmega4808)</u>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
+<li><strong>Thinary Nano Every (ATmega4808)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
 </ul>
               
             </div>

@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -167,10 +167,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="troubleshooting">Troubleshooting</h1>
-<p>Sometimes, things do not go according to plan, and it becomes necessary to debug the debugging setup. A first good step is to have a look at the logging output. If you spot a log entry marked <code>[CRITICAL]</code>, it may tell you already what went wrong. If you see, for example, the message</p>
-<pre><code class="language-text">[CRITICAL] Target is not powered
-</code></pre>
-<p>then it is very likely that you forgot to power the target board, or you made a wiring error.</p>
+<p>If things go not according to plan, a first good step is to have a look at the logging output of PyAvrOCD. If you spot a log entry marked <code>[CRITICAL]</code>, it may tell you already what went wrong.</p>
 <p>In general, one can distinguish between problems that prohibit the start of the GDB server and problems appearing while debugging.</p>
 <h2 id="debugging-does-not-start">Debugging does not start</h2>
 <p>For most of the error messages, it should be obvious what to do. However, there are a few messages that look cryptic, and/or a solution is not apparent.</p>
@@ -181,7 +178,7 @@
 </code></pre>
 <ul>
 <li>
-<p><code>No compatible tool discovered</code>: This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that another process currently uses it, that the serial line the tool is attached to is busy, or that <a href="../install-link/">you have not yet installed the necessary udev rules under Linux</a>.</p>
+<p><code>No compatible tool discovered</code>: This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that another process currently uses it, that the serial line the tool is attached to is busy, or that <a href="install.md">you have not yet installed the necessary udev rules under Linux</a>.</p>
 </li>
 <li>
 <p><code>[Errno 48] Address already in use</code>: This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>

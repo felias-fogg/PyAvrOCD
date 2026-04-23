@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -151,6 +151,10 @@
 </ul>
 </li>
 </ol>
+<div class="admonition info">
+<p class="admonition-title">Use dw-link as 'Arduino as ISP' programmer</p>
+<p>You can use dw-link as a programmer. Select as the <code>Port</code> in the <code>Tools</code> menu the USB connection to dw-link and choose <code>Arduino as ISP</code> as the <code>Programmer</code>. Now you can upload programs and burn bootloaders and fuses.</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Burning the bootloader using the Arduino AVR Boards core</p>
 <p>If you have debugged a board using, e.g., <code>MiniCore</code>, and now want to restore an Uno R3 board to its previous state under the<code>Arduino AVR Boards</code> core as an <code>Arduino Uno</code>, you may encounter problems when using one of the Microchip debug probes. Use a cheap USBasp programmer or something similar instead for burning the boot loader. Alternatively, you may consider staying with MiniCore and employing <a href="https://github.com/stefanrueger/urboot">Urboot</a> as the bootloader.</p>

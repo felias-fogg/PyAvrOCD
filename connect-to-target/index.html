@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -171,7 +171,7 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
 </p>
-<p>The <a href="https://felias-fogg.github.io/dw-link">dw-link</a> debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the the following picture.</p>
+<p>The <a href="https://felias-fogg.github.io/dw-link">dw-link</a> debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the following picture.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link-spi.jpeg" width="70%">
 </p>
@@ -399,7 +399,7 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/pickit4+mega.jpeg" width="70%">
 </p>
 
-<p>The pin mapping for the PICkit4 looks as follows, where I have added the Arduino pins in the last column.</p>
+<p>The pin mapping for the PICkit4 looks as follows, where I have added the Arduino pins in the last two columns.</p>
 <table>
 <thead>
 <tr>
@@ -408,6 +408,7 @@
 <th>Target pin</th>
 <th>JTAG pin</th>
 <th>Mega pin</th>
+<th>Leonardo pin</th>
 </tr>
 </thead>
 <tbody>
@@ -417,12 +418,14 @@
 <td>NC&nbsp;</td>
 <td>&nbsp;</td>
 <td></td>
+<td></td>
 </tr>
 <tr>
 <td>Pin 2 (TVDD)</td>
 <td>2</td>
 <td>VTG</td>
 <td>4</td>
+<td>5V</td>
 <td>5V</td>
 </tr>
 <tr>
@@ -431,6 +434,7 @@
 <td>GND</td>
 <td>2, 10</td>
 <td>GND</td>
+<td>GND</td>
 </tr>
 <tr>
 <td>Pin 4 (PGD)</td>
@@ -438,6 +442,7 @@
 <td>TDO</td>
 <td>3</td>
 <td>A6</td>
+<td>A1</td>
 </tr>
 <tr>
 <td>Pin 5 (PGC)</td>
@@ -445,12 +450,14 @@
 <td>TSCK</td>
 <td>1</td>
 <td>A4</td>
+<td>A3</td>
 </tr>
 <tr>
 <td>Pin 6 (TAUX)</td>
 <td>6</td>
 <td>RESET</td>
 <td>6</td>
+<td>RESET</td>
 <td>RESET</td>
 </tr>
 <tr>
@@ -459,6 +466,7 @@
 <td>TDI</td>
 <td>9</td>
 <td>A7</td>
+<td>A0</td>
 </tr>
 <tr>
 <td>Pin 8 (TTMS)</td>
@@ -466,10 +474,11 @@
 <td>TMS&nbsp;</td>
 <td>5&nbsp;</td>
 <td>A5</td>
+<td>A2</td>
 </tr>
 </tbody>
 </table>
-<p>For the Atmel debuggers, the setup appears as follows, where the JTAG pin corresponds to the mini-squid numbering. I have additionally added the corresponding Mega pin.</p>
+<p>For the Atmel debuggers, the setup appears as follows, where the JTAG pin corresponds to the mini-squid numbering. I have additionally added the corresponding Mega and Leonardo pins.</p>
 <table>
 <thead>
 <tr>
@@ -477,6 +486,7 @@
 <th>Mini-squid pin = JTAG pin</th>
 <th>Target pin</th>
 <th>Mega pin</th>
+<th>Leonardo pin</th>
 </tr>
 </thead>
 <tbody>
@@ -485,10 +495,12 @@
 <td>1</td>
 <td>TCK</td>
 <td>A4</td>
+<td>A3</td>
 </tr>
 <tr>
 <td>Pin 2 (GND)</td>
 <td>2</td>
+<td>GND</td>
 <td>GND</td>
 <td>GND</td>
 </tr>
@@ -497,11 +509,13 @@
 <td>3</td>
 <td>TDO</td>
 <td>A6</td>
+<td>A1</td>
 </tr>
 <tr>
 <td>Pin 4 (VTG)</td>
 <td>4</td>
 <td>VTG</td>
+<td>5V</td>
 <td>5V</td>
 </tr>
 <tr>
@@ -509,10 +523,12 @@
 <td>5</td>
 <td>TMS&nbsp;</td>
 <td>A5</td>
+<td>A2</td>
 </tr>
 <tr>
 <td>Pin 6 (nSRST)</td>
 <td>6</td>
+<td>RESET</td>
 <td>RESET</td>
 <td>RESET</td>
 </tr>
@@ -521,11 +537,13 @@
 <td>7&nbsp;</td>
 <td>NC&nbsp;</td>
 <td></td>
+<td></td>
 </tr>
 <tr>
 <td>Pin 8 (nTRST)</td>
 <td>8</td>
 <td>NC&nbsp;</td>
+<td></td>
 <td></td>
 </tr>
 <tr>
@@ -533,17 +551,19 @@
 <td>9</td>
 <td>TDI</td>
 <td>A7</td>
+<td>A0</td>
 </tr>
 <tr>
 <td>Pin 10 (GND)</td>
 <td>0</td>
 <td>GND&nbsp;</td>
 <td>GND</td>
+<td>GND</td>
 </tr>
 </tbody>
 </table>
 <h2 id="connecting-to-updi-targets">Connecting to UPDI targets</h2>
-<p>There are a number of UPDI boards with an embedded debugger on board. For instance, all the AVR Curiosity Nano boards, as well as the Arduino Uno WiFi Rev2, have a hardware debugger on board. In all these cases, it is enough to plug in the USB cable.</p>
+<p>There are a number of UPDI boards that come with an embedded debugger. For instance, all the AVR Curiosity Nano boards, as well as the Arduino Uno WiFi Rev2, have a hardware debugger on board. In all these cases, it is enough to plug in the USB cable.</p>
 <p>However, even without a debugger on board, connecting to a UPDI target is very easy because you need only three lines: <code>UPDI</code>, <code>VTG</code>, and <code>GND</code>. For the MPLAB debuggers SNAP and PICkit4, this looks as follows.</p>
 <table>
 <thead>
@@ -596,7 +616,11 @@
 </tr>
 </tbody>
 </table>
-<p>For the UPDI v2 interface, PIn1 has to be connected to RESET on the target. However, this is only necessary if one could use this pin to initiate a high-voltage pulse, which none of the considered Microchip debuggers are able to do.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/thinary+pickit4.jpg" width="70%">
+</p>
+
+<p>For the UPDI v2 interface, debugger pin 1 has to be connected to RESET on the target. However, this is only necessary if one could use this pin to initiate a high-voltage pulse, which none of the considered Microchip debuggers are able to do.</p>
 <p>For the Atmel debuggers JTAGICE3, PowerDebugger, and Atmel-ICE, we have the following pinout.</p>
 <table>
 <thead>

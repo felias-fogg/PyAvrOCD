@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -169,7 +169,7 @@
 <p>Instead of connecting to a target, it is also possible to run a simulator (for some MCU types). This is done by choosing <code>Simulator (simavr)</code> as the <code>Programmer</code> in the <code>Tools</code> menu.  When you request to start debugging (see below), the simulator is chosen instead of making a connection to the target board.</p>
 <h3 id="starting-the-debugger">Starting the debugger</h3>
 <p>After c<a href="../compilation-options/#compiling-an-arduino-sketch-in-the-arduino-ide-2">ompiling the sketch</a>, it is time to start debugging by clicking the debug button in the top row. This will start the GDB server.</p>
-<p>Instead of the message shown in the following screenshot, an error message "No compatible tool" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="../install-link/#installation">installation instructions</a>). Or maybe you forgot to connect a debug probe altogether.</p>
+<p>Instead of the message shown in the following screenshot, an error message "No compatible tool" may be displayed. The reason may be that the Arduino IDE 2 reserved the debugger's serial line for the <code>Serial Monitor</code>. Simply close the <code>Serial Monitor</code> console and try again. On Linux, another reason could be that the udev rules have not yet been installed (see <a href="install.md#installation">installation instructions</a>). Or maybe you forgot to connect a debug probe altogether.</p>
 <p><img alt="ide2-2" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png" /></p>
 <p>If there is a connection to the debugger and the target, the GDB server will start up. When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. As mentioned above, power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the GDB server will not stop at this point.</p>
 <p>After power-cycling the target, the symbolic debugger starts. Eventually, execution is stopped in the first line of the internal <code>main</code> function at an initial internal breakpoint, indicated by the yellow triangle (not on Windows) left of line 35 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.</p>

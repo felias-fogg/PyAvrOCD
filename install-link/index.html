@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/install-link/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>PyAvrOCD - PyAvrOCD</title>
+    <title>PyAvrOCD installation &amp; configuration - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "PyAvrOCD";
+        var mkdocs_page_name = "PyAvrOCD installation \u0026amp; configuration";
         var mkdocs_page_input_path = "install-link.md";
         var mkdocs_page_url = "/install-link/";
       </script>
@@ -49,24 +49,8 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">PyAvrOCD</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#downloading-binaries">Downloading binaries</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pypi">PyPI</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#github">GitHub</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a>
-    </li>
-    </ul>
+              <ul>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -143,8 +127,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Installation & Configuration</li>
-      <li class="breadcrumb-item active">PyAvrOCD</li>
+      <li class="breadcrumb-item active">PyAvrOCD installation &amp; configuration</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/install-link.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -155,7 +138,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="pyavrocd-installation-configuration">PyAvrOCD installation &amp; configuration</h1>
-<p>Both the installation and configuration of PyAvrOCD are straightforward on Windows, macOS, and Linux machines (see <a href="../supported-platforms/">supported platforms</a>). Mac and Linux users should be aware of some idiosyncrasies, however.</p>
+<h2 id="installation">Installation</h2>
+<p>Mac and Linux users should be aware of some idiosyncrasies.</p>
 <div class="admonition info">
 <p class="admonition-title">Linux</p>
 <p>On a Linux installation, users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
@@ -164,62 +148,143 @@
 <p class="admonition-title">macOS</p>
 <p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in a terminal window to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE. After that, you can start the executable without a hitch.</p>
 </div>
-<h2 id="installation">Installation</h2>
 <h3 id="arduino-ide-2">Arduino IDE 2</h3>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient <a href="http://pyavrocd.io/debugging-software/#arduino-ide-2">to add an "additional boards manager URL" </a> and <a href="http://PyAvrOCD.io/supporting-cores/">install the respective core</a>. It will then be installed as a tool for this core. Together with PyAvrOCD, you will also get the GDB client <code>avr-gdb</code> and the simulator (for some AVR chips) <code>simavr</code>.</p>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient to <a href="../supporting-cores/">install a debug-enabled Arduino core</a>. Together with PyAvrOCD, you will also get the GDB client <code>avr-gdb</code> and the simulator (for some AVR chips) <code>simavr</code>.</p>
 <p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly, as described below.</p>
 <h3 id="downloading-binaries">Downloading binaries</h3>
-<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub page</a>, click on the label <code>Latest</code> below the section title <code>Releases</code> (located on the right-hand side of the page), download the archive containing the binary for your architecture, and then untar the archive. It includes the folder <code>tools</code>, which in turn contains the executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>), a folder <code>pyavrocd-util</code>,  <code>avr-gdb</code> (or <code>avr-gdb.exe</code>), the GDB debugger for AVR chips, and additionally <code>simavr</code> (or <code>simavr.exe</code>), a software simulator of some of the AVR chips.</p>
-<p>Store all of it somewhere in the same folder and preferably include this folder in your <code>PATH</code> variable. My preference for such a folder is <code>~/.local/bin</code> , which will be used throughout this document. So, in order to store everything there, use the following shell commands (PowerShell on Windows):</p>
-<pre><code class="language-sh">mv tools/* ~/.local/bin
-</code></pre>
-<p>The avr-gdb debugger has version 17.1, which is relatively recent, and has been compiled for your architecture with only a minimal amount of references to dynamic libraries. It is strongly advised to use this version since it contains a few patches.</p>
-<p>Since the binaries were generated on very recent versions of the respective operating systems, it can happen that the binary is not compatible with your operating system. In this case, use one of the methods below.</p>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">PyAvrOCD GitHub repo</a>, and download  the archive containing the binary for your architecture from the set of assets of the latest <code>Releases</code>.  This archive includes the folder <code>tools</code>.</p>
+<details>
+<summary><b>How to download the binaries</b></summary>
+<p></p>
+<p>Click on the <code>Latest</code> button below <b>Releases</b> on the right side of the page.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/repo.png" width="55%">
+</p>
+<p>
+This will open the latest release page with all its assets.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/release.png" width="55%">
+</p>
+<p>
+Select the archive matching your architecture and download it.
+After downloading the archive, extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):
+<pre>
+<code class="language-bash hljs">tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz</code>
+</pre>
+</p>
+</details>
+<p></p>
+
+<p>Store its content somewhere in a folder and include this folder in your <code>PATH</code> variable.</p>
+<details>
+<summary><b>How to install the binaries</b></summary>
+<p></p>
+<p>
+Once you have downloaded the archive and uncompressed it, you need to move the files from the tools folder to its destination (e.g., <code>~/.local/bin</code>). For this purpose, first move into the <code>tools</code> folder of the uncompressed archive and:
+</p>
+<p>
+<pre>
+<code class="language-bash hljs">mkdir ~/.local
+mkdir ~/.local/bin
+rm -rf ~/.local/bin/pyavrocd-util
+mv pyavrocd* ~/.local/bin/
+mv avr-gdb*  ~/.local/bin/
+mv bin/* ~/.local/bin/
+mv lib ~/.local/</code>
+</pre>
+</p>
+<p>
+Now, you only need to add <code>~/.local/bin/</code> to your <code>PATH</code>
+</p>
+</details>
+<p></p>
+
+<p>It might happen that the binaries are not compatible with your operating system. In this case, use one of the methods below.</p>
 <h3 id="pypi">PyPI</h3>
-<p>I assume you already installed a recent Python version (&gt;=3.10). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a> will bring you the most recent version of PyAvrOCD to your computer.</p>
-<p>It is possible to install PyAvrOCD using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a>. However, it is recommended to use <a href="https://pipx.pypa.io/">pipx</a> instead. Pipx installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.</p>
-<pre><code class="language-bash">&gt; pipx install pyavrocd
-&gt; pipx ensurepath
-</code></pre>
-<p>After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code>.</p>
+<p>I assume you already installed a recent Python version (&gt;=3.10). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a>, with the help of <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a> or <a href="https://pipx.pypa.io/">pipx</a>, will bring PyAvrOCD to your computer.</p>
+<details>
+<summary><b>How to install PyAvrOCD with pip or pipx</b></summary>
+<p></p>
+<p>
+It is possible to install PyAvrOCD using <code>pip</code>. However, it is recommended to use <code>pipx</code> instead. <code>Pipx</code> installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.
+</p>
+<pre>
+<code class="language-bash hljs">pipx install pyavrocd
+pipx ensurepath</code>
+</pre>
+<p>
+After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code>.
+</details>
+<p></p>
+
 <p>Note that the folder with <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">SVD</a> files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the <a href="https://github.com/felias-fogg/PyAvrOCD/releases/tag/v0.22.0">release page</a> of the GitHub repo. The release asset is called <code>svd.tar.gz</code>.</p>
 <h3 id="github">GitHub</h3>
-<p>Alternatively, you can download or clone the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub repository</a>. Additionally, you need to install a Python package manager, for instance, <a href="https://python-poetry.org">Poetry</a>:</p>
-<pre><code class="language-bash">&gt; pipx install poetry
-</code></pre>
-<p>With that, you can start executing the script inside the downloaded folder as follows:</p>
-<pre><code class="language-bash">&gt; poetry install
-&gt; poetry run pyavrocd ...
-</code></pre>
-<p>Furthermore, you can create a binary standalone package as follows:</p>
-<pre><code class="language-bash">&gt; poetry run pyinstaller pyavrocd.spec
-</code></pre>
-<p>As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those two to a place in your <code>PATH</code>.</p>
+<p>Alternatively, you can download or clone the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub repository</a>. Additionally, you need to install a Python package manager, for instance, <a href="https://python-poetry.org">Poetry</a>, which can be used to install and run the package.</p>
+<details>
+<summary><b>How to use Poetry</b></summary>
+<p></p>
+<p>
+After having cloned the repo, install Poetry:
+</p>
+<pre>
+<code class="language-bash hljs">pipx install poetry</code>
+</pre>
+<p>
+With that, you can start executing the script inside the downloaded folder as follows:
+</p>
+<pre>
+<code class="language-bash hljs">poetry install
+poetry run pyavrocd ...
+</code>
+</pre>
+<p>
+Furthermore, you can create a binary standalone package as follows:
+</p>
+<pre>
+<code class="language-bash hljs">poetry run pyinstaller pyavrocd.spec</code>
+</pre>
+<p>
+  As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those two to a place in your <code>PATH</code>.
+</p>
+</details>
+<p></p>
+
 <h2 id="configuration">Configuration</h2>
 <p>It is not necessary to set up any configuration file before using PyAvrOCD.</p>
-<p>However, sometimes, it may be convenient to store some <a href="../command-line-options/">options</a> in a file so that you do not have to type them every time you invoke PyAvrOCD. Or, you may want to override options that are set in an IDE. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
-<p>Let us assume, <code>file.ext</code> contains the following lines:</p>
-<pre><code>--manage
+<p>However, sometimes, it may be convenient to store some <a href="../command-line-options/">options</a> in a file so that you do not have to type them every time you invoke PyAvrOCD. For this purpose, the <code>@</code> notation is very helpful. If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
+<details>
+<summary><b>Example</b></summary>
+<p></p>
+<p>
+Let us assume, <code>file.ext</code> contains the following lines:
+</p>
+<pre>
+<code class="language-bash hljs">--manage
 eesave
 --prog=3000
 --to
 atmelice
---veri=e
-</code></pre>
-<p>When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>, then this is expanded into</p>
-<pre><code>pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e
-</code></pre>
-<p>With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to</p>
-<pre><code>pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable
-</code></pre>
+--veri=e</code>
+</pre>
+<p>
+When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>,, then this is expanded into
+</p>
+<pre>
+<code class="language-bash hljs">pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e</code>
+</pre>
+<p>
+With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to
+</p>
+<pre>
+<code class="language-bash hljs">pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable</code>
+</pre>
+</details>
+<p></p>
 <p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../quick_pio/" class="btn btn-neutral float-left" title="PlatformIO"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../debugging-software/" class="btn btn-neutral float-right" title="Debugging software">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
 
   <hr/>
 
@@ -245,10 +310,6 @@ atmelice
         </span>
     
     
-      <span><a href="../quick_pio/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../debugging-software/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

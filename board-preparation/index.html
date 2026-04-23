@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -212,7 +212,7 @@ The `SPIEN` fuse could be disabled. In this case, the above comments apply. Othe
 
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
 <p>Again, UPDI targets are easy to deal with. Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible.</p>
-<p>On the <strong>Nano Every</strong>, for example, this pin cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. And the USB-UART converter is usually disconnected from this pin so that one can connect to the pin without any problems.</p>
+<p>On the <strong>Nano Every</strong>, UPDI cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. It is the middle pad of the line of three pads closer to the edge of the board (see picture below). And the onboard USB-UART converter is usually disconnected from this pin, so that one can connect to the pin without any problems.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-every.png" width="60%">
 </p>

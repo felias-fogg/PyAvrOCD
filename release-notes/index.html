@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -102,6 +102,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v120">Release v1.2.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v112">Release v1.1.2</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v111">Release v1.1.1</a>
@@ -177,6 +179,15 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v120">Release v1.2.0</h2>
+<ul>
+<li>Added: UPDI targets can now be debugged</li>
+<li>Added: Option <code>--comm-speed</code> meant for UPDI and PDI communication speed.</li>
+<li>Changed: <code>timers run</code> cannot be set for UPDI targets</li>
+<li>Fixed PC masking when flash memory size is not a power of two in PyAvrOCD as well as in AVR-GDB.</li>
+<li>Fixed: Setting a single register in the RSP handler works now.</li>
+<li>Fixed: Reattaching an MCU did not work for JTAG targets, but is now possible.</li>
+</ul>
 <h2 id="release-v112">Release v1.1.2</h2>
 <ul>
 <li>Fixed: Recognition of  ATtiny48/88 did not work as advertised, but now it does again.</li>

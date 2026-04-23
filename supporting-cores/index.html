@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -159,14 +159,47 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="installing-a-debug-enabled-arduino-core">Installing a debug-enabled Arduino core</h1>
-<p>Arduino cores or platforms are the means to support MCUs and boards for integration into the Arduino IDE 2 (and into the Arduino CLI). They are the key to making debugging for particular chips available in the Arduino IDE 2. Meanwhile, there exists a number of debug-enabled Arduino cores. Sometimes, they are forks, sometimes improved new versions of older cores, and sometimes they are extensions of existing cores. Note that PyAvrOCD can support an MCU, but there is no corresponding core. This means that debugging by means of GDB is possible, but there is no Arduino IDE support (so far).</p>
-<p>If you want to install a core, in most cases, you first have to add a <em>package index</em>  URL to the list of <code>Additional boards manager URLs</code>, which you find in the <code>Preferences</code> dialog. Once this has been done, you can search in the <code>Boards Manager</code> (accessible through the <code>Tools</code> menu or the board icon on the left side of the Arduino IDE 2 window) for the core, and then install it.</p>
+<p>Arduino cores are the key to making debugging available in the Arduino
+IDE 2 for particular chips. If you want to install a new core, in most
+cases, you first have to add a <em>boards manager</em> URL in the
+<code>Preferences</code> dialog.</p>
+<details>
+  <summary><b>How to enter a new boards manager URL</b></summary>
+<p></p>
+  <p>First you need to open the <code>Preferences</code> dialog, which you find either in the <code>Arduino IDE</code> or the <code>File</code> menu. </p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+<p>
+Next you have to open the field <code>Additional boards manager URLs</code> and type in the package index URL, finishing with clicking on two <code>OK</code>  buttons in succession.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+<p>
+Now type in the package index URL.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls-xmini.png" width="50%">
+</p>
+</details>
+<p></p>
+
+<p>Once this has been done, you can search in the <code>Boards Manager</code> for the core, and install it.</p>
+<details>
+<summary><b>How to install a new core</b></summary>
+<p></p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
+</details>
+<p></p>
+
 <h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore (Debug enabled)</a></h3>
-<p>This is my fork of Spence Konde's ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. With the advent of TinyCore (see below), it is deprecated. You can install it after including the following URL:</p>
+<p>This is a fork of Spence Konde's ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. With the advent of TinyCore (see below), it is deprecated. However, it might still be of interest to people who use the micronucleus boot loaders, which are not supported by TinyCore. You can install it after including the following URL:</p>
 <pre><code>https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 </code></pre>
 <h3 id="tinycore"><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
-<p>This is a fork of Spence Konde's ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not support the micronucleus bootloader, however. You can install it after including the following URL:</p>
+<p>This is a fork of Spence Konde's ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not support the micronucleus bootloaders, however. You can install it after including the following URL:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
@@ -186,7 +219,7 @@
 <pre><code>https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
 </code></pre>
 <h3 id="megacore"><a href="https://github.com/MCUdude/MegaCore">MegaCore</a></h3>
-<p>A core for most 64 and 100-pin AVRs. All of the listed MCUs are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. You can make the core installable by adding:</p>
+<p>A core for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this core. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. You can make the core installable by adding:</p>
 <pre><code>https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
 </code></pre>
 <h3 id="majorcore"><a href="https://github.com/MCUdude/MajorCore">MajorCore</a></h3>
