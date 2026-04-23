@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="" href="../install.md">PyAvrOCD</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
@@ -151,7 +151,7 @@
 <pre><code>&gt; pyavrocd [options]
 </code></pre>
 <p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.</p>
-<p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a <a href="install.md#configuration">configuration file</a>.</p>
+<p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a <a href="../install/#configuration">configuration file</a>.</p>
 <h2 id="command-line-options">Command-line options</h2>
 <table>
 <thead>
@@ -258,7 +258,7 @@
 <h2 id="additional-command-line-options-derived-from-monitor-commands">Additional command-line options derived from monitor commands</h2>
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code>.</p>
 <h2 id="providing-command-line-options-in-configuration-files">Providing command-line options in configuration files</h2>
-<p>In addition to options, one can specify file names prefixed with a '@'-sign. In particular, the argument <code>@pyavrocd.options</code> is always added to the end of the command line. Such <a href="install.md#configuration">configuration files</a> can contain additional arguments to those specified on the command line.</p>
+<p>In addition to options, one can specify file names prefixed with a '@'-sign. In particular, the argument <code>@pyavrocd.options</code> is always added to the end of the command line. Such <a href="../install/#configuration">configuration files</a> can contain additional arguments to those specified on the command line.</p>
               
             </div>
           </div><footer>
