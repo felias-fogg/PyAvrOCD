@@ -231,7 +231,7 @@ Now type in the package index URL.
 <h3 id="step-8-debug-the-sketch">Step 8: Debug the sketch</h3>
 <p>You can now start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
 <h3 id="step-9-start-over-or-terminate-the-debugging-session">Step 9: Start over or terminate the debugging session</h3>
-<p>After leaving the debugger, you edit the sketch and start again at step 6. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
+<p>After leaving the debugger, you can edit the sketch and start again at step 6. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
 <p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode.
 It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
 <p>If you want to restore your Uno to the original state, consult the section on "<a href="../restore-original-state/">Restoring the target</a>."</p>

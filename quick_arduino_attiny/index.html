@@ -137,132 +137,140 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</h2>
-<p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe.  Instead, we will build our own debug probe.</p>
+                <h2 id="quickstart-guide-snap-attiny85">Quickstart guide: SNAP &amp; ATtiny85</h2>
+<p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 using the MPLAB SNAP debug probe.</p>
 <h3 id="required-hardware">Required hardware</h3>
 <ul>
-<li>Arduino Uno (will become the <em>debug probe</em>)</li>
+<li>SNAP</li>
 <li>USB cable</li>
 <li>ATtiny85 (or any other classic ATtiny or ATmegaX8) as the <em>target</em></li>
-<li>In order to connect the debug probe to the target, you need:<ul>
+<li>In order to set up the target, you need:<ul>
 <li>a breadboard together with</li>
-<li>11 Jumper wires (male-to-male)</li>
-<li>2 LEDs</li>
-<li>3 Resistors (10 kΩ, 220Ω, 220Ω)</li>
-<li>2 Capacitors (100 nF, 10 µF)</li>
+<li>jumper wires (male-to-male)</li>
+<li>1 LED</li>
+<li>2 resistors (10 kΩ, 1kΩ)</li>
+<li>1 capacitor (100 nF)</li>
 </ul>
 </li>
 </ul>
-<h3 id="step-1-install-new-board-manager-files">Step 1: Install new board manager files</h3>
-<p>Open the <code>Preferences</code> dialog of the Arduino IDE and paste the following <code>Board Manager URLs</code> into the list:</p>
+<h3 id="step-1-install-the-debug-enabled-tinycore">Step 1: Install the debug-enabled TinyCore</h3>
+<p>Add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
-<p>Close the <code>Preference</code> dialog with <code>OK</code>. Now, you can install the core, <code>TinyCore</code>.</p>
-<ul>
-<li>Select <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>Board Managers</code> ... . This will open the Boards Manager dialog.</li>
-<li>In the search field, type <code>TinyCore</code> and install the most recent version.</li>
-</ul>
-<h3 id="step-2-install-dw-link-firmware-on-an-uno">Step 2: Install <em>dw-link</em> firmware on an Uno</h3>
-<p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
-<p>The simplest way to install the firmware is to download an uploader from the <a href="https://github.com/felias-fogg/dw-link/releases/latest">Release assets</a> of the <a href="https://github.com/felias-fogg/dw-link">dw-link GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
-<h3 id="step-3-hardware-setup">Step 3: Hardware setup</h3>
-<p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a debug probe. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
-<p><img alt="ATtiny85-debug" src="../pics/attiny85-debug-new.png" /></p>
-<p>In reality, this could be like in the following photo.</p>
+<details>
+  <summary><b>How to enter a new boards manager URL</b></summary>
+<p></p>
+  <p>First you need to open the <code>Preferences</code> dialog, which you find either in the <code>Arduino IDE</code> or the <code>File</code> menu. </p>
 <p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny-breadboard.jpg" width="30%">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+<p>
+Next you have to open the field <code>Additional boards manager URLs</code> and type in the package index URL, finishing with clicking on two <code>OK</code>  buttons in succession.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+<p>
+Now type in the package index URL.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls-xmini.png" width="50%">
+</p>
+</details>
+<p></p>
+
+<p>Next, you have to install the new core. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>.</p>
+<details>
+<summary><b>How to install a new core</b></summary>
+<p></p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
+</details>
+<p></p>
+
+<div class="admonition info">
+<p class="admonition-title">Linux systems</p>
+<p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
+</div>
+<h3 id="step-2-connect-the-target-with-the-debug-probe">Step 2: Connect the target with the debug probe</h3>
+<p>You need to set up the hardware on a breadboard and use a few jumper wires to connect the ATtiny to the debug probe. Further, as is obvious from the Fritzing sketch, you need an external power supply. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/snap+attiny85.png" width="80%">
 </p>
 
-<p>Here is a table of all connections to check that you have made all the connections.</p>
+<p>Here is a table of all connections that you can use in order to check whether you have made all the connections.</p>
 <table>
 <thead>
 <tr>
-<th>ATtiny pin#</th>
-<th>Arduino Uno pin</th>
+<th>ATtiny pin</th>
+<th>SNAP pin</th>
 <th>component</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>1 (Reset)</td>
-<td>D8</td>
-<td>10k resistor to Vcc</td>
+<td>#1 (Reset)</td>
+<td>TAUX #6</td>
+<td>10 kΩ resistor to Vcc</td>
 </tr>
 <tr>
-<td>2 (D3)</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>3 (D4)</td>
-<td></td>
-<td>220 Ω resistor to target (red) LED (+)</td>
-</tr>
-<tr>
-<td>4 (GND)</td>
-<td>GND</td>
-<td>red and yellow LED (-), decoupling cap 100 nF, RESET blocking cap of 10µF (-)</td>
-</tr>
-<tr>
-<td>5 (D0, MOSI)</td>
-<td>D11</td>
-<td></td>
-</tr>
-<tr>
-<td>6 (D1, MISO)</td>
-<td>D12</td>
-<td></td>
-</tr>
-<tr>
-<td>7 (D2, SCK)</td>
-<td>D13</td>
-<td></td>
-</tr>
-<tr>
-<td>8 (Vcc)</td>
-<td>5V</td>
-<td>10k resistor, decoupling cap 100 nF</td>
-</tr>
-<tr>
+<td>#2 (D3)</td>
 <td>&nbsp;</td>
-<td>RESET</td>
-<td>RESET blocking cap of 10 µF (+)</td>
+<td>&nbsp;</td>
 </tr>
 <tr>
+<td>#3 (D4)</td>
 <td>&nbsp;</td>
-<td>D7</td>
-<td>220 Ω to system (yellow) LED (+)</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>#4 (GND)</td>
+<td>GND #3</td>
+<td>GND on breadboard, LED (-), decoupling cap 100 nF</td>
+</tr>
+<tr>
+<td>#5 (D0, MOSI)</td>
+<td>TTDI #7</td>
+<td></td>
+</tr>
+<tr>
+<td>#6 (D1, MISO)</td>
+<td>PGD #4</td>
+<td></td>
+</tr>
+<tr>
+<td>#7 (D2, SCK)</td>
+<td>PGC #5</td>
+<td>1 kΩ resistor to LED (+)</td>
+</tr>
+<tr>
+<td>#8 (Vcc)</td>
+<td>TVDD #2</td>
+<td>Vcc on breadboard, 10k resistor, decoupling cap 100 nF</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>connect LED (+) and 1 kΩ resistor</td>
 </tr>
 </tbody>
 </table>
-<p>The yellow LED is the <em>system LED</em>, and the red one is the <em>ATtiny-LED</em>. The system LED gives you information about the internal state of the debugger:</p>
-<ol>
-<li>debugWIRE mode disabled (LED is off),</li>
-<li>waiting for power-cycling the target (LED flashes every second for 0.1 sec)</li>
-<li>debugWIRE mode enabled (LED is on),</li>
-<li>ISP programming (LED is blinking slowly),</li>
-<li>error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).</li>
-</ol>
-<h3 id="step-4-start-debugging">Step 4: Start Debugging</h3>
-<ul>
-<li>Load the sketch you want to debug into the IDE by choosing <code>Open...</code> in the <code>File</code> menu.</li>
-<li>Select <code>ATtiny25/45/85</code> as the board under <code>Tools</code> -&gt; <code>Board</code> -&gt; <code>TinyCore</code>.</li>
-<li>In the <code>Tools</code> menu,  choose <code>1 MHz (internal)</code> as the <code>Clock Source</code>  (assuming that the ATtiny is as it comes from the factory and no fuse has been changed).</li>
-<li>In the <code>Sketch</code> menu, select <code>Optimize for Debugging</code>.</li>
-<li>Compile the code by clicking the <code>Verify</code> button in the upper left corner.</li>
-<li>Open the debug panes by clicking the debug symbol (bug with triangle) in the left sidebar.</li>
-<li>Click the debug symbol in the top row to start debugging. This will start the debugger and the debug server. The activities are logged in the <code>Debug Console</code> and the <code>gdb-server</code> console in the bottom right part of the window.</li>
-<li>You will probably be asked to "power-cycle the target." This means that you need to remove power from the target and then reconnect it, activating the debugWIRE mode.</li>
-<li>After the debugger and GDB server have been started, the debugger will start executing the program on the target. Execution will stop at the first line of the <code>main</code> function.</li>
-<li>Now, you are in business and can set breakpoints (clicking left of the line number), continue executing, stop the program asynchronously, inspect and change values, and examine different stack frames. To terminate your debugging session, click the red box in the debug row before terminating the debugging session.</li>
-</ul>
-<p><img alt="debug window" src="../pics/ide2-3.png" /></p>
-<p>Be aware that after finishing the debug session, the MCU is still in debugWIRE mode! You can change that by typing <code>monitor debugwire disable</code> in the last line of the <code>Debug Console</code>.</p>
-<h3 id="after-debugging-has-finished">After debugging has finished</h3>
-<p>When you are done with debugging, you probably want to disable the debugWIRE mode again, because in debugWIRE mode, you cannot use the RESET line or ISP programming. This can be accomplished by using the command <code>monitor debugwire disable</code> before you leave the debugger. In addition, you should disable the <code>Optimize for Debugging</code> setting because it will, in general, generate more code.</p>
-<p>So, after everything has been debugged, what do you do with your newly built debug probe? You don't have to throw it away. You can also use it as an ISP programmer (STK500 v1). In the Arduino IDE, such a programmer is called <code>Arduino as ISP</code>.</p>
+<h3 id="step-3-load-sketch-and-select-board">Step 3: Load sketch and select board</h3>
+<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; TinyCore -&gt; ATtiny85</code>. If this is a chip is fresh from the factory, you need to adjust for the clock frequency. Choose <code>1 MHz internal osc.</code> under <code>Tools -&gt; Clock</code>.</p>
+<h3 id="step-4-compile-the-sketch">Step 4: Compile the sketch</h3>
+<p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark symbol) in the top bar. This will compile the sketch.</p>
+<h3 id="step-5-start-debugging">Step 5: Start debugging</h3>
+<p>Now it is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top bar. If the target MCU is not already in debugWIRE mode, the debugger will request 'power cycling'.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-attiny-power-cycle.png " width="90%"></p>
+
+<p>Power cycling means to remove the Vcc jumper cable and, after a few seconds, to reinsert it. After a while, the <code>DEBUG</code> pane should open.</p>
+<h3 id="step-8-debug-the-sketch">Step 8: Debug the sketch</h3>
+<p>You can now start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
+<h3 id="step-9-start-over-or-terminate-the-debugging-session">Step 9: Start over or terminate the debugging session</h3>
+<p>After leaving the debugger, you can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode. It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
 <h3 id="what-can-go-wrong">What can go wrong?</h3>
-<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [WARNING] often tell what went wrong. If the status LED is blinking very fast, it means that the debugger has hit an unrecoverable error. Type <code>monitor info</code> into the last line of the <code>Debug Console</code> in order to find out about the <a href="../troubleshooting/#internal-and-fatal-dw-link-errors">error number</a>. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
               
             </div>
           </div><footer>
