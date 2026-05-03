@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/rangestepping-speedup/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Potential Speedup for Rangestepping - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Potential Speedup for Rangestepping";
+        var mkdocs_page_input_path = "rangestepping-speedup.md";
+        var mkdocs_page_url = "/rangestepping-speedup/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../pics/logo-tiny.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Supported devices & platforms</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Potential Speedup for Rangestepping</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/rangestepping-speedup.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="potential-speedup-for-rangestepping">Potential Speedup for Rangestepping</h1>
+<p>While the current implementation of range stepping does already cover a lot of ground, there is still the problem that when one "steps over" a line, one will necessarily stop for each procedure call. The reason is that we leave the range. GDB will then set a BP at the return address inside the range, continue execution, and after returning back into the range, another range-stepping action is called.</p>
+<p>It would be much faster not to stop after the call, of course. And this is what a "step over" command is meant to do.  However, there is only one rangestepping command that does not distinguish between stepping over and stepping into.</p>
+<p>What we see in the stream of GDB commands is the following:</p>
+<p>``` 
+$vCont;r<START>,<END>:1  ;; range stepping required
+T05 ... PC out of range  ;; stopped in a function
+$m 80...                 ;; looking into prog
+$m 00...                 ;; looking into stack
+$m 00...                 ;; looking somewhere else
+$Z1,<addr>,2             ;; set breakpoint inside range (return address)
+$vCont;c                 ;; finish function and stop after return
+T05 ... PC at <addr>     ;; break after return
+$m 00...
+$z1,<addr>               ;; remove temp breakpoint
+$vCont;r<START>,<END>:1  ;; continue with range stepping</p>
+<pre><code>
+At the point where `$vCont;c` is requested, the range stepping scaffold is deleted, and the temporary hardware BPs are deallocated. When the second `$vCont;r&lt;START&gt;,&lt;END&gt;:1` command is received, the range stepping scaffold is set up again, and range stepping is continued.
+
+In case of a &quot;step into&quot; command, the sequence looks different.
+
+</code></pre>
+<p>$vCont;r<START>,<END>:1  ;; range stepping required
+T05 ... PC out of range  ;; stopped in a function
+$m 80...                 ;; looking into prog
+$m 00...                 ;; looking into stack
+$m 00...                 ;; looking somewhere else
+$Z1,<func>,2             ;; set breakpoint outside range (start of function address)
+$vCont;c                 ;; finish function and stop after return
+T05 ... PC at <func>     ;; stop inside function
+$z1,<func>,2             ;; remove temp BP
+$m 00 ...
+```</p>
+<p>This means that if the first kind of sequence is observed, then one could remember that if the next time, range-stepping is requested for the same range, we could ignore all <code>call</code>, <code>rcall</code>, and <code>icall</code> instructions.</p>
+<p>Basically, it means that if we simply ignore <code>m</code> (and perhaps <code>x</code>) records, then the following sequence should trigger the <code>call-ignore</code> mode:</p>
+<ol>
+<li><code>$vCont;r&lt;range&gt;</code></li>
+<li><code>$Z1,&lt;addr&gt;</code> with <code>&lt;addr&gt;</code> inside <code>&lt;range&gt;</code></li>
+<li><code>$vCont;c</code></li>
+<li><code>$z1,&lt;addr&gt;</code></li>
+<li><code>$vCont;r&lt;range&gt;</code> with same range</li>
+</ol>
+<p>If the range stepping method is called now, it can ignore all <code>call</code> instructions as potential branch points and as instructions to jump outside the range.  If any other record is received, the <code>call-ignore</code> mode needs to be disabled.</p>
+<p>Will that be enough to distinguish it from simply leaving the range, setting a breakpoint in the range, and then stopping again in the range? Yes. When execution is stopped, GDB will also use <code>$qfThreadInfo</code> and <code>$qsThreadInfo</code> records. So, the above sequence seems to be distinctive.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

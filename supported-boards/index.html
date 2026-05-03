@@ -180,7 +180,7 @@
 <li><u>ATmega256RFR2 Xplained Pro</u></li>
 <li><strong>AVR Butterfly (ATmega169)</strong>: <a href="../supporting-cores/#megacore">MegaCore</a></li>
 <li><u>MEGA-1284P Xplained</u>: <a href="../supporting-cores/#mightycore">MightyCore</a></li>
-<li><strong>ATmega4809 Curiosity Nano</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; onboard debugger</li>
+<li><strong>ATmega4809 Curiosity Nano</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; onboard debugger; choose the <code>48 pin standard</code> pinout; serial I/O is routed via <code>Serial3</code>. The LED is connected to PF5 (digital pin 39). The programmer you have to choose is <code>Curiosity Nano</code>.</li>
 </ul>
 <h2 id="arduino-boards">Arduino boards</h2>
 <ul>
@@ -215,8 +215,8 @@
 <li>Arduino Industrial 101</li>
 <li>Arduino Linino One</li>
 <li>Arduino UNO WiFi (Rev 1):  <a href="../supporting-cores/#minicore">MiniCore</a>; cut <code>RESET EN</code> solder bridge</li>
-<li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; board has an onboard debugger</li>
-<li><strong>Arduino Nano Every:</strong> <a href="../supporting-cores/#megacorex">MegaCoreX</a>; <a href="../board-preparation/#preparing-a-updi-target">UPDI pad on the backside</a></li>
+<li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; board has an onboard debugger; the recommended pinout is <code>Uno Wifi</code>; serial I/O is via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 25 (PD6); there is no bootloader support (because you can load via the debugger)</li>
+<li><strong>Arduino Nano Every:</strong> <a href="../supporting-cores/#megacorex">MegaCoreX</a>; <a href="../board-preparation/#preparing-a-updi-target">UPDI pad on the backside</a>; the only pinout is <code>Nano Every</code>; serial I/O is routed via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 13 (PE2); there is no bootloader support (because you can load via the serial interface)</li>
 </ul>
 <h2 id="sparkfun-boards">Sparkfun boards</h2>
 <ul>
@@ -230,10 +230,10 @@
 <li>RedBot (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li><u>Serial-7-Segment-Display</u> (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
 <li>ATmega128RFA1 Development Board</li>
-<li>LilyPad USB Plus</li>
+<li><s>LilyPad USB Plus</s>:  JTAG pins are not accessible</li>
 <li>SerLcd</li>
 <li>Digital Sandbox (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
-<li>Microview (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a></li>
+<li>Microview (ATmega328P): <a href="../supporting-cores/#minicore">MiniCore</a>; the SPI pins are not exposed, you need to solder to some vias inside the enclosure</li>
 </ul>
 <h2 id="adafruit-boards">Adafruit boards</h2>
 <ul>
@@ -319,7 +319,7 @@
 <li><u>Digispark (ATtiny85)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><u>Digispark Pro (ATtiny167)</u>: <a href="../supporting-cores/#tinycore">TinyCore</a></li>
 <li><u>Pololu A-Star 328PB Micro</u>: <a href="../supporting-cores/#minicore">MiniCore</a></li>
-<li><strong>Thinary Nano Every (ATmega4808)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a></li>
+<li><strong>Thinary Nano Every (ATmega4808)</strong>: <a href="../supporting-cores/#megacorex">MegaCoreX</a>; the only supported pinout is <code>Nano 4808</code>; serial I/O via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 9 (PA7); no bootload support because there is a JTAG2UPDI programmer on board</li>
 </ul>
               
             </div>
