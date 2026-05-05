@@ -179,7 +179,7 @@
 </tr>
 <tr>
 <td><code>--comm-speed</code><br><code>-C</code></td>
-<td>Communication speed for (U)PDI in kbps. The recommended maximal communication speed is less than <code>F_CPU</code>/17777 kbps. Default is min(900,<code>F_CPU</code>/17777). Since the F_CPU default is 1,000,000, the default is 56 kbps if no value for <code>F_CPU</code> is provided.</td>
+<td>Communication speed for (U)PDI in kbps. The recommended maximal communication speed is  <code>F_CPU</code>/17777 kbps. Default is min(900,<code>F_CPU</code>/17777). Since the F_CPU default is 8,000,000, the default is 450 kbps if no value for <code>F_CPU</code> is provided. Note that a UPDI speed that is too low (less than 45% of the recommended max speed) can lead to problems.</td>
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
@@ -195,7 +195,7 @@
 </tr>
 <tr>
 <td><code>--F_CPU</code><br><code>-F</code></td>
-<td>Frequency of CPU clock (Hz). It is used to determine the default value for <code>--debug-clock</code> and will be passed to <code>simavr</code> if called. The default is 1,000,000 Hz.</td>
+<td>Frequency of CPU clock (Hz). It is used to determine the default value for <code>--debug-clock</code> and will be passed to <code>simavr</code> if called. The default is 8,000,000 Hz.</td>
 </tr>
 <tr>
 <td><code>--interface</code><br><code>-i</code></td>

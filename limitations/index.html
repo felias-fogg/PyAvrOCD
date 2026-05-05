@@ -119,6 +119,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#link-time-jump-relaxation">Link-time jump relaxation</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#resets">Resets</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
@@ -214,7 +216,7 @@
 <p>The debugging system, consisting of the debug probe, the GDB server, and GDB itself, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. Finally, debugging your AVR chips can also be a risk to the health of your MCU.</p>
 <h2 id="debug-probes">Debug probes</h2>
 <p>The Microchip/Atmel debug probes/programmers do not electrically disconnect from the target when inactive.</p>
-<p>When you connect a debug probe to a <strong>debugWIRE</strong> target, you should be aware that the SPI/ISP lines will not be electrically disconnected, even when the probe is inactive or only active on the debugWIRE line. In particular, the SNAP probe has a pretty low-impedance high-state MISO line and a low-impedance low-state SCK line. However, also the other probes can interfere with high impedance outputs. It is something to look out for if these lines do not behave as they should.</p>
+<p>When you connect a debug probe to a <strong>debugWIRE</strong> target, you should be aware that the SPI/ISP lines will not be electrically disconnected, even when the probe is inactive or only active on the debugWIRE line. In particular, the SNAP probe has a pretty low-impedance high-state MISO line and a low-impedance low-state SCK line. However, the other probes can also interfere with high impedance outputs. It is something to look out for if these lines do not behave as they should.</p>
 <p>For other debugging interfaces, such as <strong>JTAG</strong> or <strong>UPDI</strong>, the problem is not relevant since the debug control and data lines need to be exclusively accessed by the debug probe in any case.</p>
 <h2 id="bootloader">Bootloader</h2>
 <p>Bootloaders will usually be erased when running the debugger.</p>
@@ -249,6 +251,10 @@
 <h2 id="link-time-jump-relaxation">Link-time jump relaxation</h2>
 <p>When using the optimization option <code>-mrelax</code>, the line number information gets distorted.</p>
 <p>The optimization option <code>-mrelax</code> is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible.</p>
+<h2 id="resets">Resets</h2>
+<p>Resets that occur while executing will erase the hardware breakpoints.</p>
+<p>Resets, e.g., due to a watch dog timer reset or a software reset, are handled gracefully by PyAvrOCD. However, all hardware breakpoints are deleted. For this reason, you should use the monitor command <code>monitor breakpoints software</code> if you plan to debug a program that resets while it executes. </p>
+<p>JTAG and debugWIRE targets simply start executing after a reset. UPDI targets need to be stopped and started again to continue executing after a reset while executing under debugging supervision. </p>
 <h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
 <p>Breakpoints in interrupt routines can throw off the timing of time-critical code.</p>
 <p>It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone.</p>
@@ -279,7 +285,7 @@ IN R2, PINB
 <p>Some of the AVR MCUs support USB communication in hardware, e.g., ATmega32U4. Since this kind of communication depends on timely responses by the connected devices, breaking in the middle of such communication exchanges may lead to losing the connection. My experience is, however, that the connection is quite robust. You should not stop execution between the initial break in <code>main</code> and the end of the <code>Serial</code>.<code>begin</code> call, because in this case, USB enumeration may time out. Otherwise, the USB connection appears to be quite robust. However, output may be garbled when a program stops before all serial I/O has been transferred to the host, similar to what is happening with serial I/O.</p>
 <h2 id="io-register-access">I/O register access</h2>
 <p>Some I/O registers cannot be accessed from the debugging UI.</p>
-<p>Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers <code>UDR</code> and <code>SPDR</code>). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2 or PlatformIO, then the <code>PERIPHERALS</code> debugger pane will show you a comment to this effect.</p>
+<p>Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers <code>UDR</code> and <code>SPDR</code>). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2, then the <code>PERIPHERALS</code> debugger pane will show you a comment to this effect.</p>
 <p>Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). Again, if you use the Arduino IDE or PlatformIO, the <code>PERIPHERALS</code> pane will inform you about the fact that the register is read-only to the debugger.</p>
 <h2 id="unsafe-exits-from-debugging">Unsafe exits from debugging</h2>
 <p>MCU and debug probe can be in an undefined state after abrupt exits.</p>
@@ -334,7 +340,7 @@ IN R2, PINB
 <h3 id="using-only-hardware-breakpoints">Using only hardware breakpoints</h3>
 <p>Can it be a solution to use only hardware breakpoints? It will definitely reduce flash wear to zero (well, except for reprogramming the target). And all GDB servers support that by trying to use hardware breakpoints as much as possible. Only when too many breakpoints are requested are software breakpoints utilized.</p>
 <p>You can enforce the use of <em>only</em> hardware breakpoints by employing the following <code>monitor</code> command.</p>
-<pre><code class="language-text">monitor breakpoint hardware
+<pre><code class="language-text">monitor breakpoints hardware
 </code></pre>
 <p>After using this command, you always get an error when more than the number of available hardware breakpoints is in use when you request to start or continue execution. One must be aware, though, that there might be slight problems when single-stepping and when continuing from a breakpoint.</p>
 <p>A GDB step-over operation uses a temporary breakpoint, which can lead to the situation where, after starting a step-over operation with a single step on the GDB server level, it is discovered that too many breakpoints are necessary to complete the step-over operation. In this case, the initial single step is done, but then execution is stopped (in the middle of the step-over operation).</p>
