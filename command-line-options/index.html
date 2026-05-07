@@ -147,7 +147,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="invoking-pyavrocd">Invoking PyAvrOCD</h1>
-<p>In a terminal window, you invoke PyAvrOCD as follows:</p>
+<p>In a terminal window, you invoke PyAvrOCD as follows, whereby the only mandatory option is the <code>-d</code> or <code>--device</code> option, specifying the MCU:</p>
 <pre><code>&gt; pyavrocd [options]
 </code></pre>
 <p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.</p>
@@ -179,7 +179,7 @@
 </tr>
 <tr>
 <td><code>--comm-speed</code><br><code>-C</code></td>
-<td>Communication speed for (U)PDI in kbps. The recommended maximal communication speed is  <code>F_CPU</code>/17777 kbps. Default is min(900,<code>F_CPU</code>/17777). Since the F_CPU default is 8,000,000, the default is 450 kbps if no value for <code>F_CPU</code> is provided. Note that a UPDI speed that is too low (less than 45% of the recommended max speed) can lead to problems.</td>
+<td>Communication speed upper limit for (U)PDI in kbps. Note that values that are too low may lead to erroneous behavior of the debugger. Safe values are apparently strictly higher than 1/40 of the CPU clock. Use with care.</td>
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
