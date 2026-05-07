@@ -102,6 +102,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v123">Release v1.2.3</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v122">Release v1.2.2</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v121">Release v1.2.1</a>
@@ -183,10 +185,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v123">Release v1.2.3</h2>
+<ul>
+<li>The default value for<code>--comm-speed</code> (UPDI communication speed) is now 750 kbps (as it is for Microchip Studio). Using lower values with care.</li>
+<li>The default MCU clock frequency (F_CPU) is again 1,000,000 Hz</li>
+</ul>
 <h2 id="release-v122">Release v1.2.2</h2>
 <ul>
-<li>Removed <code>--comm-speed</code> from the visible options and added a warning against using values that are too low. There is no default value any longer and no value is communicated to the hardware debugger, except when the user specifies a value explicitly.</li>
-<li>The default MCU clock frequency (F_CPU) is again 1,000,000 Hz</li>
+<li>Wrong correction of default value for the UPDI communication speed.</li>
 </ul>
 <h2 id="release-v121">Release v1.2.1</h2>
 <ul>
