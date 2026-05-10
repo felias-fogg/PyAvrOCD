@@ -97,6 +97,16 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#problems-after-debugging">Problems after Debugging</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-the-mcu-does-not-seem-to-execute-the-stored-program-but-acts-funny">After debugging, the MCU does not seem to execute the stored program, but acts funny</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-upload-a-new-program-using-a-bootloader">After debugging, it is impossible to upload a new program using a bootloader.</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#signals-and-error-messages">Signals and error messages</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#internal-and-fatal-dw-link-errors">Internal and fatal dw-link errors</a>
@@ -195,13 +205,21 @@
 <h3 id="when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</h3>
 <p>Probably the same reason as above.</p>
 <h3 id="single-stepping-takes-forever">Single-stepping takes forever</h3>
-<p>You requested a single step, and the debugger seems to take forever to complete this single step. There are two possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. The debugger will return from it, either when an interrupt wakes up the MCU or when you interrupt execution using Ctrl-C. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown. In order to recover, interrupt execution, set a breakpoint somewhere after this line, and then request to continue execution.</p>
+<p>You requested a single step, and the debugger seems to take forever to complete this single step. There are a few possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown.  Third, this could also be caused by the phenomenon mentioned above (low UPDI communication speed leading to single-step skidding). In all cases, simply stop with Ctrl-C (or the equivalent on the IDE level), set a breakpoint where you want to stop next, and continue execution.</p>
 <h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
-<p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that <a href="../limitations/#link-time-optimization">link time optimization</a> has optimized away your variable.</p>
+<p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that the compiler has optimized away your variable. If you really are in need to inspect and maybe change the variable. you can declare it as <code>volatile</code>. Then it will always be visible when in scope. However, handling of it is rather inefficient.</p>
 <h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
-<p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way to fix that is to use a more recent compiler version. If you have one at hand, together with the binary utilities, you can put a file <code>platform.local.txt</code> into the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer#boards">platform folder</a> of your core and write the line <code>compiler.path=/path/to/bin-folder/</code> into it.</p>
+<p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way around it is mentioned above. Declare the variable as <code>volatile</code>.</p>
 <h3 id="backtraces-are-distorted">Backtraces are distorted</h3>
 <p>This sometimes happens when AVR-GDB is not able to figure out the stack frame. I am working on it.</p>
+<h2 id="problems-after-debugging">Problems after Debugging</h2>
+<h3 id="after-debugging-the-mcu-does-not-seem-to-execute-the-stored-program-but-acts-funny">After debugging, the MCU does not seem to execute the stored program, but acts funny</h3>
+<p>Usually, after having finished debugging, the MCU is released, and the uploaded program will continue to execute. However, if the <a href="#limitations.md#unsafe-exits-from-debugging">debugging session has ended abruptly</a>, e.g., by disconnecting power, the debugger did not get a chance to replace the software breakpoints with the original instructions. In this case, simply reflash the MCU.</p>
+<h3 id="after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</h3>
+<p>When you deal with a debugWIRE target, note that the debugWIRE mode is only left when the command <code>monitor debugwire disable</code> has been typed into the GDB command line before ending the debug session. When you are still in debugWIRE mode, you cannot use SPI programming! You first need to <a href="../limitations/#exit-debugwire-mode">exit debugwire mode</a>.</p>
+<p>Note also that debugging a debugWIRE target can have <a href="../limitations/#debugwire-can-brick-mcus">adverse effects</a>.</p>
+<h3 id="after-debugging-it-is-impossible-to-upload-a-new-program-using-a-bootloader">After debugging, it is impossible to upload a new program using a bootloader.</h3>
+<p>Usually, the bootloader is erased before debugging starts. This means that you have to <a href="../restore-original-state/">reflash the bootloader and maybe change some fuses after debugging</a>.</p>
 <h2 id="signals-and-error-messages">Signals and error messages</h2>
 <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
 <table>
