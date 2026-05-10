@@ -155,7 +155,7 @@
 <p>Before doing that, it is advisable to select the <code>Optimize for Debugging</code> option.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
 
-<p>This will select the debugging-friendly optimization option <code>-Og</code> and will disable <em>link time optimization</em> in order to make the debugging experience smoother.<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth is usually around 20%, but can be as bad as 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>
+<p>This will select the debugging-friendly optimization option <code>-Og</code> and will disable <em>link time optimization</em><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> in order to make the debugging experience smoother. Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth is usually around 20%, but can be as bad as 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>
 <p>As an alternative to disabling the <code>Optimize for Debugging</code> option when the binary code gets too large, you may consider conditionally disabling parts of your code. When the <code>Optimize for Debugging</code> option is active, the compile-time constant <code>DEBUG</code> is defined. If the option is disabled, the constant <code>NDEBUG</code> is defined. So you can enclose parts of your code by</p>
 <pre><code class="language-C++">#ifndef DEBUG
 ...
@@ -178,7 +178,7 @@
 <hr />
 <ol>
 <li id="fn:1">
-<p>Some cores might still allow disabling LTO in the <code>Tools</code> menu. In this case, one needs to disable LTO separately.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Some cores might still allow disabling LTO in the <code>Tools</code> menu. In this case, one needs to disable LTO separately. Other cores, such as megaTinyCore and DxCore, do not allow for disabling LTO at all.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
