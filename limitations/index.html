@@ -253,8 +253,8 @@
 <p>The optimization option <code>-mrelax</code> is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible.</p>
 <h2 id="resets">Resets</h2>
 <p>Resets that occur while executing will erase the hardware breakpoints.</p>
-<p>Resets, e.g., due to a watch dog timer reset or a software reset, are handled gracefully by PyAvrOCD. However, all hardware breakpoints are deleted. For this reason, you should use the monitor command <code>monitor breakpoints software</code> if you plan to debug a program that resets while it executes. </p>
-<p>JTAG and debugWIRE targets simply start executing after a reset. UPDI targets need to be stopped and started again to continue executing after a reset while executing under debugging supervision. </p>
+<p>Resets, e.g., due to a watch dog timer reset or a software reset, are handled gracefully by PyAvrOCD. However, all hardware breakpoints are deleted. For this reason, you should use the monitor command <code>monitor breakpoints software</code> if you plan to debug a program that resets while it executes.</p>
+<p>JTAG and debugWIRE targets simply start executing after a reset. UPDI targets need to be stopped and started again to continue executing after a reset while executing under debugging supervision.</p>
 <h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
 <p>Breakpoints in interrupt routines can throw off the timing of time-critical code.</p>
 <p>It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone.</p>
