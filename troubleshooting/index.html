@@ -48,7 +48,7 @@
                   <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
                   </li>
               </ul>
-              <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
+              <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
                   </li>
@@ -78,9 +78,23 @@
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Troubleshooting</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#debugging-does-not-start">Debugging does not start</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#apple-could-not-verify-is-free-of-malware-that-may-harm-your-mac-or-compromise-your-privacy">Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#no-compatible-tool-discovered">No compatible tool discovered</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#errno-48-address-already-in-use">[Errno 48] Address already in use</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#isp-programming-failed-wrong-connection-or-wrong-mcu">ISP programming failed. Wrong connection or wrong MCU?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-session-not-started-debugwire-not-activated-by-power-cycling-parasitic-power-supply">Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#problems-while-debugging">Problems while debugging</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#code-executes-slower-or-faster-than-expected">Code executes slower or faster than expected</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</a>
@@ -103,7 +117,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-upload-a-new-program-using-a-bootloader">After debugging, it is impossible to upload a new program using a bootloader.</a>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</a>
     </li>
         </ul>
     </li>
@@ -181,24 +195,25 @@
 <p>In general, one can distinguish between problems that prohibit the start of the GDB server and problems appearing while debugging.</p>
 <h2 id="debugging-does-not-start">Debugging does not start</h2>
 <p>For most of the error messages, it should be obvious what to do. However, there are a few messages that look cryptic, and/or a solution is not apparent.</p>
-<ul>
-<li><code>Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</code>  This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file <code>FILE</code> as follows. Afterward, macOS will start these executables without a hitch.</li>
-</ul>
+<h3 id="apple-could-not-verify-is-free-of-malware-that-may-harm-your-mac-or-compromise-your-privacy"><code>Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</code></h3>
+<p>This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file <code>FILE</code> as follows. Afterward, macOS will start these executables without a hitch.</p>
 <pre><code class="language-bash">&gt; xattr -d com.apple.quarantine FILE
 </code></pre>
-<ul>
-<li>
-<p><code>No compatible tool discovered</code>: This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that another process currently uses it, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>
-</li>
-<li>
-<p><code>[Errno 48] Address already in use</code>: This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>
-</li>
-<li><code>ISP programming failed. Wrong connection or wrong MCU?</code>: This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. It could also mean that the MCU is not accessible anymore by ISP programming, which can have <a href="../limitations/#debugwire-can-brick-mcus">many possible causes</a>.</li>
-<li><code>Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</code>: debugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a <a href="https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/">parasitic power supply</a> problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the <code>IOREF</code> pin instead of using the <code>5V</code>  or <code>3.3V</code> pin. If this is not possible, consult the <a href="https://github.com/felias-fogg/XMiniCore#powering-external-circuitry">README file</a> of XMiniCore.</li>
-</ul>
+<h3 id="no-compatible-tool-discovered"><code>No compatible tool discovered</code></h3>
+<p>This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that another process currently uses it, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>
+<h3 id="errno-48-address-already-in-use"><code>[Errno 48] Address already in use</code></h3>
+<p>This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>
+<h3 id="isp-programming-failed-wrong-connection-or-wrong-mcu"><code>ISP programming failed. Wrong connection or wrong MCU?</code></h3>
+<p>This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. It could also mean that the MCU is not accessible anymore by ISP programming, which can have <a href="../limitations/#debugwire-can-brick-mcus">many possible causes</a>.</p>
+<h3 id="debug-session-not-started-debugwire-not-activated-by-power-cycling-parasitic-power-supply"><code>Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</code></h3>
+<p>DebugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a <a href="https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/">parasitic power supply</a> problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the <code>IOREF</code> pin instead of using the <code>5V</code>  or <code>3.3V</code> pin. If this is not possible, consult the <a href="https://github.com/felias-fogg/XMiniCore#powering-external-circuitry">README file</a> of XMiniCore.</p>
 <h2 id="problems-while-debugging">Problems while debugging</h2>
+<h3 id="code-executes-slower-or-faster-than-expected">Code executes slower or faster than expected</h3>
+<p>Note that PyAvrOCD by itself does not set any timing-related fuses (<code>CKDIV8</code> on classic chips or <code>FREQSEL</code> on modern chips). This means before debugging, you need to run <code>Burn Bootloader</code> in the Arduino IDE 2 after selecting the right clock settings, or you have to set the timing-related fuses to their desired values by other means.</p>
 <h3 id="loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</h3>
-<p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow. With <em>JTAG</em>, the situation is much better. The default speed is 1 MHz for programming and 200 kHz for debugging. However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
+<p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow.</p>
+<p>With <em>JTAG</em>, the situation is much better. The default speed is 1 MHz for programming (<code>--prog-clock</code>) and 200 kHz for debugging (<code>--debug-clock</code>). However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU.</p>
+<p><em>UPDI</em> communication speed is set to 750 kb/s by default (<code>--comm-speed</code>). On Dx and Ex series chips, speeds up to 1800 kb/s are possible.  <a href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">Refrain from setting speed to 400 kb/s or less</a>.</p>
 <h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later">The debugger does not stop at a line with a set breakpoint, but only later</h3>
 <p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
 <p>A different cause for such behavior can be that the UPDI communication speed is too low. I experienced breakpoint and single-step skidding when the UPDI communication was too low, e.g., 400 kHz or less when the MCU ran at 16 MHz.</p>
@@ -214,11 +229,11 @@
 <p>This sometimes happens when AVR-GDB is not able to figure out the stack frame. I am working on it.</p>
 <h2 id="problems-after-debugging">Problems after Debugging</h2>
 <h3 id="after-debugging-the-mcu-does-not-seem-to-execute-the-stored-program-but-acts-funny">After debugging, the MCU does not seem to execute the stored program, but acts funny</h3>
-<p>Usually, after having finished debugging, the MCU is released, and the uploaded program will continue to execute. However, if the <a href="../limitations/#unsafe-exits-from-debugging">debugging session has ended abruptly</a>, e.g., by disconnecting power, the debugger did not get a chance to replace the software breakpoints with the original instructions. In this case, simply reflash the MCU.</p>
+<p>Usually, after having finished debugging, the MCU is released, and the uploaded program will continue to execute. However, if the <a href="../limitations/#unsafe-exits-from-debugging">debugging session has ended abruptly</a>, e.g., by disconnecting power, the debugger did not get a chance to replace the software breakpoints with the original instructions. In this case, the MCU may act strangely. The cure is to simply reflash the MCU.</p>
 <h3 id="after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</h3>
-<p>When you deal with a debugWIRE target, note that the debugWIRE mode is only left when the command <code>monitor debugwire disable</code> has been typed into the GDB command line before ending the debug session. When you are still in debugWIRE mode, you cannot use SPI programming! You first need to <a href="../limitations/#exit-debugwire-mode">exit debugwire mode</a>.</p>
-<p>Note also that debugging a debugWIRE target can have <a href="../limitations/#debugwire-can-brick-mcus">adverse effects</a>.</p>
-<h3 id="after-debugging-it-is-impossible-to-upload-a-new-program-using-a-bootloader">After debugging, it is impossible to upload a new program using a bootloader.</h3>
+<p>When you deal with a debugWIRE target, note that the debugWIRE mode is only left when the command <code>monitor debugwire disable</code> has been typed into the GDB command line before ending the debug session. When you are still in debugWIRE mode, you cannot use SPI programming! You first need to <a href="../limitations/#exit-debugwire-mode">exit debugwire mode</a>. Note also that debugging a debugWIRE target can have <a href="../limitations/#debugwire-can-brick-mcus">adverse effects</a>.</p>
+<p>It is also possible that you locked yourself out by setting the wrong fuses (this applies to JTAG and UPDI targets as well).</p>
+<h3 id="after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</h3>
 <p>Usually, the bootloader is erased before debugging starts. This means that you have to <a href="../restore-original-state/">reflash the bootloader and maybe change some fuses after debugging</a>.</p>
 <h2 id="signals-and-error-messages">Signals and error messages</h2>
 <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
