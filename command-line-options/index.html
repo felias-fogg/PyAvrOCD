@@ -183,11 +183,11 @@
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
-<td>The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed.</td>
+<td>The MCU type of the target chip.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed.</td>
 </tr>
 <tr>
 <td><code>--elf-file</code><br><code>-e</code></td>
-<td>ELF file that will be debugged. If the file is specified, it will be checked whether it has been compiled with the <code>-mrelax</code> option. If so, debugging is refused because the line-numbering debug information is, in this case, completely distorted.</td>
+<td>ELF file containing the executable to be debugged. If the file is specified, it will be checked whether it has been compiled with the <a href="../compilation-options/#relax"><code>-mrelax</code> option</a>. If so, debugging is refused because the line-numbering debug information is, in this case, completely distorted.</td>
 </tr>
 <tr>
 <td><code>--debug-clock</code><br><code>-D</code></td>
