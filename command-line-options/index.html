@@ -179,11 +179,15 @@
 </tr>
 <tr>
 <td><code>--comm-speed</code><br><code>-C</code></td>
-<td>Communication speed for (U)PDI in kbps (default 750). Note that values that are too low may lead to erroneous behavior of the debugger. Safe values are apparently strictly higher than 1/40 of the CPU clock. Use with care.</td>
+<td>Communication speed for (U)PDI in kbps (default 750). Note that values that are too low may lead to erroneous behavior of the debugger. Safe values are apparently strictly higher than 400 kbps if the CPU clock is 16 MHz or higher. Use with care.</td>
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
 <td>The argument to this option specifies the MCU type of the target chip in lower case.  This option is mandatory. If a '?' mark is given, all supported MCUs are listed.</td>
+</tr>
+<tr>
+<td><code>--elf-file</code><br><code>-e</code></td>
+<td>ELF file that will be debugged. If the file is specified, it will be checked whether it has been compiled with the <code>-mrelax</code> option. If so, debugging is refused because the line-numbering debug information is, in this case, completely distorted.</td>
 </tr>
 <tr>
 <td><code>--debug-clock</code><br><code>-D</code></td>

@@ -159,8 +159,8 @@
 <p>Before doing that, it is advisable to select the <code>Optimize for Debugging</code> option.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/optimize-for-debug.png" width="30%"></p>
 
-<p>This will select the debugging-friendly optimization option <code>-Og</code> and will disable <em>link time optimization</em><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup> in order to make the debugging experience smoother. Otherwise, some variables and structural information may not be displayed, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth is usually around 20%, but can be as bad as 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>
-<p>As an alternative to disabling the <code>Optimize for Debugging</code> option when the binary code gets too large, you may consider conditionally disabling parts of your code. When the <code>Optimize for Debugging</code> option is active, the compile-time constant <code>DEBUG</code> is defined. If the option is disabled, the constant <code>NDEBUG</code> is defined. So you can enclose parts of your code by</p>
+<p>This will select the debugging-friendly optimization option <code>-Og</code> in order to make the debugging experience smoother. Otherwise, the debugger may not be able to stop at every line, and single-stepping may not necessarily follow the statements as specified in the source text. However, selecting this option can also enlarge the size of the binary code significantly. Experience shows that the growth is usually around 20%, but can be as bad as 40%. If the resulting binary code does not fit into flash memory, one can also debug with a disabled <code>Optimize for Debugging</code> option. However, debugging will in this case be less comfortable.</p>
+<p>As an alternative to disabling the <code>Optimize for Debugging</code> option when the binary code gets too large, you may consider conditionally disabling parts of your code. When the <code>Optimize for Debugging</code> option is active, the compile-time constant <code>DEBUG</code> is defined. So you can enclose parts of your code by</p>
 <pre><code class="language-C++">#ifndef DEBUG
 ...
 #endif
@@ -170,23 +170,16 @@
 <p class="admonition-title">Disable 'Optimize for Debugging' setting after debugging has finished.</p>
 <p>Once <code>Optimize for Debugging</code> has been activated, it will also be enabled for other projects. You have to explicitly disable this option in order to get smaller binary files again.</p>
 </div>
+<p>For some of the debug-enabled Arduino cores, it is possible to disable <em>link-time optimization</em> (<code>LTO</code>). This can be helpful because it will preserve some debug information (see below).</p>
 <h2 id="compiling-in-other-environments">Compiling in other environments</h2>
 <p>In most IDEs and, of course, on the command line, you usually have full control over all the compiler and linker settings. There are a few compiler options that are critical for debugging.</p>
 <h3 id="critical-optimization-options">Critical optimization options</h3>
 <ul>
 <li>The <em>compiler optimization level</em> for MCUs is usually <code>-Os</code>, meaning that the needed space in flash memory should be minimized. For debugging, one should choose <code>-Og</code> instead, which optimizes for space but tries to keep the control flow as similar as possible to the source text, i.e., no inlining or code re-ordering. Of course, the produced binary will be bigger than when using <code>-Os</code>.</li>
-<li><em>Link time optimization</em>, triggered by <code>-flto</code> for compilation and linking, will prune away unused library code. In addition, it may also do code inlining across compilation units. Further, it seems to prune debugging information, such as information about global variables and class structures. For this reason, it is advisable to disable link time optimization when debugging.  Again, this will increase the size of the binary.</li>
-<li><em>Link time jump relaxation</em> is triggered by the compiler and linker option <code>-mrelax</code>. This will try to replace <code>JMP</code> and <code>CALL</code> instructions with <code>RJMP</code> and <code>RCALL</code> at link time. While this sounds like a reasonable and easy optimization, its implementation is unfortunately buggy when it comes to the generation of debugging information. The line number information is completely garbled, at least in version AVR-GCC v7.3. So this option should <em>never be used when debugging</em>.</li>
-<li><em>Including debugging information</em> is triggered by the compiler option <code>-g</code>. This may enlarge the size of the object file in ELF format, but does not lead to larger binaries. So, this option can always be used at no cost. Using <code>-g3</code> or <code>-ggdb3</code>  instead of <code>-g</code> promises to record more debugging information, which might be helpful for the debugging process.</li>
+<li><em>Link time optimization</em>, enabled by <code>-flto</code> for compilation and linking, will prune away dead code. In addition, it may also do code inlining across compilation units. Further, the currently employed GCC  version 7.3.0 prunes debugging information, such as information about global variables and class structures. For this reason, it is advisable to disable link time optimization when debugging.  However, this is not possible for the Arduino cores that support modern AVR MCUs. Hopefully, the situation will improve when upgrading to a more recent GCC version.</li>
+<li><em>Link time jump relaxation</em> is enabled by the compiler and linker option <code>-mrelax</code>. This will try to replace <code>JMP</code> and <code>CALL</code> instructions with <code>RJMP</code> and <code>RCALL</code> at link time. While it sounds like a reasonable and easy optimization, its implementation is unfortunately buggy when it comes to the generation of debugging information. The line number information is completely garbled, at least in version AVR-GCC v7.3. So this option should <em>never be used when debugging</em>.</li>
+<li><em>Including debugging information</em> is enabled by the compiler option <code>-g</code>. This may enlarge the size of the object file in ELF format, but does not lead to larger binaries. So, this option can always be used at no cost. Using <code>-g3</code> or <code>-ggdb3</code>  instead of <code>-g</code> will record macro definitions, which might be helpful for the debugging process.</li>
 </ul>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p>Some cores might still allow disabling LTO in the <code>Tools</code> menu. In this case, one needs to disable LTO separately. Other cores might not allow for disabling LTO at all.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
               
             </div>
           </div><footer>
