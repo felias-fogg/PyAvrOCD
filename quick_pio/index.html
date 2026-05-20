@@ -47,7 +47,7 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">PlatformIO</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#quickstart-guide-atmel-ice-atmega1284">Quickstart guide: Atmel-ICE &amp; ATmega1284</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-atmel-ice-atmega1284">Quickstart: Atmel-ICE &amp; ATmega1284</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware">Required hardware</a>
     </li>
@@ -69,7 +69,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-dw-link-attiny85">Quickstart: dw-link &amp; ATtiny85</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware_1">Required hardware</a>
     </li>
@@ -188,7 +188,8 @@
               
                 <h1 id="quickstart-guides-platformio">Quickstart Guides: PlatformIO</h1>
 <p>The following two quickstart guides provide an easy entrance into the the wonderful land of debugging using PlatformIO.</p>
-<h2 id="quickstart-guide-atmel-ice-atmega1284">Quickstart guide: Atmel-ICE &amp; ATmega1284</h2>
+<hr />
+<h2 id="quickstart-atmel-ice-atmega1284">Quickstart: Atmel-ICE &amp; ATmega1284</h2>
 <p>This quickstart guide shows you how to set up a PlatformIO project for debugging a JTAG target using an EDBG-based debug probe.</p>
 <h3 id="required-hardware">Required hardware</h3>
 <p>We will use an ATmega1284 (but any other AVR JTAG Mega will do) and the debug probe Atmel-ICE  (any other <a href="../supported-debuggers/">EDBG-based debug probe</a> is also OK). In addition, we will use the <a href="https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/">DIP-40 Arduino-compatible development board</a> to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.</p>
@@ -317,7 +318,8 @@
 <h3 id="potential-problems">Potential Problems</h3>
 <p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections of the PyAvrOCD manual.</p>
 <p>One common problem is forgetting to change from ISP to JTAG or back. In this case, the debug probe complains that there is no device.</p>
-<h2 id="quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</h2>
+<hr />
+<h2 id="quickstart-dw-link-attiny85">Quickstart: dw-link &amp; ATtiny85</h2>
 <p>This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe. Instead, we will build our own debug probe.</p>
 <p>It explains</p>
 <ul>

@@ -45,15 +45,15 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Arduino IDE 2</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#quickstart-guide-atmega328p-xplained-mini">Quickstart guide: ATmega328P Xplained Mini</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-curiosity-nano">Quickstart: Curiosity Nano</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware">Required hardware</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-the-debug-enabled-xminicore">Step 1: Install the debug-enabled XMiniCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-a-debug-enabled-core">Step 1: Install a debug-enabled core</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-3-compile-and-upload-the-sketch">Step 3: Compile and upload the sketch</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-compile-the-sketch">Step 3: Compile the sketch</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-4-debug-the-sketch">Step 4: Debug the sketch</a>
     </li>
@@ -63,9 +63,27 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#quickstart-guide-dw-link-arduino-uno-r3">Quickstart guide: dw-link &amp; Arduino UNO R3</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-atmega328p-xplained-mini">Quickstart: ATmega328P Xplained Mini</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware_1">Required hardware</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-the-debug-enabled-xminicore">Step 1: Install the debug-enabled XMiniCore</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-load-sketch-and-select-board_1">Step 2: Load sketch and select board</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-compile-and-upload-the-sketch">Step 3: Compile and upload the sketch</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-debug-the-sketch_1">Step 4: Debug the sketch</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-5-start-over-or-terminate-the-debugging-session_1">Step 5: Start over or terminate the debugging session</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#potential-problems_1">Potential problems</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-dw-link-arduino-uno">Quickstart: dw-link &amp; Arduino UNO</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-hardware_2">Required hardware</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-1-turning-an-uno-into-a-debug-probe">Step 1: Turning an UNO into a debug probe</a>
     </li>
@@ -85,13 +103,13 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-9-start-over-or-terminate-the-debugging-session">Step 9: Start over or terminate the debugging session</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#potential-problems_1">Potential problems</a>
+    <li class="toctree-l3"><a class="reference internal" href="#potential-problems_2">Potential problems</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#quickstart-guide-snap-attiny85">Quickstart guide: SNAP &amp; ATtiny85</a>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-snap-attiny85">Quickstart: SNAP &amp; ATtiny85</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#required-hardware_2">Required hardware</a>
+    <li class="toctree-l3"><a class="reference internal" href="#required-hardware_3">Required hardware</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-1-install-the-debug-enabled-tinycore">Step 1: Install the debug-enabled TinyCore</a>
     </li>
@@ -207,15 +225,81 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="quickstart-guides-arduino-ide-2">Quickstart Guides: Arduino IDE 2</h1>
-<p>Since PyAvrOCD is integrated into the Arduino IDE 2, it is pretty easy to start debugging. Below, you will find three different quickstart guides to set up debugging in the Arduino IDE 2 for the following hardware setups:</p>
+<p>Since PyAvrOCD is integrated into the Arduino IDE 2, it is pretty easy to start debugging. Below, you will find four quickstart guides to start embedded debugging in the Arduino IDE 2 using the following hardware:</p>
 <ul>
-<li><a href="#quickstart-guide-atmega328p-xplained-mini">ATmega328P XPlained Mini board</a>,</li>
-<li><a href="#quickstart-guide-dw-link-arduino-uno-r3">dw-link debugger and an Arduino Uno R3</a>, and</li>
-<li><a href="#quickstart-guide-snap-attiny85">SNAP debugger and an ATtiny85 on a breadboard</a>.</li>
+<li>
+<p><a href="#quickstart-curiosity-nano">Curiosity Nano board</a>,</p>
+</li>
+<li>
+<p><a href="#quickstart-atmega328p-xplained-mini">ATmega328P XPlained Mini board</a>,</p>
+</li>
+<li><a href="#quickstart-dw-link-arduino-uno">dw-link debugger and an Arduino Uno R3</a>, and</li>
+<li><a href="#quickstart-snap-attiny85">SNAP debugger and an ATtiny85 on a breadboard</a>.</li>
 </ul>
-<h2 id="quickstart-guide-atmega328p-xplained-mini">Quickstart guide: ATmega328P Xplained Mini</h2>
-<p>The <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">Atmega328P Xplained Mini</a> development board, which has an Arduino Uno footprint, is ideal for making a first experience with embedded debugging because it already contains an onboard debugger. It is simply plug-and-play.</p>
+<hr />
+<h2 id="quickstart-curiosity-nano">Quickstart: Curiosity Nano</h2>
+<p>The <a href="https://www.microchip.com/en-us/development-tools-tools-and-software/development-tools-category-explorer?category=curiosityboards&amp;subcategory=8-bit-curiosity-nano-boards">Curiosity Nano</a> development boards provide an ideal and affordable entry into embedded programming and debugging because they have a debugger already on board. This makes it a plug-and-play experience.</p>
 <h3 id="required-hardware">Required hardware</h3>
+<p>You need a Curiosity Nano board and a USB cable to connect the board to your computer.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cnano.png" width="55%">
+</p>
+
+<h3 id="step-1-install-a-debug-enabled-core">Step 1: Install a debug-enabled core</h3>
+<p>Add new <em>boards manager URL</em>s in the <code>Preferences</code> dialog:<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></p>
+<pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
+https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
+</code></pre>
+<details>
+  <summary><b>How to enter a new boards manager URL</b></summary>
+<p></p>
+  <p>First you need to open the <code>Preferences</code> dialog, which you find either in the <code>Arduino IDE</code> or the <code>File</code> menu. </p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+<p>
+Next you have to open the field <code>Additional boards manager URLs</code> and type in the package index URL, finishing with clicking on two <code>OK</code>  buttons in succession.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+<p>
+Now type in the package index URL.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls-xmini.png" width="50%">
+</p>
+</details>
+<p></p>
+
+<p>Next, you have to install the appropriate core. Activate the <code>Boards Manager</code>, select the most recent versions of the core you want to install, and click on <code>Install</code>.</p>
+<details>
+<summary><b>How to install a new core</b></summary>
+<p></p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
+</details>
+<p></p>
+
+<div class="admonition info">
+<p class="admonition-title">Linux systems</p>
+<p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
+</div>
+<h3 id="step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</h3>
+<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; &lt;core&gt; -&gt; &lt;board&gt;</code>. If you want to use serial I/O, you may also want to select the right <code>Port</code> in the <code>Tools</code> menu. Perhaps you want to set a few additional options in the <code>Tools</code> menu, such as the chip, the pinout, etc.</p>
+<h3 id="step-3-compile-the-sketch">Step 3: Compile the sketch</h3>
+<p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark) in the top bar. This will compile the sketch.</p>
+<h3 id="step-4-debug-the-sketch">Step 4: Debug the sketch</h3>
+<p>It is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top bar. This will open the <code>DEBUG</code> pane after a while. Now you can start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
+<h3 id="step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</h3>
+<p>You can now edit the sketch and start again at step 3. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
+<p>If you want to stop debugging, it may be a good idea to deactivate the <code>Optimize for Debugging</code> option.</p>
+<h3 id="potential-problems">Potential problems</h3>
+<p>If something goes wrong, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
+<hr />
+<h2 id="quickstart-atmega328p-xplained-mini">Quickstart: ATmega328P Xplained Mini</h2>
+<p>The <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">Atmega328P Xplained Mini</a> development board, which has an Arduino Uno footprint, is ideal for making a first experience with embedded debugging because it already contains an onboard debugger. It is simply plug-and-play.</p>
+<h3 id="required-hardware_1">Required hardware</h3>
 <p>The only thing you need is the XPlained Mini board and a USB cable to connect it to your computer.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/xplained.png" width="35%">
@@ -260,25 +344,25 @@ Now type in the package index URL.
 <p class="admonition-title">Linux systems</p>
 <p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
-<h3 id="step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</h3>
+<h3 id="step-2-load-sketch-and-select-board_1">Step 2: Load sketch and select board</h3>
 <p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; XMiniCore -&gt; Atmel atmega328p Xplained mini</code>. If you want to use serial I/O, you may also want to select the right <code>Port</code> in the <code>Tools</code> menu.</p>
 <h3 id="step-3-compile-and-upload-the-sketch">Step 3: Compile and upload the sketch</h3>
 <p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Upload</code> button (arrow to the right) in the top bar. This will compile and upload the sketch.</p>
-<h3 id="step-4-debug-the-sketch">Step 4: Debug the sketch</h3>
+<h3 id="step-4-debug-the-sketch_1">Step 4: Debug the sketch</h3>
 <p>It is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top row. This will open the <code>DEBUG</code> pane after a while. Now you can start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
-<h3 id="step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</h3>
+<h3 id="step-5-start-over-or-terminate-the-debugging-session_1">Step 5: Start over or terminate the debugging session</h3>
 <p>You can now edit the sketch and start again at step 3. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
 <p>If you want to stop debugging, it may be a good idea to deactivate the <code>Optimize for Debugging</code> option again.</p>
-<h3 id="potential-problems">Potential problems</h3>
+<h3 id="potential-problems_1">Potential problems</h3>
 <p>If something goes wrong, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
 <div class="admonition danger">
 <p class="admonition-title">Warning:  Use IOREF to source attached circuits</p>
 <p>If you have any attached circuitry, be it on a breadboard or a shield, use the <code>IOREF</code> pin to power it. If this is not possible, check out the <a href="https://github.com/felias-fogg/XMiniCore?tab=readme-ov-file#powering-external-circuitry"><code>README</code> file of XminiCore for a solution</a>.</p>
 </div>
 <hr />
-<h2 id="quickstart-guide-dw-link-arduino-uno-r3">Quickstart guide: dw-link &amp; Arduino UNO R3</h2>
+<h2 id="quickstart-dw-link-arduino-uno">Quickstart: dw-link &amp; Arduino UNO</h2>
 <p>This quickstart guide shows how to try out embedded debugging as offered by the Arduino IDE 2 without requiring you to invest in a debug probe. It will turn an Arduino Uno into a debug probe.</p>
-<h3 id="required-hardware_1">Required hardware</h3>
+<h3 id="required-hardware_2">Required hardware</h3>
 <ul>
 <li>Two Arduino UNO R3 (or similar),</li>
 <li>one USB cable (for the connection to the host),</li>
@@ -374,13 +458,13 @@ Now type in the package index URL.
 <p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode.
 It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
 <p>If you want to restore your Uno to the original state, consult the section on "<a href="../restore-original-state/">Restoring the target</a>."</p>
-<h3 id="potential-problems_1">Potential problems</h3>
+<h3 id="potential-problems_2">Potential problems</h3>
 <p>If the status LED of dw-link starts to blink furiously, then the hardware debugger has hit an unrecoverable error. Typing <code>monitor info</code> into the input field of the GDB debugger can then help you find out about the error number, which is decoded in the <a href="../troubleshooting/#internal-and-fatal-dw-link-errors">Troubleshooting</a> section.
 It may also be a good idea to consult the <a href="../limitations/">Limitations</a> section.</p>
 <hr />
-<h2 id="quickstart-guide-snap-attiny85">Quickstart guide: SNAP &amp; ATtiny85</h2>
+<h2 id="quickstart-snap-attiny85">Quickstart: SNAP &amp; ATtiny85</h2>
 <p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 using the MPLAB SNAP debug probe.</p>
-<h3 id="required-hardware_2">Required hardware</h3>
+<h3 id="required-hardware_3">Required hardware</h3>
 <ul>
 <li>SNAP</li>
 <li>USB cable</li>
@@ -532,6 +616,14 @@ Now type in the package index URL.
 <p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode. It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
 <h3 id="what-can-go-wrong">What can go wrong?</h3>
 <p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:*">
+<p>Extensions to cover the Dx- and Ex-chips are expected to arrive soon.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>

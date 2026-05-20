@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_arduino_attiny/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_curiosity_nano/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Quick arduino attiny - PyAvrOCD</title>
+    <title>Quick curiosity nano - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Quick arduino attiny";
-        var mkdocs_page_input_path = "quick_arduino_attiny.md";
-        var mkdocs_page_url = "/quick_arduino_attiny/";
+        var mkdocs_page_name = "Quick curiosity nano";
+        var mkdocs_page_input_path = "quick_curiosity_nano.md";
+        var mkdocs_page_url = "/quick_curiosity_nano/";
       </script>
     
     <!--[if lt IE 9]>
@@ -127,9 +127,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Quick arduino attiny</li>
+      <li class="breadcrumb-item active">Quick curiosity nano</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_arduino_attiny.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_curiosity_nano.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -137,25 +137,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="quickstart-snap-attiny85">Quickstart: SNAP &amp; ATtiny85</h2>
-<p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 using the MPLAB SNAP debug probe.</p>
+                <h2 id="quickstart-curiosity-nano">Quickstart: Curiosity Nano</h2>
+<p>The <a href="https://www.microchip.com/en-us/development-tools-tools-and-software/development-tools-category-explorer?category=curiosityboards&amp;subcategory=8-bit-curiosity-nano-boards">Curiosity Nano</a> development boards provide an ideal and affordable entry into embedded programming and debugging because they have a debugger already on board. This makes it a plug-and-play experience.</p>
 <h3 id="required-hardware">Required hardware</h3>
-<ul>
-<li>SNAP</li>
-<li>USB cable</li>
-<li>ATtiny85 (or any other classic ATtiny or ATmegaX8) as the <em>target</em></li>
-<li>In order to set up the target, you need:<ul>
-<li>a breadboard together with</li>
-<li>jumper wires (male-to-male)</li>
-<li>1 LED</li>
-<li>2 resistors (10 kΩ, 1kΩ)</li>
-<li>1 capacitor (100 nF)</li>
-</ul>
-</li>
-</ul>
-<h3 id="step-1-install-the-debug-enabled-tinycore">Step 1: Install the debug-enabled TinyCore</h3>
-<p>Add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
-<pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
+<p>You need a Curiosity Nano board and a USB cable to connect the board to your computer.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cnano.png" width="55%">
+</p>
+
+<h3 id="step-1-install-a-debug-enabled-core">Step 1: Install a debug-enabled core</h3>
+<p>Add new <em>boards manager URL</em>s in the <code>Preferences</code> dialog:<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></p>
+<pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
+https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 </code></pre>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -179,7 +172,7 @@ Now type in the package index URL.
 </details>
 <p></p>
 
-<p>Next, you have to install the new core. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>.</p>
+<p>Next, you have to install the appropriate core. Activate the <code>Boards Manager</code>, select the most recent versions of the core you want to install, and click on <code>Install</code>.</p>
 <details>
 <summary><b>How to install a new core</b></summary>
 <p></p>
@@ -192,105 +185,25 @@ Now type in the package index URL.
 <p class="admonition-title">Linux systems</p>
 <p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
-<h3 id="step-2-connect-the-target-with-the-debug-probe">Step 2: Connect the target with the debug probe</h3>
-<p>You need to set up the hardware on a breadboard and use a few jumper wires to connect the ATtiny to the debug probe. Further, as is obvious from the Fritzing sketch, you need an external power supply. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/snap+attiny85.png" width="80%">
-</p>
-
-<details>
-<summary><b>Table of breadboard connections</b></summary>
-<p></p>
-<p>You can use this table to check whether you have made all the connections.</p>
-<table>
-<thead>
-<tr>
-<th>ATtiny pin</th>
-<th>SNAP pin</th>
-<th>component</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>#1 (Reset)</td>
-<td>TAUX #6</td>
-<td>10 kΩ resistor to Vcc</td>
-</tr>
-<tr>
-<td>#2 (D3)</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td>#3 (D4)</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-<tr>
-<td>#4 (GND)</td>
-<td>GND #3</td>
-<td>GND on breadboard, LED (-), decoupling cap 100 nF</td>
-</tr>
-<tr>
-<td>#5 (D0, MOSI)</td>
-<td>TTDI #7</td>
-<td></td>
-</tr>
-<tr>
-<td>#6 (D1, MISO)</td>
-<td>PGD #4</td>
-<td></td>
-</tr>
-<tr>
-<td>#7 (D2, SCK)</td>
-<td>PGC #5</td>
-<td>1 kΩ resistor to LED (+)</td>
-</tr>
-<tr>
-<td>#8 (Vcc)</td>
-<td>TVDD #2</td>
-<td>Vcc on breadboard, 10k resistor, decoupling cap 100 nF</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>connect LED (+) and 1 kΩ resistor</td>
-</tr>
-</tbody>
-</table>
-<!--
-| ATtiny pin    | SNAP pin | component                                              |
-| ------------- | -------- | ------------------------------------------------------ |
-| #1 (Reset)    | TAUX #6  | 10 kΩ resistor to Vcc                                  |
-| #2 (D3)       | &nbsp;   | &nbsp;                                                 |
-| #3 (D4)       | &nbsp;   | &nbsp;                                                 |
-| #4 (GND)      | GND #3   | GND on breadboard, LED (-), decoupling cap 100 nF      |
-| #5 (D0, MOSI) | TTDI #7  |                                                        |
-| #6 (D1, MISO) | PGD #4   |                                                        |
-| #7 (D2, SCK)  | PGC #5   | 1 kΩ resistor to LED (+)                               |
-| #8 (Vcc)      | TVDD #2  | Vcc on breadboard, 10k resistor, decoupling cap 100 nF |
-|               |          | connect LED (+) and 1 kΩ resistor                      |
--->
-
-</details>
-<p></p>
-
-<h3 id="step-3-load-sketch-and-select-board">Step 3: Load sketch and select board</h3>
-<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; TinyCore -&gt; ATtiny85</code>. If this is a chip is fresh from the factory, you need to adjust for the clock frequency. Choose <code>1 MHz internal osc.</code> under <code>Tools -&gt; Clock</code>.</p>
-<h3 id="step-4-compile-the-sketch">Step 4: Compile the sketch</h3>
-<p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark symbol) in the top bar. This will compile the sketch.</p>
-<h3 id="step-5-start-debugging">Step 5: Start debugging</h3>
-<p>Now it is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top bar. If the target MCU is not already in debugWIRE mode, the debugger will request 'power cycling'.</p>
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-attiny-power-cycle.png " width="90%"></p>
-
-<p>Power cycling means to remove the Vcc jumper cable and, after a few seconds, to reinsert it. After a while, the <code>DEBUG</code> pane should open.</p>
-<h3 id="step-8-debug-the-sketch">Step 8: Debug the sketch</h3>
-<p>You can now start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
-<h3 id="step-9-start-over-or-terminate-the-debugging-session">Step 9: Start over or terminate the debugging session</h3>
-<p>After leaving the debugger, you can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
-<p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode. It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
-<h3 id="what-can-go-wrong">What can go wrong?</h3>
-<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
+<h3 id="step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</h3>
+<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; &lt;core&gt; -&gt; &lt;board&gt;</code>. If you want to use serial I/O, you may also want to select the right <code>Port</code> in the <code>Tools</code> menu. Perhaps you want to set a few additional options in the <code>Tools</code> menu, such as the chip, the pinout, etc.</p>
+<h3 id="step-3-compile-the-sketch">Step 3: Compile the sketch</h3>
+<p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark) in the top bar. This will compile the sketch.</p>
+<h3 id="step-4-debug-the-sketch">Step 4: Debug the sketch</h3>
+<p>It is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top bar. This will open the <code>DEBUG</code> pane after a while. Now you can start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
+<h3 id="step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</h3>
+<p>You can now edit the sketch and start again at step 3. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
+<p>If you want to stop debugging, it may be a good idea to deactivate the <code>Optimize for Debugging</code> option.</p>
+<h3 id="potential-problems">Potential problems</h3>
+<p>If something goes wrong, it is a good idea to have a look at the output of the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> section of the PyAvrOCD manual.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:*">
+<p>Extensions to cover the Dx- and Ex-chips are expected to arrive soon.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>
