@@ -167,8 +167,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="setting-the-right-fuses-to-enable-debugging">Setting the right fuses to enable debugging</h1>
-<p>The good news for Arduino IDE 2 users: You do not have to worry about fuses. Almost all the fuse setting details are taken care of by the IDE.</p>
-<p>One thing you have to be aware of is that it may be necessary to enable the JTAG pins on targets with the JTAG interface.</p>
+<p>The good news for Arduino IDE 2 users: You do not have to worry about fuses. Almost all the fuse setting details are taken care of by the IDE. However, on targets with JTAG interface,  it may be necessary to enable the JTAG pins on targets with the JTAG interface.</p>
 <details>
 <summary><b>How to enable the JTAG pins</b></summary>
 <p></p>
@@ -243,8 +242,7 @@ When you use the <code>Burn Bootloader</code> command, all fuses corresponding t
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
 <p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. However, if it is a pin with UPDI/GPIO/RESET shared functionality, and the UPDI functionality has been disabled,  you need high-voltage programming. PyAvrOCD does not support this because the compatible debug probes do not support high-voltage programming. The advice is to buy a dedicated <a href="https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6">high-voltage UPDI programmer</a> or <a href="https://avdweb.nl/arduino/attiny3217/hv-programming">build one on a breadboard</a>, and then restore the UPDI functionality.</p>
 <h3 id="fuse-settings-when-pyavrocd-manages-the-fuse_1">Fuse settings when PyAvrOCD manages the fuse</h3>
-<p>Since UPDI targets do not have a special debugging fuse, you only need to care about <code>lockbits</code>. The bootloader setting can mostly be ignored. Either it has been erased when the lockbits are cleared, in which case the MCU will skip over this section, or it is still there, which implies that the bootloader will jump to the application program.</p>
-<p>In other words, for UPDI targets, PyAvrOCD will manage the <code>EESAVE</code> fuse and the <code>lockbits</code> for you.</p>
+<p>UPDI targets do not have a special debugging fuse, and the bootloader, if there is one, will be overwritten with NOPs. This means you only need to care about <code>lockbits</code>. So, for UPDI targets, PyAvrOCD will only manage the <code>EESAVE</code> fuse and the <code>lockbits</code> for you.</p>
 <h3 id="fuse-settings-when-fuses-are-managed-manually_2">Fuse settings when fuses are managed manually</h3>
 <p>When you want complete control over the fuses, you only have to make sure that the <code>lockbits</code> are cleared. You may also want to set the <code>EESAVE</code> fuse.</p>
               

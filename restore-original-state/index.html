@@ -144,16 +144,16 @@
 <p>If, after debugging, you want to restore a target board to its original state, a few things have to be done:</p>
 <ol>
 <li>If your target is a debugWIRE MCU, then you need to disable debugWIRE mode. This can be done by entering the debugger and then issuing the <code>monitor debugwire disable</code> command.</li>
-<li>You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for <strong>debug use</strong> only.  In this case, you can also ignore step 3.</li>
-<li>You may need to reflash the bootloader, if initially present, and likely need to set the correct fuses.<ul>
-<li>To restore the board to its exact original state before debugging, you must get hold of the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using an SPI programmer.</li>
+<li>You need to undo the physical changes you have made to the board. This may be to restore a solder bridge (or solder a header in its place). Alternatively, you may need to solder a capacitor again or reconnect a reset circuit. My advice is not to do that, but mark the board instead for <em>debug use</em> only.  In this case, you can ignore step 3.</li>
+<li>You may need to reflash the <em>bootloader</em>, if initially present, and likely need to set the correct <em>fuses</em>.<ul>
+<li>To restore the board to its exact original state before debugging, you must get hold of the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using a programmer.</li>
 <li>In the Arduino IDE, you can do this by using the <code>Burn Bootloader</code> command in the <code>Tools</code> menu. This will set the correct fuses and reinstall the bootloader (if needed). Note that if you want only to set the fuses without installing a bootloader, you still have to use the <code>Burn Bootloader</code> command.</li>
 </ul>
 </li>
 </ol>
 <div class="admonition info">
-<p class="admonition-title">Use dw-link as 'Arduino as ISP' programmer</p>
-<p>You can use dw-link as a programmer. Select as the <code>Port</code> in the <code>Tools</code> menu the USB connection to dw-link and choose <code>Arduino as ISP</code> as the <code>Programmer</code>. Now you can upload programs and burn bootloaders and fuses.</p>
+<p class="admonition-title">Use dw-link as an 'Arduino as ISP' programmer</p>
+<p>You can use dw-link as a programmer. Select as the <code>Port</code> in the <code>Tools</code> menu the serial connection to dw-link and choose <code>Arduino as ISP</code> as the <code>Programmer</code>. Now you can upload programs and burn bootloaders and fuses.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Burning the bootloader using the Arduino AVR Boards core</p>
