@@ -287,7 +287,7 @@ Now type in the package index URL.
 <p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
 <h3 id="step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</h3>
-<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; &lt;core&gt; -&gt; &lt;board&gt;</code>. If you want to use serial I/O, you may also want to select the right <code>Port</code> in the <code>Tools</code> menu. Perhaps you want to set a few additional options in the <code>Tools</code> menu, such as the chip, the pinout, etc.</p>
+<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; &lt;core&gt; -&gt; &lt;board&gt;</code>. If you want to use serial I/O, you need to select the right <code>Port</code> in the <code>Tools</code> menu. The boards do not always use the standard serial interface. Check out the <a href="../supported-boards/">section on supported Microchip boards</a>. Finally, you may want to set a few additional options in the <code>Tools</code> menu, such as the chip, the pinout, etc.</p>
 <h3 id="step-3-compile-the-sketch">Step 3: Compile the sketch</h3>
 <p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark) in the top bar. This will compile the sketch.</p>
 <h3 id="step-4-debug-the-sketch">Step 4: Debug the sketch</h3>
