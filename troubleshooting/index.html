@@ -202,7 +202,7 @@
 <pre><code class="language-bash">&gt; xattr -d com.apple.quarantine FILE
 </code></pre>
 <h3 id="no-compatible-tool-discovered"><code>No compatible tool discovered</code></h3>
-<p>This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that another process currently uses it, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>
+<p>This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>
 <h3 id="errno-48-address-already-in-use"><code>[Errno 48] Address already in use</code></h3>
 <p>This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>
 <h3 id="isp-programming-failed-wrong-connection-or-wrong-mcu"><code>ISP programming failed. Wrong connection or wrong MCU?</code></h3>
