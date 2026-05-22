@@ -163,7 +163,8 @@
 <li>My CNANO attiny1607 chokes after clearing the lock bits with <code>AVR8_FAILURE_PDI_TIMEOUT: PDI physical timed out</code> after having been switched to debmode. Waiting for 0.3 seconds after switching to deb mode helped.</li>
 <li>With the AVR Dx and Ex devices, the C-program ceeprom.c writing into EEPROM chokes (GCC 15.2, avrlibc 2.2.1). After calling <code>write_eprom_byte</code>, the value is unchanged and you cannoz write to EEPROM anymore from the debugger! For this reason, I will use the Arduino program again, which works flawlessly. My guess: A bug in avr-libc 2.2.1, but then I am not sure about that.</li>
 <li>The AVR64EA48 crashes on <code>flashed.ino</code> when there is a <code>Serial.begin(9600)</code> in <code>setup</code>. All other chips do OK.</li>
-<li>The DX/EX CNANO boards do not communicate over the virtual serial line.</li>
+<li><s>The DX/EX CNANO boards do not communicate over the virtual serial line.</s> You have to figure out, which serial line and which Swap Microchip used for each board.</li>
+<li>The AVR16DU28 and AVR32DU28 did not compile with the homebrew GCC toolchain because some files were missing.</li>
 </ul>
               
             </div>
