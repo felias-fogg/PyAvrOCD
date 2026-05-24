@@ -49,7 +49,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware">Required hardware</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-a-debug-enabled-core">Step 1: Install a debug-enabled core</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-a-debug-enabled-arduino-package">Step 1: Install a debug-enabled Arduino package</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</a>
     </li>
@@ -111,7 +111,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware_3">Required hardware</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-the-debug-enabled-tinycore">Step 1: Install the debug-enabled TinyCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-the-debug-enabled-tinycore-package">Step 1: Install the debug-enabled TinyCore package</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-2-connect-the-target-with-the-debug-probe">Step 2: Connect the target with the debug probe</a>
     </li>
@@ -140,7 +140,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
@@ -245,7 +245,7 @@
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cnano.png" width="55%">
 </p>
 
-<h3 id="step-1-install-a-debug-enabled-core">Step 1: Install a debug-enabled core</h3>
+<h3 id="step-1-install-a-debug-enabled-arduino-package">Step 1: Install a debug-enabled Arduino package</h3>
 <p>Add new <em>boards manager URL</em>s in the <code>Preferences</code> dialog:<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></p>
 <pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
@@ -276,11 +276,11 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Next, you have to install the appropriate core. Activate the <code>Boards Manager</code>, select the most recent versions of the core you want to install, and click on <code>Install</code>.</p>
+<p>Next, you have to install the appropriate Arduino package. Activate the <code>Boards Manager</code>, select the most recent versions of the package you want to install, and click on <code>Install</code>.</p>
 <details>
-<summary><b>How to install a new core</b></summary>
+<summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
-<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4). If the package is already installed, then an <code>Update</code> button will be shown that you need to click on.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
 </details>
 <p></p>
@@ -290,7 +290,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
 <h3 id="step-2-load-sketch-and-select-board">Step 2: Load sketch and select board</h3>
-<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; &lt;core&gt; -&gt; &lt;board&gt;</code>. If you want to use serial I/O, you need to select the right <code>Port</code> in the <code>Tools</code> menu. The boards do not always use the standard serial interface. Check out the <a href="../supported-boards/">section on supported Microchip boards</a>. Finally, you may want to set a few additional options in the <code>Tools</code> menu, such as the chip, the pinout, etc.</p>
+<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; &lt;package&gt; -&gt; &lt;board&gt;</code>. If you want to use serial I/O, you need to select the right <code>Port</code> in the <code>Tools</code> menu. The boards do not always use the standard serial interface. Check out the <a href="../supported-boards/">section on supported Microchip boards</a>. Finally, you may want to set a few additional options in the <code>Tools</code> menu, such as the chip, the pinout, etc.</p>
 <h3 id="step-3-compile-the-sketch">Step 3: Compile the sketch</h3>
 <p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark) in the top bar. This will compile the sketch.</p>
 <h3 id="step-4-debug-the-sketch">Step 4: Debug the sketch</h3>
@@ -338,11 +338,11 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Next you have to install the new core. Activate the <code>Boards Manager</code>, select <code>XMiniCore</code>, and click on <code>Install</code>.</p>
+<p>Next you have to install the new package. Activate the <code>Boards Manager</code>, select <code>XMiniCore</code>, and click on <code>Install</code>.</p>
 <details>
-<summary><b>How to install a new core</b></summary>
+<summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
-<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4). If the package is already installed, then an <code>Update</code> button will be shown that you need to click on.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
 </details>
 <p></p>
@@ -393,7 +393,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </p>
 
 <h3 id="step-2-install-the-debug-enabled-minicore">Step 2: Install the debug-enabled MiniCore</h3>
-<p>Since the stock Arduino AVR Boards core does not support debugging, we need to shop elsewhere. For this reason, you need to add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog so that <code>MiniCore</code> can be installed:</p>
+<p>Since the stock Arduino AVR Boards package does not support debugging, we need to shop elsewhere. For this reason, you need to add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog so that <code>MiniCore</code> can be installed:</p>
 <pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 </code></pre>
 <details>
@@ -423,9 +423,9 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 
 <p>Next you have to install the <code>MiniCore</code>. Activate the <code>Boards Manager</code>, select <code>MiniCore</code>, and click on <code>Install</code>.</p>
 <details>
-<summary><b>How to install a new core</b></summary>
+<summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
-<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4). If the package is already installed, then an <code>Update</code> button will be shown that you need to click on.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
 </details>
 <p></p>
@@ -488,7 +488,7 @@ It may also be a good idea to consult the <a href="../limitations/">Limitations<
 </ul>
 </li>
 </ul>
-<h3 id="step-1-install-the-debug-enabled-tinycore">Step 1: Install the debug-enabled TinyCore</h3>
+<h3 id="step-1-install-the-debug-enabled-tinycore-package">Step 1: Install the debug-enabled TinyCore package</h3>
 <p>Add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
@@ -517,11 +517,11 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Next, you have to install the new core. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>.</p>
+<p>Next, you have to install the new package. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>.</p>
 <details>
-<summary><b>How to install a new core</b></summary>
+<summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
-<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4). If the package is already installed, then an <code>Update</code> button will be shown that you need to click on.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
 </details>
 <p></p>

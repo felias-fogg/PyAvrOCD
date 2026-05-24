@@ -1,0 +1,7 @@
+<details>
+<summary><b>How to install a new Arduino package</b></summary>
+<p></p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4).</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
+</details>
+<p></p>

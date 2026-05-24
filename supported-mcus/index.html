@@ -54,7 +54,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
@@ -114,6 +114,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-majorcore">ATmega supported by MajorCore</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-arduino-avr-boards-debug-enabled">ATmegas supported by Arduino AVR Boards (Debug enabled)</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</a>
@@ -122,23 +124,25 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#modern-atmegas">Modern ATmegas</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacorex">Atmegas supported by MegaCoreX</a>
+    <li class="toctree-l3"><a class="reference internal" href="#atmegas-supported-by-megacorex-debug-enabled">ATmegas supported by MegaCoreX (Debug enabled)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#atmega-supported-by-arduino-megaavr-boards-debug-enabled">ATmega supported by Arduino megaAVR Boards (Debug enabled)</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#avr-dx-ex-lx-sx-devices">AVR Dx-, Ex-, Lx-, Sx- devices</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#avr-da-series-supported-by-dxcore">AVR DA series supported by DxCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#avr-da-series-supported-by-dxcore-debug-enabled">AVR DA series supported by DxCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#avr-db-series-supported-by-dxcore">AVR DB series supported by DxCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#avr-db-series-supported-by-dxcore-debug-enabled">AVR DB series supported by DxCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#avr-dd-series-supported-by-dxcore">AVR DD series supported by DxCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#avr-dd-series-supported-by-dxcore-debug-enabled">AVR DD series supported by DxCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#avr-du-series-supported-by-dxcore">AVR DU series supported by DxCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#avr-du-series-supported-by-dxcore-debug-enabled">AVR DU series supported by DxCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#avr-ea-series-supported-by-dxcore">AVR EA series supported by DxCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#avr-ea-series-supported-by-dxcore-debug-enabled">AVR EA series supported by DxCore (Debug enabled)</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#avr-eb-series-supported-by-dxcore">AVR EB series supported by DxCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#avr-eb-series-supported-by-dxcore-debug-enabled">AVR EB series supported by DxCore (Debug enabled)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#avr-la-series">AVR LA series</a>
     </li>
@@ -207,15 +211,15 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of all AVR MCUs, which should be compatible with PyAvrOCD. It is extended continuously as the development of PyAvrOCD proceeds. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.</p>
+<p>This is the list of the AVR MCUs that should be compatible with PyAvrOCD. It is extended continuously as the development of PyAvrOCD proceeds. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.</p>
 <p>The list is structured by the Arduino cores that support the chips, where some of the MCUs are supported by more than one core.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
-<h3 id="attinys-supported-by-microcore">ATtinys supported by <em><a href="../supporting-cores/#microcore">MicroCore</a></em></h3>
+<h3 id="attinys-supported-by-microcore">ATtinys supported by <a href="../supporting-packages/#microcore">MicroCore</a></h3>
 <ul>
 <li><strong>ATtiny13(A)</strong></li>
 </ul>
 <p>Because of its limited flash memory, debugging a sketch on this MCU is rather challenging.</p>
-<h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <em><a href="../supporting-cores/#tinycore">TinyCore</a></em> and <em><a href="../supporting-cores/#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a></em></h3>
+<h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <a href="../supporting-packages/#tinycore">TinyCore</a> and <a href="../supporting-packages/#attinycore">ATTinyCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
 <li><strong>ATtiny2313, ATtiny2313A, ATtiny4313</strong></li>
@@ -239,28 +243,28 @@
 <li><s>ATtiny102, ATtiny104</s></li>
 </ul>
 <h2 id="modern-attinys">Modern ATtinys</h2>
-<h3 id="attiny-0-series-supported-by-megatinycore-debug-enabled">ATtiny 0-series supported by <a href="../supporting-cores/#megatinycore-debug-enabled">megaTinyCore (Debug enabled)</a></h3>
+<h3 id="attiny-0-series-supported-by-megatinycore-debug-enabled">ATtiny 0-series supported by <a href="../supporting-packages/#megatinycore">megaTinyCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>ATtiny202</strong>, <strong>ATtiny402</strong></li>
 <li><strong>ATtiny204</strong>, <strong>ATtiny404,</strong> <strong>ATtiny804</strong>, <strong>ATtiny1604</strong></li>
 <li><strong>ATtiny406</strong>, <strong>ATtiny806</strong>, <strong>ATtiny1606</strong></li>
 <li>ATtiny807, <strong>ATtiny1607</strong></li>
 </ul>
-<h3 id="attiny-1-series-supported-by-megatinycore-debug-enabled">ATtiny 1-series supported by <a href="../supporting-cores/#megatinycore-debug-enabled">megaTinyCore (Debug enabled)</a></h3>
+<h3 id="attiny-1-series-supported-by-megatinycore-debug-enabled">ATtiny 1-series supported by <a href="../supporting-packages/#megatinycore">megaTinyCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>ATtiny212</strong>, <strong>ATtiny412</strong></li>
 <li><strong>ATtiny214</strong>, <strong>ATtiny414</strong>, <strong>ATtiny814,</strong> <strong>ATtiny1614</strong></li>
 <li><strong>ATtiny416</strong>, <strong>ATtiny816</strong>, <strong>ATtiny1616</strong>, <strong>ATtiny3216</strong></li>
 <li><u>ATtiny417</u>, <strong>ATtiny817</strong>, <u>ATtiny1617</u>, <strong>ATtiny3217</strong></li>
 </ul>
-<h3 id="attiny-2-series-supported-by-megatinycore-debug-enabled">ATtiny 2-series supported by <a href="../supporting-cores/#megatinycore-debug-enabled">megaTinyCore (Debug enabled)</a></h3>
+<h3 id="attiny-2-series-supported-by-megatinycore-debug-enabled">ATtiny 2-series supported by <a href="../supporting-packages/#megatinycore">megaTinyCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>ATtiny424</strong>, <strong>ATtiny824</strong>, <strong>ATtiny1624</strong>, <strong>ATtiny3224</strong></li>
 <li><strong>ATtiny426</strong>, <strong>ATtiny826</strong>, <strong>ATtiny1626</strong>, <strong>ATtiny3226</strong></li>
 <li><u>ATtiny427</u>, <u>ATtiny827</u>, <u>ATtiny1627</u>, <strong>ATtiny3237</strong></li>
 </ul>
 <h2 id="classic-atmegas">Classic ATmegas</h2>
-<h3 id="atmegas-supported-by-minicore">ATmegas supported by <a href="../supporting-cores/#minicore"><em>MiniCore</em></a></h3>
+<h3 id="atmegas-supported-by-minicore">ATmegas supported by <a href="../supporting-packages/#minicore">MiniCore</a></h3>
 <ul>
 <li>
 <p><s>ATmega8</s></p>
@@ -273,14 +277,14 @@
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
-<h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-cores/#xminicore"><em>XMiniCore</em></a></h3>
+<h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-packages/#xminicore">XMiniCore</a></h3>
 <p>The following MCUs are already supported by MiniCore. However, XMiniCore goes some way to make it easier to deal with the Microchip Xplained Mini development boards so that debugging becomes plug-and-play.</p>
 <ul>
 <li><strong>ATmega328P</strong> (Xplained Mini board)</li>
 <li><strong>ATmega168PB</strong> (Xplained Mini board)</li>
 <li><strong>ATmega328PB</strong> (Xplained Mini board)</li>
 </ul>
-<h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="../supporting-cores/#mightycore"><em>MightyCore</em></a></h3>
+<h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="../supporting-packages/#mightycore">MightyCore</a></h3>
 <ul>
 <li><strong>ATmega16(A)</strong>, <strong>ATmega32(A)</strong></li>
 <li><strong>ATmega164(P)(A)</strong>, <strong>ATmega324(P)(A)</strong>, <strong>ATmega324PB</strong>, <strong>ATmega644(P)(A)</strong>, <strong>ATmega1284(P)</strong></li>
@@ -288,7 +292,7 @@
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of my avr-gdb repo</a>.</p>
 <p>The ATmega8535 does not possess a debug interface.</p>
-<h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="../supporting-cores/#megacore"><em>MegaCore</em></a></h3>
+<h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="../supporting-packages/#megacore">MegaCore</a></h3>
 <ul>
 <li><strong>ATmega64(A)</strong>, <strong>ATmega128(A)</strong></li>
 <li><strong>ATmega640</strong>, <strong>ATmega1280</strong>, <strong>ATmega2560</strong></li>
@@ -301,12 +305,21 @@
 </ul>
 <p>The Atmega64(A), ATmega329(P)(A), and ATmega3250(P)(A) MCUs have a stuck-at-one-bit in the PC, which might lead to the same problem as for the ATmega16s mentioned above when an older, unpatched AVR-GDB version is used.</p>
 <p>The ATmega128(A) MCUs do not allow for software breakpoints. This means that you can use only four hardware breakpoints.</p>
-<h3 id="atmega-supported-by-majorcore">ATmega supported by <a href="../supporting-cores/#majorcore"><em>MajorCore</em></a></h3>
+<h3 id="atmega-supported-by-majorcore">ATmega supported by <a href="../supporting-packages/#majorcore">MajorCore</a></h3>
 <ul>
 <li><strong>ATmega162</strong></li>
 <li><s>ATmega8515</s></li>
 </ul>
 <p>The ATmega8515 does not have a debug interface.</p>
+<h3 id="atmegas-supported-by-arduino-avr-boards-debug-enabled">ATmegas supported by <a href="../supporting-packages/#arduino-avr-boards">Arduino AVR Boards (Debug enabled)</a></h3>
+<p>Most of the MCUs covered by this package are already supported by other packages. However, one exception is the ATmega32U4 (e.g., on the Leonardo).</p>
+<ul>
+<li><strong>ATmega168</strong></li>
+<li><strong>Atmega328P</strong></li>
+<li><strong>ATmega32U4</strong></li>
+<li><strong>ATmega1280</strong></li>
+<li><strong>ATmega2560</strong></li>
+</ul>
 <h3 id="other-atmegas-with-debugwire-interface">Other ATmegas with debugWIRE interface</h3>
 <ul>
 <li><u>ATmega8U2</u>, ATmega16U2, <u>ATmega32U2</u></li>
@@ -319,7 +332,7 @@
 </ul>
 <h3 id="other-atmegas-with-jtag-interface">Other ATmegas with JTAG interface</h3>
 <ul>
-<li>ATmega16U4, <strong>ATmega32U4</strong></li>
+<li>ATmega16U4</li>
 <li>AT90USB646, AT90USB647, <u>AT90USB1286</u>, AT90USB1287</li>
 <li>ATmega644rfr2, ATmega1284rfr2, ATmega2564rfr2</li>
 <li>ATmega64rfr2, ATmega128rfr2, <u>ATmega256rfr2</u></li>
@@ -327,39 +340,44 @@
 <li>ATmega406</li>
 </ul>
 <h2 id="modern-atmegas">Modern ATmegas</h2>
-<h3 id="atmegas-supported-by-megacorex">Atmegas supported by <em><a href="../supporting-cores/#megacorex">MegaCoreX</a></em></h3>
+<h3 id="atmegas-supported-by-megacorex-debug-enabled">ATmegas supported by <a href="../supporting-packages/#megacorex">MegaCoreX (Debug enabled)</a></h3>
 <p>This is the megaAVR 0-series. The ATmega4809 made it on some Arduino boards.</p>
 <ul>
 <li><strong>ATmega808</strong>, <strong>ATmega1608</strong>, <strong>ATmega3208</strong>, <strong>ATmega4808</strong></li>
 <li><strong>ATmega809</strong>, <strong>ATmega1609</strong>, <strong>ATmega3209</strong>, <strong>ATmega4809</strong></li>
 </ul>
+<h3 id="atmega-supported-by-arduino-megaavr-boards-debug-enabled">ATmega supported by <a href="../supporting-packages/#arduino-megaavr-boards">Arduino megaAVR Boards (Debug enabled)</a></h3>
+<p>There exists only 2 Arduino boards, both using the </p>
+<ul>
+<li><strong>ATmega4809</strong></li>
+</ul>
 <h2 id="avr-dx-ex-lx-sx-devices">AVR Dx-, Ex-, Lx-, Sx- devices</h2>
 <p>Work in progress: The current preview v1.4.0a1 supports the MCU mentioned below. As usual, the bold ones have been tested and work.</p>
-<h3 id="avr-da-series-supported-by-dxcore">AVR DA series supported by <em><a href="../supporting-cores/#dxcore">DxCore</a></em></h3>
+<h3 id="avr-da-series-supported-by-dxcore-debug-enabled">AVR DA series supported by <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>AVR32DA28(S)</strong>, AVR32DA32(S), AVR32DA48(S)</li>
 <li><strong>AVR64DA28(S)</strong>, AVR64DA32(S), AVR64DA48(S), AVR32DA64(S)</li>
 <li><strong>AVR128DA28(S)</strong>, AVR128DA32(S), <strong>AVR128DA48(S)</strong>, AVR128DA64(S)</li>
 </ul>
-<h3 id="avr-db-series-supported-by-dxcore">AVR DB series supported by <em><a href="../supporting-cores/#dxcore">DxCore</a></em></h3>
+<h3 id="avr-db-series-supported-by-dxcore-debug-enabled">AVR DB series supported by  <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>AVR32DB28</strong>, AVR32DB32, AVR32DB48</li>
 <li><strong>AVR64DB28</strong>, AVR64DB32, AVR64DB48, AVR32DB64</li>
 <li><strong>AVR128DB28</strong>, <u>AVR128DB32</u>, <strong>AVR128DB48</strong>, <u>AVR128DB64</u></li>
 </ul>
-<h3 id="avr-dd-series-supported-by-dxcore">AVR DD series supported by <em><a href="../supporting-cores/#dxcore">DxCore</a></em></h3>
+<h3 id="avr-dd-series-supported-by-dxcore-debug-enabled">AVR DD series supported by  <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a></h3>
 <ul>
 <li>AVR16DD14, AVR16DD20, <strong>AVR16DD28</strong>, AVR16DD32</li>
 <li>AVR32DD14, AVR32DD20, <strong>AVR32DD28</strong>, AVR32DD32</li>
 <li><u>AVR64DD14</u>, <u>AVR64DD20</u>, <strong>AVR64DD28</strong>, <strong>AVR64DD32</strong></li>
 </ul>
-<h3 id="avr-du-series-supported-by-dxcore">AVR DU series supported by <em><a href="../supporting-cores/#dxcore">DxCore</a></em></h3>
+<h3 id="avr-du-series-supported-by-dxcore-debug-enabled">AVR DU series supported by  <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a></h3>
 <ul>
 <li>AVR16DU14, AVR16DU20, <strong>AVR16DU28</strong>, AVR16DU32</li>
 <li>AVR32DU14, AVR32DU20, <strong>AVR32DU28</strong>, AVR32DU32</li>
 <li><strong>AVR64DU28</strong>, <strong>AVR64DU32</strong></li>
 </ul>
-<h3 id="avr-ea-series-supported-by-dxcore">AVR EA series supported by <em><a href="../supporting-cores/#dxcore">DxCore</a></em></h3>
+<h3 id="avr-ea-series-supported-by-dxcore-debug-enabled">AVR EA series supported by  <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a></h3>
 <ul>
 <li>
 <p><strong>AVR16EA28</strong>, AVR16EA32, AVR16EA48</p>
@@ -369,7 +387,7 @@
 </li>
 <li><strong>AVR64EA28</strong>, AVR64EA32, <strong>AVR64EA48</strong></li>
 </ul>
-<h3 id="avr-eb-series-supported-by-dxcore">AVR EB series supported by <em><a href="../supporting-cores/#dxcore">DxCore</a></em></h3>
+<h3 id="avr-eb-series-supported-by-dxcore-debug-enabled">AVR EB series supported by  <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a></h3>
 <ul>
 <li>AVR16EB14, AVR16EB20, <strong>AVR16EB28</strong>, <strong>AVR16EB32</strong></li>
 <li>AVR32EB14, AVR32EB20, AVR32EB28, AVR32EB32</li>

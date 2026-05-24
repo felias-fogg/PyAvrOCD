@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/supporting-cores/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/supporting-packages/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Arduino cores - PyAvrOCD</title>
+    <title>Arduino packages - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Arduino cores";
-        var mkdocs_page_input_path = "supporting-cores.md";
-        var mkdocs_page_url = "/supporting-cores/";
+        var mkdocs_page_name = "Arduino packages";
+        var mkdocs_page_input_path = "supporting-packages.md";
+        var mkdocs_page_url = "/supporting-packages/";
       </script>
     
     <!--[if lt IE 9]>
@@ -54,31 +54,45 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Arduino cores</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Arduino packages</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a>
+    <li class="toctree-l2"><a class="reference internal" href="#hardware-packages-with-integrated-debugging-solutions">Hardware packages with integrated debugging solutions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#tinycore">TinyCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#tinycore">TinyCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#microcore">MicroCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#microcore">MicroCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#minicore">MiniCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#minicore">MiniCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#xminicore">XMiniCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#xminicore">XMiniCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#mightycore">MightyCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#mightycore">MightyCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#megacore">MegaCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#megacore">MegaCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#majorcore">MajorCore</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#majorcore">MajorCore</a>
+        </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#megacorex">MegaCoreX</a>
+    <li class="toctree-l2"><a class="reference internal" href="#debug-enabled-forks-of-official-arduino-packages">Debug-enabled forks of official Arduino packages</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino-avr-boards-debug-enabled">Arduino AVR Boards (Debug enabled)</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#megatinycore-debug-enabled">megaTinyCore (Debug enabled)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino-megaavr-boards-debug-enabled">Arduino megaAVR Boards (Debug enabled)</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#dxcore-debug-enabled">DxCore (Debug enabled)</a>
+        </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#_1"></a>
+    <li class="toctree-l2"><a class="reference internal" href="#debug-enabled-forks-of-3rd-party-packages">Debug-enabled forks of 3rd party packages</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#megacorex-debug-enabled">MegaCoreX (Debug enabled)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#megatinycore-debug-enabled">megaTinyCore (Debug enabled)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dxcore-debug-enabled">DxCore (Debug enabled)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#attinycore-debug-enabled">ATTinyCore (Debug enabled)</a>
+    </li>
+        </ul>
     </li>
     </ul>
                   </li>
@@ -154,9 +168,9 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Installation</li>
-      <li class="breadcrumb-item active">Arduino cores</li>
+      <li class="breadcrumb-item active">Arduino packages</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/supporting-cores.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/supporting-packages.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -164,10 +178,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="installing-a-debug-enabled-arduino-core">Installing a debug-enabled Arduino core</h1>
-<p>Arduino cores are the key to making debugging available in the Arduino
-IDE 2 for particular chips. If you want to install a new core, in most
-cases, you first have to add a <em>boards manager</em> URL in the
+                <h1 id="installing-a-debug-enabled-arduino-package">Installing a debug-enabled Arduino package</h1>
+<p>Arduino packages are the key to making debugging available in the Arduino
+IDE 2. There are two types of such packages. Either debugging has been
+integrated by the package maintainer or it is a fork of an existing
+package. Either way, if you want to install such a package, you first
+have to add a new <em>boards manager</em> URL in the
 <code>Preferences</code> dialog.</p>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -194,62 +210,95 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Once this has been done, you can search in the <code>Boards Manager</code> for the core, and install it.</p>
+<p>Once this has been done, you can search in the <code>Boards Manager</code> for the package, and install it or upgrade to the most
+recent version. In case of a debug-enabled fork, the version number is
+usually postfixed by <code>-preX</code> and the name of the package will have
+<code>(Debug enabled)</code> attached to the official name. </p>
 <details>
-<summary><b>How to install a new core</b></summary>
+<summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
-<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the core's name into the search line (2). Then all cores with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this core by clicking on <code>Install</code> (4).</p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4). If the package is already installed, then an <code>Update</code> button will be shown that you need to click on.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
 </details>
 <p></p>
 
-<p>Extending existing official hardware packages</p>
-<h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore (Debug enabled)</a></h3>
-<p>This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. While it might still be of interest to people who use the micronucleus boot loaders, nowadays TinyCore (see below) is the preferred core for classic ATtinys. You can install ATTinyCore (Debug enabled) after including the following URL:</p>
-<pre><code>https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
-</code></pre>
+<h2 id="hardware-packages-with-integrated-debugging-solutions">Hardware packages with integrated debugging solutions</h2>
 <h3 id="tinycore"><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
 <p>This is a fork of ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not support the micronucleus bootloaders, however. You can install it after including the following URL:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
-<p>This is a core for the ATtiny13(A). You can make it installable by adding the following URL to the Boards Manager URLs:</p>
+<p>This is a package for the ATtiny13(A). You can make it installable by adding the following URL to the Boards Manager URLs:</p>
 <pre><code>https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 </code></pre>
 <h3 id="minicore"><a href="https://github.com/MCUdude/MiniCore">MiniCore</a></h3>
-<p>This is the core for the small ATmegas with a debugWIRE interface, aka, ATmegaX8.  You can make it installable by adding the following <em>boards manager URL</em>:</p>
+<p>This is the package for the small ATmegas with a debugWIRE interface, aka, ATmegaX8.  You can make it installable by adding the following <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 </code></pre>
 <h3 id="xminicore"><a href="https://github.com/felias-fogg/XMiniCore">XMiniCore</a></h3>
-<p>This is a debug-enabled Arduino core for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the <em>Atmel AVR Xplained-minis</em> board package of the official Arduino distribution, which is already 10 years old and does not really work. The new core is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see <a href="../quick_arduino/#quickstart-atmega328p-xplained-mini">quickstart guide for ATmega328P Xplained Mini</a>). It is just plug-and-play:</p>
+<p>This is a debug-enabled Arduino package for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the <em>Atmel AVR Xplained-minis</em> board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see <a href="../quick_arduino/#quickstart-atmega328p-xplained-mini">quickstart guide for ATmega328P Xplained Mini</a>). It is just plug-and-play:</p>
 <pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 </code></pre>
 <h3 id="mightycore"><a href="https://github.com/MCUdude/MightyCore">MightyCore</a></h3>
-<p>An Arduino core for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8353 does not have a debugging interface. You can make it installable by adding the following <em>boards manager URL</em>:</p>
+<p>An Arduino package for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8353 does not have a debugging interface. You can make it installable by adding the following <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
 </code></pre>
 <h3 id="megacore"><a href="https://github.com/MCUdude/MegaCore">MegaCore</a></h3>
-<p>A core for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this core. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. You can make the core installable by adding to the <em>boards manager URL</em>:</p>
+<p>A package for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. You can make the package installable by adding to the <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
 </code></pre>
 <h3 id="majorcore"><a href="https://github.com/MCUdude/MajorCore">MajorCore</a></h3>
-<p>This core covers just ATmega8515 and ATmega162, of which only the latter possesses a debugging interface. The additional <em>boards manager URL</em> is:</p>
+<p>This package covers just ATmega8515 and ATmega162, of which only the latter possesses a debugging interface. The additional <em>boards manager URL</em> is:</p>
 <pre><code>https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 </code></pre>
-<h3 id="megacorex"><a href="https://github.com/felias-fogg/MegaCoreX">MegaCoreX</a></h3>
-<p>This is a fork of the core for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can install the core using the following URL:</p>
+<h2 id="debug-enabled-forks-of-official-arduino-packages">Debug-enabled forks of official Arduino packages</h2>
+<p><a id=arduino-avr-boards></a></p>
+<h3 id="arduino-avr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-avr">Arduino AVR Boards</a> (Debug enabled)</h3>
+<p>This is the debug enabled fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are</p>
+<ul>
+<li>additional programmers,</li>
+<li>changes to platform.txt to enable debugging,</li>
+<li>changes to boards.txt to enable the JTAG pins on boards with the JTAG interface, and</li>
+<li>an upgrade to version 8.0 of avrdude.</li>
+</ul>
+<p>You can make this fork available by including:</p>
+<pre><code>https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json
+</code></pre>
+<p><a id=arduino-megaavr-boards></a></p>
+<h3 id="arduino-megaavr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-megaavr">Arduino megaAVR Boards</a> (Debug enabled)</h3>
+<p>This is the debug enabled fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. The only changes are:</p>
+<ul>
+<li>additional programmers,</li>
+<li>changes to platform.txt to enable debugging,</li>
+<li>change to boards.txt to set the default programmer for the Uno Wifi Rev2, and</li>
+<li>an upgrade to version 8.0 of avrdude.</li>
+</ul>
+<p>You can make this fork available by including:</p>
+<pre><code>https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCore-megaavr_index.json
+</code></pre>
+<h2 id="debug-enabled-forks-of-3rd-party-packages">Debug-enabled forks of 3rd party packages</h2>
+<p><a id=megacorex></a></p>
+<h3 id="megacorex-debug-enabled"><a href="https://github.com/felias-fogg/MegaCoreX">MegaCoreX</a>  (Debug enabled)</h3>
+<p>This is a fork of the package for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can make the debug-enabled fork of the package available using the following URL:</p>
 <pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 </code></pre>
-<p>You can expect to find the debug extension really soon in the upstream repo.</p>
-<h3 id="megatinycore-debug-enabled"><a href="https://github.com/felias-fogg/megaTinyCore">megaTinyCore (Debug enabled)</a></h3>
-<p>This is a fork of the core for modern ATiny Chips (series 0, 1, and 2). You can install it by using the following URL:</p>
+<p>Expect to find the debug extension soon in the upstream repo.</p>
+<p><a id=megatinycore></a></p>
+<h3 id="megatinycore-debug-enabled"><a href="https://github.com/felias-fogg/megaTinyCore">megaTinyCore</a> (Debug enabled)</h3>
+<p>This is a fork of the package for modern ATiny Chips (series 0, 1, and
+2). Make the debug-enabled fork available using following URL:</p>
 <pre><code>https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 </code></pre>
-<h3 id="dxcore-debug-enabled"><a href="https://github.com/felias-fogg/DxCore">DxCore (Debug enabled)</a></h3>
-<p>This is a fork of Spence Konde's DxCore, the core for the most recently marketed AVR chips. Install it using:</p>
+<p><a id=dxcore></a></p>
+<h3 id="dxcore-debug-enabled"><a href="https://github.com/felias-fogg/DxCore">DxCore</a> (Debug enabled)</h3>
+<p>This is a fork of DxCore, the package for the most recently marketed AVR chips. Nake the debug-enabled fork available by using:</p>
 <pre><code>https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_DxCore_index.json
 </code></pre>
-<h3 id="_1"></h3>
+<p><a id=attinycore></a></p>
+<h3 id="attinycore-debug-enabled"><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore</a> (Debug enabled)</h3>
+<p>This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. While it might still be of interest to people who use the micronucleus boot loaders, nowadays <a href="#tinycore">TinyCore (see above)</a> is the preferred package for classic ATtinys. You can make this fork available by including the following URL:</p>
+<pre><code>https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
+</code></pre>
               
             </div>
           </div><footer>
