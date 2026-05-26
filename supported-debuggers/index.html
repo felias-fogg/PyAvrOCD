@@ -163,7 +163,7 @@
 <li><a href="https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html"><strong>nEDBG</strong></a> - <strong>on-board debuggers on Curiosity Nano boards</strong> (can also be used stand-alone to debug other UPDI targets)</li>
 <li><strong><a href="https://felias-fogg.github.io/dw-link">dw-link</a></strong> - <strong>DIY debugger running on an Arduino UNO R3</strong> (only debugWIRE)</li>
 </ul>
-<p>If you do not own one of the above debug probes, but you own a PICkit5 or PICkit Basic, you can consider <a href="https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/">downgrading</a> it to a PICkit4 or SNAP, respectively. </p>
+<p>If you do not own one of the above debug probes, but you own a <a href="https://www.microchip.com/en-us/development-tool/PG164150">PICkit5</a> or <a href="https://www.microchip.com/en-us/development-tool/PG164110">PICkit Basic</a>, you can consider <a href="https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/">downgrading</a> it to a PICkit4 or SNAP, respectively. </p>
 <h3 id="switching-to-avr-mode">Switching to AVR mode</h3>
 <p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
 <pre><code>avrdude -c snap_isp -Pusb -xmode=avr
