@@ -188,7 +188,7 @@
 <li><strong>AVR16EB32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O through the debug interface does not seem to work.</li>
 </ul>
 <h2 id="arduino-boards">Arduino boards</h2>
-<p>All the Arduino boards with AVR chips are also supported by the debug-enabled forks of the <em>Arduino (mega)AVR Boards</em> packages.</p>
+<p>All the Arduino boards with AVR chips are also supported by the debug-enabled forks of the <a href="../supporting-packages/#debug-enabled-forks-of-official-arduino-packages"><em>Arduino (mega)AVR Boards</em></a> packages.</p>
 <ul>
 <li>Arduino Yún</li>
 <li><strong>Arduino UNO R3</strong>:   <a href="../supporting-packages/#minicore">MiniCore</a>; <a href="../board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
@@ -320,7 +320,7 @@
 <h2 id="miscellaneous-boards">Miscellaneous boards</h2>
 <ul>
 <li><u>MH-ET LIVE (ATtiny88)</u>: <a href="../supporting-packages/#tinycore">TinyCore</a></li>
-<li><u>Digispark (ATtiny85)</u>: <a href="../supporting-packages/#tinycore">TinyCore</a></li>
+<li><s>Digispark (ATtiny85)</s>s&gt;: RESET pin is set to be a GPIO; HV programming needed before it can debugged</li>
 <li><u>Digispark Pro (ATtiny167)</u>: <a href="../supporting-packages/#tinycore">TinyCore</a></li>
 <li><u>Pololu A-Star 328PB Micro</u>: <a href="../supporting-packages/#minicore">MiniCore</a></li>
 <li><strong>Thinary Nano Every (ATmega4808)</strong>: <a href="../supporting-packages/#megacorex">MegaCoreX</a>; the only supported pinout is <code>Nano 4808</code>; serial I/O via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 9 (PA7); no bootloader support because there is a <code>JTAG2UPDI</code> programmer on board</li>
