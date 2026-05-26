@@ -97,7 +97,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later-or-not-at-all">The debugger does not stop at a line with a set breakpoint, but only later (or not at all)</a>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint">The debugger does not stop at a line with a set breakpoint</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-all-although-only-a-single-step-was-requested-or-it-definitely-should-have-stopped-at-the-next-breakpoint">The debugger does not stop at all although only a single-step was requested or it definitely should have stopped at the next breakpoint.</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-debugger-seems-to-be-confused-about-the-line-where-it-stopped">The debugger seems to be confused about the line where it stopped</a>
     </li>
@@ -106,6 +108,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#single-stepping-takes-forever">Single-stepping takes forever</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#global-variables-are-not-listed-in-the-global-variables-section">Global variables are not listed in the Global variables section</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</a>
     </li>
@@ -215,17 +219,21 @@
 <h3 id="loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</h3>
 <p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow.</p>
 <p>With <em>JTAG</em> and <em>UPDI</em> targets, this problem should not happen. For JTAG, the default speed is 1 MHz for programming (<code>--prog-clock</code>) and 200 kHz for debugging (<code>--debug-clock</code>). However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU. UPDI communication speed is set to 750 kb/s by default (<code>--comm-speed</code>). On Dx and Ex series chips, speeds up to 1800 kb/s are possible.  <a href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later-or-not-at-all">Refrain from setting speed to 400 kb/s or less</a>.</p>
-<h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint-but-only-later-or-not-at-all">The debugger does not stop at a line with a set breakpoint, but only later (or not at all)</h3>
+<h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint">The debugger does not stop at a line with a set breakpoint</h3>
 <p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
-<p>A different cause for such behavior can be that the UPDI communication speed is too low. I experienced breakpoint and single-step skidding when the UPDI communication was too low, e.g., 400 kHz or less when the MCU ran at 16 MHz. This could lead to stopping at a different location or not stopping at all.</p>
+<h3 id="the-debugger-does-not-stop-at-all-although-only-a-single-step-was-requested-or-it-definitely-should-have-stopped-at-the-next-breakpoint">The debugger does not stop at all although only a single-step was requested or it definitely should have stopped at the next breakpoint.</h3>
+<p>Such behavior could be caused the UPDI communication speed being too slow. I experienced breakpoint and single-step skidding when the UPDI communication speed was too low, e.g., 400 kbps or less when the MCU ran at 16 MHz. And this may lead to missing a breakpoint or stepping too far. Another possible cause is the <a href="../compilation-options/#critical-optimization-options"><code>-mrelax</code> optimization</a> option (see below).</p>
 <h3 id="the-debugger-seems-to-be-confused-about-the-line-where-it-stopped">The debugger seems to be confused about the line where it stopped</h3>
 <p>If the debugger stopped at a line, but from other evidence it is clear that the program flow is somewhere else, it could be that the <a href="../compilation-options/#critical-optimization-options"><code>-mrelax</code> optimization</a> option had been used, which distorts the line numbering information. Compile and link without this option!</p>
 <h3 id="when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</h3>
-<p>Probably the same reason as above.</p>
+<p>Probably the one of the reasons mentioned above (no <code>-Og</code> option set, <code>-mrelax</code> set, or UPDI communication speed too low).</p>
 <h3 id="single-stepping-takes-forever">Single-stepping takes forever</h3>
-<p>You requested a single step, and the debugger seems to take forever to complete this single step. There are a few possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown.  Third, this could also be caused by the phenomenon mentioned above (low UPDI communication speed leading to single-step skidding). In all cases, simply stop with Ctrl-C (or the equivalent on the IDE level), set a breakpoint where you want to stop next, and continue execution.</p>
+<p>You requested a single step, and the debugger seems to take forever to complete this single step. There are a few possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown.  Third, this could also be caused by the phenomenon mentioned above (low UPDI communication speed leading to single-step skidding). Fourth, it could be caused by the <code>-mrelax</code> option (see above).</p>
+<p>In all cases, simply stop with Ctrl-C (or the equivalent on the IDE level), set a breakpoint where you want to stop next, and continue execution.</p>
 <h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
 <p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that the compiler has optimized away your variable. If you really are in need to inspect and maybe change the variable. you can declare it as <code>volatile</code>. Then it will always be visible when in scope. However, handling of it is rather inefficient.</p>
+<h3 id="global-variables-are-not-listed-in-the-global-variables-section">Global variables are not listed in the <code>Global variables</code> section</h3>
+<p>The LTO linker optimization does that to you. However, you still can inspect variables by hovering over them or requesting to display them in the <code>Watch</code> pane. You can set the value of variables by using the <code>set var &lt;variable&gt;=&lt;value&gt;</code> GDB command, which you can type in the last line of the <code>Debug Console</code> window.</p>
 <h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
 <p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way around it is mentioned above. Declare the variable as <code>volatile</code>.</p>
 <h3 id="backtraces-are-distorted">Backtraces are distorted</h3>
