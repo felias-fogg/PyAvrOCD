@@ -183,9 +183,9 @@
 <li><strong>AVR128DA48 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PC6 (pin 20); button is on PC7 (pin 21); programmer should be <code>Curiosity Nano</code>; serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code> through the debug interface.</li>
 <li><strong>AVR128DB48 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PB3 (pin 11); button is on PB2 (pin 10); serial I/O is routed via <code>Serial3</code> instead of <code>Serial</code> through the debug interface.</li>
 <li><strong>AVR64DD32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O through the debug interface is routed via <code>Serial</code>, however, you need to swap the I/O pins using <code>Serial.swap(3)</code>.</li>
-<li><strong>AVR64DU32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF2 (pin 22); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O through the debug interface does not seem to work.</li>
+<li><strong>AVR64DU32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF2 (pin 22); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code> through the debug interface, and in addition, you need to swap the pins: <code>Serial1.swap(2)</code>.</li>
 <li><strong>AVR64EA48 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PB3 (pin 11); button is on PB2 (pin 10); programmer should be <code>Curiosity Nano</code>; serial I/O is routed via <code>Serial1</code> instead of <code>Serial</code> through the debug interface.</li>
-<li><strong>AVR16EB32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O through the debug interface does not seem to work.</li>
+<li><strong>AVR16EB32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O through the debug interface is routed via <code>Serial</code>, however, you need to swap the I/O pins using <code>Serial.swap(4)</code>.</li>
 </ul>
 <h2 id="arduino-boards">Arduino boards</h2>
 <p>All the Arduino boards with AVR chips are also supported by the debug-enabled forks of the <a href="../supporting-packages/#debug-enabled-forks-of-official-arduino-packages"><em>Arduino (mega)AVR Boards</em></a> packages.</p>
@@ -246,7 +246,7 @@
 <li><s>Flora (ATmega32U4)</s>: JTAG pins are not accessible</li>
 <li>Feather 32U4</li>
 <li>Feather 328P: <a href="../supporting-packages/#minicore">MiniCore</a></li>
-<li>Gemma (ATtiny85):  <a href="https://github.com/MCUdude/TinyCore">TinyCore</a>,</li>
+<li>Gemma (ATtiny85):  <a href="https://github.com/MCUdude/TinyCore">TinyCore</a>; RESET pad on backside</li>
 <li>Trinket 3.3V (ATtiny85): <a href="../supporting-packages/#tinycore">TinyCore</a></li>
 <li>Trinket 5V (ATtiny85): <a href="../supporting-packages/#tinycore">TinyCore</a></li>
 <li>Metro (ATmega328P):  <a href="../supporting-packages/#minicore">MiniCore</a>, cut <code>RESET EN</code> solder bridge</li>
