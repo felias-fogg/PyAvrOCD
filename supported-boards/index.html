@@ -159,8 +159,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-boards">Supported boards</h1>
-<p>Almost all boards equipped with one of the supported chips can be used in one way or another. Tested boards are marked in boldface, and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested. If no package is mentioned, then there is no support through an Arduino package yet, but PyAvrOCD nevertheless supports debugging the chip.</p>
-<p>For supported boards, possible board modifications and other information is mentioned.</p>
+<p>Almost all boards equipped with one of the <a href="../supported-mcus/">supported chips</a> can be used in one way or another. Tested boards are marked in boldface, and those known not to work are struck out. The ones that are underlined are sitting on my desk and are waiting to be tested. If no supporting hardware package is mentioned, then there is no support through an Arduino package yet, but PyAvrOCD nevertheless supports debugging the chip. For supported boards that have been tested, possible board modifications and other information are mentioned.</p>
 <h2 id="microchip-boards">Microchip boards</h2>
 <p>Most of the supported Microchip boards have an embedded debugger on board, which makes it easy to work with. You do not have to modify the boards physically or change fuses. When working with debugWIRE targets, the power cycling is done automatically.</p>
 <ul>
@@ -320,7 +319,7 @@
 <h2 id="miscellaneous-boards">Miscellaneous boards</h2>
 <ul>
 <li><u>MH-ET LIVE (ATtiny88)</u>: <a href="../supporting-packages/#tinycore">TinyCore</a></li>
-<li><s>Digispark (ATtiny85)</s>s&gt;: RESET pin is set to be a GPIO; HV programming needed before it can debugged</li>
+<li><s>Digispark (ATtiny85)</s>: RESET pin is set to be a GPIO; HV programming needed before the board can be debugged</li>
 <li><u>Digispark Pro (ATtiny167)</u>: <a href="../supporting-packages/#tinycore">TinyCore</a></li>
 <li><u>Pololu A-Star 328PB Micro</u>: <a href="../supporting-packages/#minicore">MiniCore</a></li>
 <li><strong>Thinary Nano Every (ATmega4808)</strong>: <a href="../supporting-packages/#megacorex">MegaCoreX</a>; the only supported pinout is <code>Nano 4808</code>; serial I/O via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 9 (PA7); no bootloader support because there is a <code>JTAG2UPDI</code> programmer on board</li>
