@@ -41,29 +41,13 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Supported devices & platforms</span></p>
-              <ul>
+              <p class="caption"><span class="caption-text">Supported</span></p>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Installation</span></p>
-              <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Arduino packages</a>
     <ul class="current">
@@ -106,6 +90,22 @@
         </ul>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
@@ -167,7 +167,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Installation</li>
+          <li class="breadcrumb-item">Supported</li>
       <li class="breadcrumb-item active">Arduino packages</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/supporting-packages.md" class="icon icon-github"> Edit on GitHub</a>
@@ -178,13 +178,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="installing-a-debug-enabled-arduino-package">Installing a debug-enabled Arduino package</h1>
-<p>Arduino packages are the key to making debugging available in the Arduino
-IDE 2. There are two types of such packages. Either debugging has been
-integrated by the package maintainer or it is a fork of an existing
-package. Either way, if you want to install such a package, you first
-have to add a new <em>boards manager</em> URL in the
-<code>Preferences</code> dialog.</p>
+                <h1 id="debug-enabled-arduino-packages">Debug-enabled Arduino packages</h1>
+<p>Arduino packages are the key to making debugging available in the Arduino IDE 2. There are two types of such packages. Either debugging has been integrated by the package maintainer or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new <em>boards manager</em> URL in the <code>Preferences</code> dialog. Note that by adding new URLs you add the option to install new enhanced versions, but you can always revert back to the original versions of a package.  </p>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
 <p></p>
@@ -210,10 +205,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Once this has been done, you can search in the <code>Boards Manager</code> for the package, and install it or upgrade to the most
-recent version. In case of a debug-enabled fork, the version number is
-usually postfixed by <code>-preX</code> and the name of the package will have
-<code>(Debug enabled)</code> attached to the official name. </p>
+<p>Once this has been done, you can search in the <code>Boards Manager</code> for the package, and install it or upgrade to the most recent version. In case of a debug-enabled fork, the version number is usually postfixed by <code>-preX</code> and the name of the package will have <code>(Debug enabled)</code> attached to the official name. </p>
 <details>
 <summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
@@ -224,15 +216,15 @@ usually postfixed by <code>-preX</code> and the name of the package will have
 
 <h2 id="hardware-packages-with-integrated-debugging-solutions">Hardware packages with integrated debugging solutions</h2>
 <h3 id="tinycore"><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
-<p>This is a fork of ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not support the micronucleus bootloaders, however. You can install it after including the following URL:</p>
+<p>This is a fork of ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not yet support the micronucleus bootloaders, however. Debugging support has been integrated starting with the release of v0.0.1. You can install it after including the following URL:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
 <h3 id="microcore"><a href="https://github.com/MCUdude/MicroCore">MicroCore</a></h3>
-<p>This is a package for the ATtiny13(A). You can make it installable by adding the following URL to the Boards Manager URLs:</p>
+<p>This is a package for the ATtiny13(A). Debugging support is integrated since version 2.5.0. You can make it installable by adding the following URL to the Boards Manager URLs:</p>
 <pre><code>https://mcudude.github.io/MicroCore/package_MCUdude_MicroCore_index.json
 </code></pre>
 <h3 id="minicore"><a href="https://github.com/MCUdude/MiniCore">MiniCore</a></h3>
-<p>This is the package for the small ATmegas with a debugWIRE interface, aka, ATmegaX8.  You can make it installable by adding the following <em>boards manager URL</em>:</p>
+<p>This is the package for the small ATmegas with a debugWIRE interface, aka, ATmegaX8. PyAvrOCD has been intgrated into the package since version 3.1.0. You can make the package installable by adding the following <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 </code></pre>
 <h3 id="xminicore"><a href="https://github.com/felias-fogg/XMiniCore">XMiniCore</a></h3>
@@ -240,15 +232,15 @@ usually postfixed by <code>-preX</code> and the name of the package will have
 <pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 </code></pre>
 <h3 id="mightycore"><a href="https://github.com/MCUdude/MightyCore">MightyCore</a></h3>
-<p>An Arduino package for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8353 does not have a debugging interface. You can make it installable by adding the following <em>boards manager URL</em>:</p>
+<p>An Arduino package for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8353 does not have a debugging interface. Debugging is supported since version 3.1.0. You can make it installable by adding the following <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
 </code></pre>
 <h3 id="megacore"><a href="https://github.com/MCUdude/MegaCore">MegaCore</a></h3>
-<p>A package for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. You can make the package installable by adding to the <em>boards manager URL</em>:</p>
+<p>A package for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding to the <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
 </code></pre>
 <h3 id="majorcore"><a href="https://github.com/MCUdude/MajorCore">MajorCore</a></h3>
-<p>This package covers just ATmega8515 and ATmega162, of which only the latter possesses a debugging interface. The additional <em>boards manager URL</em> is:</p>
+<p>This package covers just ATmega8515 and ATmega162, of which only the latter possesses a debugging interface. Debugging is supported since version 3.1.0. The additional <em>boards manager URL</em> is:</p>
 <pre><code>https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 </code></pre>
 <h2 id="debug-enabled-forks-of-official-arduino-packages">Debug-enabled forks of official Arduino packages</h2>
@@ -285,8 +277,7 @@ usually postfixed by <code>-preX</code> and the name of the package will have
 <p>Expect to find the debug extension soon in the upstream repo.</p>
 <p><a id=megatinycore></a></p>
 <h3 id="megatinycore-debug-enabled"><a href="https://github.com/felias-fogg/megaTinyCore">megaTinyCore</a> (Debug enabled)</h3>
-<p>This is a fork of the package for modern ATiny Chips (series 0, 1, and
-2). Make the debug-enabled fork available using following URL:</p>
+<p>This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-enabled fork available using following URL:</p>
 <pre><code>https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 </code></pre>
 <p><a id=dxcore></a></p>
@@ -303,8 +294,8 @@ usually postfixed by <code>-preX</code> and the name of the package will have
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../debugging-software/" class="btn btn-neutral float-left" title="Debugging software"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../board-preparation/" class="btn btn-neutral float-right" title="Preparing the target board">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../supported-debuggers/" class="btn btn-neutral float-left" title="Debug probes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../supported-platforms/" class="btn btn-neutral float-right" title="Platforms">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -331,10 +322,10 @@ usually postfixed by <code>-preX</code> and the name of the package will have
         </span>
     
     
-      <span><a href="../debugging-software/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../supported-debuggers/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../board-preparation/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../supported-platforms/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
