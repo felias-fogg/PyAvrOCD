@@ -143,6 +143,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#io-register-access">I/O register access</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#svd-mediated-access-to-bitfields-in-io-registers">SVD mediated access to bitfields in I/O registers</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#unsafe-exits-from-debugging">Unsafe exits from debugging</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
@@ -288,6 +290,9 @@ IN R2, PINB
 <p>Some I/O registers cannot be accessed from the debugging UI.</p>
 <p>Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers <code>UDR</code> and <code>SPDR</code>). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2, then the <code>PERIPHERALS</code> debugger pane will show you a comment to this effect.</p>
 <p>Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). Again, if you use the Arduino IDE or PlatformIO, the <code>PERIPHERALS</code> pane will inform you about the fact that the register is read-only to the debugger.</p>
+<h2 id="svd-mediated-access-to-bitfields-in-io-registers">SVD mediated access to bitfields in I/O registers</h2>
+<p>Bitfield access to I/O registers mediated through SVD is sometimes buggy.</p>
+<p>The translation from Microchip ATDF files to open-source (ARM) SVD files (when building the base for PyAvrOCD) is not completely lossless. Sometimes, bitfields in AVR MCUs are not continuous, i.e., the bits are sprinkled over the byte of an I/O register. In this case, the generated SVD representation has bitfields that overlap with other bitfields. This is, for example, the case with the WDTCSR in ATmega328P. It may simply be confusing. When you try to assign values to such bitfields, it will get it outright wrong.</p>
 <h2 id="unsafe-exits-from-debugging">Unsafe exits from debugging</h2>
 <p>MCU and debug probe can be in an undefined state after abrupt exits.</p>
 <p>When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:</p>
