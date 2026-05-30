@@ -41,7 +41,7 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Supported</span></p>
+              <p class="caption"><span class="caption-text">Supported devices & platforms</span></p>
               <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
                   </li>
@@ -179,6 +179,10 @@
 <tr>
 <td><code>monitor</code> <code>info</code></td>
 <td>Display information about the target and the state of the debugger.</td>
+</tr>
+<tr>
+<td><code>monitor</code> <code>ioregister</code> <code>&lt;ioreg-expression&gt;</code> [<code>&lt;integer&gt;</code>]</td>
+<td>This monitor command displays I/O register values and can set them. An <code>&lt;ioreg-expression&gt;</code> is a wildcard expression (as you use for files), which can address one or more I/O registers or bit fields using the notation <code>&lt;peripheral&gt;</code>.<code>&lt;register&gt;</code> or, respectively,  <code>&lt;peripheral&gt;</code>.<code>&lt;register&gt;</code>.<code>&lt;field&gt;</code>. The <code>&lt;peripheral&gt;</code> part can be omitted.  If a unique register is referenced, all bitfields are also printed. When an additional integer literal <code>&lt;integer&gt;</code> is given, then its value will be stored in the register or bitfield, provided the <code>&lt;ioreg-expression&gt;</code> addresses a unique register or bitfield.</td>
 </tr>
 <tr>
 <td><code>monitor</code> <code>load</code> [<code>readbeforewrite</code> | <code>writeonly</code> | <code>noinitialload</code>]</td>
