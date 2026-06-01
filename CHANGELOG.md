@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.5.1 (01-May-2026)
+### 1.5.1 (01-June-2026)
 
 - **Added:**
      - New monitor command `ioregister`. If one additional argument is given, it will be matched against the I/O register names (using wildcard matching), and the matched registers and their values will be printed. If a unique register is addressed, then the bitfields (if any) are printed as well. If the expression matches a unique bitfield in a register, this will be printed. If two arguments are given, then the second should be an integer value, which is stored in the unique register or bitfield referred to by the first argument.

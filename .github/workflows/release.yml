@@ -205,7 +205,7 @@ jobs:
         run: bash extras/packer.sh
 
       - name: Asset upload
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: extras/assets/*.tar.gz
 
@@ -255,7 +255,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v6
+      uses: actions/download-artifact@v7
       with:
         name: python-package-distributions
         path: dist/
