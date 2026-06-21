@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.5.2
+### 1.5.2 (21-June-2026)
 - **Added:**
      - If the io-reg expression in an `monitor ioregister` command denotes a unique bitfield, then the potentional values and their descrioption are printed if present in the SVD file.
 
