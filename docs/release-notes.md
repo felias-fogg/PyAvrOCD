@@ -1,5 +1,10 @@
 # Release Notes
 
+## Release v1.5.2
+
+- The `monitor ioregister` command has been extended. Now it will display possible values of a uniquily specified bitfield if the values are specified in the SVD file.
+- In addition, a few changes to the documentation have been made, in particular to the debugging section. There is now a hint how display the assembly code of a function and a description of the `monitor ioregister` command.
+
 ## Release v1.5.1
 
 - The main addition is the new monitor command: `monitor ioregister <ioreg-expression>` [`<integer>`]. It can be used to inspect and set I/O registers and bitfields in I/O registers.

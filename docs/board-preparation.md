@@ -1,6 +1,6 @@
 # Preparing a target board for debugging
 
-When you want to debug a program on a target board, usually some modifications of the hardware are necessary. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.
+When you want to debug a program on a target board that has no embedded debugger on board, usually some modifications of the hardware are necessary. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.
 
 ## Preparing a debugWIRE target
 

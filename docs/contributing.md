@@ -16,7 +16,7 @@ If you have a *question* or some *general ideas*, please do not open an issue, b
 
 If you have found what looks like a *bug* or a *documentation glitch*, or if you have a *feature request*, please open an [issue](https://github.com/felias-fogg/PyAvrOCD/issues).
 
-Please include as much detail as possible. If you get an error message, include the complete log of the server using the option `--verbose all` (perhaps as a zip-file).  In case of a bug, it will be very helpful if the issue report touches the following aspects:
+Please include as much detail as possible. If you get an error message, include the complete log of the server.  In case of a bug, it will be very helpful if the issue report touches the following aspects:
 
 1. What are you trying to achieve?
 2. What is your setup (OS, MCU, debug probe, software setup)?

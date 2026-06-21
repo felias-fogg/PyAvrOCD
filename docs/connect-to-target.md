@@ -1,26 +1,22 @@
 # Connecting the debug probe to a target
 
-The Microchip debuggers Snap and PICkit4 have an eight-pin SIL connector, where a triangle marks pin 1. This connector is not compatible with any AVR debug connector.
+If you need to connect an external debug probe to your target board, then you have to deal with one of the three connector variants offered by the debug probes.
 
-If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as shown in the following picture.
+The Microchip debuggers **Snap** and **PICkit4** have an eight-pin SIL connector, where a triangle marks pin 1. This connector is not compatible with any AVR debug connector. If you want to connect to your target board with a standard SPI or JTAG cable, you can buy an adapter board for AVR connectors from Microchip, as shown in the following picture.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/SNAP-adapter.JPG" width="70%">
 </p>
-
-Atmel-ICE, Power Debugger, and JTAGICE3 all feature a keyed 10-pin, 50-mil JTAG header. For these debuggers, adapters are either already included or must be purchased separately. For AVR targets, one should, of course, use the header marked `AVR`.
+**Atmel-ICE**, **Power Debugger**, and **JTAGICE3** all feature a keyed 10-pin, 50-mil header. For these debuggers, adapters are either already included or must be purchased separately. For AVR targets, one should, of course, use the header marked `AVR`.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Atmel-adapter.JPG" width="70%">
 </p>
-The [dw-link](https://felias-fogg.github.io/dw-link) debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the following picture.
+The **[dw-link](https://felias-fogg.github.io/dw-link)** debugger uses the header on the Arduino Uno. The most convenient way is to prepare an ISP cable with a broken-out RESET and VCC cable as shown in the following picture.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/dw-link-spi.jpeg" width="70%">
 </p>
-
-Finally, all EDBG debuggers are easy to use. Since they are embedded debuggers, the connection to the target is already on the board.
-
 If you do not have the standard headers on board or you are using a breadboard, then you have to connect each line using a jumper cable or the Atmel squid cable, as shown in the following picture.
 
 <p align="center">
@@ -43,7 +39,7 @@ There are two types of SPI programming connectors. The more recent type has six 
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/Isp_headers.svg.png" width="40%">
 </p>
 
-Note the notches on the left side of the headers. Since almost all SPI programming plugs are keyed, you can only plug them in in the correct orientation. However, the headers sometimes do not have notches. In this case, pin 1 is usually marked in some way, either with a dot, a star, or with the number 1. Similarly, plugs also come unkeyed. In this case, again, pin 1 is marked in some way.
+Note the notches on the left side of the headers. Since almost all SPI programming plugs are keyed, you can only plug them in in the correct orientation. However, the headers sometimes do not have notches. In this case, pin 1 is usually marked in some way, either with a dot, a star, or the number 1. Similarly, plugs also come unkeyed. In this case, again, pin 1 is marked in some way.
 
 ### Connecting to targets with an SPI programming header
 
@@ -159,9 +155,7 @@ For the Atmel debuggers, the setup appears as follows, where the JTAG pin corres
 
 ## Connecting to UPDI targets
 
-There are a number of UPDI boards that come with an embedded debugger. For instance, all the AVR Curiosity Nano boards, as well as the Arduino Uno WiFi Rev2, have a hardware debugger on board. In all these cases, it is enough to plug in the USB cable.
-
-However, even without a debugger on board, connecting to a UPDI target is very easy because you need only three lines: `UPDI`, `VTG`, and `GND`. For the MPLAB debuggers SNAP and PICkit4, this looks as follows.
+Connecting to a UPDI target is very easy because you need only three lines: `UPDI`, `VTG`, and `GND`. For the MPLAB debuggers SNAP and PICkit4, this looks as follows.
 
 | MBLAP Debugger | Pin # | Target pin |
 | -------------- | ----- | ---------- |

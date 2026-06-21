@@ -131,11 +131,11 @@ Now it is time to start debugging by clicking the `Debug` button (bug in front o
 
 Power cycling means to remove the Vcc jumper cable and, after a few seconds, to reinsert it. After a while, the `DEBUG` pane should open.
 
-### Step 8: Debug the sketch
+### Step 6: Debug the sketch
 
 You can now start and stop execution, inspect variables, set breakpoints, and the like (see section on [debugging](debugging.md)). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.
 
-### Step 9: Start over or terminate the debugging session
+### Step 7: Start over or terminate the debugging session
 
 After leaving the debugger, you can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.
 

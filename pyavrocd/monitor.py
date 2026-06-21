@@ -584,7 +584,8 @@ Timers:                   """ + ("frozen when stopped"
                                         'address' : p['baseAddress'] + r['addressOffset'],
                                         'bits' : f['bitRange'],
                                         'size' : r['size'],
-                                        'description': f['description'] })
+                                        'description': f['description'],
+                                        'enumeratedValues': f.get('enumeratedValues',{'enumeratedValue' : [] }) })
         self.logger.debug("Matching fields: %s", result)
         return result
 
@@ -603,7 +604,13 @@ Timers:                   """ + ("frozen when stopped"
             val = self._extract_bitfield(val, f['bits'])
             results.append(
                 f"{f['name']} (@0x{f['address']:X}{f['bits']}) = 0x{val:X}, 0b{val:b}, {val} ({f['description']})")
+        if len(fields) == 1:
+            for v in fields[0]['enumeratedValues']['enumeratedValue']:
+                results.append(
+                    f"   {v['value']}: {v['name']} ({v['description']})")
         return '\n'.join(results)
+
+
 
     def _extract_bitfield(self, val : int, bits : str) -> int:
         bitsrange = bits.replace("[","").replace("]","").split(":")
