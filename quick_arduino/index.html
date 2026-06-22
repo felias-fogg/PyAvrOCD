@@ -134,9 +134,9 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-5-start-debugging">Step 5: Start debugging</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-8-debug-the-sketch_1">Step 8: Debug the sketch</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-6-debug-the-sketch">Step 6: Debug the sketch</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-9-start-over-or-terminate-the-debugging-session_1">Step 9: Start over or terminate the debugging session</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-7-start-over-or-terminate-the-debugging-session">Step 7: Start over or terminate the debugging session</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#what-can-go-wrong">What can go wrong?</a>
     </li>
@@ -622,9 +622,9 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-attiny-power-cycle.png " width="90%"></p>
 
 <p>Power cycling means to remove the Vcc jumper cable and, after a few seconds, to reinsert it. After a while, the <code>DEBUG</code> pane should open.</p>
-<h3 id="step-8-debug-the-sketch_1">Step 8: Debug the sketch</h3>
+<h3 id="step-6-debug-the-sketch">Step 6: Debug the sketch</h3>
 <p>You can now start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
-<h3 id="step-9-start-over-or-terminate-the-debugging-session_1">Step 9: Start over or terminate the debugging session</h3>
+<h3 id="step-7-start-over-or-terminate-the-debugging-session">Step 7: Start over or terminate the debugging session</h3>
 <p>After leaving the debugger, you can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
 <p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode. It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
 <h3 id="what-can-go-wrong">What can go wrong?</h3>

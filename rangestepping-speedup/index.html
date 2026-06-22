@@ -181,6 +181,7 @@ $m 00 ...
 </ol>
 <p>If the range stepping method is called now, it can ignore all <code>call</code> instructions as potential branch points and as instructions to jump outside the range.  If any other record is received, the <code>call-ignore</code> mode needs to be disabled.</p>
 <p>Will that be enough to distinguish it from simply leaving the range, setting a breakpoint in the range, and then stopping again in the range? Yes. When execution is stopped, GDB will also use <code>$qfThreadInfo</code> and <code>$qsThreadInfo</code> records. So, the above sequence seems to be distinctive.</p>
+<p>This method has been implemented in version 1.2.1.</p>
               
             </div>
           </div><footer>

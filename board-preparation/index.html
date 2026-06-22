@@ -157,7 +157,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="preparing-a-target-board-for-debugging">Preparing a target board for debugging</h1>
-<p>When you want to debug a program on a target board, usually some modifications of the hardware are necessary. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.</p>
+<p>When you want to debug a program on a target board that has no embedded debugger on board, usually some modifications of the hardware are necessary. The general rule is that the lines used for debugging should not have any resistive or capacitive loads or active components on them.</p>
 <h2 id="preparing-a-debugwire-target">Preparing a debugWIRE target</h2>
 <p>Since the RESET line is used for communication between the MCU and the debug probe, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
 <h3 id="arduino-uno-and-clones">Arduino Uno and clones</h3>

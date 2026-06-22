@@ -141,7 +141,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="monitor-commands">Monitor commands</h1>
-<p>PyAvrOCD implements several <code>monitor</code> commands. These can be used to control important aspects of the GDB server. Two important commands are the <code>monitor debugwire enable</code> and <code>monitor debugwire disable</code> commands, which enable and disable, respectively, debugWIRE mode on MCUs supporting this interface. When using Arduino IDE 2, you can type such commands into the last line of the <code>Debug Console</code>.</p>
+<p>PyAvrOCD implements several <code>monitor</code> commands. These can be used to control important aspects of the GDB server. Two important commands are the <code>monitor debugwire enable</code> and <code>monitor debugwire disable</code> commands, which enable and disable, respectively, debugWIRE mode on MCUs supporting this interface. A very useful command when using a CLI interface is <code>monitor ioregister</code>, which can be used to print the values of certain I/O registers.</p>
+<p>When using Arduino IDE 2, you can type such commands into the last line of the <code>Debug Console</code>.</p>
 <p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="70%"></p>
 
 <table>
@@ -182,7 +183,7 @@
 </tr>
 <tr>
 <td><code>monitor</code> <code>ioregister</code> <code>&lt;ioreg-expression&gt;</code> [<code>&lt;integer&gt;</code>]</td>
-<td>This monitor command displays I/O register values and can set them. An <code>&lt;ioreg-expression&gt;</code> is a wildcard expression (as you use for files), which can address one or more I/O registers or bit fields using the notation [<code>&lt;peripheral&gt;</code>.]<code>&lt;register&gt;</code> or  [<code>&lt;peripheral&gt;</code>.]<code>&lt;register&gt;</code>.<code>&lt;field&gt;</code>, respectively. If a unique register is referenced, all bitfields are also printed. When an additional integer literal <code>&lt;integer&gt;</code> is given, then its value will be stored in the register or bitfield, provided the <code>&lt;ioreg-expression&gt;</code> addresses a unique register or bitfield.</td>
+<td>This monitor command displays I/O register values and can set them. An <code>&lt;ioreg-expression&gt;</code> is a wildcard expression (as you use for files), which can address one or more I/O registers or bitfields using the notation [<code>&lt;peripheral&gt;</code>.]<code>&lt;register&gt;</code> or  [<code>&lt;peripheral&gt;</code>.]<code>&lt;register&gt;</code>.<code>&lt;field&gt;</code>, respectively. If a unique register is referenced, all bitfields are also printed. If a unique bitfield is referenced, all potential values and their descriptions are printed if present in the SVD file. When an additional integer literal <code>&lt;integer&gt;</code> is given, then its value will be stored in the register or bitfield, provided the <code>&lt;ioreg-expression&gt;</code> addresses a unique register or bitfield. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>monitor</code> <code>load</code> [<code>readbeforewrite</code> | <code>writeonly</code> | <code>noinitialload</code>]</td>
