@@ -51,9 +51,30 @@ for dir in binaries/*; do
 	if [ -f $dir/pyavrocd -o -f $dir/pyavrocd.exe ]; then
 	    if [ -d $dir/pyavrocd-util ]; then
 		type=${dir##*/}
+                if [[ $type == "aarch64-linux-gnu" ]]; then
+                    SYSTEM="linux_aarch64"
+                elif [[ $type == "arm-linux-gnueabihf" ]]; then
+                    SYSTEM="linux_armv6l"
+                elif [[ $type == "arm64-apple-darwin" ]]; then
+                    SYSTEM="darwin_arm64"
+                elif [[ $type == "i686-linux-gnu" ]]; then
+                    SYSTEM="linux_i686"
+                elif [[ $type == "i686-mingw32" ]]; then
+                    SYSTEM="window_x86"
+                elif [[ $type == "x86_64-apple-darwin" ]]; then
+                    SYSTEM="darwin_x86_64"
+                elif [[ $type == "x86_64-linux-gnu" ]]; then
+                    SYSTEM="linux_x86_64"
+                elif [[ $type == "x86_64-mingw32" ]]; then
+                    SYSTEM="windows_amd64"
+                else
+                    echo "Unknown OS type: $type"
+                    exit 1
+                fi
 		echo "Packing tools for: $type"
 		rm -rf tools
 		mkdir tools
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"license\": \"GPL-3.0\", \"system\": \"${SYSTEM}\"} > tools/package.json
                 if [ ! -f $dir/avr-gdb ] && [ ! -f $dir/avr-gdb.exe ]; then
                     pushd $dir
                     wget https://github.com/felias-fogg/avr-gdb/releases/latest/download/${type}.tar.gz

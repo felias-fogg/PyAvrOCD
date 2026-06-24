@@ -1,10 +1,12 @@
 # Debug-enabled Arduino packages
 
-Arduino packages are the key to making debugging available in the Arduino IDE 2. There are two types of such packages. Either debugging has been integrated by the package maintainer or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog. Note that by adding new URLs you add the option to install new enhanced versions, but you can always revert back to the original versions of a package.
+Arduino packages are the key to making debugging available in the Arduino IDE 2. There are two types of such packages. Either debugging has been integrated by the package maintainer, or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog. Note that by adding new URLs, you add the option to install new enhanced versions, but you can always revert back to the original versions of a package.
 
 {!details-boards-manager-url.md!}
 
-Once this has been done, you can search in the <code>Boards Manager</code> for the package, and install it or upgrade to the most recent version. In case of a debug-enabled fork, the version number is usually postfixed by `-preX` and the name of the package will have `(Debug enabled)` attached to the official name.
+Once this has been done, you can search in the <code>Boards Manager</code> for the package and install it or upgrade to the most recent version. In case of a debug-enabled fork, the version number is usually suffixed by `-preX,` and the name of the package will have `(Debug enabled)` attached to the official name.
+
+Meanwhile, some of the board packages have been upgraded to employ the AVR-GCC 15.1 toolchain. It is signaled by version numbers having a `-gcc15x` suffix.
 
 {!details-install-package.md!}
 
@@ -12,7 +14,7 @@ Once this has been done, you can search in the <code>Boards Manager</code> for t
 
 ### [TinyCore](https://github.com/MCUdude/TinyCore)
 
-This is a fork of ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  It does not yet support the micronucleus bootloaders, however. Debugging support has been integrated starting with the release of v0.0.1. You can install it after including the following URL:
+This is a fork of ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  <s>It does not yet support the micronucleus bootloaders, however.</s> Debugging support has been integrated starting with the release of v0.0.1. You can install it after including the following URL:
 
 ```
 https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
@@ -34,9 +36,15 @@ This is the package for the small ATmegas with a debugWIRE interface, aka, ATmeg
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
+Currently, there also exists an experimental fork that includes the AVR-GCC 15.1 toolchain. If you want to try this out, use the following URL in addition:
+
+```
+https://felias-fogg.github.io/MiniCore/package_GCC15_MiniCore_index.json
+```
+
 ### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
 
-This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play:
+This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. This board package also uses the new AVR-GCC 15.1 toolchain.
 
 ```
 https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
@@ -71,12 +79,14 @@ https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 <a id=arduino-avr-boards></a>
 ### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (Debug enabled)
 
-This is the debug enabled fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are
+This is the debug-enabled fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are
 
 - additional programmers,
 - changes to platform.txt to enable debugging,
 - changes to boards.txt to enable the JTAG pins on boards with the JTAG interface, and
 - an upgrade to version 8.0 of avrdude.
+
+Meanwhile, the AVR-GCC 15.1 toolchain has been added to this fork. If you would like to stick to the old 7.3.0 toolchain, then avoid installing versions with the `-gcc15`  suffix.
 
 You can make this fork available by including:
 ```
@@ -87,7 +97,7 @@ https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-av
 
 ### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (Debug enabled)
 
-This is the debug enabled fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by [MegaCoreX](#megacorex). The only changes to the upstream repo are:
+This is the debug-enabled fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by [MegaCoreX](#megacorex). The only changes to the upstream repo are:
 
 - additional programmers,
 - changes to platform.txt to enable debugging,
