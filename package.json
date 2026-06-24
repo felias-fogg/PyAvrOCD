@@ -1,0 +1,10 @@
+{
+    "name": "tool-pyavrocd",
+    "version": "1.0.0",
+    "description": "GDB server for AVR microcontrollers",
+    "keywords": ["GDB server", "debugging", "compiler", "microchip", "avr"],
+    "url" : "https://github.com/felias-fogg/PyAvrOCD/",
+    "homepage": "https://pyavrocd.io",
+    "license": "GPL-3.0",
+    "system": [ "*" ]
+}
