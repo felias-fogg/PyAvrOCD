@@ -44,7 +44,7 @@ https://felias-fogg.github.io/MiniCore/package_GCC15_MiniCore_index.json
 
 ### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
 
-This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. This board package also uses the new AVR-GCC 15.1 toolchain.
+This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. This board package also uses the new AVR-GCC 15.1 toolchain. You can make the board package available by including the following boards manager URL:
 
 ```
 https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
@@ -111,7 +111,7 @@ https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCor
 ```
 
 
-## Debug-enabled forks of 3rd party packages
+## Debug-enabled forks of 3rd-party packages
 
 <a id=megacorex></a>
 ### [MegaCoreX](https://github.com/felias-fogg/MegaCoreX)  (Debug enabled)
@@ -127,7 +127,7 @@ Expect to find the debug extension soon in the upstream repo.
 <a id=megatinycore></a>
 ### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (Debug enabled)
 
-This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-enabled fork available using following URL:
+This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-enabled fork available using the following URL:
 
 ```
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
@@ -136,7 +136,7 @@ https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_inde
 <a id=dxcore></a>
 ### [DxCore](https://github.com/felias-fogg/DxCore) (Debug enabled)
 
-This is a fork of DxCore, the package for the most recently marketed AVR chips. Nake the debug-enabled fork available by using:
+This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-enabled fork available by using:
 
 ```
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_DxCore_index.json
@@ -145,7 +145,7 @@ https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_DxCore_index.json
 <a id=attinycore></a>
 ### [ATTinyCore](https://github.com/felias-fogg/ATTinyCore) (Debug enabled)
 
-This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. While it might still be of interest to people who use the micronucleus boot loaders, nowadays [TinyCore (see above)](#tinycore) is the preferred package for classic ATtinys. You can make this fork available by including the following URL:
+This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. Nowadays, [TinyCore (see above)](#tinycore) is the preferred package for classic ATtinys. You can make this fork available by including the following URL:
 
 ```
 https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
