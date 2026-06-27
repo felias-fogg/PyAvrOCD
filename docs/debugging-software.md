@@ -108,7 +108,7 @@ set logging overwrite 1</code>
 
 ## A software simulator: simavr
 
-The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. While the package managers under macOS and Linux offer the stable version 1.7, this release unfortunately does not play well with PyAvrOCD. You can either download a binary from the latest [Github Actions CI](https://github.com/buserror/simavr/actions) or you can build it from source.
+The software simulator `simavr` is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. You can either download a binary from the latest [Github Actions CI](https://github.com/buserror/simavr/actions), you can build it from source, or, under macOS, use Homebrew.
 
 <details>
 <summary><b>How to build simavr from source</b></summary>
@@ -120,13 +120,6 @@ If you want or need to build simavr from source, clone or download the
 <pre>
 <code class="language-bash hljs">make install DESTDIR=~/.local/</code>
 </pre>
-
-This works under macOS and Linux. The instructions in the repo provided for Windows appear to be outdated. For the Mac, one could alternatively build from source by using the following commands:
-
-<pre>
-<code class="language-bash hljs">brew tap osx-cross/avr
-brew install --HEAD simavr
-</code>
-</pre>
 </details>
+
 <p></p>
