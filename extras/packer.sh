@@ -74,7 +74,7 @@ for dir in binaries/*; do
 		echo "Packing tools for: $type"
 		rm -rf tools
 		mkdir tools
-                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"license\": \"GPL-3.0\", \"system\": \"${SYSTEM}\"} > tools/package.json
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
                 if [ ! -f $dir/avr-gdb ] && [ ! -f $dir/avr-gdb.exe ]; then
                     pushd $dir
                     wget https://github.com/felias-fogg/avr-gdb/releases/latest/download/${type}.tar.gz
