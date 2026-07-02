@@ -1,5 +1,13 @@
 # Release Notes
 
+## Release v1.5.4
+
+- Now, PyAvrOCD is also tightly integrated with PlafromIO. It has an PlatformIO manifest and thanks to the new command `monitor disconnect` , it gracefully terminates when debugging is stopped. The key to making PyAvrOCD available inside PlatformIO is the forked platform:
+
+```
+https://github.com/felias-fogg/platform-atmelavr.git
+```
+
 ## Release v1.5.2
 
 - The `monitor ioregister` command has been extended. Now it will display possible values of a uniquily specified bitfield if the values are specified in the SVD file.

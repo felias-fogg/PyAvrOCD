@@ -27,6 +27,7 @@ monopts: dict[str, tuple[ str | None, str | None, list [ str ] ] ] \
             'breakpoints'     : ('cli', 'all', ['all', 'software', 'hardware']),
             'caching'         : ('cli', 'enable', ['enable', 'disable']),
             'debugwire'       : ('cli', None, ['enable', 'disable']),
+            'disconnect'      : (None, None, []),
             'erasebeforeload' : ('cli', None, ['enable', 'disable']),
             'help'            : (None, None, []),
             'info'            : (None, None, []),
@@ -84,6 +85,7 @@ class MonitorCommand():
             'breakpoints'     : self._mon_breakpoints,
             'caching'         : self._mon_cache,
             'debugwire'       : self._mon_debugwire,
+            'disconnect'      : self._mon_disconnect,
             'erasebeforeload' : self._mon_erase_before_load,
             'help'            : self._mon_help,
             'info'            : self._mon_info,
@@ -384,6 +386,11 @@ class MonitorCommand():
             return("", "debugWIRE is disabled")
         return self._mon_unknown_arg(0)
 
+    def _mon_disconnect(self, _ : int | list[str]) -> tuple[ str, str ]:
+        if self.is_debugger_active():
+            return("disconnect", "Disconnected from debug tool")
+        return("", "No connection to debug tool")
+
     def _mon_erase_before_load(self, optix : int | list[str]) -> tuple[ str, str ]:
         if self._iface == 'debugwire':
             return("", "On debugWIRE targets, flash memory cannot be erased before loading executable")
@@ -409,6 +416,7 @@ class MonitorCommand():
 version                             - print version
 info                                - print info about target and debugger
 reset                               - reset MCU
+disconnect                          - disconnect from debug tool
 atexit [stay|leave]                 - stay in/leave debug mode on exit
 breakpoints [all|software|hardware] - allow breakpoints of a certain kind
 caching [enable|disable]            - use loaded executable as cache (default)

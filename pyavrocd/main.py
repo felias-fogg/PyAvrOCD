@@ -580,7 +580,10 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
         avrdebugger = XAvrDebugger(backend.transport, device, intf, args)
         if args.debugwire:
             if intf != 'debugwire':
-                logger.warning("Ignoring --debugwire option for %s target", intf)
+                if args.debugwire[0] == 'd':
+                    logger.critical("Cannot disable debugWIRE on %s target", intf)
+                    return 1
+                logger.warning("Ignoring --debugwire option on %s target", intf)
             else:
                 if args.debugwire[0] == 'd' and intf == 'debugwire':
                     avrdebugger.cold_dw_disable()

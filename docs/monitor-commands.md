@@ -12,6 +12,7 @@ When using Arduino IDE 2, you can type such commands into the last line of the `
 | `monitor` `breakpoints` [`all` \| `software` \| `hardware`]  | Restricts the kind of breakpoints that can be used. Either `all` types are permitted, only `software` breakpoints are allowed, or only `hardware` breakpoints can be used. Using `all` kinds is the default. |
 | `monitor` `caching` [`enable` \| `disable`]                  | The loaded executable is cached in PyAvrOCD when `enable`d, which is the default setting. **(+)** |
 | `monitor` `debugwire` [`enable` \| `disable`]                | DebugWIRE mode will be `enable`d or `disable`d. When enabling it, you may be asked to power-cycle the target, and the MCU will be reset. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming. |
+| `monitor` `disconnect`                                       | Disconnect from debug probe. This can be helpful in an IDE context when the IDE kills the GDB server while it is shutting down. **(+)** |
 | `monitor`  `erasebeforeload` [`enable` \| `disable`]         | This monitor option controls whether the flash is erased before an executable is loaded, which is the default for JTAG targets. This option is ignored on debugWIRE targets since those do not support a chip erase command in debug mode. |
 | `monitor` `help`                                             | Display help text.                                           |
 | `monitor` `info`                                             | Display information about the target and the state of the debugger. |
@@ -25,7 +26,7 @@ When using Arduino IDE 2, you can type such commands into the last line of the `
 | `monitor` `verify` [`enable `\|` disable`]                   | Verify flash after loading each flash page. The default setting is for this option to be `enable`d. |
 | `monitor` `version`                                          | Show version number of PyAvrOCD.                             |
 
-All commands can, as usual, be abbreviated. For example, `mo d e` is equivalent to `monitor debugwire enable`. If you use a command without an argument, the current setting is printed.
+All commands can, as usual, be abbreviated. For example, `mo de e` is equivalent to `monitor debugwire enable`. If you use a command without an argument, the current setting is printed.
 
 All state-changing commands can also be specified as command-line options when invoking PyAvrOCD, e.g., `--verify disable`. These options will have the same effect as issuing the corresponding monitor command after a connection to the GDB server has been established. The only exception is `--debugwire disable`. If this option is given, PyAvrOCD will disable debugWIRE mode and then exit immediately without waiting for a GDB connection.
 

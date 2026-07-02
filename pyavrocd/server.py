@@ -104,9 +104,9 @@ class RspServer():
                 if self.handler is None or self.handler.mon is None or \
                     self.handler.mon.is_debugger_active():
                     self.avrdebugger.stop_debugging(leave=leave, graceful=True)
-            # sleep 0.5 seconds before closing in order to allow the client to close first
+            # sleep 1 second before closing in order to allow the client to close first
             if platform.system() != "Windows":
-                time.sleep(0.5) # under Windows, a system exception is raised
+                time.sleep(1) # under Windows, a system exception is raised
             if self.connection:
                 self.connection.close()
                 self.logger.info("Connection closed")

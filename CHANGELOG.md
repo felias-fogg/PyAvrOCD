@@ -1,8 +1,22 @@
 # Changelog
 
-### 1.5.2 (21-June-2026)
+### 1.5.4
+
 - **Added:**
-     - If the io-reg expression in an `monitor ioregister` command denotes a unique bitfield, then the potentional values and their descrioption are printed if present in the SVD file.
+     - PlatformIO manifest
+     - `monitor disconnect` command, which disconnects from the debug tool (before we get shutdown by the IDE)
+- **Fixed:**
+     - If pyavrocd is called with `--debugwire disable` on a non-debugWIRE target, the program is now terminated instewad of waiting for a connection.
+
+
+### 1.5.3
+
+- was an experimental pre-release
+
+### 1.5.2 (21-June-2026)
+
+- **Added:**
+     - If the io-reg expression in an `monitor ioregister` command denotes a unique bitfield, then the potentional values and their description are printed if present in the SVD file.
 
 ### 1.5.1 (01-June-2026)
 

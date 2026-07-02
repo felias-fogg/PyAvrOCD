@@ -450,6 +450,9 @@ class GdbHandler():
                 self._live_tests.run_tests()
             elif 'test' == response[0]:
                 self.dbg.reactivate()
+            elif 'disconnect' == response[0]:
+                self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
+                self.mon.set_debug_mode_active(False)
         except AvrIspProtocolError:
             self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
             if self.critical is None:

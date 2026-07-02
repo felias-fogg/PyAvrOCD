@@ -237,7 +237,7 @@ class TestMonitorCommand(TestCase):
     def test_dispatch_debugWIRE(self):
         self.set_up()
         self.mo._debugger_active = False
-        self.assertEqual(self.mo.dispatch(["d"]), ("", "debugWIRE is disabled"))
+        self.assertEqual(self.mo.dispatch(["de"]), ("", "debugWIRE is disabled"))
         self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(["debugwire"]), ("", "debugWIRE is enabled"))
         self.mo._debugger_active = False
