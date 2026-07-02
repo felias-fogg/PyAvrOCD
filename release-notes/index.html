@@ -102,6 +102,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v154">Release v1.5.4</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v152">Release v1.5.2</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v151">Release v1.5.1</a>
@@ -197,6 +199,12 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v154">Release v1.5.4</h2>
+<ul>
+<li>Now, PyAvrOCD is also tightly integrated with PlafromIO. It has an PlatformIO manifest and thanks to the new command <code>monitor disconnect</code> , it gracefully terminates when debugging is stopped. The key to making PyAvrOCD available inside PlatformIO is the forked platform: </li>
+</ul>
+<pre><code>https://github.com/felias-fogg/platform-atmelavr.git
+</code></pre>
 <h2 id="release-v152">Release v1.5.2</h2>
 <ul>
 <li>The <code>monitor ioregister</code> command has been extended. Now it will display possible values of a uniquily specified bitfield if the values are specified in the SVD file.</li>
