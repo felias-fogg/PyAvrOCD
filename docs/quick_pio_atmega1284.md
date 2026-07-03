@@ -13,33 +13,46 @@ We will use an ATmega1284 (but any other AVR JTAG Mega will do) and the debug pr
 
 In the following, I will assume that PlatformIO, as an extension of VSCode, has been installed already and that you are somewhat familiar with it.
 
-{!pio_quick_install.md!}
+### Step 1: Set up a project with the right platform
 
-### Step 3: Set up the example project
+Setup a PlatformIO project and instead of using `atmelavr` as the platform, specify the following in your `platformio.ini` configuration file:
 
-Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file `platformio.ini`, too long to present here. You can clone a project containing this file, together with a small program, from
+```
+...
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = ATmega1284P
+...
+```
+
+The best way to start is to clone or download the following repository.
 
 ```
 https://github.com/felias-fogg/pio-atmega1284p-example
 ```
 
-After opening a `new window`, click on `Clone Git Repository...` and type the above line into the input field. Perhaps VS Code asks you to log in to GitHub first.
+The `plaformio.ini` file contains the following sections:
 
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-1.png" width="90%">
-</p>
+```
+[env:atmega1284p]
+;;contains all information about the platform & chip and
+;;how to commuincate with Atmel-ICE
+...
 
-The repo will be cloned, and you have to provide a destination for it.
+[env:debug]
+;; enables debugging
+...
 
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-2.png" width="90%">
-</p>
+[env:release]
+;; supports uploading in release mode
+...
+```
 
 
 
-### Step 4: Prepare the board for debugging
+### Step 2: Prepare the board for debugging
 
-Before debugging can take place, you need to make sure that the JTAG pins are enabled. On an ATmega1284P, these are the pins  `PC2`&mdash;`PC5`. Fresh from the factory, the JTAG pins are enabled. However, on Arduino boards, they are by default disabled. Since the state is probably unknown, we will set them anyway. In order to activate them, we need to connect the Atmel-ICE to the board using the ISP connection, as shown in the following photo. The key or marker of the ISP plug should be oriented towards the MCU.
+Before debugging can take place, you need to make sure that the JTAG pins are enabled. On an ATmega1284P, these are the pins  `PC2`&mdash;`PC5`. Fresh from the factory, the JTAG pins are enabled. However, on Arduino boards, they are by default disabled. Since the state is probably unknown, we will set them anyway. In order to activate the JTAG pins, we need to connect the Atmel-ICE to the board using the ISP connection, as shown in the following photo. The key or marker of the ISP plug should be oriented towards the MCU.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmelice_isp.jpg" width="70%">
@@ -71,7 +84,7 @@ If you have not activated the `debug` environment, now is the time to do it (as 
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
 </p>
 
-This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. As requested by the configuration in `platformio.ini`, a first temporary stop is made in the `setup` function. The yellow triangle and the highlighted line signify this. The most important control panel is now the one shown on the right side at the top. It enables you (from left to right) to
+This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the `main` function. The yellow triangle and the highlighted line signify this. The most important control panel is now the one shown on the right side at the top. It enables you (from left to right) to
 
 - *continuing/suspending* execution,
 - *stepping-over*, i.e., making a step to the beginning of the next source line in the same function,
@@ -102,7 +115,7 @@ I believe that from here on, you will be able to use the debugger productively.
 
 If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
-Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to disable the JTAG pins, perhaps. For this purpose, you first need to switch back to the ISP connection. Then switch to the `release` environment and click `Set Fuses` again. Possibly, you even want to restore the bootloader, which was deleted when starting the debugger. In this case, you need to click `Burn Bootloader`.
+Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to disable the JTAG pins, perhaps. Switch to the `release` environment and click `Set Fuses` again. Possibly, you even want to restore the bootloader, which was deleted when starting the debugger. In this case, you need to click `Burn Bootloader`.
 
 ### Potential Problems
 
