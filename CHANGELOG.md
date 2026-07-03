@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.5.4
+### 1.5.4 (02-July-2026)
 
 - **Added:**
      - PlatformIO manifest
