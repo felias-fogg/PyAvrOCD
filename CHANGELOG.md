@@ -4,7 +4,7 @@
 
 - **Added:**
      - PlatformIO manifest
-     - `monitor disconnect` command, which disconnects from the debug tool (before we get shutdown by the IDE)
+     - `monitor disconnect` command, which disconnects from the debug tool (before we get shut down by the IDE)
 - **Fixed:**
      - If pyavrocd is called with `--debugwire disable` on a non-debugWIRE target, the program is now terminated instead of waiting for a connection.
 

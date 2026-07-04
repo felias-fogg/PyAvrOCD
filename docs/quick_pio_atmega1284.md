@@ -15,7 +15,7 @@ In the following, I will assume that PlatformIO, as an extension of VSCode, has 
 
 ### Step 1: Set up a project with the right platform
 
-Setup a PlatformIO project and instead of using `atmelavr` as the platform, specify the following in your `platformio.ini` configuration file:
+Set up a PlatformIO project and instead of using `atmelavr` as the platform, specify the following in your `platformio.ini` configuration file:
 
 ```
 ...
@@ -52,7 +52,7 @@ The `plaformio.ini` file contains the following sections:
 
 ### Step 2: Prepare the board for debugging
 
-Before debugging can take place, you need to make sure that the JTAG pins are enabled. On an ATmega1284P, these are the pins  `PC2`&mdash;`PC5`. Fresh from the factory, the JTAG pins are enabled. However, on Arduino boards, they are by default disabled. Since the state is probably unknown, we will set them anyway. In order to activate the JTAG pins, we need to connect the Atmel-ICE to the board using the ISP connection, as shown in the following photo. The key or marker of the ISP plug should be oriented towards the MCU.
+Before debugging can take place, you need to make sure that the JTAG pins are enabled. On an ATmega1284P, these are the pins  `PC2`&mdash;`PC5`. Fresh from the factory, the JTAG pins are enabled. However, on Arduino boards, they are by default disabled. Since the state is probably unknown, we will set it anyway. In order to activate the JTAG pins, we need to connect the Atmel-ICE to the board using the ISP connection, as shown in the following photo. On this board, the key or marker of the ISP plug should be oriented towards the MCU.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmelice_isp.jpg" width="70%">
@@ -64,19 +64,19 @@ In order to set the correct fuses, we now select the `debug` environment by firs
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-3.png" width="90%">
 </p>
 
-After that, we request to set the fuses as specified in the `debug` section in the configuration file by clicking on `Set Fuses`. The result of this action is displayed in the `Terminal` window and should be as shown in the picture below.
+After that, we request that the fuses be set by clicking on `Set Fuses`. The result of this action is displayed in the `Terminal` window and should be as shown in the picture below.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-4.png" width="90%">
 </p>
-Before we can start debugging, we need to change the connection between the debug probe and the target board from ISP to JTAG, as shown in the following picture. As with the ISP plug, the keying or marker should be oriented towards the MCU.
+Before we can start debugging, we need to change the connection between the debug probe and the target board from ISP to JTAG, as shown in the following picture. As with the ISP plug, the keying or marker should be oriented towards the MCU on this board.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmelice_jtag.jpg" width="70%">
 </p>
 
 
-### Step 5: Debug the program
+### Step 3: Debug the program
 
 If you have not activated the `debug` environment, now is the time to do it (as shown in the previous step). And then we are ready to go into business seriously. First, click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.
 
