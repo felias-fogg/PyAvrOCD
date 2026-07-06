@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/signals_and_errors/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/contact/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Signals and errors - PyAvrOCD</title>
+    <title>Contact - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Signals and errors";
-        var mkdocs_page_input_path = "signals_and_errors.md";
-        var mkdocs_page_url = "/signals_and_errors/";
+        var mkdocs_page_name = "Contact";
+        var mkdocs_page_input_path = "contact.md";
+        var mkdocs_page_url = "/contact/";
       </script>
     
     <!--[if lt IE 9]>
@@ -97,7 +97,7 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">About</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
@@ -110,7 +110,9 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Contact</a>
+    <ul class="current">
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
                   </li>
@@ -129,9 +131,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Signals and errors</li>
+          <li class="breadcrumb-item">About</li>
+      <li class="breadcrumb-item active">Contact</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/signals_and_errors.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/contact.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -139,91 +142,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
-<table>
-<thead>
-<tr>
-<th>Signal or error code</th>
-<th>Error message</th>
-<th>Explanation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>SIGHUP</code></td>
-<td><em>Enable debugWIRE first: 'monitor debugwire enable</em><br>or<br><em>JTAG pins are not enabled</em><br>or something similar</td>
-<td>If the debugger receives this signal, it means that there is no connection to the target's OCD. You need to enable debugging by setting a fuse or something similar, perhaps by issuing <code>monitor debugwire enable</code>.</td>
-</tr>
-<tr>
-<td><code>SIGINT</code></td>
-<td></td>
-<td>This is not an error signal. It rather signals that execution has been stopped by a keyboard interrupt (or something equivalent).</td>
-</tr>
-<tr>
-<td><code>SIGILL</code></td>
-<td><em>Cannot execute because of  BREAK instruction</em></td>
-<td>The debugger receives this signal when one tries to single-step or continue executing at a location where the user has placed a BREAK instruction. Alternatively, the BREAK instruction might be a leftover from a previously interrupted debugging session.</td>
-</tr>
-<tr>
-<td><code>SIGTRAP</code></td>
-<td></td>
-<td>This is not an error signal. Instead, it is issued when execution stops at a place where a BREAK instruction has been placed, and it is not a breakpoint. From this point it is not possible to continue execution.</td>
-</tr>
-<tr>
-<td><code>SIGABRT</code></td>
-<td>See debug server log</td>
-<td>This signal is raised after a serious internal error or when execution shall be continued after such an error. Use the <code>monitor info</code> to get more information about the error.</td>
-</tr>
-<tr>
-<td><code>SIGBUS</code></td>
-<td><em>Cannot execute because stack pointer is too low</em></td>
-<td>This signal is raised if the stack threatens to overwrite I/O registers when execution is about to start.</td>
-</tr>
-<tr>
-<td><code>SIGSEGV</code></td>
-<td><em>No program loaded; cannot start execution</em></td>
-<td>This signal is raised when execution is about to start, but there was no prior <code>load</code> command.  If this is done intentionally (because it is known that the flash memory has been programmed), one can  disable the check by using the command <code>monitor onlywhenloaded disable</code>.</td>
-</tr>
-<tr>
-<td><code>SISGSYS</code></td>
-<td><em>Too many breakpoints set</em></td>
-<td>Execution cannot continue because too many breakpoints have been set. You need to delete some in order to continue execution.</td>
-</tr>
-<tr>
-<td><code>E01</code></td>
-<td></td>
-<td>Error code returned when attempting to read or write memory contents while there is no connection to the OCD.</td>
-</tr>
-<tr>
-<td><code>E04</code></td>
-<td></td>
-<td>Error signaling that GDB requested a packet longer than the communicated maximal size.</td>
-</tr>
-<tr>
-<td><code>E11</code></td>
-<td></td>
-<td>Error code returned when writing to flash memory was unsuccessful.</td>
-</tr>
-<tr>
-<td><code>E13</code></td>
-<td></td>
-<td>Error code when writing to memory failed.</td>
-</tr>
-<tr>
-<td><code>E14</code></td>
-<td></td>
-<td>Error code for a read memory failure.</td>
-</tr>
-<tr>
-<td><code>E15</code></td>
-<td></td>
-<td>Error code when GDB sent a data package with the wrong size.</td>
-</tr>
-</tbody>
-</table>
+                <h1 id="contact">Contact</h1>
+<p>Bernhard Nebel<br>c/o Block Services<br>
+Stuttgarter Str. 106<br>
+70736 Fellbach</p>
+<p>You can contact me at the e-mail address mentioned on my <a href="https://github.com/felias-fogg">GitHub profile page</a>.</p>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../privacy/" class="btn btn-neutral float-left" title="Privacy policy"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
 
   <hr/>
 
@@ -248,6 +177,8 @@
           <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
         </span>
     
+    
+      <span><a href="../privacy/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
