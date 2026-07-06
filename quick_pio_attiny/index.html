@@ -164,76 +164,42 @@
 </ul>
 </li>
 </ul>
-<h3 id="step-1-installing-pyavrocd">Step 1: Installing PyAvrOCD</h3>
-<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD/">PyAvrOCD GitHub repo</a> and click on the <code>Latest</code> button below <strong>Releases</strong> on the right side of the page.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/repo.png" width="55%">
-</p>
+<h3 id="step-1-set-up-a-project-with-the-right-platform">Step 1: Set up a project with the right platform</h3>
+<p>Setup a PlatformIO project and instead of using <code>atmelavr</code> as the platform, specify the following in your <code>platformio.ini</code> configuration file:</p>
+<pre><code>[platformio]
 
-<p>This will open the latest release page with all its assets.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/release.png" width="55%">
-</p>
+[env:attiny85]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = attiny85
+...
+</code></pre>
+<p>The best way to start is to clone or download the following repository.</p>
+<pre><code class="language-bash">https://github.com/felias-fogg/pio-attiny85-example
+</code></pre>
+<p>The <code>plaformio.ini</code> file contains the following sections:</p>
+<pre><code class="language-wasm">[platformio]
+default_envs = debug
 
-<p>Here you can download the debug server executables for your platform. If there is nothing for you, there is an alternative way to install PyAvrOCD described <a href="step-1a:-alternative-way-of-installing-pyavrocd">below</a>. After downloading the archive, extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):</p>
-<pre><code class="language-sh">&gt; tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz
+[env:attiny85]
+;;contains all information about the platform &amp; chip and
+;;how to commuincate with dw-link
+...
+
+[env:debug]
+;; enables debugging
+...
+
+[env:release]
+;; supports uploading in release mode
+...
 </code></pre>
-<p>Once you have downloaded the archive and uncompressed it, you need to decide where to place the files contained in it. I prefer the folder <code>~/.local/bin/</code> (where <code>~</code> signifies the user folder). Move the three items that you find in the <code>tools</code> folder of the uncompressed archive to this folder (or any other place you have chosen):</p>
-<ul>
-<li><code>pyavrocd</code>[<code>.exe</code>] - the debug server executable,</li>
-<li><code>pyavrocd-util</code> - a folder with auxiliary code and data that should always be stored alongside the executable, and</li>
-<li><code>avr-gdb</code>[<code>.exe</code>] - a current version (16.3) of the GDB debugger for AVR chips with a minimal amount of dependencies on dynamic libraries.</li>
-</ul>
-<pre><code class="language-shell">&gt; mkdir ~/.local
-&gt; mkdir ~/.local/bin
-&gt; rm -rf ~/.local/bin/pyavrocd-util
-&gt; mv tools/* ~/.local/bin/
-</code></pre>
-<div class="admonition info">
-<p class="admonition-title">Windows</p>
-<p>On Windows, use <code>rmdir</code> instead of <code>rm -rf</code> above.</p>
-</div>
-<div class="admonition info">
-<p class="admonition-title">Linux</p>
-<p>Under Linux, you need to install <code>udev</code> rules so that the debug probes can communicate with the host. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">macOS</p>
-<p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in order to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE.</p>
-</div>
-<h3 id="step-1a-an-alternative-way-of-installing-pyavrocd">Step 1a: An alternative way of installing PyAvrOCD</h3>
-<p>When you are not happy with the choices provided to you above, when the PyAvrOCD binaries will not start because of incompatibilities, or when you have a compatible Python installation that you do not want to duplicate, it is also possible to install PyAvrOCD from <a href="https://pypi.org">PyPI, the Python Package Index</a>. The preferred way of doing that is using <a href="https://pipx.pypa.io/stable/">pipx</a>, which will install an executable in the folder <code>~/.local/bin/</code> and a virtual Python environment with all the required modules in <code>~/.local/pipx/</code>. Although this is, in theory, platform agnostic, you may encounter problems when USB and HIDAPI libraries have to be built from source. Note that Linux users need to install <code>udev</code> rules (see above).</p>
-<p>Assuming that you have been successful in installing PyAvrOCD using pipx, we also want to download SVD files that we will need during our IDE debugging sessions. Create the folder <code>pyavrocd-util</code> in the folder <code>~/.local/bin</code> , download the SVD archive into it, and extract the folder:</p>
-<pre><code class="language-sh">&gt; cd ~/.local/bin
-&gt; mkdir pyavrocd-util
-&gt; cd pyavrocd-util
-&gt; wget https://github.com/felias-fogg/PyAvrOCD/releases/latest/download/svd.tar.gz -O svd.tar.gz
-&gt; tar xvzf svd.tar.gz
-</code></pre>
-<h3 id="step-2-replace-the-outdated-avr-gdb-client">Step 2: Replace the outdated avr-gdb client</h3>
-<p>The avr-gdb client in the AVR toolchain, as delivered by PlatformIO, is seriously outdated (version 7.8 from 2014). Even worse, under recent versions of macOS and Ubuntu, it will not start because of incompatibilities. For this reason, it makes sense to employ a more recent version of avr-gdb. Either use the one obtainable from your OS or make use of the binary downloaded in <a href="#step-1-installing-pyavrocd">Step 1</a>. The folder you need to copy the client to is <code>~/.platformio/packages/toolchain-atmelavr/bin</code>:</p>
-<pre><code class="language-sh">cp ~/.local/bin/avr-gdb .platformio/packages/toolchain-atmelavr/bin/
-</code></pre>
-<h3 id="step-3-turn-an-uno-into-a-debug-probe">Step 3: Turn an UNO into a debug probe</h3>
+<h3 id="step-2-turn-an-uno-into-a-debug-probe">Step 2: Turn an UNO into a debug probe</h3>
 <p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
 <p>The simplest way to install the firmware is to download an uploader from the Release assets of the <a href="https://github.com/felias-fogg/dw-link">GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
 <p>Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using PlatformIO.</p>
 <p>The Uno now acts as a debug probe providing a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html">GDB RSP</a> interface. If you configured the serial line to the Uno as 115200 baud, and click on <code>Monitor</code> in the <code>PROJECT TASK</code> menu, select the <code>Terminal</code> window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".</p>
-<h3 id="step-4-set-up-the-example-project">Step 4: Set up the example project</h3>
-<p>Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file <code>platformio.ini</code>, too long to present here. You can clone a project containing this file, together with a small program, from</p>
-<pre><code>https://github.com/felias-fogg/pio-attiny85-example
-</code></pre>
-<p>After opening a <code>new window</code>, click on <code>Clone Git Repository...</code> and type the above line into the input field. Perhaps VS Code asks you to log in to GitHub first.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-attiny-1.png" width="90%">
-</p>
-
-<p>The repo will be cloned, and you have to provide a destination for it.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-2.png" width="90%">
-</p>
-
-<h3 id="step-5-set-up-the-hardware">Step 5: Set up the hardware</h3>
+<h3 id="step-3-set-up-the-hardware">Step 3: Set up the hardware</h3>
 <p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny85-debug-new.png" width="70%">
@@ -313,8 +279,8 @@
 <li>ISP programming (LED is blinking slowly),</li>
 <li>error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).</li>
 </ol>
-<h3 id="step-6-debug-the-program">Step 6: Debug the program</h3>
-<p>If you have not activated the <code>debug</code> environment, now is the time to do it.</p>
+<h3 id="step-4-debug-the-program">Step 4: Debug the program</h3>
+<p>If you have not activated the <code>debug</code> environment, now is the time to do it. However, since the debug environment is the default one, it should already be active.</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-1.png" width="90%">
 </p>
@@ -328,27 +294,15 @@
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-3.png" width="90%">
 </p>
-
-<p>After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and after that, execution is started. As required, execution will stop in the setup function, which is signified by the yellow triangle and the highlighted line (A). The most crucial control panel (B) is now the one shown on the right side at the top. It enables you (from left to right) to</p>
-<ul>
-<li><em>continuing/suspending</em> execution,</li>
-<li><em>stepping-over</em>, i.e., making a step to the beginning of the following source line in the same function,</li>
-<li><em>stepping-in</em>, that is, making a step to the following source line (entering perhaps a new function),</li>
-<li><em>stepping-out</em>, that is, executing the current function until it returns to the calling function,</li>
-<li><em>resetting</em> the MCU, and</li>
-<li><em>terminating</em> the debugging session.</li>
-</ul>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-4.png" width="90%">
-</p>
-<p>From here on, I believe, you know your way around.</p>
-<h3 id="step-7-start-over-or-terminate-the-debugging-session">Step 7: Start over or terminate the debugging session</h3>
+<p>After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and execution is started. The MCU will remain in debugWIRE mode even when debugging is stopped. You have to exit debugWIRE mode explicitly (see below).</p>
+<p>After starting the debugger, program execution will stop in the first line of the internal <code>main</code> function, which is signified by the yellow triangle and the highlighted line. How you debug is sketched in the <a href="../debugging/">section on debugging</a>.</p>
+<h3 id="step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</h3>
 <p>If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
 <p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
 </p>
-
+<p>Alternatively, you can also use the <code>Disable debugWIRE</code>  project task under the <code>Platform</code> heading to disable debugWIRE mode.</p>
 <h3 id="potential-problems">Potential Problems</h3>
 <p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
               

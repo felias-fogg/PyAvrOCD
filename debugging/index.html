@@ -96,7 +96,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#debugging-using-platformiovsc">Debugging using PlatformIO/VSC</a>
+    <li class="toctree-l2"><a class="reference internal" href="#debugging-using-platformiovscode">Debugging using PlatformIO/VSCode</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#debugging-using-gede">Debugging using Gede</a>
     </li>
@@ -200,11 +200,10 @@
 <h3 id="finishing-the-debug-session">Finishing the debug session</h3>
 <p>If everything now works out, you may consider calling it a day and stopping work on the program. If you were debugging on a debugWIRE target, consider typing the command <code>monitor debugwire disable</code> into the last line of the <code>Debug Console</code> before terminating the debugger.  This is necessary to bring the target chip back into normal mode, where it accepts SPI programming.</p>
 <p>You may finally want to disable the <code>Optimize for Debugging</code> option in the <code>Sketch</code> menu. If you leave it enabled, then all future compilation actions will use this option and produce much larger code than necessary.</p>
-<h2 id="debugging-using-platformiovsc">Debugging using PlatformIO/VSC</h2>
-<p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the <code>platformio.ini</code> configuration file and support for disassembled code. However, it may not be the proper IDE for beginners.</p>
-<p>In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  <code>platform.ini</code>  that can be used to integrate PyAvrOCD and to start the debugger is provided <a href="../debugging-software/#platformio-and-visual-studio-code">here</a>.</p>
+<h2 id="debugging-using-platformiovscode">Debugging using PlatformIO/VSCode</h2>
+<p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. The control of changing the focus between windows is a bit different, however. Under PlatformIO, it may be necessary to select the DEBUG CONSOLE manually after debugging is started. Further, after the initial stop in the <code>main</code> function, it may be necessary to open the sketch file through the explorer. Otherwise, the description of how to <a href="#debugging-using-the-arduino-ide-2">debug in the Arduino IDE 2</a> describes things very well.</p>
 <h2 id="debugging-using-gede">Debugging using Gede</h2>
-<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option <code>--gede</code> or <code>-g</code> when starting PyAvrOCD.</p>
+<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built from source and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option <code>--start gede</code> or <code>-s gede</code> when starting PyAvrOCD.</p>
 <p><img alt="Gede" src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png" /></p>
 <p><code>Project dir</code> and <code>Program</code> are specific to your debugging session. The rest should be copied as it is shown. Before you click <code>OK</code>, you should switch to the <code>Commands</code> section, where you need to enter the command <code>monitor debugwire enable</code> if you are working with a debugWIRE target.</p>
 <p><img alt=" " src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-cmds.png" /></p>

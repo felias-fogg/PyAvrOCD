@@ -151,7 +151,7 @@
 <pre><code>&gt; pyavrocd [options]
 </code></pre>
 <p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.</p>
-<p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a <a href="../install/#configuration">configuration file</a>.</p>
+<p>If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a <a href="#providing-command-line-options-in-configuration-files">configuration file</a>.</p>
 <h2 id="command-line-options">Command-line options</h2>
 <table>
 <thead>
@@ -262,7 +262,37 @@
 <h2 id="additional-command-line-options-derived-from-monitor-commands">Additional command-line options derived from monitor commands</h2>
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code>.</p>
 <h2 id="providing-command-line-options-in-configuration-files">Providing command-line options in configuration files</h2>
-<p>In addition to options, one can specify file names prefixed with a '@'-sign. In particular, the argument <code>@pyavrocd.options</code> is always added to the end of the command line. Such <a href="../install/#configuration">configuration files</a> can contain additional arguments to those specified on the command line.</p>
+<p>If you place the string <code>@file.ext</code> on the command line, then arguments are read from <code>file.ext</code> and spliced into the command line. These arguments are read line by line.</p>
+<details>
+<summary><b>Example</b></summary>
+<p></p>
+<p>
+Let us assume, <code>file.ext</code> contains the following lines:
+</p>
+<pre>
+<code class="language-bash hljs">--manage
+eesave
+--prog=3000
+--to
+atmelice
+--veri=e</code>
+</pre>
+<p>
+When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>,, then this is expanded into
+</p>
+<pre>
+<code class="language-bash hljs">pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e</code>
+</pre>
+<p>
+With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to
+</p>
+<pre>
+<code class="language-bash hljs">pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable</code>
+</pre>
+</details>
+<p></p>
+
+<p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>.</p>
               
             </div>
           </div><footer>

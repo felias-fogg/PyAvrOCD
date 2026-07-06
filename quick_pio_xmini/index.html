@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/pio_quick_install/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_pio_xmini/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Pio quick install - PyAvrOCD</title>
+    <title>Quick pio xmini - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Pio quick install";
-        var mkdocs_page_input_path = "pio_quick_install.md";
-        var mkdocs_page_url = "/pio_quick_install/";
+        var mkdocs_page_name = "Quick pio xmini";
+        var mkdocs_page_input_path = "quick_pio_xmini.md";
+        var mkdocs_page_url = "/quick_pio_xmini/";
       </script>
     
     <!--[if lt IE 9]>
@@ -127,9 +127,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Pio quick install</li>
+      <li class="breadcrumb-item active">Quick pio xmini</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/pio_quick_install.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_pio_xmini.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -137,22 +137,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h3 id="step-1-installing-an-alternative-platform">Step 1: Installing an alternative platform</h3>
-<p>Setup a PlatformIO project and instead of using <code>atmelavr</code> as the platform, specify the following in your <code>platformio.ini</code> configuration file:</p>
-<pre><code>[platformio]
+                <h2 id="quickstart-atmega328p-xplained-mini">Quickstart: ATmega328P Xplained Mini</h2>
+<p>The <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">Atmega328P Xplained Mini</a> development board, which has an Arduino Uno footprint, is ideal for making a first experience with embedded debugging because it already contains an onboard debugger. It is simply plug-and-play.</p>
+<h3 id="required-hardware">Required hardware</h3>
+<p>The only thing needed is the XPlained Mini board and a USB cable to connect it to your computer.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/xplained.png" width="35%">
+</p>
 
-[env:atmega1284p]
+<h3 id="step-1-set-up-a-project-with-the-right-platform">Step 1: Set up a project with the right platform</h3>
+<p>Set up a PlatformIO project, e.g., by importing arduino-blink from the example projects. Add the following to your <code>platformio.ini</code> configuration file, making the new <code>xmini</code> environment the default environment:</p>
+<pre><code class="language-python-repl">[platformio]
+default_envs = xmini
+
+[env:xmini]
 platform = https://github.com/felias-fogg/platform-atmelavr.git
 framework = arduino
-board = ATmega1284P
-upload_flags = -e
-board_upload.require_upload_port = false
+board = xmini328p
+debug_tool = pyavrocd
 </code></pre>
-<p>This will pull in:</p>
-<ul>
-<li>The new AVR-GCC 15.1 toolchain</li>
-<li>and PyAvrOCD.</li>
-</ul>
+<h3 id="step-2-debug-the-program">Step 2: Debug the program</h3>
+<p>Click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
+</p>
+
+<p>This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the <code>main</code> function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the <a href="http://localhost:8000/debugging/">debugging section</a>. </p>
+<h3 id="step-3-start-over-or-terminate-the-debugging-session">Step 3: Start over or terminate the debugging session</h3>
+<p>If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
+</p>
+
+<p>Alternatively, you can also use the <code>Disable debugWIRE</code>  project task under the <code>Platform</code> heading to disable debugWIRE mode.</p>
+<h3 id="potential-problems">Potential Problems</h3>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="http://localhost:8000/troubleshooting/">Troubleshooting</a> and the <a href="http://localhost:8000/limitations/">Limitations</a> sections of the PyAvrOCD manual.</p>
+<div class="admonition danger">
+<p class="admonition-title">Warning:  Use IOREF to source attached circuits</p>
+<p>If you have any attached circuitry, be it on a breadboard or a shield, use the <code>IOREF</code> pin to power it. If this is not possible, check out the <a href="https://github.com/felias-fogg/XMiniCore?tab=readme-ov-file#powering-external-circuitry"><code>README</code> file of XminiCore for a solution</a>.</p>
+</div>
               
             </div>
           </div><footer>

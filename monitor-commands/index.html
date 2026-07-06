@@ -170,6 +170,10 @@
 <td>DebugWIRE mode will be <code>enable</code>d or <code>disable</code>d. When enabling it, you may be asked to power-cycle the target, and the MCU will be reset. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming.</td>
 </tr>
 <tr>
+<td><code>monitor</code> <code>disconnect</code></td>
+<td>Disconnect from debug probe. This can be helpful in an IDE context when the IDE kills the GDB server while it is shutting down. <strong>(+)</strong></td>
+</tr>
+<tr>
 <td><code>monitor</code>  <code>erasebeforeload</code> [<code>enable</code> | <code>disable</code>]</td>
 <td>This monitor option controls whether the flash is erased before an executable is loaded, which is the default for JTAG targets. This option is ignored on debugWIRE targets since those do not support a chip erase command in debug mode.</td>
 </tr>
@@ -219,7 +223,7 @@
 </tr>
 </tbody>
 </table>
-<p>All commands can, as usual, be abbreviated. For example, <code>mo d e</code> is equivalent to <code>monitor debugwire enable</code>. If you use a command without an argument, the current setting is printed.</p>
+<p>All commands can, as usual, be abbreviated. For example, <code>mo de e</code> is equivalent to <code>monitor debugwire enable</code>. If you use a command without an argument, the current setting is printed.</p>
 <p>All state-changing commands can also be specified as command-line options when invoking PyAvrOCD, e.g., <code>--verify disable</code>. These options will have the same effect as issuing the corresponding monitor command after a connection to the GDB server has been established. The only exception is <code>--debugwire disable</code>. If this option is given, PyAvrOCD will disable debugWIRE mode and then exit immediately without waiting for a GDB connection.</p>
 <p>Commands marked with <strong>(+)</strong> are not implemented in dw-link.</p>
               
