@@ -8,7 +8,7 @@ In a terminal window, you invoke PyAvrOCD as follows, whereby the only mandatory
 
 PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.
 
-If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a [configuration file](install.md#configuration).
+If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a [configuration file](#providing-command-line-options-in-configuration-files).
 
 ## Command-line options
 
@@ -45,4 +45,35 @@ You can also use the [monitor command options](monitor-commands.md) as command-l
 
 ## Providing command-line options in configuration files
 
-In addition to options, one can specify file names prefixed with a '@'-sign. In particular, the argument `@pyavrocd.options` is always added to the end of the command line. Such [configuration files](install.md#configuration) can contain additional arguments to those specified on the command line.
+If you place the string `@file.ext` on the command line, then arguments are read from `file.ext` and spliced into the command line. These arguments are read line by line.
+
+<details>
+<summary><b>Example</b></summary>
+<p></p>
+<p>
+Let us assume, <code>file.ext</code> contains the following lines:
+</p>
+<pre>
+<code class="language-bash hljs">--manage
+eesave
+--prog=3000
+--to
+atmelice
+--veri=e</code>
+</pre>
+<p>
+When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>,, then this is expanded into
+</p>
+<pre>
+<code class="language-bash hljs">pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e</code>
+</pre>
+<p>
+With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to
+</p>
+<pre>
+<code class="language-bash hljs">pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable</code>
+</pre>
+</details>
+<p></p>
+
+Note that implicitly `@pyavrocd.options` is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file `pyavrocd.options`.

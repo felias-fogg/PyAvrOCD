@@ -1,6 +1,6 @@
 # Installing & configuring the debugging software
 
-The GDB server PyAvrOCD provides an interface to the hardware debug probe. In addition to that, you need an IDE, a debug GUI, or the stand-alone GDB client.
+In addition to PyAvrOCD, you need an IDE, a debug GUI, or the stand-alone GDB client.
 
 ## Arduino IDE 2
 
@@ -12,72 +12,20 @@ to install them is covered in the [section on Arduino packages](supporting-packa
 
 ## PlatformIO and Visual Studio Code
 
-[PlatformIO](https://platformio.org) is a cross-platform,
-cross-architecture, multiple framework professional tool for embedded
-systems engineers. Installed as an extension to the popular Visual
-Studio Code, it provides a powerful IDE for embedded programming and
-debugging. Using the `platformio.ini` file, integrating an external
-debugging framework is very easy.
+[PlatformIO](https://platformio.org) is a cross-platform, cross-architecture, multiple-framework tool for embedded
+system development. It can be installed as an extension to Visual Studio Code, which provides a powerful IDE for embedded programming and debugging. By using project-specific`platformio.ini` files, integrating PyAvrOCD is straightforward by employing a forked platform:
 
-<details>
-<summary><b>A platformio.ini example</b></summary>
-<p></p>
-<pre>
-<code class="language-text hljs">[platformio]
-default_envs = debug
+```
+[env:...]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+...
+```
 
-[env:atmega328p]
-platform = atmelavr
-framework = arduino
-board = ATmega328P
-board_build.mcu = atmega328p
-board_build.f_cpu = 16000000L
-board_hardware.oscillator = external
-build_unflags = -flto              ;; this makes sure we can watch the global vars
-
-[env:debug]
-extends = env:atmega328p          ;; <--- substitute the right board here
-build_type = debug
-debug_tool = custom
-debug_server = /path/to/pyavrocd  ;; <-- specify path to gdbserver
-    --port=3333
-    --device=${this.board_build.mcu}
-    --manage=all
-debug_init_cmds =
-    define pio_reset_halt_target
-         monitor reset
-    end
-    define pio_reset_run_target
-         monitor reset
-         disconnect
-    end
-    target remote $DEBUG_PORT
-    monitor debugwire enable
-    $LOAD_CMDS
-    $INIT_BREAK
-debug_build_flags =
-    -Og
-    -ggdb3
-    -DDEBUG
-debug_svd_path = /path/to/svd-file ;; <-- specify path to SVD file</code>
-</pre>
-<p>
-Note that debugging in the IDE can only start when the debug environment is made the current environment.
-</p>
-<p>
-A more elaborate example can be found at
-<a href="https://github.com/felias-fogg/pio-atmega1284p-example">https://github.com/felias-fogg/pio-atmega1284p-example</a>.
-</p>
-</details>
-<p></p>
-
-Recently, PyAvrOCD has been extended to [deal with *System View Description* files](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/), which enable the IDE to view and manipulate I/O registers in a very comfortable way. In order to use this feature, you need to download the set of SVD files from the [latest release of PyAvrOCD](https://github.com/felias-fogg/PyAvrOCD/releases/latest) and copy the appropriate SVD file to the PlatformIO project folder, or you can also access it in the `pyavrocd-util` folder, which is stored alongside `pyavrocd`. The SVD files are all stored in the directory `pyavrocd-util/svd`.
-
-I noticed that the avr-gdb debugger in the PlatformIO toolchain is quite dated and does not start (e.g., under Ubuntu 24.04 and macOS 15.5). Simply replace it with a more recent version from your system or, better yet, use the version shipped with the PyAvrOCD binary, which contains some important patches. The location where PlatformIO stores its copy of avr-gdb is `~/.platformio/packages/toolchain-atmelavr/`, where the tilde symbol signifies the home directory of the user.
+For the modern parts, there is no supporting fork yet, but it will be added real soon.
 
 ## Other IDEs
 
-There are a few other possible options for IDEs. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR-GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup). Integration into [**Visual Studio Code**](https://code.visualstudio.com) and **[Eclipse Theia](https://theia-ide.org)** should be straightforward because one could make use of the Visual Studio Code extension [cortex-debug](https://github.com/Marus/cortex-debug) that is also used in the Arduino IDE 2.
+There are a few other possible options for IDEs. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR-GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup).
 
 If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.
 

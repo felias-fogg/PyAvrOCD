@@ -84,34 +84,9 @@ If you have not activated the `debug` environment, now is the time to do it (as 
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
 </p>
 
-This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the `main` function. The yellow triangle and the highlighted line signify this. The most important control panel is now the one shown on the right side at the top. It enables you (from left to right) to
+This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the `main` function. A yellow triangle and the highlighted line signify this. How you can control the program is sketched in the [debugging section](debugging.md).
 
-- *continuing/suspending* execution,
-- *stepping-over*, i.e., making a step to the beginning of the next source line in the same function,
-- *stepping-in*, that is, making a step to the next source line (entering perhaps a new function),
-- *stepping-out*, that is, executing the current function until it returns to the calling function,
-- *resetting* the MCU, and
-- *terminating* the debugging session.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-2.png" width="90%">
-</p>
-
-Before we click the `Continue` button, let us make some amendments. Place a breakpoint in line 19 by clicking to the left of the line number (1). Then let us require to make local and global variables visible for inspection by clicking on the markers left at the top (2 & 3). In addition, let us have a look at the peripheral register PORTB (4). Finally, click on the `continue` button (5) to continue execution.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-3.png" width="90%">
-</p>
-
-After a short while, execution will stop in line 19. As one can see on the left, a local variable `local_ontime` came to life and has a value now. Similarly, all the global variables have values now. And one can see that bit 0 of PORTB, which is the port bit controlling the LED, is now also 1. Unfortunately, not all register values that should be displayed are actually displayed. This seems to be an error of the IDE.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-4.png" width="90%">
-</p>
-
-I believe that from here on, you will be able to use the debugger productively.
-
-### Step 6: Start over or terminate the debugging session
+### Step 4: Start over or terminate the debugging session
 
 If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 

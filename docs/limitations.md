@@ -44,7 +44,9 @@ I recently stumbled over a [case](https://gist.github.com/felias-fogg/8f4e1fdb3b
 
 Sometimes, the IDE might hide things from you.
 
-The Arduino IDE 2 has the feature of displaying all the global variables, together with the current values. If link-time optimization (LTO) is activated, unfortunately, all global variables disappear from sight. However, even with LTO disabled, [some variables are not displayed](https://github.com/arduino/arduino-ide/issues/2822). These seem to be the first variables in the `.bss` and `.data` segments. In an Arduino sketch, these are those listed last as uninitialized, respectively, initialized, in the list of declarations.
+The Arduino IDE 2 has the feature of displaying all the global variables, together with the current values. If link-time optimization (LTO) is activated, unfortunately, all global variables disappear from sight. Since LTO is activated for most board packages and since it cannot be deactivated safely, global variables are not shown.
+
+In PlatformIO, the contents of [some of the peripheral registers is not displayed](https://github.com/platformio/platformio-vscode-ide/issues/4405).
 
 ## Compiler optimizations
 
@@ -76,7 +78,7 @@ All these problems disappear when link-time optimization is disabled. In some de
 
 When using the optimization option `-mrelax`, the line number information gets distorted.
 
-The optimization option `-mrelax` is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible. For this reason, the Arduino IDE 2 checks whether the sketch has been compiled with this option and will refrain from debugging if this has been the case.
+The optimization option `-mrelax` is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible. For this reason, the Arduino IDE 2 checks whether the sketch has been compiled with this option and will refrain from debugging if this has been the case. Note that this issue has been solved in AVR-GCC 15.1 version of the toolchain.
 
 ## Resets
 
@@ -147,7 +149,7 @@ Some I/O registers cannot be accessed from the debugging UI.
 
 Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers `UDR` and `SPDR`). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2, then the `PERIPHERALS` debugger pane will show you a comment to this effect.
 
-Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). Again, if you use the Arduino IDE or PlatformIO, the `PERIPHERALS` pane will inform you about the fact that the register is read-only to the debugger.
+Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). If you use the Arduino IDE, the `PERIPHERALS` pane will inform you about the fact that the register is read-only to the debugger.
 
 ## SVD mediated access to bitfields in I/O registers
 

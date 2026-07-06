@@ -60,15 +60,13 @@ If everything now works out, you may consider calling it a day and stopping work
 
 You may finally want to disable the `Optimize for Debugging` option in the `Sketch` menu. If you leave it enabled, then all future compilation actions will use this option and produce much larger code than necessary.
 
-## Debugging using PlatformIO/VSC
+## Debugging using PlatformIO/VSCode
 
-Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. Compared to the Arduino IDE 2, PlatformIO/VSC offers several features that work better, such as easy adaptability through the `platformio.ini` configuration file and support for disassembled code. However, it may not be the proper IDE for beginners.
-
-In any case, if you are opting for PlatformIO/VSC, you are probably familiar with the tool, and I do not need to preach to the converted. The necessary  `platform.ini`  that can be used to integrate PyAvrOCD and to start the debugger is provided [here](debugging-software.md#platformio-and-visual-studio-code).
+Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. The control of changing the focus between windows is a bit different, however. Under PlatformIO, it may be necessary to select the DEBUG CONSOLE manually after debugging is started. Further, after the initial stop in the `main` function, it may be necessary to open the sketch file through the explorer. Otherwise, the description of how to [debug in the Arduino IDE 2](#debugging-using-the-arduino-ide-2) describes things very well.
 
 ## Debugging using Gede
 
-[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--gede` or `-g` when starting PyAvrOCD.
+[Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built from source and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--start gede` or `-s gede` when starting PyAvrOCD.
 
 ![Gede](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png)
 

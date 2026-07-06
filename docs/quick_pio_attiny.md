@@ -25,9 +25,47 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
      * 3 Resistors (10 kΩ, 220Ω, 220Ω)
      * 2 Capacitors (100 nF, 10 µF)
 
-{!pio_quick_install.md!}
+### Step 1: Set up a project with the right platform
 
-### Step 3: Turn an UNO into a debug probe
+Setup a PlatformIO project and instead of using `atmelavr` as the platform, specify the following in your `platformio.ini` configuration file:
+
+```
+[platformio]
+
+[env:attiny85]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = attiny85
+...
+```
+
+The best way to start is to clone or download the following repository.
+
+```bash
+https://github.com/felias-fogg/pio-attiny85-example
+```
+
+The `plaformio.ini` file contains the following sections:
+
+```wasm
+[platformio]
+default_envs = debug
+
+[env:attiny85]
+;;contains all information about the platform & chip and
+;;how to commuincate with dw-link
+...
+
+[env:debug]
+;; enables debugging
+...
+
+[env:release]
+;; supports uploading in release mode
+...
+```
+
+### Step 2: Turn an UNO into a debug probe
 
 First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).
 
@@ -37,30 +75,8 @@ Alternatively, you can download or clone the dw-link repository and then compile
 
 The Uno now acts as a debug probe providing a [GDB RSP](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html) interface. If you configured the serial line to the Uno as 115200 baud, and click on `Monitor` in the `PROJECT TASK` menu, select the `Terminal` window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".
 
-### Step 4: Set up the example project
 
-Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file `platformio.ini`, too long to present here. You can clone a project containing this file, together with a small program, from
-
-```
-https://github.com/felias-fogg/pio-attiny85-example
-```
-
-After opening a `new window`, click on `Clone Git Repository...` and type the above line into the input field. Perhaps VS Code asks you to log in to GitHub first.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-attiny-1.png" width="90%">
-</p>
-
-
-The repo will be cloned, and you have to provide a destination for it.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-2.png" width="90%">
-</p>
-
-
-
-### Step 5: Set up the hardware
+### Step 3: Set up the hardware
 
 You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left.
 
@@ -97,9 +113,9 @@ The yellow LED is the *system LED*, and the red one is the *ATtiny-LED*. The sys
 4. ISP programming (LED is blinking slowly),
 5. error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).
 
-### Step 6: Debug the program
+### Step 4: Debug the program
 
-If you have not activated the `debug` environment, now is the time to do it.
+If you have not activated the `debug` environment, now is the time to do it. However, since the debug environment is the default one, it should already be active.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-1.png" width="90%">
@@ -116,22 +132,11 @@ This will start the debugging process and open the `TERMINAL` window below the e
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-3.png" width="90%">
 </p>
+After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and execution is started. The MCU will remain in debugWIRE mode even when debugging is stopped. You have to exit debugWIRE mode explicitly (see below).
 
-After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and after that, execution is started. As required, execution will stop in the setup function, which is signified by the yellow triangle and the highlighted line (A). The most crucial control panel (B) is now the one shown on the right side at the top. It enables you (from left to right) to
+After starting the debugger, program execution will stop in the first line of the internal `main` function, which is signified by the yellow triangle and the highlighted line. How you debug is sketched in the [section on debugging](debugging.md).
 
-- *continuing/suspending* execution,
-- *stepping-over*, i.e., making a step to the beginning of the following source line in the same function,
-- *stepping-in*, that is, making a step to the following source line (entering perhaps a new function),
-- *stepping-out*, that is, executing the current function until it returns to the calling function,
-- *resetting* the MCU, and
-- *terminating* the debugging session.
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-4.png" width="90%">
-</p>
-From here on, I believe, you know your way around.
-
-### Step 7: Start over or terminate the debugging session
+### Step 5: Start over or terminate the debugging session
 
 If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
@@ -140,6 +145,7 @@ Instead of starting a new edit/compile/debug cycle, you may want to call it a da
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
 </p>
+Alternatively, you can also use the `Disable debugWIRE`  project task under the `Platform` heading to disable debugWIRE mode.
 
 ### Potential Problems
 
