@@ -47,11 +47,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes & simulators</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
@@ -95,6 +97,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#finishing-the-debug-session">Finishing the debug session</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debugging-using-arduino-maker-workshop">Debugging using Arduino Maker Workshop</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#debugging-using-platformiovscode">Debugging using PlatformIO/VSCode</a>
     </li>
@@ -202,6 +206,9 @@
 <h3 id="finishing-the-debug-session">Finishing the debug session</h3>
 <p>If everything now works out, you may consider calling it a day and stopping work on the program. If you were debugging on a debugWIRE target, consider typing the command <code>monitor debugwire disable</code> into the last line of the <code>Debug Console</code> before terminating the debugger.  This is necessary to bring the target chip back into normal mode, where it accepts SPI programming.</p>
 <p>You may finally want to disable the <code>Optimize for Debugging</code> option in the <code>Sketch</code> menu. If you leave it enabled, then all future compilation actions will use this option and produce much larger code than necessary.</p>
+<h2 id="debugging-using-arduino-maker-workshop">Debugging using Arduino Maker Workshop</h2>
+<p>Since Arduino IDE 2 and the Arduino Maker Workshop use the same underlying technology, namely, Visual Studio Code and Cortex-Debug, everything written above applies. The main difference is that debugging is started by clicking on the little green triangle or <code>F5</code> instead of the debugging button in the top row.</p>
+<p>An additional difference is how you start the simulator. This is done by choosing the right launch configuration from the drop down list right to the green triangle before starting debugging.</p>
 <h2 id="debugging-using-platformiovscode">Debugging using PlatformIO/VSCode</h2>
 <p>Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. The control of changing the focus between windows is a bit different, however. Under PlatformIO, it may be necessary to select the DEBUG CONSOLE manually after debugging is started. Further, after the initial stop in the <code>main</code> function, it may be necessary to open the sketch file through the explorer. Otherwise, the description of how to <a href="#debugging-using-the-arduino-ide-2">debug in the Arduino IDE 2</a> describes things very well.</p>
 <h2 id="debugging-using-gede">Debugging using Gede</h2>

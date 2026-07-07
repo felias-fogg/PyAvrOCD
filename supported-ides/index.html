@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/disclaimer/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/supported-ides/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Disclaimer - PyAvrOCD</title>
+    <title>IDEs - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Disclaimer";
-        var mkdocs_page_input_path = "disclaimer.md";
-        var mkdocs_page_url = "/disclaimer/";
+        var mkdocs_page_name = "IDEs";
+        var mkdocs_page_input_path = "supported-ides.md";
+        var mkdocs_page_url = "/supported-ides/";
       </script>
     
     <!--[if lt IE 9]>
@@ -42,7 +42,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Supported</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
@@ -51,7 +51,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">IDEs</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#arduino-maker-workshop">Arduino Maker Workshop</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</a>
+    </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
@@ -92,10 +100,8 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Caveats</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Disclaimer</a>
-    <ul class="current">
-    </ul>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
                   </li>
@@ -133,10 +139,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Caveats</li>
-      <li class="breadcrumb-item active">Disclaimer</li>
+          <li class="breadcrumb-item">Supported</li>
+      <li class="breadcrumb-item active">IDEs</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/disclaimer.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/supported-ides.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -144,18 +150,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="disclaimer">Disclaimer</h1>
-<p>Note that, as is usual in life, there are some risks involved when using a tool. In particular, <a href="../limitations/#debugwire-can-brick-mcus">the debugWIRE interface can be a serious health risk to your MCU</a>. Even worse, all other aspects of the debugging package have the potential of doing harm to the tested MCU, its environment, or to you (because debugging can drive you crazy). Further, the debug probe, the PyAvrOCD server, and the GDB debugger have a <a href="../limitations/">number of limitations</a>, which may lead to a behavior of the MCU that differs from when no debugger is present. Finally, using a debugger on an MCU that controls a system in real-time can lead to funny results. So, be careful when debugging your microcontroller-controlled brewery.</p>
-<div class="admonition danger">
-<p class="admonition-title">No warranty!</p>
-<p>All in all, bear in mind that <a href="../license-link/">the software is provided "as is", without warranty of any kind</a>.</p>
-</div>
+                <h1 id="supported-ides">Supported IDEs</h1>
+<p>The IDEs listed below are explicitly supported by PyAvrOCD. There exist extensions and/or forks of Arduino packages and PlatformIO packages that integrate PyAvrOCD into these IDEs. With a bit of effort, it should be possible to make PyAvrOCD available in other IDEs as well.</p>
+<h2 id="arduino-ide-2">Arduino IDE 2</h2>
+<p><a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> is probably the most straightforward option. In contrast to the deprecated Arduino IDE, debugging is supported by making use of an early version of the Visual Studio Code extension Cortex-Debug. The design principle behind Arduino IDE 2 is not to overwhelm beginners with a multitude of options and interaction elements. This comes at a cost, however. One is often constrained in what is possible. If one wants to be more flexible, then it is possible to employ <strong>Arduino-cli</strong>, the command-line interface to the Arduino processor, which exposes somewhat more functionality to the user.</p>
+<p>PyAvrOCD has been integrated into Arduino IDE 2 by extending the <code>platform.txt</code>  configuration files of Arduino hardware packages. In order to configure Cortex-Debug, a number of attributes of the form <code>debug.cortex-debug.custom</code> and a few other variables had to be set in the <code>platform.txt</code> file.</p>
+<h2 id="arduino-maker-workshop">Arduino Maker Workshop</h2>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop">Arduino Maker Workshop</a> is a Visual Studio Code extension that provides a very convenient interface to the Arduino CLI. It feels very similar to the Arduino IDE2 but offers more freedom. One can add the <a href="https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug">Cortex-Debug</a> extension, resulting in a very smooth IDE. Because the Cortex-Debug version from the VSCode marketplace is much more recent than the one employed in the Arduino IDE 2, debugging is much better. The UI is more streamlined and assembly-level debugging is supported. </p>
+<p>On the negative side, there is no <code>Burn Bootloader</code> button or command yet. Further, each Arduino hardware package needs an additional small modification to generate the <code>launch.json</code> files that are needed to configure Cortex-Debug. </p>
+<p>The integration of PyAvrOCD in the form of generating the <code>launch.json</code> files is implemented by shell scripts and Windows batch files. These are parametrized and invoked by the hook <code>recipe.hooks.sketch.prebuild.1.pattern</code> defined in <code>platform.txt</code>.</p>
+<h2 id="platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</h2>
+<p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple-framework tool for embedded
+system development. It can be installed as an extension to Visual Studio Code, which provides a powerful IDE for embedded programming and debugging. </p>
+<p>The debugging UI is not Cortex-Debug. Assembly-level debugging is not possible. Further, the peripheral register display is somewhat buggy, sometimes not displaying the values of the inspected registers.</p>
+<p>Integration of PyAvrOCD is implemented in a fork of the MCU-family-specific platform, which needs to be specified in the project configuration file <code>platformio.ini</code>. </p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../troubleshooting/" class="btn btn-neutral float-left" title="Troubleshooting"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../limitations/" class="btn btn-neutral float-right" title="Limitations">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../supported-platforms/" class="btn btn-neutral float-left" title="Platforms"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../supporting-packages/" class="btn btn-neutral float-right" title="Arduino packages">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -182,10 +196,10 @@
         </span>
     
     
-      <span><a href="../troubleshooting/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../supported-platforms/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../limitations/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../supporting-packages/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

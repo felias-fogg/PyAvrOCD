@@ -47,11 +47,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes & simulators</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
@@ -68,6 +70,8 @@
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Debugging software</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#arduino-maker-workshop">Arduino Maker Workshop</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</a>
     </li>
@@ -157,24 +161,21 @@
                 <h1 id="installing-configuring-the-debugging-software">Installing &amp; configuring the debugging software</h1>
 <p>In addition to PyAvrOCD, you need an IDE, a debug GUI, or the stand-alone GDB client.</p>
 <h2 id="arduino-ide-2">Arduino IDE 2</h2>
-<p><a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> is probably the most straightforward option. After having installed
-it, you can extend the IDE's capabilities by adding third-party
-packages in the <code>Additional Board Manager URLs</code> field of the
-<code>Preferences</code> dialog. The set of available debug-enabled Arduino packages and how
-to install them is covered in the <a href="../supporting-packages/">section on Arduino packages</a>.</p>
+<p>After having installed <a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a>, you can extend the IDE's capabilities by adding third-party packages in the <code>Additional Board Manager URLs</code> field of the <code>Preferences</code> dialog. The set of available debug-enabled Arduino packages and how to install them is covered in the <a href="../supporting-packages/">section on Arduino packages</a>.</p>
+<h2 id="arduino-maker-workshop">Arduino Maker Workshop</h2>
+<p>First, <a href="https://code.visualstudio.com">Visual Studio Code</a> has to be installed. In addition to the Visual Studio Code extension <a href="https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop">Arduino Maker Workshop</a>, one needs to add the <a href="https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug">Cortex-Debug</a> extension. The Arduino packages that are ready for the Arduino Maker Workshop are marked in the <a href="../supporting-packages/">Arduino packages list</a>.</p>
 <h2 id="platformio-and-visual-studio-code">PlatformIO and Visual Studio Code</h2>
-<p><a href="https://platformio.org">PlatformIO</a> is a cross-platform, cross-architecture, multiple-framework tool for embedded
-system development. It can be installed as an extension to Visual Studio Code, which provides a powerful IDE for embedded programming and debugging. By using project-specific<code>platformio.ini</code> files, integrating PyAvrOCD is straightforward by employing a forked platform:</p>
+<p>You need to install <a href="https://code.visualstudio.com">Visual Studio Code</a> and the Visual Studio Code extension <a href="https://platformio.org">PlatformIO</a>. By using project-specific<code>platformio.ini</code> files, integrating PyAvrOCD is straightforward, specifying the forked platform for the Atmel AVR family:</p>
 <pre><code>[env:...]
 platform = https://github.com/felias-fogg/platform-atmelavr.git
 ...
 </code></pre>
-<p>For the modern parts, there is no supporting fork yet, but it will be added real soon.</p>
+<p>For the modern parts, i.e., UPDI targets, there is no supporting fork yet, but it will be added real soon.</p>
 <h2 id="other-ides">Other IDEs</h2>
 <p>There are a few other possible options for IDEs. I believe it should be possible to integrate PyAvrOCD into  <a href="https://www.jetbrains.com/clion/"><strong>CLion</strong></a> and <a href="https://eclipseide.org/projects/"><strong>Eclipse</strong></a>. How to integrate an AVR-GDB server into CLion is, for example, described <a href="https://bloom.oscillate.io/docs/clion-debugging-setup">here</a>.</p>
 <p>If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.</p>
 <h2 id="a-debug-gui-gede">A debug GUI: Gede</h2>
-<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built and run on almost all Linux distros, FreeBSD, and macOS. You need an AVR-GDB client with a version of 10.2 or higher. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option <code>--start gede</code> when invoking PyAvrOCD. Configuring Gede is done when you <a href="../debugging/#debugging-using-gede">start the GUI</a>.</p>
+<p><a href="https://github.com/jhn98032/gede">Gede</a> is a lean and clean GUI for GDB. It can be built from source and run on almost all Linux distros, FreeBSD, and macOS. You need an AVR-GDB client with a version of 10.2 or higher. A better choice is the client shipped together with PyAvrOCD. If you have installed Gede somewhere in your PATH, PyAvrOCD will start Gede in the background if you specify the option <code>--start gede</code> when invoking PyAvrOCD. Configuring Gede is done when you <a href="../debugging/#debugging-using-gede">start the GUI</a>.</p>
 <h2 id="cli-debugging">CLI debugging</h2>
 <p>The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries, which contains a few important patches for AVR MCUs.</p>
 <p>It is not necessary to configure anything when you use
@@ -194,7 +195,7 @@ set logging overwrite 1</code>
 <p></p>
 
 <h2 id="a-software-simulator-simavr">A software simulator: simavr</h2>
-<p>The software simulator <code>simavr</code> is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator first. You can either download a binary from the latest <a href="https://github.com/buserror/simavr/actions">Github Actions CI</a>, you can build it from source, or, under macOS, use Homebrew.</p>
+<p>The software simulator <code>simavr</code> is included in the Arduino IDE 2 tools and in the binary package. If you have installed PyAvrOCD differently, you need to install the simulator separately. You can either download a binary from the latest <a href="https://github.com/buserror/simavr/actions">GitHub Actions CI</a>, you can build it from source, or, under macOS, use Homebrew.</p>
 <details>
 <summary><b>How to build simavr from source</b></summary>
 <p></p>

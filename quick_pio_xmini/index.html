@@ -47,11 +47,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes & simulators</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
@@ -164,7 +166,7 @@ debug_tool = pyavrocd
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
 </p>
 
-<p>This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the <code>main</code> function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the <a href="http://localhost:8000/debugging/">debugging section</a>. </p>
+<p>This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the <code>main</code> function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the <a href="http://localhost:8000/debugging/">debugging section</a>.</p>
 <h3 id="step-3-start-over-or-terminate-the-debugging-session">Step 3: Start over or terminate the debugging session</h3>
 <p>If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
 <p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/supported-debuggers/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Debug probes - PyAvrOCD</title>
+    <title>Debug probes & simulators - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Debug probes";
+        var mkdocs_page_name = "Debug probes \u0026 simulators";
         var mkdocs_page_input_path = "supported-debuggers.md";
         var mkdocs_page_url = "/supported-debuggers/";
       </script>
@@ -47,7 +47,7 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Debug probes</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Debug probes & simulators</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#hardware-debug-probes">Hardware debug probes</a>
         <ul>
@@ -59,9 +59,11 @@
     </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
-                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
@@ -140,7 +142,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
           <li class="breadcrumb-item">Supported</li>
-      <li class="breadcrumb-item active">Debug probes</li>
+      <li class="breadcrumb-item active">Debug probes & simulators</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/supported-debuggers.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -150,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="supported-debug-probes">Supported debug probes</h1>
+                <h1 id="supported-debug-probes-simulators">Supported debug probes &amp; simulators</h1>
 <p>PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe <a href="https://felias-fogg.github.io/dw-link">dw-link</a>. And, as a service to Arduino users, it provides access to the software simulation tool <a href="https://github.com/buserror/simavr">simavr</a> (see <a href="#software-simulator">below</a>).</p>
 <h2 id="hardware-debug-probes">Hardware debug probes</h2>
 <p>Except for dw-link, the list below is copied from the README file of <a href="https://github.com/microchip-pic-avr-tools/pyedbglib">pyedbglib</a>. Boldface means that I have tested the debuggers and they work with PyAvrOCD:</p>
@@ -165,7 +167,7 @@
 <li><a href="https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html"><strong>nEDBG</strong></a> - <strong>on-board debuggers on Curiosity Nano boards</strong> (can also be used stand-alone to debug other UPDI targets)</li>
 <li><strong><a href="https://felias-fogg.github.io/dw-link">dw-link</a></strong> - <strong>DIY debugger running on an Arduino UNO R3</strong> (only debugWIRE)</li>
 </ul>
-<p>If you do not own one of the above debug probes, but you own a <a href="https://www.microchip.com/en-us/development-tool/PG164150">PICkit5</a> or <a href="https://www.microchip.com/en-us/development-tool/PG164110">PICkit Basic</a>, you can consider <a href="https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/">downgrading</a> it to a PICkit4 or SNAP, respectively. </p>
+<p>If you do not own one of the above debug probes, but you own a <a href="https://www.microchip.com/en-us/development-tool/PG164150">PICkit5</a> or <a href="https://www.microchip.com/en-us/development-tool/PG164110">PICkit Basic</a>, you can consider <a href="https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/">downgrading</a> it to a PICkit4 or SNAP, respectively.</p>
 <h3 id="switching-to-avr-mode">Switching to AVR mode</h3>
 <p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
 <pre><code>avrdude -c snap_isp -Pusb -xmode=avr
@@ -175,14 +177,14 @@
 </code></pre>
 <p>In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to <a href="https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version">flash new firmware first using MPLAB X</a>.</p>
 <h2 id="software-simulator">Software simulator</h2>
-<p>In addition to the above-mentioned debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service mainly aimed at Arduino IDE 2 users. If you use this IDE, then the way to start the simulator is as follows:</p>
+<p>In addition to the above-mentioned debug probes, PyAvrOCD also supports the simulation tool <a href="https://github.com/buserror/simavr"><code>simavr</code></a> by providing a pass-through service. If you use the <strong>Arduino IDE 2</strong>, then the way to start the simulator is as follows:</p>
 <ol>
 <li>Verify/compile your sketch.</li>
 <li>Choose <code>Simulator (simavr)</code> as the <code>Programmer</code> in the <code>Tools</code> menu.</li>
 <li>Click on the Debugger icon at the top of the window.</li>
 </ol>
-<p>In this case, the simulator will be started instead of making a connection to a hardware probe. As you will notice, this fake programmer cannot be used to program a chip. It is only used to signal that the simulator should be started when debugging is requested.</p>
-<p>An alternative way to start <code>simavr</code> is to provide a path argument to the <code>--start</code> option that has as its last part <code>simavr</code>. If you use another IDE other than the Arduino IDE 2, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
+<p>If you use the VSCode extension <strong>Arduino Maker Workshop</strong>, you need to select the <em>Simavr</em> debugging configuration before starting the debugger. In <strong>PlatformIO</strong>, you can select <code>simavr</code> as a debugging tool in the <code>platformio.ini</code> configuration file.</p>
+<p>An alternative way to start <code>simavr</code> is to provide a path argument to the <code>--start</code> option that has as its last part <code>simavr</code>. If you use another IDE other than the ones mentioned above, you can trigger that by putting the file <code>pyavrocd.options</code> into the project folder containing the two lines</p>
 <pre><code class="language-text">--start
 /path/to/simavr-executable
 </code></pre>
@@ -197,7 +199,7 @@
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../supported-boards/" class="btn btn-neutral float-left" title="Boards"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../supporting-packages/" class="btn btn-neutral float-right" title="Arduino packages">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../supported-platforms/" class="btn btn-neutral float-right" title="Platforms">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -227,7 +229,7 @@
       <span><a href="../supported-boards/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../supporting-packages/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../supported-platforms/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

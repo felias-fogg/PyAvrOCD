@@ -47,11 +47,13 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes & simulators</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
@@ -65,7 +67,7 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">PyAvrOCD</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2">Arduino IDE 2</a>
+    <li class="toctree-l2"><a class="reference internal" href="#arduino-ide-2-arduino-maker-workshop">Arduino IDE 2 &amp; Arduino Maker Workshop</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#platformio">PlatformIO</a>
     </li>
@@ -155,14 +157,14 @@
                 <h1 id="pyavrocd-installation">PyAvrOCD installation</h1>
 <div class="admonition info">
 <p class="admonition-title">Linux</p>
-<p>Under Linux, users may need to add a few <code>udev</code> rules after having installed PyAvrOCD. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
+<p>Under Linux, users may need to add a few <code>udev</code> rules before they can use PyAvrOCD. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
-<h2 id="arduino-ide-2">Arduino IDE 2</h2>
-<p>If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient to <a href="../supporting-packages/">install a debug-enabled Arduino package</a>. Together with PyAvrOCD, you will also get the GDB client <code>avr-gdb</code> and the simulator (for some AVR chips) <code>simavr</code>.</p>
+<h2 id="arduino-ide-2-arduino-maker-workshop">Arduino IDE 2 &amp; Arduino Maker Workshop</h2>
+<p>If you want to use PyAvrOCD as part of Arduino IDE 2 or the Arduino Maker Workshop, it is sufficient to <a href="../supporting-packages/">install a debug-enabled Arduino package</a> in the IDE.</p>
 <h2 id="platformio">PlatformIO</h2>
-<p>When you want to use PyAvrOCD together with PlatformIO, you only have to set <a href="../debugging-software/#platformio-and-visual-studio-code">the right platform</a> in your platform.ini configuration file. Then PyAvrOCD will be automatically downloaded and installed when needed.</p>
+<p>When you want to use PyAvrOCD together with PlatformIO, you only have to set <a href="../debugging-software/#platformio-and-visual-studio-code">the right platform</a> in your <code>platform.ini</code> configuration file. Then PyAvrOCD will be automatically downloaded and installed when needed.</p>
 <h2 id="downloading-binaries">Downloading binaries</h2>
-<p>If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly. This can be done, e.g., by downloading the binaries.</p>
+<p>In order to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly. This can be done, e.g., by downloading the binaries.</p>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">PyAvrOCD GitHub repo</a>, and download  the archive containing the binary for your architecture from the set of assets of the latest <code>Releases</code>.  This archive includes the folder <code>tools</code>.</p>
 <details>
 <summary><b>How to download the binaries</b></summary>
