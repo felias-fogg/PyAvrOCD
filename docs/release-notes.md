@@ -1,8 +1,12 @@
 # Release Notes
 
+## Release v1.5.5
+
+- The included simavr version has been upgraded from 1.7 to 1.8.
+
 ## Release v1.5.4
 
-- Now, PyAvrOCD is also tightly integrated with PlafromIO. It has an PlatformIO manifest and thanks to the new command `monitor disconnect` , it gracefully terminates when debugging is stopped. The key to making PyAvrOCD available inside PlatformIO is the forked platform:
+- Now, PyAvrOCD is also tightly integrated with PlatformIO. It has a PlatformIO manifest, and thanks to the new command `monitor disconnect` , it gracefully terminates when debugging is stopped. The key to making PyAvrOCD available inside PlatformIO is the forked platform:
 
 ```
 https://github.com/felias-fogg/platform-atmelavr.git

@@ -32,4 +32,10 @@ Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavro
 
 ## What has been done so far, and what to expect in the future
 
-Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas. There is the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front. Additionally, I am working on integrating PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension. Finally, I am committed to fixing some of the more obvious bugs in the AVR part of the GDB debugger.
+Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas.
+
+I made some leeway into integrating PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension. There are already a few extensions of hardware packages that work with these IDEs.
+
+<s>There is the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front</s>. My attempt at using the GCC 15.1 toolchain was abruptly stopped when I discovered that the compiler produces buggy debug information concerning local variables, whereas the old compiler works without a flaw at that point. I guess more research and/or debugging is necessary before this is a viable solution.
+
+ Finally, I am committed to fixing some of the more obvious bugs in the AVR part of the GDB debugger.

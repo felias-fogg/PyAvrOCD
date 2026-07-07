@@ -1,5 +1,10 @@
 # Changelog
 
+### 1.5.5 (07-July-2026)
+
+- **Changed**:
+     - Simavr version 1.8
+
 ### 1.5.4 (02-July-2026)
 
 - **Added:**
