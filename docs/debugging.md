@@ -60,6 +60,12 @@ If everything now works out, you may consider calling it a day and stopping work
 
 You may finally want to disable the `Optimize for Debugging` option in the `Sketch` menu. If you leave it enabled, then all future compilation actions will use this option and produce much larger code than necessary.
 
+## Debugging using Arduino Maker Workshop
+
+Since Arduino IDE 2 and the Arduino Maker Workshop use the same underlying technology, namely, Visual Studio Code and Cortex-Debug, everything written above applies. The main difference is that debugging is started by clicking on the little green triangle or `F5` instead of the debugging button in the top row.
+
+An additional difference is how you start the simulator. This is done by choosing the right launch configuration from the drop down list right to the green triangle before starting debugging.
+
 ## Debugging using PlatformIO/VSCode
 
 Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same thing in the Arduino IDE 2. The reason is that both IDEs are based on VS Code. The control of changing the focus between windows is a bit different, however. Under PlatformIO, it may be necessary to select the DEBUG CONSOLE manually after debugging is started. Further, after the initial stop in the `main` function, it may be necessary to open the sketch file through the explorer. Otherwise, the description of how to [debug in the Arduino IDE 2](#debugging-using-the-arduino-ide-2) describes things very well.

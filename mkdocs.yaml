@@ -29,9 +29,10 @@ nav:
   - Supported:
     - MCUs: 'supported-mcus.md'
     - Boards: 'supported-boards.md'
-    - Debug probes: 'supported-debuggers.md'
-    - Arduino packages: 'supporting-packages.md'
+    - Debug probes & simulators: 'supported-debuggers.md'
     - Platforms: 'supported-platforms.md'
+    - IDEs: 'supported-ides.md'
+    - Arduino packages: 'supporting-packages.md'
   - Quickstart Guides:
     - Arduino IDE 2: 'quick_arduino.md'
     - PlatformIO: 'quick_pio.md'
@@ -58,6 +59,7 @@ nav:
     - Credits: 'credits-link.md'
     - Code of conduct: 'code_of_conduct-link.md'
     - Privacy policy: 'privacy.md'
+    - Contact: 'contact.md'
     - GitHub repo: https://github.com/felias-fogg/PyAvrOCD
 not_in_nav:
   generate-new-version.md

@@ -3,23 +3,21 @@
 
 
 !!! info "Linux"
-    Under Linux, users may need to add a few `udev` rules after having installed PyAvrOCD. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
+    Under Linux, users may need to add a few `udev` rules before they can use PyAvrOCD. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
-## Arduino IDE 2
+## Arduino IDE 2 & Arduino Maker Workshop
 
-If you want to use PyAvrOCD as part of Arduino IDE 2, you do not need to install it explicitly. It is sufficient to [install a debug-enabled Arduino package](supporting-packages.md). Together with PyAvrOCD, you will also get the GDB client `avr-gdb` and the simulator (for some AVR chips) `simavr`.
+If you want to use PyAvrOCD as part of Arduino IDE 2 or the Arduino Maker Workshop, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE.
 
 ## PlatformIO
 
-When you want to use PyAvrOCD together with PlatformIO, you only have to set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your platform.ini configuration file. Then PyAvrOCD will be automatically downloaded and installed when needed.
+When you want to use PyAvrOCD together with PlatformIO, you only have to set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file. Then PyAvrOCD will be automatically downloaded and installed when needed.
 
 ## Downloading binaries
 
-If you want to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly. This can be done, e.g., by downloading the binaries.
+In order to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly. This can be done, e.g., by downloading the binaries.
 
 Go to the [PyAvrOCD GitHub repo](https://github.com/felias-fogg/PyAvrOCD), and download  the archive containing the binary for your architecture from the set of assets of the latest `Releases`.  This archive includes the folder `tools`.
-
-
 
 <details>
 <summary><b>How to download the binaries</b></summary>

@@ -1,4 +1,4 @@
-# Supported debug probes
+# Supported debug probes & simulators
 
 PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe [dw-link](https://felias-fogg.github.io/dw-link). And, as a service to Arduino users, it provides access to the software simulation tool [simavr](https://github.com/buserror/simavr) (see [below](#software-simulator)).
 
@@ -17,7 +17,7 @@ Except for dw-link, the list below is copied from the README file of [pyedbglib]
 * [**nEDBG**](https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html) - **on-board debuggers on Curiosity Nano boards** (can also be used stand-alone to debug other UPDI targets)
 * **[dw-link](https://felias-fogg.github.io/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
 
-If you do not own one of the above debug probes, but you own a [PICkit5](https://www.microchip.com/en-us/development-tool/PG164150) or [PICkit Basic](https://www.microchip.com/en-us/development-tool/PG164110), you can consider [downgrading](https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/) it to a PICkit4 or SNAP, respectively. 
+If you do not own one of the above debug probes, but you own a [PICkit5](https://www.microchip.com/en-us/development-tool/PG164150) or [PICkit Basic](https://www.microchip.com/en-us/development-tool/PG164110), you can consider [downgrading](https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/) it to a PICkit4 or SNAP, respectively.
 
 ### Switching to AVR mode
 
@@ -37,15 +37,15 @@ In both cases, you can check whether you were successful by typing the same comm
 
 ## Software simulator
 
-In addition to the above-mentioned debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service mainly aimed at Arduino IDE 2 users. If you use this IDE, then the way to start the simulator is as follows:
+In addition to the above-mentioned debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service. If you use the **Arduino IDE 2**, then the way to start the simulator is as follows:
 
 1. Verify/compile your sketch.
 2. Choose `Simulator (simavr)` as the `Programmer` in the `Tools` menu.
 3. Click on the Debugger icon at the top of the window.
 
-In this case, the simulator will be started instead of making a connection to a hardware probe. As you will notice, this fake programmer cannot be used to program a chip. It is only used to signal that the simulator should be started when debugging is requested.
+If you use the VSCode extension **Arduino Maker Workshop**, you need to select the *Simavr* debugging configuration before starting the debugger. In **PlatformIO**, you can select `simavr` as a debugging tool in the `platformio.ini` configuration file.
 
-An alternative way to start `simavr` is to provide a path argument to the `--start` option that has as its last part `simavr`. If you use another IDE other than the Arduino IDE 2, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
+An alternative way to start `simavr` is to provide a path argument to the `--start` option that has as its last part `simavr`. If you use another IDE other than the ones mentioned above, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
 
 ```text
 --start

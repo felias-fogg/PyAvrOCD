@@ -1,6 +1,6 @@
 # Debug-enabled Arduino packages
 
-Arduino packages are the key to making debugging available in the Arduino IDE 2. There are two types of such packages. Either debugging has been integrated by the package maintainer, or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog. Note that by adding new URLs, you add the option to install new enhanced versions, but you can always revert back to the original versions of a package.
+Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. There are two types of such packages. Either debugging has been integrated by the package maintainer, or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog. Note that by adding new URLs, you add the option to install new enhanced versions, but you can always revert back to the original versions of a package.
 
 {!details-boards-manager-url.md!}
 
