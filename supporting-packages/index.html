@@ -210,7 +210,6 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <p></p>
 
 <p>Once this has been done, you can search in the <code>Boards Manager</code> for the package and install it or upgrade to the most recent version. In case of a debug-enabled fork, the version number is usually suffixed by <code>-preX,</code> and the name of the package will have <code>(Debug enabled)</code> attached to the official name.</p>
-<p>Meanwhile, some of the board packages have been upgraded to employ the AVR-GCC 15.1 toolchain. It is signaled by version numbers having a <code>-gcc15x</code> suffix.</p>
 <details>
 <summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
@@ -232,11 +231,8 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <p>This is the package for the small ATmegas with a debugWIRE interface, aka, ATmegaX8. PyAvrOCD has been integrated into the package since version 3.1.0. You can make the package installable by adding the following <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 </code></pre>
-<p>Currently, there also exists an experimental fork that includes the AVR-GCC 15.1 toolchain. If you want to try this out, use the following URL in addition:</p>
-<pre><code>https://felias-fogg.github.io/MiniCore/package_GCC15_MiniCore_index.json
-</code></pre>
 <h3 id="xminicore"><a href="https://github.com/felias-fogg/XMiniCore">XMiniCore</a></h3>
-<p>This is a debug-enabled Arduino package for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the <em>Atmel AVR Xplained-minis</em> board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see <a href="../quick_arduino/#quickstart-atmega328p-xplained-mini">quickstart guide for ATmega328P Xplained Mini</a>). It is just plug-and-play. This board package also uses the new AVR-GCC 15.1 toolchain. You can make the board package available by including the following boards manager URL:</p>
+<p>This is a debug-enabled Arduino package for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the <em>Atmel AVR Xplained-minis</em> board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see <a href="../quick_arduino/#quickstart-atmega328p-xplained-mini">quickstart guide for ATmega328P Xplained Mini</a>). It is just plug-and-play. You can make the board package available by including the following boards manager URL:</p>
 <pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 </code></pre>
 <h3 id="mightycore"><a href="https://github.com/MCUdude/MightyCore">MightyCore</a></h3>
@@ -244,7 +240,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <pre><code>https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
 </code></pre>
 <h3 id="megacore"><a href="https://github.com/MCUdude/MegaCore">MegaCore</a></h3>
-<p>A package for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding to the <em>boards manager URL</em>:</p>
+<p>A package for most 64- and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the <a href="https://github.com/MCUdude/MegaCore#supported-microcontrollers">listed MCUs</a> are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding the foolowing URL to the <em>boards manager URL</em>:</p>
 <pre><code>https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
 </code></pre>
 <h3 id="majorcore"><a href="https://github.com/MCUdude/MajorCore">MajorCore</a></h3>
@@ -261,7 +257,6 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <li>changes to boards.txt to enable the JTAG pins on boards with the JTAG interface, and</li>
 <li>an upgrade to version 8.0 of avrdude.</li>
 </ul>
-<p>Meanwhile, the AVR-GCC 15.1 toolchain has been added to this fork. If you would like to stick to the old 7.3.0 toolchain, then avoid installing versions with the <code>-gcc15</code>  suffix.</p>
 <p>You can make this fork available by including:</p>
 <pre><code>https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json
 </code></pre>
