@@ -222,7 +222,7 @@
 <ul>
 <li>ATtiny13, <strong>ATtiny13A</strong></li>
 </ul>
-<p>Because of its limited flash memory, debugging a sketch on this MCU is rather challenging.</p>
+<p>Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rather challenging.</p>
 <h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <a href="../supporting-packages/#tinycore">TinyCore</a> and <a href="../supporting-packages/#attinycore">ATTinyCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
@@ -364,7 +364,7 @@
 <li><strong>ATmega168,</strong> <strong>ATmega168A</strong>, <strong>ATmega168P</strong>, <strong>ATmega168PA</strong>, <strong>ATmega168PB</strong>,</li>
 <li><strong>ATmega328,</strong> <strong>ATmega328P</strong>, <strong>ATmega328PB</strong></li>
 </ul>
-<p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without the A-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
+<p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without an A- or P-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
 <h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-packages/#xminicore">XMiniCore</a></h3>
 <p>The following MCUs are already supported by MiniCore. However, XMiniCore goes some way to make it easier to deal with the Microchip Xplained Mini development boards so that debugging becomes plug-and-play.</p>
 <ul>

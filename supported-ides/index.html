@@ -67,6 +67,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#arduino-maker-workshop">Arduino Maker Workshop</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#eclipse">Eclipse</a>
+    </li>
         </ul>
     </li>
     </ul>
@@ -177,8 +179,10 @@ system development. It can be installed as an extension to <a href="https://code
 <h2 id="ides-compatible-with-pyavrocd">IDEs compatible with PyAvrOCD</h2>
 <p>There exists a number of IDEs and/or frameworks that can be convinced to cooperate with PyAvrOCD.  However, usually a bit of manual work is necessary. </p>
 <h3 id="arduino-maker-workshop">Arduino Maker Workshop</h3>
-<p><a href="https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop">Arduino Maker Workshop</a> is a Visual Studio Code extension that provides a very convenient interface to the Arduino CLI. It feels very similar to the Arduino IDE2 but offers everything VSC has, e.g., AI support. One can add the <a href="https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug">Cortex-Debug</a> extension, resulting in a very smooth IDE. Because the Cortex-Debug version from the VSCode marketplace is much more recent than the one employed in the Arduino IDE 2, debugging is much better. The UI is more streamlined and assembly-level debugging is supported. </p>
-<p>On the negative side, <s>there is no <code>Burn Bootloader</code> button or command yet. Further,</s> each Arduino hardware package needs an additional small modification to generate the <code>launch.json</code> files that are needed to configure Cortex-Debug.  This modification needs to be triggered manually and needs to be repeated after each upgrade of a board package.</p>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop">Arduino Maker Workshop</a> is a Visual Studio Code extension that provides a very convenient interface to the Arduino CLI. It feels very similar to the Arduino IDE2 but offers everything VSC has, e.g., AI support. One can add the <a href="https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug">Cortex-Debug</a> extension, resulting in a very smooth IDE. Because the Cortex-Debug version from the VSCode marketplace is much more recent than the one employed in the Arduino IDE 2, debugging is much better. The UI is more streamlined, and assembly-level debugging is supported. </p>
+<p>On the negative side, <s>there is no <code>Burn Bootloader</code> button or command yet. Further,</s> each Arduino hardware package needs an additional small modification to generate the <code>launch.json</code> files that are needed to configure Cortex-Debug.  This modification needs to be triggered manually and repeated after each upgrade of a board package. So, a more principled and durable solution would be great.</p>
+<h3 id="eclipse">Eclipse</h3>
+<p>It should be possible to develop and debug Software for AVR chips using Eclipse/CDT. And I found a recent, very detailed description of how to configure Eclipse: <a href="https://androidexperto.com/programming-avrs-with-eclipse/"><strong>Programming AVRs with Eclipse</strong></a>. I have not tested it and would be interested to hear back from you if you are successful in teaching Eclipse how to use PyAvrOCD.</p>
 <div class="footnote">
 <hr />
 <ol>
