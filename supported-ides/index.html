@@ -65,9 +65,15 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#ides-compatible-with-pyavrocd">IDEs compatible with PyAvrOCD</a>
+    <li class="toctree-l2"><a class="reference internal" href="#ides-potentially-compatible-with-pyavrocd">IDEs potentially compatible with PyAvrOCD</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#eclipse">Eclipse</a>
+    <li class="toctree-l3"><a class="reference internal" href="#eclipsecdt">Eclipse/CDT</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#clion">CLion</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#codeblocks">Code::Blocks</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#visual-studio-code">Visual Studio Code</a>
     </li>
         </ul>
     </li>
@@ -163,9 +169,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-ides">Supported IDEs</h1>
-<p>There are some IDEs that are explicitly supported by PyAvrOCD. With a bit of effort, it is possible to make PyAvrOCD available in other IDEs as well.</p>
+<p>There are some IDEs that are explicitly supported by PyAvrOCD. In addition, with a bit of effort, it should be possible to make PyAvrOCD available in other IDEs as well.</p>
 <h2 id="ides-supported-by-board-or-platform-packages">IDEs supported by board or platform  packages</h2>
-<p>There exist extensions and/or forks of Arduino packages and PlatformIO packages that integrate PyAvrOCD into the following three IDEs.</p>
+<p>There exist extensions and/or forks of Arduino packages and PlatformIO packages that integrate PyAvrOCD into the following four IDEs.</p>
 <h3 id="arduino-ide-2">Arduino IDE 2</h3>
 <p><a href="https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/">Arduino IDE 2</a> is probably the most straightforward option. In contrast to the deprecated Arduino IDE, debugging is supported by making use of an early version of the Visual Studio Code extension Cortex-Debug. The design principle behind Arduino IDE 2 is not to overwhelm beginners with a multitude of options and interaction elements. This comes at a cost, however. One is often constrained in what is possible. If one wants to be more flexible, then it is possible to employ <strong>Arduino-cli</strong>, the command-line interface to the Arduino processor, which exposes somewhat more functionality to the user.</p>
 <p>PyAvrOCD has been integrated into Arduino IDE 2 by extending the <code>platform.txt</code>  configuration files of Arduino hardware packages. In order to configure Cortex-Debug, a number of attributes of the form <code>debug.cortex-debug.custom</code> and a few other attributes had to be set in the <code>platform.txt</code> file.</p>
@@ -179,10 +185,16 @@ system development. It can be installed as an extension to <a href="https://code
 <p>Integration of PyAvrOCD is implemented in a fork of the MCU-family-specific platform, which needs to be specified in the project configuration file <code>platformio.ini</code>.</p>
 <h3 id="platformio-and-clion">PlatformIO and CLion</h3>
 <p>The IDE <a href="https://www.jetbrains.com/clion/">CLion</a><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> by JetBrains is compatible with PlatformIO as well.  After the installation of PlatformIO inside CLion, everything works out of the box. In particular, the display of peripheral registers and assembly-level debugging work like a charm.</p>
-<h2 id="ides-compatible-with-pyavrocd">IDEs compatible with PyAvrOCD</h2>
+<h2 id="ides-potentially-compatible-with-pyavrocd">IDEs potentially compatible with PyAvrOCD</h2>
 <p>There exists a number of IDEs and/or frameworks that can (probably) be convinced to cooperate with PyAvrOCD.  However, a bit of manual work is necessary.</p>
-<h3 id="eclipse">Eclipse</h3>
-<p>It should be possible to develop and debug Software for AVR chips using Eclipse/CDT. And I found a recent, very detailed description of how to configure Eclipse: <a href="https://androidexperto.com/programming-avrs-with-eclipse/"><strong>Programming AVRs with Eclipse</strong></a>. I have not tested it and would be interested to hear back from you if you are successful in teaching Eclipse how to use PyAvrOCD.</p>
+<h3 id="eclipsecdt">Eclipse/CDT</h3>
+<p>It should be possible to develop and debug Software for AVR chips using Eclipse/CDT. And I found a recent, very detailed description of how to configure Eclipse: <a href="https://androidexperto.com/programming-avrs-with-eclipse/"><strong>Programming AVRs with Eclipse</strong></a>. I have not tested it and would be interested to hear back from you if you are successful in addtionally teaching Eclipse how to use PyAvrOCD.</p>
+<h3 id="clion">CLion</h3>
+<p>CLion should also work "standalone" with AVR chips by setting up an AVR-GCC toolchain. And, as described in <a href="https://bloom.oscillate.io/docs/clion-debugging-setup#prerequisites">this tutorial</a>, one can configure how to invoke a GDB server. </p>
+<h3 id="codeblocks">Code::Blocks</h3>
+<p>You can set up the AVR GCC toolchain and it is also possible to configure the avr-gdb invocation so that it connects to an external GDB server. </p>
+<h3 id="visual-studio-code">Visual Studio Code</h3>
+<p>Tony Mitchell describes in <a href="https://www.tonymitchell.ca/posts/use-vscode-with-avr-toolchain/">this tutorial</a> how to set up an AVR-GCC toolchain in VSC. Now, it should be a breeze to add a launch.json file to it, so that Cortex-Debug can be configured and invoked.</p>
 <div class="footnote">
 <hr />
 <ol>
