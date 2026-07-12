@@ -6,8 +6,6 @@ Arduino packages are the key to making debugging available in the *Arduino IDE 2
 
 Once this has been done, you can search in the <code>Boards Manager</code> for the package and install it or upgrade to the most recent version. In case of a debug-enabled fork, the version number is usually suffixed by `-preX,` and the name of the package will have `(Debug enabled)` attached to the official name.
 
-Meanwhile, some of the board packages have been upgraded to employ the AVR-GCC 15.1 toolchain. It is signaled by version numbers having a `-gcc15x` suffix.
-
 {!details-install-package.md!}
 
 ## Hardware packages with integrated debugging solutions
@@ -36,15 +34,9 @@ This is the package for the small ATmegas with a debugWIRE interface, aka, ATmeg
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
 ```
 
-Currently, there also exists an experimental fork that includes the AVR-GCC 15.1 toolchain. If you want to try this out, use the following URL in addition:
-
-```
-https://felias-fogg.github.io/MiniCore/package_GCC15_MiniCore_index.json
-```
-
 ### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
 
-This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. This board package also uses the new AVR-GCC 15.1 toolchain. You can make the board package available by including the following boards manager URL:
+This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. You can make the board package available by including the following boards manager URL:
 
 ```
 https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
@@ -60,7 +52,7 @@ https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
 
 ### [MegaCore](https://github.com/MCUdude/MegaCore)
 
-A package for most 64 and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the [listed MCUs](https://github.com/MCUdude/MegaCore#supported-microcontrollers) are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding to the *boards manager URL*:
+A package for most 64- and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the [listed MCUs](https://github.com/MCUdude/MegaCore#supported-microcontrollers) are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding the foolowing URL to the *boards manager URL*:
 
 ```
 https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
@@ -85,8 +77,6 @@ This is the debug-enabled fork of the standard Arduino package, which supports a
 - changes to platform.txt to enable debugging,
 - changes to boards.txt to enable the JTAG pins on boards with the JTAG interface, and
 - an upgrade to version 8.0 of avrdude.
-
-Meanwhile, the AVR-GCC 15.1 toolchain has been added to this fork. If you would like to stick to the old 7.3.0 toolchain, then avoid installing versions with the `-gcc15`  suffix.
 
 You can make this fork available by including:
 ```

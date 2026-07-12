@@ -8,11 +8,13 @@ After having installed [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/t
 
 ## Arduino Maker Workshop
 
-First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. In addition to the Visual Studio Code extension [Arduino Maker Workshop](https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop), one needs to add the [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension. The Arduino packages that are ready for the Arduino Maker Workshop are marked in the [Arduino packages list](supporting-packages.md).
+First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. In addition to the Visual Studio Code extension [Arduino Maker Workshop](https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop), one needs to add the [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension.
+
+In order to debug a particular MCU, install the right board packages from the [Arduino packages list](supporting-packages.md).
 
 ## PlatformIO and Visual Studio Code
 
-You need to install [Visual Studio Code](https://code.visualstudio.com) and the Visual Studio Code extension [PlatformIO](https://platformio.org). By using project-specific`platformio.ini` files, integrating PyAvrOCD is straightforward, specifying the forked platform for the Atmel AVR family:
+You need to install [Visual Studio Code](https://code.visualstudio.com) and the Visual Studio Code extension [PlatformIO](https://platformio.org). By using project-specific `platformio.ini` files, integrating PyAvrOCD is straightforward. You simply need to  specify the debug-enabled platform for the Atmel AVR family:
 
 ```
 [env:...]
@@ -20,13 +22,13 @@ platform = https://github.com/felias-fogg/platform-atmelavr.git
 ...
 ```
 
+Some examples for `platformio.ini` files using PyAvrOCD can be found in the section on [PlatformIO quickstart guides](quick_pio.md).
+
 For the modern parts, i.e., UPDI targets, there is no supporting fork yet, but it will be added real soon.
 
-## Other IDEs
+## PlatformIO and CLion
 
-There are a few other possible options for IDEs. I believe it should be possible to integrate PyAvrOCD into  [**CLion**](https://www.jetbrains.com/clion/) and [**Eclipse**](https://eclipseide.org/projects/). How to integrate an AVR-GDB server into CLion is, for example, described [here](https://bloom.oscillate.io/docs/clion-debugging-setup).
-
-If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be happy to add it here.
+Similar to Visual Studio Code, you can install a PlatfromIO plugin that exposes the most important PlatformIO commands in CLion. After you have installed CLion, follow the instructions of the [CLion documentation](https://www.jetbrains.com/help/clion/platformio.html) for installing PlatformIO. And then you can use the way described above in order to use the debug-enabled enabled fork of the platform package.
 
 ## A debug GUI: Gede
 
@@ -36,8 +38,7 @@ If you have a clear description of how to integrate PyAvrOCD in an IDE, I'd be h
 
 The most basic option is simply to install avr-gdb, the GDB debugger for AVR chips. You can use the version shipped with the PyAvrOCD binaries, which contains a few important patches for AVR MCUs.
 
-It is not necessary to configure anything when you use
-avr-gdb. However, I find it very helpful to have the few commands in the global initialization file `.gdbinit`.
+It is not necessary to configure anything when you use avr-gdb. However, I find it very helpful to have a few commands in the global initialization file `.gdbinit`.
 
 <details>
 <summary><b>A .gdbinit example</b></summary>
