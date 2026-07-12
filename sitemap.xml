@@ -2,222 +2,222 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://pyavrocd.io/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/UPDI-notes/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/adaptation-of-core/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/avr-devices/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/board-preparation/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/code_of_conduct-link/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/command-line-options/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/compilation-options/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/connect-to-target/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/contact/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/contributing/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/credits-link/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/debug-speed/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/debugging-software/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/debugging/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/details-boards-manager-url/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/details-install-package/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/disclaimer/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/fit-for-maker-workshopl/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/fuse-preparation/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/gdb-fixes/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/install/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/license-link/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/limitations/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/list-of-oss-avr-gdb-server/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/list-of-probes/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/list-of-usb-packages/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/load-speed/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/modern-attiny/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/monitor-commands/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/non-tri-state/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/pio_quick_install/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/privacy/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_arduino/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_arduino_attiny/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_arduino_uno/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_arduino_xmini/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_curiosity_nano/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_pio/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_pio_atmega1284/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_pio_attiny/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/quick_pio_xmini/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/rangestepping-speedup/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/release-notes/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/restore-original-state/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/signals_and_errors/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/snap-connector/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/supported-boards/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/supported-debuggers/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/supported-ides/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/supported-mcus/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/supported-platforms/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/supporting-packages/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/test-problems/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
     <url>
          <loc>https://pyavrocd.io/troubleshooting/</loc>
-         <lastmod>2026-07-11</lastmod>
+         <lastmod>2026-07-12</lastmod>
     </url>
 </urlset>

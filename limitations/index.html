@@ -336,6 +336,7 @@ IN R2, PINB
 <p>Another possible way is to use pyavrocd with the option <code>--debugwire disable</code>. First, carry out steps 1 and 2 from above. Then type into a terminal window (&lt;mcu&gt; being the name of the MCU):</p>
 <pre><code>pyavrocd --manage all --debugwire disable --device &lt;mcu&gt;
 </code></pre>
+<p>If you are using PlatformIO, then you can use the project task <code>Disable debugWire</code> under the <code>Platform</code> header.</p>
 <h3 id="high-voltage-programming">High-voltage programming</h3>
 <p>If none of the above-mentioned recovery methods work, the last resort is <em>high-voltage programming</em>. This means that 12 volts are applied to the RESET line, and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a <a href="https://github.com/felias-fogg/RescueAVR">breadboard high-voltage programmer</a> or a specially designed <a href="https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/">"HV fuse programmer"</a>. For MCUs with an SMD footprint, you would need to buy a breadboard adapter.</p>
 <h2 id="flash-wear">Flash Wear</h2>
