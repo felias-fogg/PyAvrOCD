@@ -71,8 +71,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#clion">CLion</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#codeblocks">Code::Blocks</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#visual-studio-code">Visual Studio Code</a>
     </li>
         </ul>
@@ -191,10 +189,8 @@ system development. It can be installed as an extension to <a href="https://code
 <p>One option for embbeded software development is Eclipse/CDT. Unfortunately, there is no out-of-the-box support for AVR chips. However, I found a very detailed description of how to configure Eclipse: <em><a href="https://androidexperto.com/programming-avrs-with-eclipse/">Programming AVRs with Eclipse</a></em>. I have not tested it, though.</p>
 <h3 id="clion">CLion</h3>
 <p>CLion should also work "standalone" with AVR chips by setting up an AVR-GCC toolchain. And, as described in <a href="https://bloom.oscillate.io/docs/clion-debugging-setup#prerequisites">this tutorial</a>, one can configure how to invoke a GDB server. </p>
-<h3 id="codeblocks">Code::Blocks</h3>
-<p>You can set up the AVR GCC toolchain and it is also possible to configure the avr-gdb invocation so that it connects to an external GDB server. </p>
 <h3 id="visual-studio-code">Visual Studio Code</h3>
-<p>Tony Mitchell describes in <a href="https://www.tonymitchell.ca/posts/use-vscode-with-avr-toolchain/">this tutorial</a> how to set up an AVR-GCC toolchain in VSC. Alternatively, the VSC extension <a href="https://marketplace.visualstudio.com/items?itemName=Alex079.vscode-avr-helper">AVR Helper</a> can help. Then, the only thing left to do is to create the right <code>launch.json</code> file, so that Cortex-Debug can be configured and invoked. I tried that with the AVR Helper and it worksed flawlessly.</p>
+<p>Tony Mitchell describes in <a href="https://www.tonymitchell.ca/posts/use-vscode-with-avr-toolchain/">this tutorial</a> how to set up an AVR-GCC toolchain in VSC. Alternatively, the VSC extension <a href="https://marketplace.visualstudio.com/items?itemName=Alex079.vscode-avr-helper">AVR Helper</a> can help. Then, the only thing left to do is to create the right <code>launch.json</code> file manually, so that Cortex-Debug can be configured and invoked. I tried that with the AVR Helper and it worked flawlessly.</p>
 <div class="footnote">
 <hr />
 <ol>
