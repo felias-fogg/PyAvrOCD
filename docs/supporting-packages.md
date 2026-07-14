@@ -66,6 +66,14 @@ This package covers just ATmega8515 and ATmega162, of which only the latter poss
 https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 ```
 
+### [MegaCoreX](https://github.com/felias-fogg/MegaCoreX)
+
+This is a fork of the package for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can make the debug-enabled fork of the package available using the following URL:
+
+```
+https://mcudude.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
+```
+
 ## Debug-enabled forks of official Arduino packages
 
 <a id=arduino-avr-boards></a>
@@ -103,18 +111,8 @@ https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCor
 
 ## Debug-enabled forks of 3rd-party packages
 
-<a id=megacorex></a>
-### [MegaCoreX](https://github.com/felias-fogg/MegaCoreX)  (Debug enabled)
-
-This is a fork of the package for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can make the debug-enabled fork of the package available using the following URL:
-
-```
-https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
-```
-
-Expect to find the debug extension soon in the upstream repo.
-
 <a id=megatinycore></a>
+
 ### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (Debug enabled)
 
 This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-enabled fork available using the following URL:

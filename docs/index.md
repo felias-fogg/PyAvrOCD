@@ -1,12 +1,10 @@
 # PyAvrOCD
 
-PyAvrOCD[^1] is *the missing AVR debugging solution* for  [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org). It is tightly integrated into both IDEs (see [quickstart guides](quick_arduino.md)).
+PyAvrOCD[^1] is *the missing AVR debugging solution* for  [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org).
 
-![ide2-6](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-6.png)PyAvrOCD is a Python GDB server[^2] for 8-bit AVR MCUs, enabling you to debug programs running on these MCUs using the [GNU Project Debugger GDB](https://www.sourceware.org/gdb/). This means it supports debugging in all IDEs that use GDB.
+![ide2-6](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-6.png)PyAvrOCD is a Python GDB server[^2] for 8-bit AVR MCUs, enabling you to debug programs running on these MCUs using the [GNU Project Debugger GDB](https://www.sourceware.org/gdb/). It communicates with Microchip's debug probes, such as [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100). In addition, it provides a pass-through service for the UNO-based debug probe [dw-link](https://felias-fogg.github.io/dw-link) and the simulation tool [simavr](https://github.com/buserror/simavr).
 
-PyAvrOCD communicates with Microchip's debug probes, such as [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100). In addition, it provides a pass-through service for the UNO-based debug probe [dw-link](https://felias-fogg.github.io/dw-link) and the simulation tool [simavr](https://github.com/buserror/simavr).
-
-Why another open-source GDB server for AVR MCUs (others are [AVaRICE](https://github.com/avrdudes/avarice) and [Bloom](https://github.com/bloombloombloom/Bloom))? The main intention is to provide a *cross-platform* AVR GDB server, which can be packaged with the Arduino IDE and PlatformIO. In addition to being cross-platform, PyAvrOCD offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
+Why [another open-source GDB server for AVR MCUs](https://arduino-craft-corner.de/index.php/2026/02/10/pyavrocd-1-0-0-released/#what-are-alternatives-to-pyavrocd)? The main intention is to provide a *cross-platform* AVR GDB server, which can be packaged with the Arduino IDE and PlatformIO. In addition to being cross-platform, PyAvrOCD offers some enhancements over its "competitors", particularly in terms of [flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [single-stepping](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
 After [installing the package](install.md), the following steps are necessary for successful debugging:
 

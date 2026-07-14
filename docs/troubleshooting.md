@@ -10,11 +10,11 @@ For most of the error messages, it should be obvious what to do. However, there 
 
 ### `Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.`
 
-This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file `FILE` as follows. Afterward, macOS will start these executables without a hitch.
+This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file `FILE` as follows. Afterward, macOS will start these executables without any problems.
 
 
 ```bash
-> xattr -d com.apple.quarantine FILE
+$ xattr -d com.apple.quarantine FILE
 ```
 
 ### `No compatible tool discovered`

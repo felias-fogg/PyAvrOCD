@@ -34,7 +34,7 @@ This will open the latest release page with all its assets.
 </p>
 <p>
 Select the archive matching your architecture and download it.
-After downloading the archive, extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):
+Then extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):
 <pre>
 <code class="language-bash hljs">tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz</code>
 </pre>
@@ -68,11 +68,11 @@ Now, you only need to add <code>~/.local/bin/</code> to your <code>PATH</code>
 <p></p>
 
 !!! warning "macOS"
-    On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command `xattr -d com.apple.quarantine FILE` in a terminal window to remove the extended attribute `com.apple.quarantine` from the binary executable FILE. After that, you can start the executable without a hitch.
+    On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command `xattr -r -d com.apple.quarantine FOLDER` in a terminal window to remove the extended attribute `com.apple.quarantine` from all the binary executables in FOLDER. After that, you can start the executables without a hitch.
 
 ## PyPI
 
-If you are a Pythonist, you may just want to install the Python package instead of the much larger binary. I assume you already installed a recent Python version (>=3.10). Then [PyPI](https://pypi.org/project/pyavrocd/), with the help of [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/) or [pipx](https://pipx.pypa.io/), will bring PyAvrOCD to your computer.
+If you are a Pythonist, you may want to install the Python package instead of the much larger binary. I assume you already installed a recent Python version (>=3.10). Then [PyPI](https://pypi.org/project/pyavrocd/), with the help of [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/) or [pipx](https://pipx.pypa.io/), will bring PyAvrOCD to your computer.
 
 <details>
 <summary><b>How to install PyAvrOCD with pip or pipx</b></summary>
@@ -85,7 +85,7 @@ It is possible to install PyAvrOCD using <code>pip</code>. However, it is recomm
 pipx ensurepath</code>
 </pre>
 <p>
-After restarting the shell, you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code>.
+Now you should be able to start the GDB server. The binary is stored under <code>~/.local/bin/</code>.
 </details>
 <p></p>
 
@@ -105,7 +105,7 @@ After having cloned the repo, install Poetry:
 <code class="language-bash hljs">pipx install poetry</code>
 </pre>
 <p>
-After having moved into the PyAvrOCD project folder, you can start executing the script inside the downloaded folder as follows:
+In the PyAvrOCD project folder, you can now start executing the script as follows:
 </p>
 <pre>
 <code class="language-bash hljs">poetry install

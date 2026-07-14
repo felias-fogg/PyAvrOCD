@@ -1,10 +1,10 @@
 # Supported IDEs
 
-There are some IDEs that are explicitly supported by PyAvrOCD. With a bit of effort, it is possible to make PyAvrOCD available in other IDEs as well.
+There are some IDEs that are explicitly supported by PyAvrOCD. In addition, with a bit of effort, it should be possible to make PyAvrOCD available in other IDEs as well.
 
 ## IDEs supported by board or platform  packages
 
-There exist extensions and/or forks of Arduino packages and PlatformIO packages that integrate PyAvrOCD into the following three IDEs.
+There exist extensions and/or forks of Arduino packages and PlatformIO packages that integrate PyAvrOCD into the following four IDEs.
 
 ### Arduino IDE 2
 
@@ -31,15 +31,21 @@ Integration of PyAvrOCD is implemented in a fork of the MCU-family-specific plat
 
 The IDE [CLion](https://www.jetbrains.com/clion/)[^*] by JetBrains is compatible with PlatformIO as well.  After the installation of PlatformIO inside CLion, everything works out of the box. In particular, the display of peripheral registers and assembly-level debugging work like a charm.
 
-## IDEs compatible with PyAvrOCD
+## IDEs potentially compatible with PyAvrOCD
 
 There exists a number of IDEs and/or frameworks that can (probably) be convinced to cooperate with PyAvrOCD.  However, a bit of manual work is necessary.
 
-### Eclipse
+### Eclipse/CDT
 
-It should be possible to develop and debug Software for AVR chips using Eclipse/CDT. And I found a recent, very detailed description of how to configure Eclipse: [**Programming AVRs with Eclipse**](https://androidexperto.com/programming-avrs-with-eclipse/). I have not tested it and would be interested to hear back from you if you are successful in teaching Eclipse how to use PyAvrOCD.
+One option for embedded software development is Eclipse/CDT. Unfortunately, there is no out-of-the-box support for AVR chips. However, I found a very detailed description of how to configure Eclipse: *[Programming AVRs with Eclipse](https://androidexperto.com/programming-avrs-with-eclipse/)*. I have not tested it, though.
 
+### CLion
 
+CLion should also work "standalone" with AVR chips by setting up an AVR-GCC toolchain. And, as described in [this tutorial](https://bloom.oscillate.io/docs/clion-debugging-setup#prerequisites), one can configure how to invoke a GDB server.
+
+### Visual Studio Code
+
+Tony Mitchell describes in [this tutorial](https://www.tonymitchell.ca/posts/use-vscode-with-avr-toolchain/) how to set up an AVR-GCC toolchain in VS Code. Alternatively, the VSC extension [AVR Helper](https://marketplace.visualstudio.com/items?itemName=Alex079.vscode-avr-helper) can help. Then, the only thing left to do is to create the right `launch.json` file manually so that Cortex-Debug can be configured and invoked. I tried that with the AVR Helper, and it worked flawlessly.
 
 [^*]: In 2025, NetBrains started to offer a free license for non-commercial use of CLion. Additionally, there is also a free educational license.
 

@@ -3,7 +3,7 @@
 In a terminal window, you invoke PyAvrOCD as follows, whereby the only mandatory option is the `-d` or `--device` option, specifying the MCU:
 
 ```
-> pyavrocd [options]
+$ pyavrocd [options]
 ```
 
 PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.
@@ -62,16 +62,16 @@ atmelice
 --veri=e</code>
 </pre>
 <p>
-When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>,, then this is expanded into
+When you now invoke PyAvrOCD with <code>pyavrocd -d attiny13 -t dwlink @file.ext</code>, then this is expanded into
 </p>
 <pre>
-<code class="language-bash hljs">pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e</code>
+<code class="language-bash hljs">$ pyavrocd -d attiny13 -t dwlink --manage eesave --prog=3000 --to atmelice --veri=e</code>
 </pre>
 <p>
 With the usual abbreviation rules, the fact that the equal sign can simply be substituted by space,  and the rule that later arguments override earlier ones, this is equivalent to
 </p>
 <pre>
-<code class="language-bash hljs">pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable</code>
+<code class="language-bash hljs">$ pyavrocd --device attiny13 --manage eesave --prog-clock 3000 --tool atmelice --verify enable</code>
 </pre>
 </details>
 <p></p>

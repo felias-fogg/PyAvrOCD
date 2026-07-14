@@ -44,7 +44,7 @@ Pane B shows the active threads, but there is just one in our case. Pane C displ
 
 Pane D displays variable values. Unfortunately, global variables are not shown if *link-time optimizations* are enabled, which is the default. Pane E can be populated with watch expressions, for example, with the names of global variables.  Finally, in pane F, the active breakpoints are listed.
 
-The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU, decodes their meanings, and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
+The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
 
 ### Correcting the bug and starting over
 
@@ -62,9 +62,7 @@ You may finally want to disable the `Optimize for Debugging` option in the `Sket
 
 ## Debugging using Arduino Maker Workshop
 
-Since Arduino IDE 2 and the Arduino Maker Workshop use the same underlying technology, namely, Visual Studio Code and Cortex-Debug, everything written above applies. The main difference is that debugging is started by clicking on the little green triangle or `F5` instead of the debugging button in the top row.
-
-An additional difference is how you start the simulator. This is done by choosing the right launch configuration from the drop down list right to the green triangle before starting debugging.
+Since Arduino IDE 2 and the Arduino Maker Workshop use the same underlying technology, namely, Visual Studio Code and Cortex-Debug, everything written above applies. The UI is organized in a somewhat different way, however. But it should be easy to find your way around.
 
 ## Debugging using PlatformIO/VSCode
 
@@ -91,7 +89,7 @@ If you are more into command-line interface programming, simply using avr-gdb ma
 After [compiling your program](compilation-options.md#compiling-in-other-environments), e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Setting the right fuses](fuse-preparation.md#general-considerations)):
 
 ```log
-> pyavrocd -d atmega328p -m all
+$ pyavrocd -d atmega328p -m all
 [INFO] This is PyAvrOCD version 1.5.1
 [INFO] Connected to mEDBG CMSIS-DAP, SN: ATML2323052700011010
 [INFO] Starting GDB server
@@ -104,7 +102,7 @@ After [compiling your program](compilation-options.md#compiling-in-other-environ
 In another terminal window, you can now start a GDB session:
 
 ```gdb
-> avr-gdb varblink0.ino.elf
+$ avr-gdb varblink0.ino.elf
 GNU gdb (GDB) 15.2
 Copyright (C) 2024 Free Software Foundation, Inc.
 ...

@@ -4,9 +4,9 @@
 
 Extremely fishy: When running Tictactoe on an ATmega808, it will single-step but then continue to the next breakpoint. Or it does double steps instead of single steps!
 
-This all seems to have to do with the UPDI communication speed being **too low**. 400 kHz and below caused this problem, while everything above 
+This all seems to have to do with the UPDI communication speed being **too low**. 400 kHz and below caused this problem, while everything above
 
-## USER_ROW write leads to timeout
+## USER_ROW write leads to a timeout
 
 After writing to USER_ROW, a 20 ms or 70 ms wait interval is necessary. Otherwise, we get a PDI timeout message from the debugger.
 
