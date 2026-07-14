@@ -144,8 +144,8 @@
                 <h1 id="notes-about-extending-pyavrocd-to-updi">Notes about extending PyAvrOCD to UPDI</h1>
 <h2 id="single-stepping-for-atmega808-solved">Single stepping for ATmega808 - solved</h2>
 <p>Extremely fishy: When running Tictactoe on an ATmega808, it will single-step but then continue to the next breakpoint. Or it does double steps instead of single steps!</p>
-<p>This all seems to have to do with the UPDI communication speed being <strong>too low</strong>. 400 kHz and below caused this problem, while everything above </p>
-<h2 id="user_row-write-leads-to-timeout">USER_ROW write leads to timeout</h2>
+<p>This all seems to have to do with the UPDI communication speed being <strong>too low</strong>. 400 kHz and below caused this problem, while everything above</p>
+<h2 id="user_row-write-leads-to-a-timeout">USER_ROW write leads to a timeout</h2>
 <p>After writing to USER_ROW, a 20 ms or 70 ms wait interval is necessary. Otherwise, we get a PDI timeout message from the debugger.</p>
 <h2 id="eeprom-solved">EEPROM - solved</h2>
 <p>EEPROM access does not work - check!</p>

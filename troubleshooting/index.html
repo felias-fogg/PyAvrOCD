@@ -206,8 +206,8 @@
 <h2 id="debugging-does-not-start">Debugging does not start</h2>
 <p>For most of the error messages, it should be obvious what to do. However, there are a few messages that look cryptic, and/or a solution is not apparent.</p>
 <h3 id="apple-could-not-verify-is-free-of-malware-that-may-harm-your-mac-or-compromise-your-privacy"><code>Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</code></h3>
-<p>This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file <code>FILE</code> as follows. Afterward, macOS will start these executables without a hitch.</p>
-<pre><code class="language-bash">&gt; xattr -d com.apple.quarantine FILE
+<p>This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file <code>FILE</code> as follows. Afterward, macOS will start these executables without any problems.</p>
+<pre><code class="language-bash">$ xattr -d com.apple.quarantine FILE
 </code></pre>
 <h3 id="no-compatible-tool-discovered"><code>No compatible tool discovered</code></h3>
 <p>This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>

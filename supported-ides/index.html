@@ -186,11 +186,11 @@ system development. It can be installed as an extension to <a href="https://code
 <h2 id="ides-potentially-compatible-with-pyavrocd">IDEs potentially compatible with PyAvrOCD</h2>
 <p>There exists a number of IDEs and/or frameworks that can (probably) be convinced to cooperate with PyAvrOCD.  However, a bit of manual work is necessary.</p>
 <h3 id="eclipsecdt">Eclipse/CDT</h3>
-<p>One option for embbeded software development is Eclipse/CDT. Unfortunately, there is no out-of-the-box support for AVR chips. However, I found a very detailed description of how to configure Eclipse: <em><a href="https://androidexperto.com/programming-avrs-with-eclipse/">Programming AVRs with Eclipse</a></em>. I have not tested it, though.</p>
+<p>One option for embedded software development is Eclipse/CDT. Unfortunately, there is no out-of-the-box support for AVR chips. However, I found a very detailed description of how to configure Eclipse: <em><a href="https://androidexperto.com/programming-avrs-with-eclipse/">Programming AVRs with Eclipse</a></em>. I have not tested it, though.</p>
 <h3 id="clion">CLion</h3>
-<p>CLion should also work "standalone" with AVR chips by setting up an AVR-GCC toolchain. And, as described in <a href="https://bloom.oscillate.io/docs/clion-debugging-setup#prerequisites">this tutorial</a>, one can configure how to invoke a GDB server. </p>
+<p>CLion should also work "standalone" with AVR chips by setting up an AVR-GCC toolchain. And, as described in <a href="https://bloom.oscillate.io/docs/clion-debugging-setup#prerequisites">this tutorial</a>, one can configure how to invoke a GDB server.</p>
 <h3 id="visual-studio-code">Visual Studio Code</h3>
-<p>Tony Mitchell describes in <a href="https://www.tonymitchell.ca/posts/use-vscode-with-avr-toolchain/">this tutorial</a> how to set up an AVR-GCC toolchain in VSC. Alternatively, the VSC extension <a href="https://marketplace.visualstudio.com/items?itemName=Alex079.vscode-avr-helper">AVR Helper</a> can help. Then, the only thing left to do is to create the right <code>launch.json</code> file manually, so that Cortex-Debug can be configured and invoked. I tried that with the AVR Helper and it worked flawlessly.</p>
+<p>Tony Mitchell describes in <a href="https://www.tonymitchell.ca/posts/use-vscode-with-avr-toolchain/">this tutorial</a> how to set up an AVR-GCC toolchain in VS Code. Alternatively, the VSC extension <a href="https://marketplace.visualstudio.com/items?itemName=Alex079.vscode-avr-helper">AVR Helper</a> can help. Then, the only thing left to do is to create the right <code>launch.json</code> file manually so that Cortex-Debug can be configured and invoked. I tried that with the AVR Helper, and it worked flawlessly.</p>
 <div class="footnote">
 <hr />
 <ol>
