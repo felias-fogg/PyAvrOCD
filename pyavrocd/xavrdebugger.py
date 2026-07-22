@@ -29,7 +29,7 @@ from pymcuprog.utils import read_target_voltage, read_tool_info
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
 from pyavrocd.xnvmmegaavrjtag import XNvmAccessProviderCmsisDapMegaAvrJtag
 from pyavrocd.xnvmupdi import XNvmAccessProviderCmsisDapUpdi
-from pyavrocd.errors import FatalError
+from pyavrocd.errors import FatalError, EndOfSession
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
 #pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -193,6 +193,8 @@ class XAvrDebugger(AvrDebugger):
                 raise FatalError("Could  not connect to target.")
             if self._iface == 'jtag' and dev_id & 0xFF != 0x3F:
                 raise FatalError("Not a Microchip JTAG target")
+        except EndOfSession:
+            raise
         except Exception as e:
             if warmstart:
                 self.logger.warning("Debug session not started: %s", str(e))
@@ -428,6 +430,12 @@ class XAvrDebugger(AvrDebugger):
                 self.logger.info("Physical interface activated. MCU id=0x%X", dev_code)
             else:
                 raise error
+        except KeyError as e:
+            if str(e) == "4":
+                self.logger.critical("Target not connected")
+                raise EndOfSession("Terminating...") from e
+            self.logger.error("KeyError: %s", str(e))
+            raise e
         except Exception as e:
             self.logger.error("%s", str(e))
             raise e

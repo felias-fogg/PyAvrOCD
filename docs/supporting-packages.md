@@ -1,6 +1,6 @@
 # Debug-enabled Arduino packages
 
-Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. There are two types of such packages. Either debugging has been integrated by the package maintainer, or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog. Note that by adding new URLs, you add the option to install new enhanced versions, but you can always revert back to the original versions of a package.
+Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. There are two types of such packages. Either debugging has been integrated by the package maintainer, or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog.
 
 {!details-boards-manager-url.md!}
 
@@ -44,7 +44,7 @@ https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 
 ### [MightyCore](https://github.com/MCUdude/MightyCore)
 
-An Arduino package for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8353 does not have a debugging interface. Debugging is supported since version 3.1.0. You can make it installable by adding the following *boards manager URL*:
+An Arduino package for ATmega8535, ATmega16, ATmega32, ATmega164, ATmega324, ATmega644, and ATmega1284, whereby ATmega8535 does not have a debugging interface. Debugging is supported since version 3.1.0. You can make it installable by adding the following *boards manager URL*:
 
 ```
 https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json

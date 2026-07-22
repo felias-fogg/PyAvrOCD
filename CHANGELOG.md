@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.5.6
+
+- **Added**:
+      - `monitor exit`: Disconnects from the debug tool, but leaves the connection open and exits after 1 second, so that GDB can close the connection; even if not, the GDB server will eventually exit anyway.
+
+- **Fixed**:
+      - Caught the strange error `KyError(4)` from mEDBG when no target is connected. Now ending the session gracefully so that the debug probe is not blocked by propagating the EndOfSession exception.
+
 ### 1.5.5 (07-July-2026)
 
 - **Changed**:

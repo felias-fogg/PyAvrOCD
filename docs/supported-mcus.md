@@ -2,7 +2,7 @@
 
 This is the list of the AVR MCUs that should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.
 
-The list is structured by the Arduino packages that support the chips, where some of the MCUs are supported by more than one package. If you want know whether a chip is supported, simply use the search function.
+The list is structured by the Arduino packages that support the chips, where some of the MCUs are supported by more than one package. If you want to know whether a particular chip is supported, simply use the search function.
 
 ## Classic ATtinys
 
@@ -305,8 +305,6 @@ There exists only 2 Arduino boards, both using the
 - **AVR64DB28**, AVR64DB32, AVR64DB48, AVR64DB64
 - **AVR128DB28**, <u>AVR128DB32</u>, **AVR128DB48**, <u>AVR128DB64</u>
 
-
-
 ### AVR DD series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
 
 - AVR16DD14, AVR16DD20, **AVR16DD28**, AVR16DD32
@@ -331,7 +329,7 @@ There exists only 2 Arduino boards, both using the
 ### AVR EB series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
 
 - AVR16EB14, AVR16EB20, **AVR16EB28**, **AVR16EB32**
-- AVR32EB14, AVR32EB20, AVR32EB28, AVR32EB32
+- AVR32EB14, AVR32EB20, **AVR32EB28**, AVR32EB32
 
 ### AVR LA series
 

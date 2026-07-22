@@ -1,5 +1,11 @@
 # Release Notes
 
+## Release v1.5.6
+
+- Added `monitor exit` command so that the GDB server can be shut down from GDB
+- Added microUPDI as a programmer (for modern ATtinys and ATmegas)
+- Fixed recognition of unconnected target for microUPDI and added graceful shutdown
+
 ## Release v1.5.5
 
 - The included simavr version has been upgraded from 1.7 to 1.8.

@@ -4,18 +4,19 @@ PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's de
 
 ## Hardware debug probes
 
-Except for dw-link, the list below is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD:
+Except for dw-link and microUPDI, the list below is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD:
 
 
 * **[MPLAB PICkit 4 In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164140)** ([when in 'AVR mode'](#switching-to-avr-mode))
 * **[MPLAB Snap In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164100)** ([when in 'AVR mode'](#switching-to-avr-mode))
 * [**Atmel-ICE**](https://www.microchip.com/en-us/development-tool/atatmel-ice)
 * **[Atmel Power Debugger](https://www.microchip.com/en-us/development-tool/atpowerdebugger)**
-* **[JTAGICE3](https://www.microchip.com/en-us/development-tool/atjtagice3) (firmware version 3.0 or newer)**
-* **[EDBG](http://content.alexandria.atmel.com/webhelp/GUID-43D69EB5-28C5-4F23-97B7-43CD3961DC33-en-US-3/index.html?GUID-180AB3C3-775A-482F-961D-D9862473CD85) - on-board debuggers on Xplained Pro/Ultra boards**
-* **[mEDBG](https://onlinedocs.microchip.com/oxy/GUID-FC2A0384-AC9D-45B4-951E-5C0DEFE8B2E9-en-US-5/GUID-4063E88C-69CE-4393-ABBF-46E406D92BD3.html) - on-board debuggers on Xplained Mini/Nano boards**
-* [**nEDBG**](https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html) - **on-board debuggers on Curiosity Nano boards** (can also be used stand-alone to debug other UPDI targets)
-* **[dw-link](https://felias-fogg.github.io/dw-link)** - **DIY debugger running on an Arduino UNO R3** (only debugWIRE)
+* [**JTAGICE3**](https://www.microchip.com/en-us/development-tool/atjtagice3) (firmware version 3.0 or newer)
+* [**EDBG**](http://content.alexandria.atmel.com/webhelp/GUID-43D69EB5-28C5-4F23-97B7-43CD3961DC33-en-US-3/index.html?GUID-180AB3C3-775A-482F-961D-D9862473CD85) - on-board debuggers on Xplained Pro/Ultra boards
+* [**mEDBG**](https://onlinedocs.microchip.com/oxy/GUID-FC2A0384-AC9D-45B4-951E-5C0DEFE8B2E9-en-US-5/GUID-4063E88C-69CE-4393-ABBF-46E406D92BD3.html) - on-board debuggers on Xplained Mini/Nano boards
+* [**nEDBG**](https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html) - on-board debuggers on Curiosity Nano boards (can also be used stand-alone to debug other UPDI targets)
+* [**microUPDI**](https://github.com/felias-fogg/microUPDI) - a DIY debugger for UPDI targets based on mEDBG. Note that it will not work on the Dx-/Ex-/Sx-series chips. And in order to debug on 0-series ATmegas, you need the most recent firmware 1.19.57, which you get from the [microUPDIcore](https://github.com/MCUdude/microUPDIcore) repo.
+* **[dw-link](https://felias-fogg.github.io/dw-link)** - DIY debugger running on an Arduino UNO R3 (only debugWIRE)
 
 If you do not own one of the above debug probes, but you own a [PICkit5](https://www.microchip.com/en-us/development-tool/PG164150) or [PICkit Basic](https://www.microchip.com/en-us/development-tool/PG164110), you can consider [downgrading](https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/) it to a PICkit4 or SNAP, respectively.
 

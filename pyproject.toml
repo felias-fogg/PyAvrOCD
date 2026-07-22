@@ -1,6 +1,6 @@
 [project]
 name = "pyavrocd"
-version = "1.5.5"
+version = "1.5.6"
 description = "A cross-platform GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
@@ -104,7 +104,7 @@ function-rgx="[a-z_][a-z0-9_]{2,50}$"
 max-args=15
 max-locals=30
 max-returns=15
-max-branches=20
+max-branches=25
 max-statements=100
 max-attributes=25
 min-public-methods=1

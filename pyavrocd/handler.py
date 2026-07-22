@@ -453,6 +453,13 @@ class GdbHandler():
             elif 'disconnect' == response[0]:
                 self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
                 self.mon.set_debug_mode_active(False)
+            elif 'exit' == response[0]:
+                if self.mon.is_debugger_active():
+                    self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
+                    self.mon.set_debug_mode_active(False)
+                self.send_reply_packet(response[1])
+                time.sleep(1)
+                raise EndOfSession()
         except AvrIspProtocolError:
             self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
             if self.critical is None:

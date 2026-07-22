@@ -29,6 +29,7 @@ monopts: dict[str, tuple[ str | None, str | None, list [ str ] ] ] \
             'debugwire'       : ('cli', None, ['enable', 'disable']),
             'disconnect'      : (None, None, []),
             'erasebeforeload' : ('cli', None, ['enable', 'disable']),
+            'exit'            : ('None', 'None', []),
             'help'            : (None, None, []),
             'info'            : (None, None, []),
             'ioregister'      : (None, None, ['*']),
@@ -87,6 +88,7 @@ class MonitorCommand():
             'debugwire'       : self._mon_debugwire,
             'disconnect'      : self._mon_disconnect,
             'erasebeforeload' : self._mon_erase_before_load,
+            'exit'            : self._mon_exit,
             'help'            : self._mon_help,
             'info'            : self._mon_info,
             'ioregister'      : self._mon_ioregister,
@@ -402,6 +404,9 @@ class MonitorCommand():
             return("", "Flash memory will not be erased before loading executable")
         return self._mon_unknown_arg(0)
 
+    def _mon_exit(self, _ : int | list[str]) -> tuple[ str, str ]:
+        return("exit", "Exiting from GDB server")
+
     def _mon_flash_verify(self, optix : int | list[str]) -> tuple[ str, str ]:
         if optix == 1 or (optix == 0 and self._verify is True):
             self._verify = True
@@ -417,6 +422,7 @@ version                             - print version
 info                                - print info about target and debugger
 reset                               - reset MCU
 disconnect                          - disconnect from debug tool
+exit                                - disconnect from tool and exit
 atexit [stay|leave]                 - stay in/leave debug mode on exit
 breakpoints [all|software|hardware] - allow breakpoints of a certain kind
 caching [enable|disable]            - use loaded executable as cache (default)
