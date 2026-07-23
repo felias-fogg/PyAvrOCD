@@ -1,7 +1,8 @@
 #!/bin/bash
 #This is a script for packing the avrocd-link tools: avr-gdb + pyavrocd + pyavrocd-util.
 #The archives will be uploaded as assests in each release and can be downloaded from there
-#as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/pyavrocd-<machine-type>.tar.gz
+#as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/pyavrocd-<machine-type>.tar.gz.
+#Additionally, the pyavrocd binaries will be uploaded stand-alone
 #
 #usage: call the script from the root folder; version will be deduced from pyavrocd -V
 
@@ -54,7 +55,7 @@ for dir in binaries/*; do
                 if [[ $type == "aarch64-linux-gnu" ]]; then
                     SYSTEM="linux_aarch64"
                 elif [[ $type == "arm-linux-gnueabihf" ]]; then
-                    SYSTEM="linux_armv6l"
+                    SYSTEM="linux_armv7l"
                 elif [[ $type == "arm64-apple-darwin" ]]; then
                     SYSTEM="darwin_arm64"
                 elif [[ $type == "i686-linux-gnu" ]]; then
@@ -85,6 +86,11 @@ for dir in binaries/*; do
 		cp -r $dir/* tools/
 		tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
+                if [ $type != "i686-linux" ]; then
+                    pushd $dir
+                    tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ../assets/${type}.tar.gz pyavrocd*
+                    popd
+                fi
 	    fi
 	fi
     fi
