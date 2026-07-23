@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/fit-for-maker-workshopl/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/how-to-produce-a-new-release/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Fit for maker workshopl - PyAvrOCD</title>
+    <title>How to produce a new release - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Fit for maker workshopl";
-        var mkdocs_page_input_path = "fit-for-maker-workshopl.md";
-        var mkdocs_page_url = "/fit-for-maker-workshopl/";
+        var mkdocs_page_name = "How to produce a new release";
+        var mkdocs_page_input_path = "how-to-produce-a-new-release.md";
+        var mkdocs_page_url = "/how-to-produce-a-new-release/";
       </script>
     
     <!--[if lt IE 9]>
@@ -131,9 +131,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Fit for maker workshopl</li>
+      <li class="breadcrumb-item active">How to produce a new release</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/fit-for-maker-workshopl.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/how-to-produce-a-new-release.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -141,13 +141,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p>Fit for Arduino Maker Workshop</p>
-<ol>
-<li>Programmer: program.tool.default=avrdude</li>
-<li>pragma + launch hooks (without atexit / debugwire)</li>
-<li>pragma + launch scripts (check serverargs)</li>
-<li>new number in platform, new release, new package file</li>
-</ol>
+                <h1 id="how-to-produce-a-new-release">How to produce a new release</h1>
+<ul>
+<li>
+<p>Commit and push any changes.</p>
+</li>
+<li>
+<p>Go into the root folder and call</p>
+<p><code>./extras/prepare_release.sh &lt;release-id&gt;</code></p>
+</li>
+<li>
+<p>This will check whether we are really ready to make a new release by checking the release-id and checking whether there are uncommited/unpushed changes.</p>
+</li>
+<li>
+<p>Then it will connect to Trixie (a Raspi 3) and produce the arm-linux-gnueabihf version of PyAvrOCD, which will be copied to the corresponding binary folder.</p>
+</li>
+<li>
+<p>After it, these changes are uploaded to GitHub. </p>
+</li>
+<li>
+<p>Then you need to create a release on the Web UI.</p>
+</li>
+</ul>
               
             </div>
           </div><footer>

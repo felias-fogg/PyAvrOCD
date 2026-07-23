@@ -1,0 +1,15 @@
+# Build on Raspi
+```
+git clone https://github.com/felias-fogg/PyAvrOCD.git
+cd PyAvrOCD
+python -m venv env
+source ./env/bin/activate
+env/bin/python -m pip install --upgrade pip
+env/bin/pip install .
+env/bin/pyinstaller -y pyavrocd.spec
+VERSION=${./dist/pyavrocd/pyavrocd -V}
+rm -rf raspi-dist
+mv dist raspi-dist
+git add raspi-dist
+git commit -m "raspi dist ${VERSION}"
+git push 

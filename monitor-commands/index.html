@@ -182,6 +182,10 @@
 <td>This monitor option controls whether the flash is erased before an executable is loaded, which is the default for JTAG targets. This option is ignored on debugWIRE targets since those do not support a chip erase command in debug mode.</td>
 </tr>
 <tr>
+<td><code>monitor</code> <code>exit</code></td>
+<td>First disconnect from the debug probe, and after one second, terminate. This will give the GDB client enough time to shutdown the connection first. <strong>(+)</strong></td>
+</tr>
+<tr>
 <td><code>monitor</code> <code>help</code></td>
 <td>Display help text.</td>
 </tr>

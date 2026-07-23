@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/install_eclipse/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/build-on-raspi/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>How to set up Eclipse/CDT - PyAvrOCD</title>
+    <title>Build on Raspi - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "How to set up Eclipse/CDT";
-        var mkdocs_page_input_path = "install_eclipse.md";
-        var mkdocs_page_url = "/install_eclipse/";
+        var mkdocs_page_name = "Build on Raspi";
+        var mkdocs_page_input_path = "build-on-raspi.md";
+        var mkdocs_page_url = "/build-on-raspi/";
       </script>
     
     <!--[if lt IE 9]>
@@ -131,9 +131,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">How to set up Eclipse/CDT</li>
+      <li class="breadcrumb-item active">Build on Raspi</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/install_eclipse.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/build-on-raspi.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -141,19 +141,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="how-to-set-up-eclipsecdt">How to set up Eclipse/CDT</h1>
-<ol>
-<li>Set up the AVR-GCC toolchain and avrdude</li>
-<li>
-<p>Install PyAvrOCD binaries in ~/.local/bin/</p>
-</li>
-<li>
-<p>Download <a href="https://www.eclipse.org/downloads/packages/release/2026-06/r/eclipse-ide-embedded-cc-developers">Eclipse IDE for Embedded C/C++ Developers</a> and install</p>
-</li>
-<li>
-<p>File &gt; New &gt; C Project</p>
-</li>
-</ol>
+                <h1 id="build-on-raspi">Build on Raspi</h1>
+<p>```
+git clone https://github.com/felias-fogg/PyAvrOCD.git
+cd PyAvrOCD
+python -m venv env
+source ./env/bin/activate
+env/bin/python -m pip install --upgrade pip
+env/bin/pip install .
+env/bin/pyinstaller -y pyavrocd.spec
+VERSION=$(./dist/pyavrocd/pyavrocd -V)
+VERSTRING=v${VERSION#*version }
+rm -rf raspi-dist
+mv dist raspi-dist
+echo ${VERSTRING} &gt; raspi-dist/VERSION</p>
               
             </div>
           </div><footer>
