@@ -51,6 +51,19 @@ jobs:
           fi
           echo "Release and system version are identical, now we continue"
 
+      - name: Test release name against preloaded arm-linux-gnueabihf version
+        if: ${{ github.event.release.name != '' }}
+        run: |
+          ALG_VERSION=$(cat extras/binaries/arm-linux-gnueabihf/VERSION)
+          REL_NAME=${{ github.event.release.name }}
+          if [ "x$REL_NAME" != "x$ALG_VERSION" ]; then
+             echo "Release name does not match preloaded binary in arm-linux-gnueabihf folder"
+             echo "Release name: ${REL_NAME}"
+             echo "Preloaded version: ${ALG_VERSION}"
+             exit 1
+          fi
+          echo "Release name and preloaded binary have identical version numbers; we continue."
+
       - name: Run unit-tests
         if: ${{ github.event.release.tag_name != '' }}
         run: |
