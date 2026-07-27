@@ -5,6 +5,8 @@
 - Added `monitor exit` command so that the GDB server can be shut down from GDB
 - Added microUPDI as a programmer (for modern ATtinys and ATmegas)
 - Fixed recognition of unconnected target for microUPDI and added graceful shutdown
+- An armv7l (Linux 32-bit ARM) binary is now offered as well compatible with Raspberry Pi 3
+- Additionally, PyAvrOCD is now packaged with AVR-GDB 17.2.1, which solves the incompatibility problem with dw-link.
 
 ## Release v1.5.5
 
