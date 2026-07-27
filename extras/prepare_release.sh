@@ -84,6 +84,9 @@ if [[ $? != 0 ]]; then
     exit 1
 fi
 
+echo "Delete duplicate gensvd.py ..."
+rm -f extras/binaries/arm-linux-gnueabihf/pyavrocd-util/svd/gensvd.py
+
 echo "Add VERSION file ..."
 echo -n "${VERSTR}" > extras/binaries/arm-linux-gnueabihf/VERSION
 
