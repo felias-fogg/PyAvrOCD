@@ -142,8 +142,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="build-on-raspi">Build on Raspi</h1>
-<p>```
-git clone https://github.com/felias-fogg/PyAvrOCD.git
+<pre><code>git clone https://github.com/felias-fogg/PyAvrOCD.git
 cd PyAvrOCD
 python -m venv env
 source ./env/bin/activate
@@ -154,7 +153,9 @@ VERSION=$(./dist/pyavrocd/pyavrocd -V)
 VERSTRING=v${VERSION#*version }
 rm -rf raspi-dist
 mv dist raspi-dist
-echo ${VERSTRING} &gt; raspi-dist/VERSION</p>
+echo ${VERSTRING} &gt; raspi-dist/VERSION
+
+</code></pre>
               
             </div>
           </div><footer>

@@ -175,7 +175,7 @@
 </tr>
 <tr>
 <td><code>--attach</code><br/><code>-a</code></td>
-<td>Connect to the target without a <code>RESET</code>. This works only if the debugging mode has been activated in a previous session and not terminated when leaving the debugger. This means you need to have terminated the previous session with <code>monitor atexit stay</code> (default with debugWIRE).</td>
+<td>Connect to the target without a <code>RESET</code>. This works only if the debugging mode has been activated in a previous session and not terminated when leaving the debugger. This means you need to have terminated the previous session with <code>monitor atexit stay</code> (default with debugWIRE). <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>-c</code></td>
@@ -183,7 +183,7 @@
 </tr>
 <tr>
 <td><code>--comm-speed</code><br><code>-C</code></td>
-<td>Communication speed for (U)PDI in kbps (default 750). Note that values that are too low may lead to erroneous behavior of the debugger. Safe values are apparently strictly higher than 400 kbps if the CPU clock is 16 MHz or higher. Use with care.</td>
+<td>Communication speed for (U)PDI in kbps (default 750). Note that values that are too low may lead to erroneous behavior of the debugger. Safe values are apparently strictly higher than 400 kbps if the CPU clock is 16 MHz or higher. Use with care. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>--device</code> <br><code>-d</code></td>
@@ -195,7 +195,7 @@
 </tr>
 <tr>
 <td><code>--debug-clock</code><br><code>-D</code></td>
-<td>JTAG clock frequency for debugging in kHz. This value should be less than a quarter of the MCU clock frequency. The default is min(2000, <code>F_CPU</code>/5000) in kHz.</td>
+<td>JTAG clock frequency for debugging in kHz. This value should be less than a quarter of the MCU clock frequency. The default is min(2000, <code>F_CPU</code>/5000) in kHz. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>-f</code></td>
@@ -219,7 +219,7 @@
 </tr>
 <tr>
 <td><code>--prog-clock</code><br><code>-P</code></td>
-<td>JTAG programming clock frequency in kHz. This is limited only by the target MCU silicon, not by the actual MCU clock frequency used. The default is (a conservative) 1000 kHz.</td>
+<td>JTAG programming clock frequency in kHz. This is limited only by the target MCU silicon, not by the actual MCU clock frequency used. The default is (a conservative) 1000 kHz. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>--start</code> <br><code>-s</code></td>
@@ -231,7 +231,7 @@
 </tr>
 <tr>
 <td><code>--usbsn</code> <br><code>-u</code></td>
-<td>USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer.</td>
+<td>USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>--verbose</code> <br><code>-v</code></td>
@@ -247,7 +247,7 @@
 </tr>
 <tr>
 <td><code>--reboot-debugger</code></td>
-<td>Will reboot the debugger before starting the debug session. This can take up to 10 seconds on a PICkit4.</td>
+<td>Will reboot the debugger before starting the debug session. This can take up to 10 seconds on a PICkit4. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>--dw-link-baud</code></td>
@@ -255,14 +255,15 @@
 </tr>
 <tr>
 <td><code>--memory-map-disable</code></td>
-<td>This option, which does not take a value, will disable the usage of the XML memory map. This option is only there for testing purposes.</td>
+<td>This option, which does not take a value, will disable the usage of the XML memory map. This option is only there for testing purposes. <strong>(+)</strong></td>
 </tr>
 <tr>
 <td><code>--skip-signature-verification</code></td>
-<td>Do not perform chip signature verification. This is another option for testing purposes.</td>
+<td>Do not perform chip signature verification. This is another option for testing purposes. <strong>(+)</strong></td>
 </tr>
 </tbody>
 </table>
+<p>The options marked with <strong>(+)</strong> are ignored by dw-link.</p>
 <h2 id="additional-command-line-options-derived-from-monitor-commands">Additional command-line options derived from monitor commands</h2>
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code>.</p>
 <h2 id="providing-command-line-options-in-configuration-files">Providing command-line options in configuration files</h2>
