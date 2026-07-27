@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: pyavrocd
-Version: 1.5.6a1
+Version: 1.5.6
 Summary: A cross-platform GDB server for AVR MCUs
 License-File: LICENSE
 Keywords: AVR,EDBG,gdb-server,debugging
