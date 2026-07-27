@@ -70,7 +70,7 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "Test run ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; ./dist/pyavrocd/pyavocd -V"
+ssh ${SERVER} "cd GitHub/PyAvrOCD; ./dist/pyavrocd/pyavrocd -V"
 if [[ $? != 0 ]]; then
     exit 1
 fi
