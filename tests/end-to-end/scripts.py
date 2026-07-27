@@ -103,7 +103,7 @@ all_scripts = {
     "",
     "",
     (("set logging file log/live.log", ""),) + prolog + \
-    (("stepi", ""),
+    (("monitor reset", ""),
      ("info reg pc", "0x0"),
      ("monitor LiveTests", "live tests successfully finished", "Not implemented")) + epilog),
 
@@ -139,7 +139,9 @@ all_scripts = {
     "--attach",
     (("file sketches/cblink/cblink.elf", ""),
      ("set logging file log/attach.log", "")) + prolog[0:6] + \
-    (("bt", "in main"),
+    (("monitor info", ""),
+     ("$SUCCESS_IF", "dw-link"),
+     ("bt", "in main"),
      ("break episode", "Breakpoint 1"),
      ("continue", ""),
      ("p cnt", ""),
@@ -347,6 +349,8 @@ all_scripts = {
      ("delete 1", ""),
      ("break range.ino:loop", "Breakpoint 2"),
      ("cont", "cnt = 0"),
+     ("monitor info", ""),
+     ("$SUCCESS_IF", "dw-link"),
      ("next", "while"),
      ("next", "LedOff"),
      ("next", "cnt = 0"),
@@ -510,7 +514,8 @@ all_scripts = {
     "",
     "",
     (("set logging file log/monitor.log", ""),) + prolog + \
-    (("monitor help", "help                                - this help text"),
+    (("monitor help", "help                                - this help text",
+          "monitor help                 - help function"),
      ("monitor info", "Target:"),
      ("monitor version", "version"),
      ("monitor atexit leave", "MCU will leave debug mode on exit", "Leave debugWIRE at exit",

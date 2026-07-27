@@ -1,12 +1,15 @@
 # Changelog
 
-### 1.5.6
+### 1.5.6 (27-July-2026)
 
 - **Added**:
-      - `monitor exit`: Disconnects from the debug tool, but leaves the connection open and exits after 1 second, so that GDB can close the connection; even if not, the GDB server will eventually exit anyway.
+  - Moved to (patched version) of AVR-GDB 17.2.1, which fixes the incompatibility with non-memory-map clients such as dw-link
+  - Binaries for ARM32 have been added (using my Raspi 3)
+  -  `monitor exit`: Disconnects from the debug tool, but leaves the connection open and exits after 1 second, so that GDB can close the connection; even if not, the GDB server will eventually exit anyway.
 
 - **Fixed**:
-      - Caught the strange error `KyError(4)` from mEDBG when no target is connected. Now ending the session gracefully so that the debug probe is not blocked by propagating the EndOfSession exception.
+  - Caught the strange error `KeyError(4)` from mEDBG when no target is connected. Now ending the session gracefully with an EndOfSession exception so that the debug probe is not blocked.
+
 
 ### 1.5.5 (07-July-2026)
 

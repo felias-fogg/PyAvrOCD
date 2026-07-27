@@ -232,7 +232,8 @@ def run_script(logger, test_name, script):
         last_response = child.before.decode()
         if child.before.decode().find(interact[1]) >= 0 or \
             len(interact) > 2 and child.before.decode().find(interact[2])  >= 0 or \
-            len(interact) > 3 and child.before.decode().find(interact[3])  >= 0:
+            len(interact) > 3 and child.before.decode().find(interact[3])  >= 0 or \
+            len(interact) > 4 and child.before.decode().find(interact[4])  >= 0:
             ix += 1
         else:
             logger.error("Failed %s in line %s with unexpected response:", test_name, ix-1)

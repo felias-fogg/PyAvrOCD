@@ -1,5 +1,5 @@
 #!/bin/bash
-DEFAULT_SERVER=trixie
+DEFAULT_SERVER=fattrixie
 if [[ "$(pwd)" != "/Users/nebel/GitHub/PyAvrOCD" ]]; then
     echo "Invoke the script only in the root folder of the repo!"
     exit 1
@@ -15,11 +15,11 @@ else
     SERVER=$DEFAULT_SERVER
 fi
 
-if [[ -n $(git status -s -uno 2>>/dev/null) ]]; then
+if [[ -n $(git status -s -uno 2>/dev/null) ]]; then
     echo "Please commit changes first"
     exit 1
 fi
-if [[ -n $(git log origin/main..HEAD 2>>/dev/null) ]]; then
+if [[ -n $(git log origin/main..HEAD 2>/dev/null) ]]; then
     echo "There are unpushed commits"
     exit 1
 fi
@@ -70,7 +70,7 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "Test run ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; VER=$(./dist/pyavrocd/pyavocd -V); VS=v${VER#*version }; echo -n ${VS} > dist/pyavrocd/VERSION"
+ssh ${SERVER} "cd GitHub/PyAvrOCD; ./dist/pyavrocd/pyavocd -V"
 if [[ $? != 0 ]]; then
     exit 1
 fi
@@ -78,11 +78,15 @@ fi
 echo "Remove old version ..."
 rm -rf extras/binaries/arm-linux-gnueabihf/pyavrocd*
 
-echo "Download new version from servbver ..."
+echo "Download new version from server ..."
 scp -r ${SERVER}:./GitHub/PyAvrOCD/dist/pyavrocd/* extras/binaries/arm-linux-gnueabihf/
 if [[ $? != 0 ]]; then
     exit 1
 fi
+
+echo "Add VERSION file ..."
+echo -n "${VERSTR}" > extras/binaries/arm-linux-gnueabihf/VERSION
+
 echo "Commit and upload to GitHub remote repo ..."
 git add extras/binaries/arm-linux-gnueabihf/
 git commit -m "New arm-linux-gnueabihf binaries ${VERSTR}"

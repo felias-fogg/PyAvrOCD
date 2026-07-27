@@ -2,7 +2,7 @@
 // on debugWIRE targets (with one HWBP only). It will test whether
 // 1) _delay_ms can be overstepped (without single instruction stepping)
 // 2) a loop with a function call can be executed fast by over-stepping the call (after
-//    having it executed once)
+//    having it executed once) -- does not apply to dw-link!
 // 3) a loop with two different exit points (regular + return) uses single instruction stepping
 // 4) a deadloop without any exit points runs fast (without single instruction stepping)
 // For UPDI and JTAG targets, HWBP-only mode is used and 1 or 3 HWBPS are allocated
