@@ -64,12 +64,12 @@ jobs:
           fi
           echo "Release name and preloaded binary have identical version numbers; we continue."
 
-      - name: Run unit-tests
+      - name: Run type checks linting and unit-tests
         if: ${{ github.event.release.tag_name != '' }}
         run: |
           mypy .
           pylint pyavrocd
-          pytest
+          pytest tests
 
   build-binaries:
     needs: check
