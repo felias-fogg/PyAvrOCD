@@ -215,7 +215,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-mcus">Supported MCUs</h1>
-<p>This is the list of AVR MCUs that should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.</p>
+<p>This is the list of the AVR MCUs that should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.</p>
 <p>MCUs marked with an asterisk are supported by the <a href="../supported-debuggers/#software-simulator">simulator simavr</a>.</p>
 <p>The list is structured by the Arduino packages that support the chips, where some of the MCUs are supported by more than one package. If you want to know whether a particular chip is supported, simply use the search function.</p>
 <h2 id="classic-attinys">Classic ATtinys</h2>
@@ -227,11 +227,11 @@
 <h3 id="attinys-supported-by-tinycore-and-attinycore-debug-enabled">ATtinys supported by <a href="../supporting-packages/#tinycore">TinyCore</a> and <a href="../supporting-packages/#attinycore">ATTinyCore (Debug enabled)</a></h3>
 <ul>
 <li><strong>ATtiny43U</strong></li>
-<li><strong>ATtiny2313</strong><em>, </em><em>ATtiny2313A</em>**</li>
-<li><strong>ATtiny4313</strong>*</li>
-<li><strong>ATtiny24</strong>*, ATtiny24A,</li>
-<li>ATtiny44<em>, </em><em>ATtiny44A</em>*</li>
-<li><strong>ATtiny84*, ATtiny84A</strong></li>
+<li><strong>ATtiny2313*</strong>, <strong>ATtiny2313A*</strong></li>
+<li><strong>ATtiny4313*</strong></li>
+<li><strong>ATtiny24*</strong>, ATtiny24A,</li>
+<li>ATtiny44*, <strong>ATtiny44A</strong></li>
+<li><strong>ATtiny84*</strong>, <strong>ATtiny84A</strong></li>
 <li><strong>ATtiny441</strong></li>
 <li><strong>ATtiny841</strong></li>
 <li><strong>ATtiny25</strong>*</li>
@@ -359,11 +359,11 @@
 <p><s>ATmega8</s>*</p>
 </li>
 <li>
-<p><strong><s>ATmega48</s></strong><em>, </em><em>ATmega48A,</em><em> </em><em>ATmega48P</em><strong>, </strong>ATmega48PA<strong><em>, </em>*ATmega48PB</strong>,</p>
+<p><strong><s>ATmega48</s>*</strong>, <strong>ATmega48A,</strong> <strong>ATmega48P*</strong>, <strong>ATmega48PA*</strong>, <strong>ATmega48PB</strong>,</p>
 </li>
-<li><strong><s>ATmega88</s></strong><em>, </em><em>ATmega88A,</em><em> </em><em>ATmega88P</em><strong>, </strong>ATmega88PA<strong><em>, </em>*Atmega88PB</strong>,</li>
-<li><strong>ATmega168</strong><em>, </em><em>ATmega168A</em><em>, </em><em>ATmega168P</em><strong>, </strong>ATmega168PA<strong><em>, </em>*ATmega168PB</strong>,</li>
-<li><strong>ATmega328</strong><em>, </em><em>ATmega328P</em><strong>, </strong>ATmega328PB***</li>
+<li><strong><s>ATmega88</s>*</strong>, <strong>ATmega88A,</strong> <strong>ATmega88P*</strong>, <strong>ATmega88PA*</strong>, <strong>Atmega88PB</strong>,</li>
+<li><strong>ATmega168*</strong>, <strong>ATmega168A</strong>, <strong>ATmega168P*</strong>, <strong>ATmega168PA*</strong>, <strong>ATmega168PB</strong>,</li>
+<li><strong>ATmega328*</strong>, <strong>ATmega328P*</strong>, <strong>ATmega328PB*</strong></li>
 </ul>
 <p>The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without an A- or P-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.</p>
 <h3 id="atmegas-supported-by-xminicore">ATmegas supported by <a href="../supporting-packages/#xminicore">XMiniCore</a></h3>
@@ -375,13 +375,13 @@
 </ul>
 <h3 id="atmegas-supported-by-mightycore">ATmegas supported by <a href="../supporting-packages/#mightycore">MightyCore</a></h3>
 <ul>
-<li><strong>ATmega16</strong><em>, </em><em>ATmega16A</em>*</li>
-<li>ATmega32<em>, </em><em>ATmega32A</em>*</li>
-<li>ATmega164A, ATmega164P<em>, </em><em>ATmega164PA</em>**</li>
-<li>ATmega324A<em>, </em><em>ATmega324P</em>**, ATmega324PA*</li>
+<li><strong>ATmega16*</strong>, <strong>ATmega16A</strong></li>
+<li>ATmega32*, <strong>ATmega32A</strong></li>
+<li>ATmega164A, ATmega164P*, <strong>ATmega164PA</strong>*</li>
+<li>ATmega324A*, <strong>ATmega324P*</strong>, ATmega324PA*</li>
 <li><strong>ATmega324PB</strong></li>
-<li><strong>ATmega644</strong><em>, </em><em>ATmega644A</em><em>, ATmega644P</em>, ATmega644PA</li>
-<li>ATmega1284<em>, </em><em>ATmega1284P</em>**</li>
+<li><strong>ATmega644*</strong>, <strong>ATmega644A</strong>, ATmega644P*, ATmega644PA</li>
+<li>ATmega1284*, <strong>ATmega1284P*</strong></li>
 <li><s>ATmega8535</s></li>
 </ul>
 <p>The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the <a href="https://github.com/felias-fogg/avr-gdb/releases/latest">Releases page of my avr-gdb repo</a>.</p>
@@ -389,9 +389,9 @@
 <h3 id="atmegas-supported-by-megacore">ATmegas supported by <a href="../supporting-packages/#megacore">MegaCore</a></h3>
 <ul>
 <li>ATmega64, <strong>ATmega64A</strong></li>
-<li>ATmega128<em>, </em><em>ATmega128A</em>*</li>
-<li><strong>ATmega640</strong>, <strong>ATmega1280</strong><em>, </em><em>ATmega2560</em>**</li>
-<li><strong>ATmega1281</strong><em>, </em><em>ATmega2561</em>**</li>
+<li>ATmega128*, <strong>ATmega128A</strong></li>
+<li><strong>ATmega640</strong>, <strong>ATmega1280*</strong>, <strong>ATmega2560*</strong></li>
+<li><strong>ATmega1281*</strong>, <strong>ATmega2561*</strong></li>
 <li>ATmega165, ATmega165P, <strong>ATmega165PA</strong></li>
 <li>ATmega325, <strong>ATmega325A</strong>,  ATmega325P, ATmega325PA</li>
 <li>ATmega645, <strong>ATmega645A</strong>, ATmega645P</li>
