@@ -189,7 +189,7 @@
 <pre><code class="language-text">--start
 /path/to/simavr-executable
 </code></pre>
-<p>Note that the list of chips supported by <code>simavr</code> is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, the simulator solution may sometimes be the more preferable option.</p>
+<p>Note that the <a href="../supported-mcus/">list of chips supported by <code>simavr</code></a> is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, the simulator solution may sometimes be the more preferable option.</p>
 <p>If you are adventurous, try out a few other things with <code>simavr</code>. It is possible to pass arguments to <code>simavr</code> using the option <code>--xargs</code>. For instance, you can trace the changes of a particular memory location, e.g., PORTB on an ATmega328P, where the built-in LED is usually controlled.  Add the following two lines in the file <code>pyavrocd.options</code>:</p>
 <pre><code class="language-text">--xargs
 --add-trace LED=trace@0x0025/0xff
