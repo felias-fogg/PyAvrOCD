@@ -2,29 +2,31 @@
 
 This is the list of the AVR MCUs that should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.
 
+MCUs marked with an asterisk are supported by the [simulator simavr](supported-debuggers.md#software-simulator).
+
 The list is structured by the Arduino packages that support the chips, where some of the MCUs are supported by more than one package. If you want to know whether a particular chip is supported, simply use the search function.
 
 ## Classic ATtinys
 
 ### ATtinys supported by [MicroCore](supporting-packages.md#microcore)
 
-- ATtiny13, **ATtiny13A**
+- ATtiny13\*, **ATtiny13A**\*
 
 Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rather challenging.
 
 ### ATtinys supported by [TinyCore](supporting-packages.md#tinycore) and [ATTinyCore (Debug enabled)](supporting-packages.md#attinycore)
 
 * **ATtiny43U**
-* **ATtiny2313**, **ATtiny2313A**
-* **ATtiny4313**
-* **ATtiny24**, ATtiny24A,
-* ATtiny44, **ATtiny44A**
-* **ATtiny84, ATtiny84A**
+* **ATtiny2313\***, **ATtiny2313A\***
+* **ATtiny4313\***
+* **ATtiny24\***, ATtiny24A,
+* ATtiny44\*, **ATtiny44A**
+* **ATtiny84\***, **ATtiny84A**
 * **ATtiny441**
 * **ATtiny841**
-* **ATtiny25**
-* **ATtiny45**
-* **ATtiny85**
+* **ATtiny25***
+* **ATtiny45***
+* **ATtiny85***
 * ATtiny261, **ATtiny261A**,
 * ATtiny461, **ATtiny461A**,
 * ATtiny861, **ATtiny861A**
@@ -33,7 +35,7 @@ Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rat
 * **ATtiny828**
 * **ATtiny48**
 * **ATtiny88**
-* **ATtiny1634**
+* **ATtiny1634***
 
 ### Other ATtinys without a debug interface
 
@@ -120,12 +122,12 @@ Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rat
 
 ### ATmegas supported by [MiniCore](supporting-packages.md#minicore)
 
-- <s>ATmega8</s>
+- <s>ATmega8</s>*
 
-* **<s>ATmega48</s>,** **ATmega48A,** **ATmega48P**, **ATmega48PA,** **ATmega48PB**,
-* **<s>ATmega88</s>,** **ATmega88A,** **ATmega88P**, **ATmega88PA,** **Atmega88PB**,
-* **ATmega168,** **ATmega168A**, **ATmega168P**, **ATmega168PA**, **ATmega168PB**,
-* **ATmega328,** **ATmega328P**, **ATmega328PB**
+* **<s>ATmega48</s>\***, **ATmega48A,** **ATmega48P\***, **ATmega48PA\***, **ATmega48PB**,
+* **<s>ATmega88</s>\***, **ATmega88A,** **ATmega88P\***, **ATmega88PA\***, **Atmega88PB**,
+* **ATmega168\***, **ATmega168A**, **ATmega168P\***, **ATmega168PA\***, **ATmega168PB**,
+* **ATmega328\***, **ATmega328P\***, **ATmega328PB\***
 
 The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (without an A- or P-suffix) sitting on my desk suffer from the problem that they either cannot be switched to debugWIRE mode, or, if you are successful, they become unresponsive. I suspect that this applies to all chips labeled this way. Even chips recently purchased through an official distributor had these issues. For this reason, PyAvrOCD will identify these chips and refuse to handle them.
 
@@ -133,19 +135,19 @@ The ATmega8 does not possess a debug interface. The ATmega48 and ATmega88 (witho
 
 The following MCUs are already supported by MiniCore. However, XMiniCore goes some way to make it easier to deal with the Microchip Xplained Mini development boards so that debugging becomes plug-and-play.
 
-- **ATmega328P** (Xplained Mini board)
+- **ATmega328P*** (Xplained Mini board)
 - **ATmega168PB** (Xplained Mini board)
-- **ATmega328PB** (Xplained Mini board)
+- **ATmega328PB*** (Xplained Mini board)
 
 ### ATmegas supported by [MightyCore](supporting-packages.md#mightycore)
 
-* **ATmega16**, **ATmega16A**
-* ATmega32, **ATmega32A**
-* ATmega164A, ATmega164P, **ATmega164PA**
-* ATmega324A, **ATmega324P**, ATmega324PA
+* **ATmega16\***, **ATmega16A**
+* ATmega32\*, **ATmega32A**
+* ATmega164A, ATmega164P\*, **ATmega164PA**\*
+* ATmega324A\*, **ATmega324P\***, ATmega324PA\*
 * **ATmega324PB**
-* **ATmega644**, **ATmega644A**, ATmega644P, ATmega644PA
-* ATmega1284, **ATmega1284P**
+* **ATmega644\***, **ATmega644A**, ATmega644P\*, ATmega644PA
+* ATmega1284\*, **ATmega1284P\***
 * <s>ATmega8535</s>
 
 The ATmega16 MCUs (with and without an A-suffix) have a stuck-at-one-bit in the program counter, which may lead to problems when you use an unpatched version of AVR-GDB. In this case, backtraces are garbled, and line-stepping might not work as expected. Use the AVR-GDB version shipped with PyAvrOCD instead, which can also be downloaded from the [Releases page of my avr-gdb repo](https://github.com/felias-fogg/avr-gdb/releases/latest).
@@ -155,9 +157,9 @@ The ATmega8535 does not possess a debug interface.
 ### ATmegas supported by [MegaCore](supporting-packages.md#megacore)
 
 * ATmega64, **ATmega64A**
-* ATmega128, **ATmega128A**
-* **ATmega640**, **ATmega1280**, **ATmega2560**
-* **ATmega1281**, **ATmega2561**
+* ATmega128\*, **ATmega128A**
+* **ATmega640**, **ATmega1280\***, **ATmega2560\***
+* **ATmega1281\***, **ATmega2561\***
 * ATmega165, ATmega165P, **ATmega165PA**
 * ATmega325, **ATmega325A**,  ATmega325P, ATmega325PA
 * ATmega645, **ATmega645A**, ATmega645P
@@ -187,11 +189,11 @@ The ATmega8515 does not have a debug interface.
 
 Most of the MCUs covered by this package are already supported by other packages. However, one exception is the ATmega32U4 (e.g., on the Leonardo).
 
-- **ATmega168**
-- **Atmega328P**
-- **ATmega32U4**
-- **ATmega1280**
-- **ATmega2560**
+- **ATmega168***
+- **Atmega328P***
+- **ATmega32U4***
+- **ATmega1280***
+- **ATmega2560***
 
 ### Other ATmegas with debugWIRE interface
 
@@ -207,17 +209,17 @@ Most of the MCUs covered by this package are already supported by other packages
 
 * ATmega64C1
 
-* ATmega16M1
+* ATmega16M1*
 
 * <u>ATmega32M1</u>
 
-* <u>ATmega64M1</u>
+* <u>ATmega64M1</u>*
 
 
 
 * AT90USB82
 
-* **AT90USB162**
+* **AT90USB162***
 
 
 
@@ -264,11 +266,11 @@ Most of the MCUs covered by this package are already supported by other packages
 
 * ATmega64rfr2
 
-* ATmega128rfr2
+* ATmega128rfr2*
 
 * <u>ATmega256rfr2</u>
 
-* ATmega128rfa1
+* ATmega128rfa1*
 
 
 
