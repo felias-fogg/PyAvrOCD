@@ -6,32 +6,18 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
-
-      - name: setup
-        uses: actions/setup-python@v6
         with:
-          python-version: '3.14'
-          architecture: x86
+          repository: felias-fogg/avr-gdb
+          ref: linux32
 
-     - name: Install dependencies
+      - name: build
         run: |
-          python -m pip install --upgrade pip
-          pip install .  # Install dependencies
+          sudo ./avr-gdb-build.sh linux32 intel
+          sudo cp ./build/avr-linux32-intel/bin/avr-gdb .
+          tar cvz --exclude="*DS_Store" --exclude="*/._*" -f x86-linux.tar.gz avr-gdb
 
-      - name: Package PyAvrOCD with PyInstaller
-        run: |
-          pyinstaller -y pyavrocd.spec
-
-      - name: Run pyavrocd
-        run: |
-          dist/pyavrocd/pyavrocd -V
-          dist/pyavrocd/pyavrocd -d ? -t ?
-
-      - name: Upload artifact
+      - name: upload
         uses: actions/upload-artifact@v6
         with:
-          name: i686-linux-gnu
-          path: dist/pyavrocd/*
-          overwrite: true
-          include-hidden-files: true
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+          name: Linux32-bit
+          path: x86-linux.tar.gz

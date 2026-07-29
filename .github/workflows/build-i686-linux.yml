@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
 
       - name: Setup
         uses: actions/setup-python@v6
@@ -16,10 +18,10 @@ jobs:
           python-version: '3.14'
           architecture: x86
 
-     - name: Install dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .  # Install dependencies
+          pip install .
 
       - name: Package PyAvrOCD with PyInstaller
         run: |
@@ -38,3 +40,4 @@ jobs:
           overwrite: true
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
