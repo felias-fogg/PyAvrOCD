@@ -75,28 +75,39 @@ jobs:
     needs: check
     strategy:
       matrix:
-      # If you change something in the list of OSs, you also have to do it further down!
-       os: [ "ubuntu-24.04", "macos-15-intel", "windows-2022",  "windows-2025", "ubuntu-24.04-arm",  "macos-15" ]
+       os: [ arm64-apple-darwin, aarch64-linux-gnu,  x86_64-mingw32,  x86_64-apple-darwin,  x86_64-linux-gnu, i686-mingw32]
+       include:
+         - os: arm64-apple-darwin
+           runner: macos-15
+           arch: arm64
+         - os: aarch64-linux-gnu
+           runner: ubuntu-24.04
+           arch: arm64
+         - os: x86_64-mingw32
+           runner: windows-latest
+           arch: x64
+         - os: x86_64-apple-darwin
+           runner: macos-15-intel
+           arch: x64
+         - os: x86_64-linux-gnu
+           runner: ubuntu-24.04
+           arch: x64
+         - os: i686-mingw32
+           runner: windows-latest
+           arch: x86
     defaults:
       run:
         shell: bash
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Python-64-bit
-        if: matrix.os != 'windows-2022'
+      - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.14'
-
-      - name: Set up Python-32-bit
-        if: matrix.os == 'windows-2022'
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-          architecture: 'x86'
+          architecture: ${{ matrix.arch }}
 
       - name: Install dependencies
         run: |
@@ -112,64 +123,14 @@ jobs:
           dist/pyavrocd/pyavrocd -V
           dist/pyavrocd/pyavrocd -d ? -t ?
 
-      - name: Upload as artifact (macOS ARM = macos-15)
-        if: matrix.os == 'macos-15'
+      - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
-          name: arm64-apple-darwin
+          name: ${{ matrix.os }}
           path: dist/pyavrocd/*
           overwrite: true
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
-
-      - name: Upload as artifact (Linux Arm = ubuntu-24.04-arm)
-        if: matrix.os == 'ubuntu-24.04-arm'
-        uses: actions/upload-artifact@v6
-        with:
-          name: aarch64-linux-gnu
-          path: dist/pyavrocd/*
-          overwrite: true
-          include-hidden-files: true
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
-
-      - name: Upload artifact (Windows Intel (64-bit) = windows-2025)
-        if: matrix.os == 'windows-2025'
-        uses: actions/upload-artifact@v6
-        with:
-          name: x86_64-mingw32
-          path: dist/pyavrocd/*
-          overwrite: true
-          include-hidden-files: true
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
-
-      - name: Upload artifact (Windows Intel (32-bit) = windows-2022)
-        if: matrix.os == 'windows-2022'
-        uses: actions/upload-artifact@v6
-        with:
-          name: i686-mingw32
-          path: dist/pyavrocd/*
-          overwrite: true
-          include-hidden-files: true
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
-
-      - name: Upload artifact (macOS Intel = macos-15-intel)
-        if: matrix.os == 'macos-15-intel'
-        uses: actions/upload-artifact@v6
-        with:
-          name: x86_64-apple-darwin
-          path: dist/pyavrocd/*
-          overwrite: true
-          include-hidden-files: true
-          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
-
-      - name: Upload artifact (Linux Intel = ubuntu-24.04)
-        if: matrix.os == 'ubuntu-24.04'
-        uses: actions/upload-artifact@v6
-        with:
-          name: x86_64-linux-gnu
-          path: dist/pyavrocd/*
-          overwrite: true
-          include-hidden-files: true
 
   upload:
     needs: build-binaries
@@ -228,7 +189,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#    - run: exit 1
+    - name: check for tag
+      if: ${{ github.event.release.tag_name == '' }}
+      run: exit 1
 
     - uses: actions/checkout@v5
       with:
@@ -256,7 +219,7 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python distribution to PyPI
-    if: ${{ !contains(github.event.release.name,'a') && !contains(github.event.release.name,'b') }}
+    if: ${{ !contains(github.event.release.name,'a') && !contains(github.event.release.name,'b') && github.event.release.name != '' }}
     needs:
     - build-pypi-distribution
     runs-on: ubuntu-latest

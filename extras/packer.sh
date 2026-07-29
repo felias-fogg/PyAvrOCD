@@ -1,5 +1,5 @@
 #!/bin/bash
-#This is a script for packing the avrocd-link tools: avr-gdb + pyavrocd + pyavrocd-util.
+#This is a script for packing the avrocd-link tools: avr-gdb + pyavrocd + pyavrocd-util + simavr.
 #The archives will be uploaded as assests in each release and can be downloaded from there
 #as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/pyavrocd-<machine-type>.tar.gz.
 #Additionally, the pyavrocd binaries will be uploaded stand-alone
@@ -61,7 +61,7 @@ for dir in binaries/*; do
                 elif [[ $type == "i686-linux-gnu" ]]; then
                     SYSTEM="linux_i686"
                 elif [[ $type == "i686-mingw32" ]]; then
-                    SYSTEM="window_x86"
+                    SYSTEM="windows_x86"
                 elif [[ $type == "x86_64-apple-darwin" ]]; then
                     SYSTEM="darwin_x86_64"
                 elif [[ $type == "x86_64-linux-gnu" ]]; then
@@ -75,7 +75,6 @@ for dir in binaries/*; do
 		echo "Packing tools for: $type"
 		rm -rf tools
 		mkdir tools
-                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
                 if [ ! -f $dir/avr-gdb ] && [ ! -f $dir/avr-gdb.exe ]; then
                     pushd $dir
                     wget https://github.com/felias-fogg/avr-gdb/releases/latest/download/${type}.tar.gz
@@ -83,6 +82,7 @@ for dir in binaries/*; do
                     rm -f ${type}.tar.gz
                     popd
                 fi
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
 		cp -r $dir/* tools/
 		tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
