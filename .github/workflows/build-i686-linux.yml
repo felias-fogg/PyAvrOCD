@@ -1,10 +1,11 @@
-name: Build Linux32-Intel
+# Will create Linux 32-bit binaries on Intel hardware
+name: Build-Linux32-Intel
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  create:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
