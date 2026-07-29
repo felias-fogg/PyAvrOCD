@@ -1,8 +1,10 @@
 name: Build Linux32-Intel
-on: [workflow_dispatch]
+
+on:
+  workflow_dispatch:
 
 jobs:
-  build-linux32:
+  build:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
