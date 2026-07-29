@@ -81,7 +81,7 @@ jobs:
            runner: macos-15
            arch: arm64
          - os: aarch64-linux-gnu
-           runner: ubuntu-24.04
+           runner: ubuntu-24.04-arm
            arch: arm64
          - os: x86_64-mingw32
            runner: windows-latest
