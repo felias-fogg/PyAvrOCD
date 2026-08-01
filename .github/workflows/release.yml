@@ -41,11 +41,11 @@ jobs:
           REL_NAME=${{ github.event.release.name }}
           echo "System version string: $VERSTRING"
           echo "Github release name: $REL_NAME"
-          if [ "x$REL_NAME" == "x" ]; then
+          if [[ -z "$REL_NAME" ]]; then
              REL_NAME=$VERSTRING
              echo "Adapted GitHub release name to system version string"
           fi
-          if [ "x$VERSTRING" != "x$REL_NAME" ]; then
+          if [[ "$VERSTRING" != "$REL_NAME" ]]; then
              echo "Release version does not match system version"
              exit 1
           fi
@@ -60,7 +60,7 @@ jobs:
           REL_NAME=${{ github.event.release.name }}
           echo "i686 Linux system version string: $I686_VERSTRING"
           echo "Github release name: $REL_NAME"
-          if [ "x$REL_NAME" != "xI686_VERSTRING" ]; then
+          if [[ "$REL_NAME" != "$I686_VERSTRING" ]]; then
              echo "Wrong i686 version in repo!"
              exit 1
           fi
