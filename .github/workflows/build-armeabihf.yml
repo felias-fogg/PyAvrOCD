@@ -11,11 +11,12 @@ jobs:
         id: build_image
         with:
           cpu: arm1176
-          base_image: dietpi:rpi_armv6_bookworm
+          base_image: raspios_lite:latest
           copy_artifact_path: dist/pyavrocd/*
           image_additional_mb: 2048
           commands: |
             uname -a
+            python3 --version
             df -h /
             apt update -y
             apt install -y scons
