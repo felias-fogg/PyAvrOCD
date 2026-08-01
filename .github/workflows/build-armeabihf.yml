@@ -11,7 +11,7 @@ jobs:
         id: build_image
         with:
           cpu: arm1176
-          base_image: raspi2_bullseye:20231109
+          base_image: raspi2_bookworm:20231109
           copy_artifact_path: dist/pyavrocd/*
           image_additional_mb: 2048
           commands: |
