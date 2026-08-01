@@ -11,18 +11,17 @@ jobs:
         id: build_image
         with:
           cpu: arm1176
-          base_image: raspios_lite:latest
+          base_image: raspi2_bullseye:20231109
           copy_artifact_path: dist/pyavrocd/*
           image_additional_mb: 2048
           commands: |
             df -h /
-            sudo apt update -y
-            sudo apt install -y scons
-            python3 -m pip install --upgrade pip
+            apt update -y
+            apt install -y scons
             pip install .
             pyinstaller -y pyavrocd.spec
-            pip install patchelf-wrapper
-            pip install staticx
+            pip install -y --break-system-packages  patchelf-wrapper
+            pip install -y --break-system-packages staticx
             staticx dist/pyavrocd dist/pyavrocd-static
             rm dist/pyavrocd
             mkdir dist/pyavrocd
