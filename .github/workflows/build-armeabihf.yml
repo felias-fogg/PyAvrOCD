@@ -18,6 +18,7 @@ jobs:
             df -h /
             apt update -y
             apt install -y scons
+            apt install python3-pip
             pip install .
             pyinstaller -y pyavrocd.spec
             pip install -y --break-system-packages  patchelf-wrapper
