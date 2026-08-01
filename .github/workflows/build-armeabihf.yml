@@ -1,0 +1,39 @@
+# build a arm-eabihf binary
+name: Build PyAvrOCD on linux-armeabihf
+on: [workflow_dispatch]
+
+jobs:
+  build-linux32-arm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pguyot/arm-runner-action@v2
+        id: build_image
+        with:
+          cpu: arm1176
+          base_image: raspios_lite:latest
+          copy_artifact_path: dist/pyavrocd/*
+          image_additional_mb: 2048
+          commands: |
+            df -h /
+            sudo apt update -y
+            sudo apt install -y scons
+            python3 -m pip install --upgrade pip
+            pip install .
+            pyinstaller -y pyavrocd.spec
+            pip install patchelf-wrapper
+            pip install staticx
+            staticx dist/pyavrocd dist/pyavrocd-static
+            rm dist/pyavrocd
+            mkdir dist/pyavrocd
+            mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
+            mkdir dist/pyavrocd/pyavrocd-util/
+            cp -r svd dist/pyavrocd/pyavrocd-util/
+            dist/pyavrocd/pyavrocd -V
+            dist/pyavrocd/pyavrocd -d ? -t ?
+
+      - name: upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: Linux32arm
+          path: dist/pyavrocd
