@@ -12,7 +12,7 @@ jobs:
         with:
           cpu: arm1176
           base_image: raspios_lite:latest
-          copy_artifact_path: pyavrocd
+          copy_artifact_path: spyavrocd
           image_additional_mb: 2048
           commands: |
             uname -a
@@ -29,12 +29,12 @@ jobs:
             pyinstaller -y pyavrocd.spec
             pip install --no-input patchelf-wrapper
             pip install --no-input staticx
-            staticx dist/pyavrocd pyavrocd
-            ./pyavrocd -V
-            ./pyavrocd -d ? -t ?
+            staticx dist/pyavrocd spyavrocd
+            ./spyavrocd -V
+            ./spyavrocd -d ? -t ?
 
       - name: upload
         uses: actions/upload-artifact@v6
         with:
           name: Linux32arm
-          path: pyavrocd
+          path: spyavrocd
