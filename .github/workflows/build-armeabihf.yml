@@ -19,6 +19,8 @@ jobs:
             apt update -y
             apt install -y scons
             apt install -y python3-pip
+            python3 -m venv env
+            source env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
             pip install --no-input patchelf-wrapper
