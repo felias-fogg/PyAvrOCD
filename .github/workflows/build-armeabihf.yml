@@ -20,8 +20,8 @@ jobs:
             apt install -y scons
             apt install -y python3-pip
             apt install -y python3.11-venv
-            python3 -m venv env
-            source env/bin/activate
+            python3 -m venv /PyAvrOCD/env
+            source /PyAvrOCD/env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
             pip install --no-input patchelf-wrapper
