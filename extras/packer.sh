@@ -6,18 +6,7 @@
 #
 #usage: call the script from the root folder; version will be deduced from pyavrocd -V
 
-if [ -f extras/binaries/arm64-apple-darwin/pyavrocd ]; then
-    chmod +x extras/binaries/arm64-apple-darwin/pyavrocd
-fi
-if [ -f extras/binaries/aarch64-linux-gnu/pyavrocd ]; then
-    chmod +x extras/binaries/aarch64-linux-gnu/pyavrocd
-fi
-if [ -f extras/binaries/x86_64-apple-darwin/pyavrocd ]; then
-    chmod +x extras/binaries/x86_64-apple-darwin/pyavrocd
-fi
-if [ -f  extras/binaries/x86_64-linux-gnu/pyavrocd ]; then
-    chmod +x extras/binaries/x86_64-linux-gnu/pyavrocd
-fi
+chmod +x extras/binaries/*/pyavrocd
 
 #assume that we are running on an Intel (compatible) runner
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -55,7 +44,7 @@ for dir in binaries/*; do
                 if [[ $type == "aarch64-linux-gnu" ]]; then
                     SYSTEM="linux_aarch64"
                 elif [[ $type == "arm-linux-gnueabihf" ]]; then
-                    SYSTEM="linux_armv7l"
+                    SYSTEM="linux_armv6l"
                 elif [[ $type == "arm64-apple-darwin" ]]; then
                     SYSTEM="darwin_arm64"
                 elif [[ $type == "i686-linux-gnu" ]]; then
@@ -82,14 +71,13 @@ for dir in binaries/*; do
                     rm -f ${type}.tar.gz
                     popd
                 fi
-                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
+                echo {\"name\": \"avrocd-tools\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
 		cp -r $dir/* tools/
 		tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
-                if [ $type != "i686-linux" ]; then
-                    pushd $dir
-                    tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ../assets/${type}.tar.gz pyavrocd*
-                    popd
+                pushd $dir
+                echo {\"name\": \"pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > package.json
+                tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ../assets/${type}.tar.gz pyavrocd*
                 fi
 	    fi
 	fi

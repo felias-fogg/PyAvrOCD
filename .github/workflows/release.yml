@@ -51,18 +51,20 @@ jobs:
           fi
           echo "Release and system version are identical, now we continue"
 
-      - name: Test release name against preloaded arm-linux-gnueabihf version
-        if: ${{ github.event.release.name != '' }}
+      - name: Check presence of correct i686 Linux version
+        if: ${{ github.event.release.tag_name != '' }}
         run: |
-          ALG_VERSION=$(cat extras/binaries/arm-linux-gnueabihf/VERSION)
+          I686_VER=$(extras/binaries/i686-linux-gnu/pyavrocd -V)
+          I686_VERS=v${I686_VER#*version }
+          I686_VERSTRING=${I686_VERS%rc*}
           REL_NAME=${{ github.event.release.name }}
-          if [ "x$REL_NAME" != "x$ALG_VERSION" ]; then
-             echo "Release name does not match preloaded binary in arm-linux-gnueabihf folder"
-             echo "Release name: ${REL_NAME}"
-             echo "Preloaded version: ${ALG_VERSION}"
+          echo "i686 Linux system version string: $I686_VERSTRING"
+          echo "Github release name: $REL_NAME"
+          if [ "x$REL_NAME" != "xI686_VERSTRING" ]; then
+             echo "Wrong i686 version in repo!"
              exit 1
           fi
-          echo "Release name and preloaded binary have identical version numbers; we continue."
+          echo "Release name and preloaded i686 binary have identical version numbers; we continue."
 
       - name: Run type checks linting and unit-tests
         if: ${{ github.event.release.tag_name != '' }}
@@ -78,22 +80,22 @@ jobs:
        os: [ arm64-apple-darwin, aarch64-linux-gnu,  x86_64-mingw32,  x86_64-apple-darwin,  x86_64-linux-gnu, i686-mingw32]
        include:
          - os: arm64-apple-darwin
-           runner: macos-15
+           runner: macos-14
            arch: arm64
          - os: aarch64-linux-gnu
-           runner: ubuntu-24.04-arm
+           runner: ubuntu-22.04-arm
            arch: arm64
          - os: x86_64-mingw32
-           runner: windows-latest
+           runner: windows-2022
            arch: x64
          - os: x86_64-apple-darwin
-           runner: macos-15-intel
+           runner: macos-14-large
            arch: x64
          - os: x86_64-linux-gnu
-           runner: ubuntu-24.04
+           runner: ubuntu-22.04
            arch: x64
          - os: i686-mingw32
-           runner: windows-latest
+           runner: windows-2022
            arch: x86
     defaults:
       run:
@@ -118,6 +120,19 @@ jobs:
         run: |
           pyinstaller -y pyavrocd.spec
 
+      - name: Link statically and normalize for Linux binary
+        if: ${{ contains(matrix.os, 'linux') }}
+        run: |
+          apt-get install -y scons
+          pip install patchelf-wrapper
+          pip install staticx
+          staticx dist/pyavrocd dist/pyavrocd-static
+          rm dist/pyavrocd
+          mkdir dist/pyavrocd
+          mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
+          mkdir dist/pyavrocd/pyavrocd-util/
+          cp -r svd dist/pyavrocd/pyavrocd-util/
+
       - name: Run pyavrocd
         run: |
           dist/pyavrocd/pyavrocd -V
@@ -132,12 +147,69 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
-  upload:
-    needs: build-binaries
+  build-armhf-binary:
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Qemu run
+        uses: pguyot/arm-runner-action@v2
+        id: build_image
+        with:
+          cpu: arm1176
+          import_github_env: true
+          base_image: raspi_2_bullseye:20230102
+          copy_artifact_path: dist/pyavrocd/*
+          image_additional_mb: 2048
+          commands: |
+            sudo apt update
+            sudo apt upgrade
+            sudo apt install -y git
+            sudo apt install -y scons
+            mkdir -p .local/bin
+            mkdir -p .local/lib
+            export PATH=$HOME/.local/bin:$PATH
+            git clone https://github.com/felias-fogg/PyAvrOCD.git
+            cd PyAvrOCD
+            python3 -m venv env
+            source ./env/bin/activate
+            python3 -m pip install --upgrade pip
+            pip install .
+            pyinstaller -y pyavrocd.spec
+            pip install patchelf-wrapper
+            pip install staticx
+            staticx dist/pyavrocd dist/pyavrocd-static
+            rm dist/pyavrocd
+            mkdir dist/pyavrocd
+            mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
+            mkdir dist/pyavrocd/pyavrocd-util/
+            cp -r svd dist/pyavrocd/pyavrocd-util/
+            dist/pyavrocd/pyavrocd -V
+            dist/pyavrocd/pyavrocd -d ? -t ?
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: arm-linux-gnueabihf
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+
+  build-assets:
+    needs: [build-binaries, build-armhf-binary]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
+
+      - name: Download arm-linux-gnueabihf
+        uses: actions/download-artifact@v7
+        with:
+          name: arm-linux-gnueabihf
+          path: extras/binaries/arm-linux-gnueabihf
 
       - name: Download arm64-apple-darwin
         uses: actions/download-artifact@v7
@@ -185,7 +257,7 @@ jobs:
 
   build-pypi-distribution:
     name: Build distribution
-    needs: upload
+    needs: build-assets
     runs-on: ubuntu-latest
 
     steps:

@@ -1,0 +1,10 @@
+prefix=/home/runner/work/simavr/simavr/simavr_installed/
+exec_prefix=${prefix}
+includedir=${prefix}/include/
+libdir=${exec_prefix}/lib
+
+Name: simavr
+Description: Virtual parts library for simavr
+Version:
+Cflags: -I${includedir}/simavr/parts
+Libs: -L${libdir} -lsimavrparts -lsimavr

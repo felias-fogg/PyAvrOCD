@@ -356,7 +356,7 @@ def process_arguments(args : argparse.Namespace, logger : logging.Logger) -> tup
 
 def handle_simavr(args : argparse.Namespace, device : str) -> bool:
     """
-    Checks whether simavr shall be started, and if so, will prepare the the start and exit
+    Checks whether simavr shall be started, and if so, will prepare the start, and will exit
     when simavr returns.
     """
     if not args.prg:
