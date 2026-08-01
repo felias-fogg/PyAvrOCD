@@ -18,11 +18,11 @@ jobs:
             df -h /
             apt update -y
             apt install -y scons
-            apt install python3-pip
-            pip install .
+            apt install -y python3-pip
+            pip install --no-input .
             pyinstaller -y pyavrocd.spec
-            pip install -y --break-system-packages  patchelf-wrapper
-            pip install -y --break-system-packages staticx
+            pip install --no-input patchelf-wrapper
+            pip install --no-input staticx
             staticx dist/pyavrocd dist/pyavrocd-static
             rm dist/pyavrocd
             mkdir dist/pyavrocd
