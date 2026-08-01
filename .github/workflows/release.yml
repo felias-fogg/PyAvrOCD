@@ -83,7 +83,7 @@ jobs:
            runner: macos-14
            arch: arm64
          - os: aarch64-linux-gnu
-           runner: ubuntu-22.04-arm
+           runner: ubuntu-24.04-arm
            arch: arm64
          - os: x86_64-mingw32
            runner: windows-2022
@@ -92,7 +92,7 @@ jobs:
            runner: macos-14-large
            arch: x64
          - os: x86_64-linux-gnu
-           runner: ubuntu-22.04
+           runner: ubuntu-24.04
            arch: x64
          - os: i686-mingw32
            runner: windows-2022
@@ -106,8 +106,11 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up Python
+
         uses: actions/setup-python@v6
         with:
+          # for Linux use native Python so that staticx can work!
+          if: ${{ !contains(matrix.os, 'linux') }}
           python-version: '3.14'
           architecture: ${{ matrix.arch }}
 
