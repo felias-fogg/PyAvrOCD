@@ -161,7 +161,7 @@ jobs:
           cpu: arm1176
           import_github_env: true
           base_image: raspi_2_bookworm:20231109
-          copy_artifact_path: dist/pyavrocd/*
+          copy_artifact_path: pyavrocd
           image_additional_mb: 2048
           commands: |
             sudo apt update
@@ -175,14 +175,16 @@ jobs:
             pyinstaller -y pyavrocd.spec
             pip install patchelf-wrapper
             pip install staticx
-            staticx dist/pyavrocd dist/pyavrocd-static
-            rm dist/pyavrocd
-            mkdir dist/pyavrocd
-            mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
-            mkdir dist/pyavrocd/pyavrocd-util/
-            cp -r svd dist/pyavrocd/pyavrocd-util/
-            dist/pyavrocd/pyavrocd -V
-            dist/pyavrocd/pyavrocd -d ? -t ?
+            staticx dist/pyavrocd pyavrocd
+            rm -rf dist
+            ./pyavrocd -V
+            ./pyavrocd -d ? -t ?
+
+      - name: Normalize file structure
+        run: |
+          mkdir -p dist/pyavrocd/pyavrocd-util/svd
+          cp svd/*.svd dist/pyavrocd/pyavrocd-util/svd/
+          mv pyavrocd dist/pyavrocd/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
