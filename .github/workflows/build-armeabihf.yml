@@ -11,7 +11,7 @@ jobs:
         id: build_image
         with:
           cpu: arm1176
-          base_image: raspios_lite:latest
+          base_image: raspios_lite:2023-05-03
           copy_artifact_path: dist/pyavrocd/*
           image_additional_mb: 2048
           commands: |
