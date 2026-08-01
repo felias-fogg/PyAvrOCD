@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_submodules
 import platform
+from PyInstaller.utils.hooks import collect_submodules
 
 binlist = []
 if platform.uname().system == "Darwin":
@@ -18,12 +18,16 @@ hiddenimports = []
 hiddenimports += collect_submodules('pyavrocd.deviceinfo')
 hiddenimports += collect_submodules('pyavrocd.deviceinfo.devices')
 
+if platform.uname().system != 'Linux':
+    datalist = [('./svd','svd')]
+else:
+    datalist = []
 
 a = Analysis(
     ['pyavrocd/main.py'],
     pathex=['pyavrocd/deviceinfo/devices/', 'pyavrocd/deviceinfo'],
     binaries= binlist,
-    datas=[('./svd','svd')],
+    datas=datalist,
     hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
@@ -34,30 +38,49 @@ a = Analysis(
 )
 pyz = PYZ(a.pure)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    [],
-    exclude_binaries=True,
-    name='pyavrocd',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    console=True,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    contents_directory='pyavrocd-util',
-)
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='pyavrocd',
-)
+if platform.uname().system != 'Linux':
+    exe = EXE(
+      pyz,
+      a.scripts,
+      [],
+      exclude_binaries=True,
+      name='pyavrocd',
+      debug=False,
+      bootloader_ignore_signals=False,
+      strip=False,
+      upx=True,
+      console=True,
+      disable_windowed_traceback=False,
+      argv_emulation=False,
+      target_arch=None,
+      codesign_identity=None,
+      entitlements_file=None,
+      contents_directory='pyavrocd-util',
+    )
+    coll = COLLECT(
+      exe,
+      a.binaries,
+      a.datas,
+      strip=False,
+      upx=True,
+      upx_exclude=[],
+      name='pyavrocd',
+    )
+else:
+    exe = EXE(
+      pyz,
+      a.scripts,
+      a.binaries,
+      a.datas,
+      name='pyavrocd',
+      debug=False,
+      strip=False,
+      upx=True,
+      console=True,
+      disable_windowed_traceback=False,
+      argv_emulation=False, 
+      target_arch=None, 
+      codesign_identity=None,
+      entitlements_file=None,
+    )
+
