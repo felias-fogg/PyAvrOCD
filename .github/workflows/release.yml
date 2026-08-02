@@ -1,5 +1,6 @@
 # Triggered by a new release, it will do a basic check on version number and unit tests.
-# Then it will build the binaries and creates the binary release assets and the downloadable tools for Arduino
+# Then it will build the binaries and creates the binary release assets and the downloadable
+# tools for Arduino
 # Finally, it will upload the new version to PyPI
 name: Release workflow
 
@@ -197,7 +198,7 @@ jobs:
           sudo chmod 0755 spyavrocd
           sudo chown runner:runner spyavrocd
           ls -la spyavrocd
-          mkdir -p dist/pyavrocd/pyavrocd-util
+          mkdir -p dist/pyavrocd/pyavrocd-util/svd
           cp svd/*.svd dist/pyavrocd/pyavrocd-util/svd/
           cp spyavrocd dist/pyavrocd/pyavrocd
           ls -la dist/pyavrocd/*
