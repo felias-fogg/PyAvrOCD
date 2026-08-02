@@ -1,0 +1,85 @@
+clocks:
+  - core: MicroCore
+    "1.2":
+      code: 1M2
+      value: 1200000UL
+    "9.6":
+      code: 9M6
+      value: 9600000UL
+
+  - core: TinyCore
+    "1":
+      code: 1MHz_internal
+      value: 1000000UL
+    "4":
+      code: 4MHz_internal
+      value: 4000000UL
+    "8":
+      code: 8MHz_internal
+      value: 8000000UL
+    "16":
+      code: 16MHz_external
+      value: 16000000UL
+    "16i":
+      code: 16MHz_internal_PLL
+      value: 16000000UL
+
+  - core: MiniCore
+    "1":
+      code: 1MHz_internal
+      value: 1000000UL
+    "4":
+      code: 4MHz_internal
+      value: 4000000UL
+    "8":
+      code: 8MHz_internal
+      value: 8000000UL
+    "16":
+      code: 16MHz_external
+      value: 16000000UL
+
+  - core: MegaCore
+    import: MiniCore
+
+  - core: MightyCore
+    import: MiniCore
+
+  - core: MajorCore
+    import: MiniCore
+
+  - core: MegaCoreX
+    "1":
+      code: internal_1MHz
+      value: 1000000UL
+    "4":
+      code: internal_4MHz
+      value: 4000000UL
+    "8":
+      code: internal_8MHz
+      value: 8000000UL
+    "16":
+      code: internal_16MHz
+      value: 16000000UL
+    "20":
+      code: internal_20MHz
+      value: 20000000UL
+
+  - core: tinyMegaCore
+    "1":
+      code: 1internal
+      value: 1000000UL
+    "4":
+      code: 4internal
+      value: 4000000UL
+    "8":
+      code: 8internal
+      value: 8000000UL
+    "16":
+      code: 16external
+      value: 16000000UL
+    "20":
+      code: 20external
+      value: 20000000UL
+
+  - core: DxCore
+    import: tinyMegaCore

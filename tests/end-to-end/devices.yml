@@ -1,0 +1,190 @@
+# List of all covered boards and MCUs in YAML format
+devices:
+
+
+# some virtual devices that can be imported to make the actual
+# specifications more concise
+  - device: classic_tiny
+    virtual: true
+    provides:
+      dw: true
+      arduino: true
+      adc: true
+    clock: [ 1, 4, 8, 16 ]
+    core: TinyCore
+
+  - device: classic_tinymega
+    virtual: true
+    provides:
+      dw: true
+      arduino: true
+      adc: true
+    clock: [ 1, 4, 8, 16 ]
+    core: MinyCore
+
+  - device: classic_mega
+    virtual: true
+    provides:
+      jtag: true
+      arduino: true
+      adc: true
+    clock: [ 1, 4, 8, 16 ]
+
+  - device: modern_tiny
+    virtual: true
+    provides:
+      updi: true
+      arduino: true
+    clock: [ 1, 4, 8, 16, 20 ]
+    core: tinyMega
+
+  - device: modern_mega
+    virtual: true
+    provides:
+      updi: true
+      arduino: true
+    clock: [ 1, 4, 8, 16, 20 ]
+    core: MegaCoreX
+
+  - device: modern_avr
+    virtual: true
+    provides:
+      updi: true
+      arduino: true
+    clock: [ 1, 4, 8, 16, 20 ]
+    core: DxCore
+
+####################### Classic ATinys ##################################
+
+  - device: attiny13
+    mcu: attiny13
+    provides:
+      dw: true
+      arduino: true
+      ram: 0.0625
+      flash: 1
+    clock: [ 1.2, 9.6 ]
+    core: MicroCore
+    setup: ATtiny85/13 dev Board or Programmer-ZF socket
+
+  - device: attiny13a
+    mcu: attiny13a
+    import: attiny13
+
+  - device: attiny2313
+    mcu: attiny2313
+    import: classic_tiny
+    provides:
+      adc: false
+      ram: 0.125
+      flash: 2
+    setup: MCUdude dev board or Programmer-ZF socket
+
+  - device: attiny2313
+    mcu: attiny2313
+    import: attiny2313
+
+  - device: attiny4313
+    mcu: attiny4313
+    import: 2313
+    provides:
+      ram: 0.25
+      flash: 4
+
+  - device: attiny43u
+    mcu: attiny43u
+    import: classic_tiny
+    provides:
+      adc: false # is present, but does not work
+      ram: 0.25
+      flash: 4
+    setup: AZduino breakout board
+
+  - device: attiny24
+    mcu: attiny24
+    import: classic_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    setup: MCUdude dev board or Programmer-ZF socket
+
+  - device: attiny44
+    mcu: attiny44
+    import: classic_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    setup: MCUdude dev board or Programmer-ZF socket
+
+  - device: attiny84
+    mcu: attiny84
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    setup: MCUdude dev board or Programmer-ZF socket
+
+  - device: attiny441
+    mcu: attiny441
+    import: classic_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    setup: Breakout board on breadboard
+
+  - device: attiny841
+    mcu: attiny841
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    setup: AZduino breakout board
+
+  - device: attiny25
+    mcu: attiny25
+    import: classic_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    setup: ATtiny85/13 dev Board or Programmer-ZF socket
+
+  - device: attiny45
+    mcu: attiny45
+    import: classic_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    setup: ATtiny85/13 dev Board or Programmer-ZF socket
+
+  - device: attiny85
+    mcu: attiny85
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    setup: ATtiny85/13 dev Board or Programmer-ZF socket
+
+  - device: attiny261
+    mcu: attiny261
+    import: classic_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    setup: MCUDude dev board
+
+  - device: attiny461
+    mcu: attiny461
+    import: classic_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    setup: MCUDude dev board
+
+  - device: attiny861
+    mcu: attiny861
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    setup: MCUDude dev board
+
