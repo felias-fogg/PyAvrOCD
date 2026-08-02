@@ -133,6 +133,7 @@ jobs:
           pip install patchelf-wrapper
           pip install staticx
           staticx dist/pyavrocd dist/pyavrocd-static
+          ls -la dist/*
           rm dist/pyavrocd
           mkdir dist/pyavrocd
           mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
@@ -193,9 +194,12 @@ jobs:
       - name: Normalize file structure
         run: |
           rm -rf dist
+          ls -la spyavrocd
+          sudo chmod -R 0777 spyavrocd
           mkdir -p dist/pyavrocd/pyavrocd-util
-          # cp svd/*.svd dist/pyavrocd/pyavrocd-util/
+          cp svd/*.svd dist/pyavrocd/pyavrocd-util/
           mv spyavrocd dist/pyavrocd/pyavrocd
+          ls -la dist/pyavrocd/pyavrocd
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
