@@ -133,7 +133,6 @@ jobs:
           pip install patchelf-wrapper
           pip install staticx
           staticx dist/pyavrocd dist/pyavrocd-static
-          ls -la dist/*
           rm dist/pyavrocd
           mkdir dist/pyavrocd
           mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
@@ -195,11 +194,13 @@ jobs:
         run: |
           rm -rf dist
           ls -la spyavrocd
-          sudo chmod -R 0777 spyavrocd
+          sudo chmod 0755 spyavrocd
+          sudo chown runner:runner spyavrocd
+          ls -la spyavrocd
           mkdir -p dist/pyavrocd/pyavrocd-util
-          cp svd/*.svd dist/pyavrocd/pyavrocd-util/
-          mv spyavrocd dist/pyavrocd/pyavrocd
-          ls -la dist/pyavrocd/pyavrocd
+          cp svd/*.svd dist/pyavrocd/pyavrocd-util/svd/
+          cp spyavrocd dist/pyavrocd/pyavrocd
+          ls -la dist/pyavrocd/*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -8,7 +8,7 @@
 
 chmod +x extras/binaries/*/pyavrocd
 
-#assume that we are running on an Intel (compatible) runner
+#assume that we are running on a compatible runner
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     typestr=`arch`"-linux-gnu"
 elif
@@ -63,22 +63,27 @@ for dir in binaries/*; do
                 fi
 		echo "Packing tools for: $type"
 		rm -rf tools
+                rm -rf tool
 		mkdir tools
-                if [ ! -f $dir/avr-gdb ] && [ ! -f $dir/avr-gdb.exe ]; then
-                    pushd $dir
-                    wget https://github.com/felias-fogg/avr-gdb/releases/latest/download/${type}.tar.gz
-                    tar xvzf ${type}.tar.gz
-                    rm -f ${type}.tar.gz
-                    popd
-                fi
+                mkdir tool
+                pushd $dir
+                wget https://github.com/felias-fogg/avr-gdb/releases/latest/download/${type}.tar.gz
+                tar xvzf ${type}.tar.gz
+                mv tool/avr-gdb* .
+                rm -rf tool
+                rm -f ${type}.tar.gz
+                popd
                 echo {\"name\": \"avrocd-tools\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
 		cp -r $dir/* tools/
-		tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
+		tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
-                pushd $dir
-                echo {\"name\": \"pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > package.json
-                tar -zcv --exclude="*DS_Store" --exclude="*/._*" -f ../assets/${type}.tar.gz pyavrocd*
+                cp -r $dir/pyavrocd* tool/
+                echo {\"name\": \"pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tool/package.json
+                rm -rf tool/pyavrocd-util/svd
+                if [[ $type == *"linux"* ]];then
+                    rm -rf tool/pyavrocd-util
                 fi
+                tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/pyavrocd-${type}.tar.gz tool/
 	    fi
 	fi
     fi
@@ -86,6 +91,6 @@ done
 cd ..
 
 echo "Packing SVDs"
-tar -zcv --exclude "*DS_Store" --exclude="*/._*" -f extras/assets/svd.tar.gz svd/
+tar -zc --exclude "*DS_Store" --exclude="*/._*" -f extras/assets/svd.tar.gz svd/
 
 
