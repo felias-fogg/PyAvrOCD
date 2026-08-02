@@ -157,61 +157,54 @@
 </thead>
 <tbody>
 <tr>
-<td>macOS 15, Intel 64-bit</td>
+<td>macOS 14, Intel 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>macOS 15, Apple Silicon 64-bit</td>
+<td>macOS 14, Apple Silicon 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux, Ubuntu 22.02, Intel 64-bit</td>
+<td>Linux Ubuntu 24.02, Intel 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux, Ubuntu 22.02, ARM 64-bit</td>
+<td>Linux Ubuntu 24.02, ARM 64-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Linux,  Intel 32-bit</td>
-<td>yes</td>
-<td>no</td>
-</tr>
-<tr>
-<td>Linux Raspi OS 6.0, ARM 32-bit</td>
-<td><strong>yes</strong><sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
-<td><strong>yes</strong></td>
-</tr>
-<tr>
-<td>Windows 10, Intel 64-bit</td>
+<td>Linux Debian 12 (Bookworm), Intel 32-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Windows 11, ARM 64-bit<br> (emulated)</td>
+<td>Linux Raspi Pi OS 6 (Trixie), ARM 32-bit (armv6l)</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 <tr>
-<td>Windows 10, Intel 32-bit</td>
+<td>Windows 10 (2022), Intel 64-bit</td>
+<td><strong>yes</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>Windows 11 (2022), ARM 64-bit<br> (emulated)</td>
+<td><strong>yes</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>Windows 10 (2022), Intel 32-bit</td>
 <td><strong>yes</strong></td>
 <td><strong>yes</strong></td>
 </tr>
 </tbody>
 </table>
 <p>As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.</p>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:*">
-<p>You need to install the two packages <code>libusb-dev</code> and <code>libudev-dev</code> so that the HIDAPI package can be built.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
+<p>While some efforts have been made to make the software as broadly compatible as possible, it can happen that some tools may fail if you use a platform different from the above or an older version than the one stated above (see <a href="../troubleshooting/">Troubleshooting</a> section). More recent versions are usually OK.</p>
               
             </div>
           </div><footer>

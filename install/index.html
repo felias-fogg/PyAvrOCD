@@ -223,7 +223,7 @@ Now, you only need to add <code>~/.local/bin/</code> to your <code>PATH</code>
 <summary><b>How to install PyAvrOCD with pip or pipx</b></summary>
 <p></p>
 <p>
-It is possible to install PyAvrOCD using <code>pip</code>. However, it is recommended to use <code>pipx</code> instead. <code>Pipx</code> installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/stable/installation/">pipx website</a>. Then proceed as follows.
+It is possible to install PyAvrOCD using <code>pip</code>. However, it is recommended to use <code>pipx</code> instead. <code>Pipx</code> installs packages in a way such that they are entirely isolated from the rest of your Python installation and can be invoked as an ordinary binary executable. So, if you haven't done so already, install pipx following the instructions on the <a href="https://pipx.pypa.io/latest/how-to/install-pipx.html">pipx website</a>. Then proceed as follows.
 </p>
 <pre>
 <code class="language-bash hljs">pipx install pyavrocd
@@ -261,7 +261,7 @@ Furthermore, you can create a binary standalone package as follows:
 <code class="language-bash hljs">poetry run pyinstaller pyavrocd.spec</code>
 </pre>
 <p>
-  As a result, you find an executable <code>pyavrocd</code> (or <code>pyavrocd.exe</code>) in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can copy those two to a place in your <code>PATH</code>.
+  As a result, under Linux, you find an executable <code>pyavrocd</code> in the directory <code>dist</code>code>. Under macOS and Windows, wou will find the executable in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can move the executable (and if present <code>pyavrocd-util</code>) to a place in your <code>PATH</code>.
 </p>
 </details>
 <p></p>
