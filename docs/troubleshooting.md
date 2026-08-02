@@ -1,6 +1,6 @@
 # Troubleshooting
 
-If things go not according to plan, a first good step is to have a look at the logging output of PyAvrOCD. If you spot a log entry marked `[CRITICAL]`, it may tell you already what went wrong.
+If things do not go according to plan, a first good step is to have a look at the logging output of PyAvrOCD. In the Arduino IDE, you have to select the `gdb-server` console in order to see it. If you spot a log entry marked `[CRITICAL]`, it may tell you already what went wrong.
 
 In general, one can distinguish between problems that prohibit the start of the GDB server and problems appearing while debugging.
 
@@ -16,6 +16,18 @@ This is an error message you may get under macOS. It happens when you download e
 ```bash
 $ xattr -d com.apple.quarantine FILE
 ```
+
+### `Request 2 cancelled on connection close`
+
+This error message in the Arduino IDE 2 is an indication that the installed AVR-GDB tool or PyAvrOCD is not compatible with your platform.
+
+Perhaps you can find a compatible AVR-GDB version using your package manager under Linux or using Homebrew when working on  Mac. Another source for Linux and Windows AVR-GDB binaries is [Zak's repository](https://github.com/ZakKemble/avr-gcc-build). It should be possible to copy the new executable to the [place where the Arduino IDE 2 expects it](https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer).
+
+If the `gdb-server` console shows you a long command with pyavrocd in it, then AVR-GDB is probably working, but PyAvrOCD could not be started. You may want to fall back on [installing the package with pip or pipx](install.md#pypi). It is then possible to copy the binary installed under ~/.local/bin/ to any place where you need it, as shown in the `gdb-server` console.
+
+### `OpenOCD: GDB Server Quit Unexpectedly. See gdb-server output for more details.`
+
+This could be the same problem as above. If you tried to start the simulator, then it might be an indication that simavr is not compatible with your platform. You could try to build simavr from source.
 
 ### `No compatible tool discovered`
 
