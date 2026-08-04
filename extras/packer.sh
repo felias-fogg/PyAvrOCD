@@ -73,12 +73,12 @@ for dir in binaries/*; do
                 rm -rf tool
                 rm -f ${type}.tar.gz
                 popd
-                echo {\"name\": \"avrocd-tools\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
 		cp -r $dir/* tools/
 		tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
                 cp -r $dir/pyavrocd* tool/
-                echo {\"name\": \"pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tool/package.json
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tool/package.json
                 rm -rf tool/pyavrocd-util/svd
                 if [[ $type == *"linux"* ]];then
                     rm -rf tool/pyavrocd-util
