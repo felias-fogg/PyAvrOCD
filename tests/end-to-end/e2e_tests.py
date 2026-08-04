@@ -40,8 +40,8 @@ def main():
     parser.add_argument('-s', '--serialport',
                             type=str,
                             dest='port',
-                            default='/dev/null',
-                            help='Serial port for dw-link')
+                            required=True,
+                            help='Serial port for dw-link otherwise usb')
     parser.add_argument('-v', '--verbose',
                         default='info', choices=['debug', 'info',
                                                      'warning', 'error', 'critical'],

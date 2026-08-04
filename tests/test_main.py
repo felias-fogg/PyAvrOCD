@@ -32,7 +32,7 @@ class TestMain(TestCase):
         self.assertEqual(args.serialnumber, None)
         self.assertEqual(args.verbose, 'info')
         self.assertEqual(args.version, False)
-        self.assertEqual(args.xargs, None)
+        self.assertEqual(args.xarg, None)
         self.assertEqual(args.baud, 115200)
         self.assertEqual(args.reboot, False)
         self.assertEqual(args.nomm, False)
@@ -229,6 +229,7 @@ class TestMain(TestCase):
         args.clkdeb = None
         args.F_CPU = '1000000L'
         args.kbps = None
+        args.reboot = False
         self.assertEqual(process_arguments(args, MagicMock()), (1, "", ""))
         mocked_print.assert_has_calls([call("Please specify target MCU with -d option")])
 
@@ -324,7 +325,7 @@ class TestMain(TestCase):
         args.prg = 'simavr'
         args.port = 2000
         args.F_CPU = '16000000UL'
-        args.xargs = '-o out.log --add-trace LED=trace@0x0038/0xff'
+        args.xarg = ['-oout.log', '--add-trace=LED=trace@0x0038/0xff']
         mocked_which.return_value =  '/usr/bin/simavr'
         self.assertTrue(handle_simavr(args, 'atmega328p'))
         mocked_popen.assert_called_once()

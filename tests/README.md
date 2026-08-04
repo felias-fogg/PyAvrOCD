@@ -124,106 +124,106 @@ The following table provides an alphabetical list of all ARM GDB commands copied
 
 | Debugger command                                             | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ~~add-symbol-file~~                                          | ~~Loads additional debug information into the debugger.~~    |
-| ***advance***                                                | Sets a temporary breakpoint at the specified address and calls the debugger `continue`command.<br> *When used after a reset tries to set a breakpoint in an area outside the the memory limits. No idea why.* |
-| ~~append~~                                                   | ~~Reads data from memory or the result of an expression and appends it to an existing file.~~ |
-| ~~awatch~~                                                   | ~~Sets a watchpoint for a data symbol.~~                     |
+| <s>add-symbol-file</s>                                       | <s>Loads additional debug information into the debugger.</s> |
+| ***advance***                                                | Sets a temporary breakpoint at the specified address and calls the debugger `continue`command.<br> *When used after a reset tries to set a breakpoint in an area outside the memory limits. No idea why.* |
+| <s>append</s>                                                | <s>Reads data from memory or the result of an expression and appends it to an existing file.</s> |
+| <s>awatch</s>                                                | <s>Sets a watchpoint for a data symbol.</s>                  |
 | **backtrace**                                                | Displays a numbered list of the calling stack frames including the function names and source line numbers. |
 | **break**                                                    | Sets an execution breakpoint at a specific location.         |
-| ~~cd~~                                                       | ~~Changes the current working directory.~~                   |
+| <s>cd</s>                                                    | <s>Changes the current working directory.</s>                |
 | **clear**                                                    | Deletes a breakpoint at a specific location.                 |
 | **condition**                                                | Sets a stop condition for a specific breakpoint or watchpoint. |
 | **continue**                                                 | Continues running the target.                                |
-| define                                                       | Derives new user-defined commands from existing commands.    |
+| <s>define</s>                                                | <s>Derives new user-defined commands from existing commands.</s> |
 | **delete breakpoints**                                       | Deletes one or more breakpoints or watchpoints.              |
-| ~~directory~~                                                | ~~Defines additional directories to search for source files.~~ |
+| <s>directory</s>                                             | <s>Defines additional directories to search for source files.</s> |
 | **disable breakpoints**                                      | Disables one or more breakpoints or watchpoints.             |
-| ~~disassemble~~                                              | ~~Displays the disassembly for the function surrounding a specific address or the disassembly for a specific address range.~~ |
-| ~~document~~                                                 | ~~Adds integrated help for a new user-defined command.~~     |
+| <s>disassemble</s>                                           | <s>Displays the disassembly for the function surrounding a specific address or the disassembly for a specific address range.</s> |
+| <s>document</s>                                              | <s>Adds integrated help for a new user-defined command.</s>  |
 | **down**                                                     | Moves and displays the current frame pointer down the call stack towards the bottom frame. |
-| ~~down-silently~~                                            | ~~Moves the current frame pointer down the call stack towards the bottom frame.~~ |
-| ~~dump~~                                                     | ~~Reads data from memory or the result of an expression and writes it to a file.~~ |
-| ~~echo~~                                                     | ~~Displays only textual strings.~~                           |
+| <s>down-silently</s>                                         | <s>Moves the current frame pointer down the call stack towards the bottom frame.</s> |
+| <s>dump</s>                                                  | <s>Reads data from memory or the result of an expression and writes it to a file.</s> |
+| <s>echo</s>                                                  | <s>Displays only textual strings.</s>                        |
 | **enable breakpoints**                                       | Enables one or more breakpoints or watchpoints by number.    |
-| ~~end~~                                                      | ~~Terminates conditional blocks when using the `define`, `if`, and `while` commands.~~ |
+| <s>end</s>                                                   | <s>Terminates conditional blocks when using the `define`, `if`, and `while` commands.</s> |
 | **exit**                                                     | Quits the debugger session.                                  |
 | file                                                         | Loads debug information from an image into the debugger and records the entry point address for future use by the `run` and `start` commands. |
 | finish                                                       | Continues running the device to the next instruction after the selected stack frame finishes. |
 | flash erase-device                                           | Erases the memory on a specified flash device.               |
-| ~~flash erase-image-sectors~~                                | ~~Erases all sectors of flash memory in the specified image.~~ |
-| ~~flash load~~                                               | ~~Loads sections from an image into one or more flash devices.~~ |
-| ~~flash load-multiple~~                                      | ~~Load multiple images on to your target.~~                  |
+| <s>flash erase-image-sectors</s>                             | <s>Erases all sectors of flash memory in the specified image.</s> |
+| <s>flash load</s>                                            | <s>Loads sections from an image into one or more flash devices.</s> |
+| <s>flash load-multiple</s>                                   | <s>Load multiple images on to your target.</s>               |
 | frame                                                        | Sets the current frame pointer in the call stack and also displays the function name and source line number for the specified frame. |
-| ~~[handle](https://developer.arm.com/documentation/101471/6-6-0/Arm-Debugger-commands/Arm-Debugger-commands-listed-in-alphabetical-order/handle?lang=en)~~ | ~~Controls the handler settings for one or more signals or exceptions.~~ |
-| ~~hbreak~~                                                   | ~~Sets a hardware execution breakpoint at a specific location.~~ |
-| ~~help~~                                                     | ~~Displays help information for a specific command or a group of commands listed according to specific debugging tasks.~~ |
-| ~~if~~                                                       | ~~Allows you to write scripts that conditionally execute debugger commands.~~ |
+| <s>[handle](https://developer.arm.com/documentation/101471/6-6-0/Arm-Debugger-commands/Arm-Debugger-commands-listed-in-alphabetical-order/handle?lang=en)</s> | <s>Controls the handler settings for one or more signals or exceptions.</s> |
+| <s>hbreak</s>                                                | <s>Sets a hardware execution breakpoint at a specific location.</s> |
+| <s>help</s>                                                  | <s>Displays help information for a specific command or a group of commands listed according to specific debugging tasks.</s> |
+| <s>if</s>                                                    | <s>Allows you to write scripts that conditionally execute debugger commands.</s> |
 | ignore                                                       | Sets the ignore counter for a breakpoint or watchpoint condition. |
 | info address                                                 | Displays the location of a symbol.                           |
-| ~~info all-registers~~                                       | ~~Displays the name and content of grouped registers for the current stack frame.~~ |
+| <s>info all-registers</s>                                    | <s>Displays the name and content of grouped registers for the current stack frame.</s> |
 | **info breakpoints**                                         | Displays information about the status of all breakpoints and watchpoints. |
-| ~~info breakpoints capabilities~~                            | ~~Displays a list of parameters that you can use with breakpoint commands for the current connection.~~ |
+| <s>info breakpoints capabilities</s>                         | <s>Displays a list of parameters that you can use with breakpoint commands for the current connection.</s> |
 | info classes                                                 | Displays C++ class names.                                    |
 | info files                                                   | Displays information about the loaded image and symbols.     |
 | info frame                                                   | Displays stack frame information at the selected position.   |
 | info functions                                               | Displays the name and data types for all functions.          |
-| ~~info handle~~                                              | ~~Displays information about the handling of signals or processor exceptions.~~ |
+| <s>info handle</s>                                           | <s>Displays information about the handling of signals or processor exceptions.</s> |
 | info locals                                                  | Displays all local variables for the current stack frame.    |
 | info members                                                 | Displays the name and data types for all class member variables that are accessible in the function corresponding to the selected stack frame. |
-| ~~info os~~                                                  | ~~Displays the current state of the Operating System (OS) support.~~ |
+| <s>info os</s>                                               | <s>Displays the current state of the Operating System (OS) support.</s> |
 | info registers                                               | Displays the name and content of all application level registers for the current stack frame. |
-| ~~info sharedlibrary~~                                       | ~~Displays the names of the loaded shared libraries, the base address, and whether the debug symbols of the shared libraries are loaded or not.~~ |
-| ~~info signals~~                                             | ~~Displays information about the handling of signals or processor exceptions.~~ |
+| <s>info sharedlibrary</s>                                    | <s>Displays the names of the loaded shared libraries, the base address, and whether the debug symbols of the shared libraries are loaded or not.</s> |
+| <s>info signals</s>                                          | <s>Displays information about the handling of signals or processor exceptions.</s> |
 | info sources                                                 | Displays the names of the source files used in the current image being debugged. |
 | info stack                                                   | Displays a numbered list of the calling stack frames including the function names and source line numbers. |
 | info symbol                                                  | Displays the symbol name at a specific address.              |
 | info target                                                  | Displays information about the loaded image and symbols.     |
-| ~~info threads~~                                             | ~~Displays information about the available threads.~~        |
+| <s>info threads</s>                                          | <s>Displays information about the available threads.</s>     |
 | info variables                                               | Displays the name and data types for all global and static variables. |
-| ~~info watchpoints~~                                         | ~~Displays information about the status of all breakpoints and watchpoints.~~ |
-| ~~info watchpoints capabilities~~                            | ~~Displays a list of parameters that you can use with watchpoint commands for the current connection.~~ |
+| <s>info watchpoints</s>                                      | <s>Displays information about the status of all breakpoints and watchpoints.</s> |
+| <s>info watchpoints capabilities</s>                         | <s>Displays a list of parameters that you can use with watchpoint commands for the current connection.</s> |
 | inspect                                                      | Displays the output of an expression and also records the result in a new debugger variable. |
 | **interrupt, stop**                                          | Interrupts the target and stops the application if it is running. |
 | **list**                                                     | Displays lines of source code surrounding the current or specified location. |
 | **load**                                                     | Loads an image on to the target and records the entry point address for future use by the `run` and `start` commands. |
-| ~~newvar~~                                                   | ~~Declares and initializes a new debugger convenience variable or register alias.~~ |
+| <s>newvar</s>                                                | <s>Declares and initializes a new debugger convenience variable or register alias.</s> |
 | **next**                                                     | Steps through an application at the source level stopping at the first instruction of each source line but stepping over all function calls. |
 | nexti                                                        | Steps through an application at the instruction level but stepping over all function calls. |
-| nexts                                                        | Steps through an application at the source level stopping at the first instruction of each source statement but stepping over all function calls. |
-| ~~nosharedlibrary~~                                          | ~~Discards all loaded shared library symbols.~~              |
+| **nexts**                                                    | Steps through an application at the source level stopping at the first instruction of each source statement but stepping over all function calls. |
+| <s>nosharedlibrary</s>                                       | <s>Discards all loaded shared library symbols.</s>           |
 | **print**                                                    | Displays the output of an expression and also records the result in a new debugger variable. |
 | **ptype**                                                    |                                                              |
-| ~~pwd~~                                                      | ~~Displays the current working directory.~~                  |
+| <s>pwd</s>                                                   | <s>Displays the current working directory.</s>               |
 | **quit**                                                     | Quits the debugger session.                                  |
 | restore                                                      | Reads data from a file and writes it to memory.              |
 | run                                                          | Starts running the target.                                   |
-| ~~rwatch~~                                                   | ~~Sets a watchpoint for a data symbol.~~                     |
+| <s>rwatch</s>                                                | <s>Sets a watchpoint for a data symbol.</s>                  |
 | select-frame                                                 | Moves the current frame pointer in the call stack.           |
-| ~~set backtrace~~                                            | ~~Controls the default behavior when using the `info stack` command.~~ |
-| ~~set breakpoint~~                                           | ~~Controls the automatic behavior of breakpoints and watchpoints.~~ |
-| ~~set-directories~~                                          | ~~Defines additional directories to search for source files.~~ |
-| ~~set endian~~                                               | ~~Specifies the byte order for use by the debugger.~~        |
-| ~~set listsize~~                                             | ~~Modifies the default number of source lines that the `list` command displays.~~ |
-| ~~set os~~                                                   | ~~Controls operating system settings in the debugger.~~      |
-| ~~set print~~                                                | ~~Controls the current debugger print settings.~~            |
-| ~~set step-mode~~                                            | ~~Controls the default behavior of the `step` and `steps` commands.~~ |
-| ~~set substitute-path~~                                      | ~~Modifies the search paths used by the debugger when it executes any of the commands that look up and display source code.~~ |
-| ~~set sysroot~~                                              | ~~Specifies the system root directory to search for shared library symbols.~~ |
+| <s>set backtrace</s>                                         | <s>Controls the default behavior when using the `info stack` command.</s> |
+| <s>set breakpoint</s>                                        | <s>Controls the automatic behavior of breakpoints and watchpoints.</s> |
+| <s>set-directories</s>                                       | <s>Defines additional directories to search for source files.</s> |
+| <s>set endian</s>                                            | <s>Specifies the byte order for use by the debugger.</s>     |
+| <s>set listsize</s>                                          | <s>Modifies the default number of source lines that the `list` command displays.</s> |
+| <s>set os</s>                                                | <s>Controls operating system settings in the debugger.</s>   |
+| <s>set print</s>                                             | <s>Controls the current debugger print settings.</s>         |
+| <s>set step-mode</s>                                         | <s>Controls the default behavior of the `step` and `steps` commands.</s> |
+| <s>set substitute-path</s>                                   | <s>Modifies the search paths used by the debugger when it executes any of the commands that look up and display source code.</s> |
+| <s>set sysroot</s>                                           | <s>Specifies the system root directory to search for shared library symbols.</s> |
 | **set variable, set**                                        | Evaluates an expression and assigns the result to a variable, register, or memory address. |
-| ~~sharedlibrary~~                                            | ~~Loads symbols from shared libraries.~~                     |
-| ~~shell~~                                                    | ~~Runs a shell command in the debug session.~~               |
-| ~~show~~                                                     | ~~Displays the debugger settings.~~                          |
-| ~~show architecture~~                                        | ~~Displays the architecture of the target.~~                 |
-| ~~show backtrace~~                                           | ~~Displays the behavior settings for use with the `info stack` command.~~ |
-| ~~show breakpoint~~                                          | ~~Displays the breakpoint and watchpoint behavior settings.~~ |
-| ~~show directories~~                                         | ~~Displays the list of directories to search for source files.~~ |
-| ~~show endian~~                                              | ~~Displays the byte order setting in use by the debugger.~~  |
-| ~~show listsize~~                                            | ~~Displays the number of source lines that the `list` command displays.~~ |
-| ~~show print~~                                               | ~~Displays the debugger print settings.~~                    |
-| ~~show step-mode~~                                           | ~~Displays the step setting for functions without debug information.~~ |
-| ~~show substitute-path~~                                     | ~~Displays the search path substitution rules in use by the debugger when searching for source files.~~ |
-| ~~show sysroot~~                                             | ~~Displays the system root directory in use by the debugger when searching for shared library symbols.~~ |
-| ~~show version~~                                             | ~~Displays the version number of the debugger.~~             |
+| <s>sharedlibrary</s>                                         | <s>Loads symbols from shared libraries.</s>                  |
+| <s>shell</s>                                                 | <s>Runs a shell command in the debug session.</s>            |
+| <s>show</s>                                                  | <s>Displays the debugger settings.</s>                       |
+| <s>show architecture</s>                                     | <s>Displays the architecture of the target.</s>              |
+| <s>show backtrace</s>                                        | <s>Displays the behavior settings for use with the `info stack` command.</s> |
+| <s>show breakpoint</s>                                       | <s>Displays the breakpoint and watchpoint behavior settings.</s> |
+| <s>show directories</s>                                      | <s>Displays the list of directories to search for source files.</s> |
+| <s>show endian</s>                                           | <s>Displays the byte order setting in use by the debugger.</s> |
+| <s>show listsize</s>                                         | <s>Displays the number of source lines that the `list` command displays.</s> |
+| <s>show print</s>                                            | <s>Displays the debugger print settings.</s>                 |
+| <s>show step-mode</s>                                        | <s>Displays the step setting for functions without debug information.</s> |
+| <s>show substitute-path</s>                                  | <s>Displays the search path substitution rules in use by the debugger when searching for source files.</s> |
+| <s>show sysroot</s>                                          | <s>Displays the system root directory in use by the debugger when searching for shared library symbols.</s> |
+| <s>show version</s>                                          | <s>Displays the version number of the debugger.</s>          |
 | source                                                       | Loads and runs a script file to control and debug your target. |
 | start                                                        | Sets a temporary breakpoint, calls the debugger `run` command, and then deletes the temporary breakpoint when it is hit. |
 | step                                                         | Steps through an application at the source level stopping on the first instruction of each source line including stepping into all function calls. |
@@ -234,18 +234,89 @@ The following table provides an alphabetical list of all ARM GDB commands copied
 | **target remote**                                            |                                                              |
 | **target extended-remote**                                   |                                                              |
 | **tbreak**                                                   | Sets an execution breakpoint at a specific location and deletes the breakpoint when it is hit. |
-| ~~thbreak~~                                                  | ~~Sets a hardware execution breakpoint at a specific location and deletes the breakpoint when it is hit.~~ |
-| ~~thread~~                                                   | ~~Displays information about the current thread.~~           |
-| ~~thread apply~~                                             | ~~Switches control to a specific thread to execute a debugger command and then switches back to the original state.~~ |
+| <s>thbreak</s>                                               | <s>Sets a hardware execution breakpoint at a specific location and deletes the breakpoint when it is hit.</s> |
+| <s>thread</s>                                                | <s>Displays information about the current thread.</s>        |
+| <s>thread apply</s>                                          | <s>Switches control to a specific thread to execute a debugger command and then switches back to the original state.</s> |
 | unset                                                        | Modifies the current debugger settings.                      |
 | **up**                                                       | Moves and displays the current frame pointer up the call stack towards the top frame. |
-| ~~up-silently~~                                              | ~~Moves the current frame pointer up the call stack towards the top frame.~~ |
+| <s>up-silently</s>                                           | <s>Moves the current frame pointer up the call stack towards the top frame.</s> |
 | **watch**                                                    | Sets a watchpoint for a data symbol.                         |
-| ~~watch-set-property~~                                       | ~~Updates the properties of an existing watchpoint.~~        |
+| <s>watch-set-property</s>                                    | <s>Updates the properties of an existing watchpoint.</s>     |
 | **whatis**                                                   | Displays the data type of an expression.                     |
 | where                                                        | Displays a numbered list of the calling stack frames including the function names and source line numbers. |
-| ~~while~~                                                    | ~~Allows you to write scripts with conditional loops that execute debugger commands.~~ |
+| <s>while</s>                                                 | <s>Allows you to write scripts with conditional loops that execute debugger commands.</s> |
 | x                                                            | Displays the content of memory at a specific address.        |
 
 
 
+## Deployment tests
+
+What tests to run before a new release is published?
+
+- [ ] Before producing binaries, running tests on Mac:
+     - [ ] dw-link + ATtiny85:
+          - [ ] Erase
+          - [ ] Upload Blink with avrdude
+          - [ ] Run e2e tests
+     - [ ] SNAP + ATtiny2313:
+          - [ ] Erase
+          - [ ] Upload blink
+          - [ ] e2e
+     - [ ] SNAP + Mega16:
+          - [ ] e2e
+     - [ ] Atmel-ICE + UNO: e2e
+          - [ ] Erase
+          - [ ] Upload Blink
+          - [ ] e2e
+     - [ ] Atmel-ICE + ATmega1284
+          - [ ] e2e
+     - [ ] UNO Wifi Rev2
+          - [ ] e2e
+     - [ ] CNano 417
+          - [ ] e2e
+     - [ ] Curiosity AVR128DB48
+          - [ ] e2e
+- [ ] Before producing binaries, test on platforms (pulling from GitHub and installing avr-gdb)
+     - [ ] Mac/Windows under Parallels
+          - [ ] dw-link + ATtiny861
+               - [ ] Erase
+               - [ ] Upload Blink
+               - [ ] run e2e?
+          - [ ] Curiosity ATmega4809
+               - [ ] e2e?
+     - [ ] Raspi/Trixie
+          - [ ] dw-link + ATtiny861
+               - [ ] Erase
+               - [ ] Upload Blink
+               - [ ] e2e
+          - [ ] Curiosity AVR128DB48
+     - [ ] Prodesk/Linux
+          - [ ] dw-link + ATtiny861
+               - [ ] Erase
+               - [ ] Upload Blink
+               - [ ] e2e
+          - [ ] XNano416
+               - [ ] e2e
+- [ ] After generating new release candidate and generating pre-screen downloads
+     - [ ] Mac
+          - [ ] Arduino IDE 2 + PlatformIO
+               - [ ] dw-link + ATtiny1634
+                    - [ ] Upload Blink
+                    - [ ] Debug vblink
+               - [ ] XMini328
+                    - [ ] Upload Blink
+                    - [ ] Debug vblink
+               - [ ] Atmel-ICE + ATmega2560
+                    - [ ] Debug vblink
+               - [ ] UNO Wifi Rev2
+                    - [ ] Debug vblink
+               - [ ] Curiosity AVR128DB48
+                    - [ ] Debug vblink
+     - [ ] Prodesk/Windows
+          - [ ] Arduino IDE 2 + PlatformIO
+               - [ ] dw-link + ATtiny1634
+               - [ ] Curiosity AVR128DB48
+     - [ ] Prodesk/Linux
+          - [ ] Arduino IDE 2 + PlatformIO
+               - [ ] dw-link + ATtiny1634
+               - [ ] Curiosity AVR128DB48

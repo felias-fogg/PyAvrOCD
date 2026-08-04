@@ -173,8 +173,8 @@ all_scripts = {
      ("set $SP=0x123",""),
      ("monitor onlywhenloaded disable",""),
      ("si",""),
-     ("x/hx 0x80005D","0x80005d:	0x0123"),
-     ("info reg SP","SP             0x123"),
+     ("x/hx 0x80005D","0x80005d:	0x0023"),
+     ("info reg SP","SP             0x23"),
      ("set {int}0x80005D=0x00FF",""),
      ("si",""),
      ("info reg SP","SP             0xff"),
@@ -460,7 +460,7 @@ all_scripts = {
      ("print cnt > 50000", "= true", "= 1"),
      ("monitor reset", "reset"),
      ("cont","init"),
-     ("next", "initVariant")) + epilog),
+     ("next", "initVariant", "setup")) + epilog),
 
 # Test sleep walking
     "sleepwalk" : (

@@ -112,7 +112,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             default = [ 'none' ],
                             type=str,
                             choices= ['?'] + manage_choices,
-                            help="Fuses to be managed, use '?' for list")
+                            help="Fuse to manage (give multiple times), use '?' for list")
 
     parser.add_argument('-p', '--port',  type=int, default=2000, dest='port',
                             help='Local port on machine (default: 2000)')
@@ -125,7 +125,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             help="JTAG clock frequency for programming (kHz) (d.: 1000)")
 
     parser.add_argument('-s', '--start',  dest='prg',
-                            help='Start specified program (e.g., simavr)')
+                            help='Start specified program (e.g., simavr or gede)')
 
     tool_choices : list [str] = ['atmelice', 'dwlink', 'edbg', 'jtagice3', 'medbg', 'nedbg',
                         'pickit4', 'powerdebugger', 'snap']
@@ -139,7 +139,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             metavar="SN",
                             type=str,
                             dest='serialnumber',
-                            help="USB serial number of the unit to use")
+                            help="Suffix of USB serial number of the tool to use")
 
     level_choices : list[str] = ['all', 'debug', 'info', 'warning', 'error', 'critical']
     parser.add_argument("-v", "--verbose",
@@ -151,10 +151,11 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             help="Print PyAvrOCD version number and exit",
                             action="store_true")
 
-    parser.add_argument("-x", "--xargs",
-                            metavar="XARGS",
+    parser.add_argument("-x", "--xarg",
+                            metavar="XARG",
                             type=str,
-                            help="Extra arguments for simavr")
+                            action='append',
+                            help="Extra argument for simavr (give multiple times)")
 
     parser.add_argument("--dw-link-baud",
                             dest='baud',
@@ -324,14 +325,16 @@ def process_arguments(args : argparse.Namespace, logger : logging.Logger) -> tup
 
     device : str = args.dev
 
-    if not device:
+    if not device and not args.reboot:
         print("Please specify target MCU with -d option")
         return 1, "", ""
-    device = device.lower()
-
-    if device not in dev_id:
-        print("Device '%s' is not supported by PyAvrOCD" % device)
-        return 1, "", ""
+    if device:
+        device = device.lower()
+        if device not in dev_id:
+            print("Device '%s' is not supported by PyAvrOCD" % device)
+            return 1, "", ""
+    else:
+        return None, "", "" # We only want to reboot
 
     intf : list[str]
     if args.interface:
@@ -356,8 +359,8 @@ def process_arguments(args : argparse.Namespace, logger : logging.Logger) -> tup
 
 def handle_simavr(args : argparse.Namespace, device : str) -> bool:
     """
-    Checks whether simavr shall be started, and if so, will prepare the start, and will exit
-    when simavr returns.
+    Checks whether simavr shall be started, and if so, will prepare the start, and will return
+    with True when simavr exits. If simavr shall not be started, return False.
     """
     if not args.prg:
         return False
@@ -369,12 +372,12 @@ def handle_simavr(args : argparse.Namespace, device : str) -> bool:
         print("Could not find program '%s'" % args.prg)
         return True
     prg = os.path.abspath(prg)
-    prg += " -g " + str(args.port) + " -f " + str(args.F_CPU) + " -m " + device
-    if args.xargs:
-        prg += " " + args.xargs
-    print("Simavr will be started: %s" % prg, flush=True)
+    simavr_args = [ "-g", str(args.port), "-f", str(args.F_CPU), "-m", device ]
+    if args.xarg:
+        simavr_args += args.xarg
+    print("Simavr starts: %s" %  " ".join([ prg ] + simavr_args), flush=True)
     print("Listening on port %d for gdb connection" % args.port, flush=True)
-    sim : subprocess.Popen = subprocess.Popen(prg, bufsize=0, shell=True)
+    sim : subprocess.Popen = subprocess.Popen( [ prg ] + simavr_args, bufsize=0, shell=False)
     sim.wait()
     return True
 
@@ -508,7 +511,7 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
         return result
 
     # check whether simavr should be started, and if so, do that exclusively
-    if handle_simavr(args, device):
+    if device and handle_simavr(args, device):
         return 0 # returning after simavr has finished
 
     # now report startup
@@ -573,6 +576,9 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     if args.reboot:
         if not tool_reboot(backend, tool, logger):
             return 1
+        if not device:
+            logger.info("Terminating ...")
+            return 0
 
     # tool is connected, now we can start
     logger.info("Starting GDB server")

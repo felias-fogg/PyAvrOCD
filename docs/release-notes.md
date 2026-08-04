@@ -1,5 +1,12 @@
 # Release Notes
 
+## Release v1.5.7
+
+- Option `--xargs` changed to `--xarg`, which can be used multiple times.
+- Option `--reboot-tool` can now be used without specifying an MCU.
+- Simavr is now called without using a shell.
+- From now on, there will also be executables for i686-linux.
+
 ## Release v1.5.6
 
 - Added `monitor exit` command so that the GDB server can be shut down from GDB

@@ -33,7 +33,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--usbsn` <br>`-u`                                           | USB serial number of the tool. This is only necessary if one has multiple debugging tools connected to the computer. **(+)** |
 | `--verbose` <br>`-v`                                         | Specify verbosity level. Possible values are `all`, `debug`, `info`, `warning`, `error`, or `critical`. The option value `all` means that, in addition to the `debug` output, all communication with GDB is logged. The default is `info`. |
 | `--version` <br>`-V`                                         | Print PyAvrOCD version number and exit.                      |
-| `--xargs`<br> `-x`                                           | Extra arguments for `simavr`.                                |
+| `--xarg`<br> `-x`                                            | Extra argument for `simavr`. Can be specified multiple times to pass multiple arguments. When you want to pass a simavr option, e.g., `--add-trace`, use the notation with an equal sign to avoid the interpretation of this option as a PyAvrOCD option: `--xarg=--add-trace`. |
 | `--reboot-debugger`                                          | Will reboot the debugger before starting the debug session. This can take up to 10 seconds on a PICkit4. **(+)** |
 | `--dw-link-baud`                                             | Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value. |
 | `--memory-map-disable`                                       | This option, which does not take a value, will disable the usage of the XML memory map. This option is only there for testing purposes. **(+)** |

@@ -62,7 +62,7 @@ void setup() {
 #else      // Classic MCU
 #ifdef OCR0A
   OCR0A = 0x80;           // prepare for having a COMPA interrupt
-#elif
+#else
   OCR0 = 0x80;           // prepare for having a COMP interrupt
 #endif
 #ifdef TIMSK

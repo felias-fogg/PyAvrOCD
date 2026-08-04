@@ -18,5 +18,5 @@ One can distinguish the support of PyAvrOCD based on whether one can install the
 
 As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.
 
-While some efforts have been made to make the software as broadly compatible as possible, it can happen that some tools may fail if you use a platform different from the above or an older version than the one stated above (see [Troubleshooting](troubleshooting.md) section). More recent versions are usually OK.
+While some efforts have been made to make the software as broadly compatible as possible, it can happen that some tools may fail if you use a platform different from the above or an older version than the one stated above (see [Troubleshooting](troubleshooting.md) section).
 
