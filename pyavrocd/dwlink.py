@@ -189,7 +189,8 @@ def discover(args : argparse.Namespace) -> tuple[int | None, Any, int | None]:
             except SerialException:
                 pass
             except Exception as e:
-                sys.stdout.write('[ERROR] ' + repr(e) + '\n\r')
+                if str(e) != 'None':
+                    sys.stdout.write('[ERROR] ' + repr(e) + '\n\r')
     return (None, None, None)
 
 def main(args : argparse.Namespace, intf : str) -> None:
@@ -297,11 +298,13 @@ def main(args : argparse.Namespace, intf : str) -> None:
                         sys.stdout.write("[DEBUG] sent: {!r}\n".format(data))
                         sys.stdout.flush()
                 except socket.error as msg:
-                    sys.stdout.write('[ERROR] {}\n\r'.format(msg))
+                    if str(msg) != 'None':
+                        sys.stdout.write('[ERROR] {}\n\r'.format(msg))
                     # probably got disconnected
                     break
         except Exception as msg:
-            sys.stdout.write('[ERROR] {}\n\r'.format(msg))
+            if str(msg) != "None":
+                sys.stdout.write('[ERROR] {}\n\r'.format(msg))
         finally:
             ser_to_net.socket = None
             sys.stdout.write('[INFO] Disconnected\n\r')

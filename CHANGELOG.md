@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.8 (06-August-2026)
+
+- **Fixed**:
+     - When using dw-link, the annoying `[ERROR] None` message before disconnecting has been eliminated.
+     - avr-gdb 17.2.1 has been replaced by avr-gdb 17.2.2, which does not crash on Ubuntu 24.04 anymore. The problem was most probably caused because 17.2.1 was cross-compiled on Ubuntu 22.04.
+
 ## 1.5.7 (04-August-2026)
 
 - **Changed:**
