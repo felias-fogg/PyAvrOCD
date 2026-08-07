@@ -149,7 +149,7 @@
 <p>how to install the PyAvrOCD GDB server,</p>
 </li>
 <li>
-<p>how to turn an Arduino UNO R3 into a <a href="https://debugwire.de/">debugWIRE</a> debug probe using the <a href="https://felias-fogg.github.io/dw-link/">dw-link</a> firmware,</p>
+<p>how to turn an Arduino UNO R3 into a <a href="https://en.wikipedia.org/wiki/DebugWIRE">debugWIRE</a> debug probe using the <a href="https://felias-fogg.github.io/dw-link/">dw-link</a> firmware,</p>
 </li>
 <li>how to set up the breadboard with the ATtiny85 on it, and</li>
 <li>how to use PlatformIO for debugging a program on the ATtiny.</li>
@@ -192,10 +192,12 @@ default_envs = debug
 
 [env:debug]
 ;; enables debugging
+build_type = debug
 ...
 
 [env:release]
 ;; supports uploading in release mode
+build_type = release
 ...
 </code></pre>
 <h3 id="step-2-turn-an-uno-into-a-debug-probe">Step 2: Turn an UNO into a debug probe</h3>
@@ -301,7 +303,7 @@ default_envs = debug
 <p>After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and execution is started. The MCU will remain in debugWIRE mode even when debugging is stopped. You have to exit debugWIRE mode explicitly (see below).</p>
 <p>After starting the debugger, program execution will stop in the first line of the internal <code>main</code> function, which is signified by the yellow triangle and the highlighted line. How you debug is sketched in the <a href="../debugging/">section on debugging</a>.</p>
 <h3 id="step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</h3>
-<p>If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>If you have found the bug you were hunting, you can now leave the debugger(red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
 <p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
