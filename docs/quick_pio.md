@@ -1,6 +1,6 @@
 # Quickstart Guides: PlatformIO
 
-The following three quickstart guides provide an easy entrance into the the wonderful land of debugging using PlatformIO.
+The following three quickstart guides provide an easy entrance into the wonderful land of debugging programs running on an AVR MCU using PlatformIO.
 
 ------
 

@@ -22,6 +22,7 @@ default_envs = xmini
 platform = https://github.com/felias-fogg/platform-atmelavr.git
 framework = arduino
 board = xmini328p
+build_type = debug
 debug_tool = pyavrocd
 ```
 
@@ -33,11 +34,11 @@ Click the debug symbol (bug in front of the triangle) in the left side bar, whic
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
 </p>
 
-This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the `main` function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the [debugging section](http://localhost:8000/debugging/).
+This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the `main` function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the [debugging section](debugging.md).
 
 ### Step 3: Start over or terminate the debugging session
 
-If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
+If you have found the bug you were hunting, you can now leave the debugger (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
 Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command `monitor debugwire disable` into the input line of the `DEBUG CONSOLE` window (1) just before terminating the debugger (2).
 
@@ -51,7 +52,8 @@ Alternatively, you can also use the `Disable debugWIRE`  project task under the 
 
 ### Potential Problems
 
-There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `DEBUG CONSOLE`. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](http://localhost:8000/troubleshooting/) and the [Limitations](http://localhost:8000/limitations/) sections of the PyAvrOCD manual.
+There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the `DEBUG CONSOLE`. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) sections of the PyAvrOCD manual.
 
 !!! danger "Warning:  Use IOREF to source attached circuits"
     If you have any attached circuitry, be it on a breadboard or a shield, use the `IOREF` pin to power it. If this is not possible, check out the [`README` file of XminiCore for a solution](https://github.com/felias-fogg/XMiniCore?tab=readme-ov-file#powering-external-circuitry).
+

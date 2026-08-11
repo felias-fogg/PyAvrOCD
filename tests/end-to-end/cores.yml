@@ -1,0 +1,178 @@
+cores:
+  MicroCore:
+    options:
+      clock: true
+      bootloader: true
+    clock:
+      1.2:
+        code: 1M2
+        value: 1200000UL
+      9.6:
+        code: 9M6
+        value: 9600000UL
+    default: 9.6
+
+  TinyCore:
+    options:
+      clock: true
+      chip: true
+      bootloader: true
+      pinout: true
+    clock:
+      1:
+        code: 1MHz_internal
+        value: 1000000UL
+      4:
+        code: 4MHz_internal
+        value: 4000000UL
+      8:
+        code: 8MHz_internal
+        value: 8000000UL
+      16:
+        code: 16MHz_external
+        value: 16000000UL
+    default: 8
+  
+  MiniCore:
+    options:
+      clock: true
+      LTO: true
+      variant: true
+      bootloader: true
+    clock:
+      1:
+        code: 1MHz_internal
+        value: 1000000UL
+      2:
+        code: 2MHz_internal
+        value: 1000000UL
+      4:
+        code: 4MHz_internal
+        value: 4000000UL
+      8:
+        code: 8MHz_internal
+        value: 8000000UL
+      16:
+        code: 16MHz_external
+        value: 16000000UL
+      20:
+        code: 20MHz_external
+        value: 20000000UL
+    default: 16
+
+  XMiniCore:
+    options:
+      clock: true
+    clock:
+      8:
+        code: 8MHz
+        value: 8000000UL
+      16:
+        code: 16MHz
+        value: 16000000UL
+    default: 16
+
+  MegaCore:
+    import: MiniCore
+    options:
+      pinout: true
+
+  MightyCore:
+    import: MegaCore
+  
+  MajorCore:
+    import: MiniCore
+    options:
+      variant: false
+  
+  MegaCoreX:
+    options:
+      clock: true
+      pinout: true
+      bootloader: true
+    clock:
+      1:
+        code: internal_1MHz
+        value: 1000000UL
+      2:
+        code: internal_2MHz
+        value: 2000000UL
+      4:
+        code: internal_4MHz
+        value: 4000000UL
+      5:
+        code: internal_5MHz
+        value: 5000000UL
+      8:
+        code: internal_8MHz
+        value: 8000000UL
+      10:
+        code: internal_10MHz
+        value: 10000000UL
+      16:
+        code: internal_16MHz
+        value: 16000000UL
+      20:
+        code: internal_20MHz
+        value: 20000000UL
+    default: 16
+  
+  megaTinyCore:
+    options:
+      chip: true
+      clock: true
+    clock:
+      1:
+        code: 1internal
+        value: 1000000UL
+      2:
+        code: 2internal
+        value: 2000000UL
+      4:
+        code: 4internal
+        value: 4000000UL
+      5:
+        code: 5internal
+        value: 5000000UL
+      8:
+        code: 8internal
+        value: 8000000UL
+      10:
+        code: 10internal
+        value: 10000000UL
+      16:
+        code: 16internal
+        value: 16000000UL
+      20:
+        code: 20internal
+        value: 20000000UL
+    default: 20
+  
+  DxCore:
+    import: megaTinyCore
+
+  arduino:
+    options:
+      cpu: true
+      clock: false
+      bootloader: false
+      chip: false
+      LTO: false
+      pinout: false
+      variant: false
+    default: 16
+    clock:
+      8:
+        value: 8000000UL
+      16:
+        value: 16000000UL
+
+  NoCore:
+    default: 16
+    clock:
+      1:
+        value: 1000000UL
+      8:
+        value: 8000000UL
+      16:
+        value: 16000000UL

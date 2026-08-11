@@ -1,0 +1,202 @@
+
+# tests safe and interruptible single-step execution
+# INT 0 is enabled and switched active by setting the IRQ pin as an output
+    singlestep : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc',
+         'noautopc'),
+    isr,
+    ,
+    ,
+    ((set logging file log/isr.log
+        response: ),) + prolog +
+    ((load
+        response: Start address 0x
+      - stimulus: b isr.ino:shortwait
+        response: Breakpoint 1
+      - stimulus: c
+        response: shortwait
+      - stimulus: n
+        response: }
+        response: outsidecount
+        response: delay (ms=1)
+      - stimulus: n
+        response: outsidecount
+        response: digitalWrite
+        response: _delay_ms(1)
+      - stimulus: c
+        response: shortwait
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: c
+        response: shortwait
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $FAIL_IF
+        response: __vectors
+      - stimulus: c
+        response: shortwait
+      - stimulus: monitor singlestep interruptible
+        response: interruptible
+      - stimulus: n
+        response: 
+      - stimulus: $SUCCESS_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $SUCCESS_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $SUCCESS_IF
+        response: __vectors
+      - stimulus: n
+        response: 
+      - stimulus: $SUCCESS_IF
+        response: __vectors
+      - stimulus: n
+        response: __vectors)) + epilog),
+
+# load something into EEPROM
+    eeprom : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc',
+         'noautopc'),
+    eeprom,
+    ,
+    ,
+    ((set logging file log/eeprom.log
+        response: ),) + prolog + \
+    ((load
+        response: Start address 0x
+      - stimulus: break loop
+        response: 
+      - stimulus: continue
+        response: Breakpoint 1, loop
+      - stimulus: p ee_data
+        response: data that's loaded straight into EEPROM
+      - stimulus: p ver
+        response: data that's loaded straight into EEPROM
+      - stimulus: delete 1
+        response: 
+      - stimulus: break blink_exit
+        response: Breakpoint 2
+      - stimulus: cont
+        response: (OK=true)
+      - stimulus: set var ee_data[0] = 'X'
+        response: 
+      - stimulus: p ee_data
+        response: Xata that's loaded straight into EEPROM)) + epilog),
+
+# loads fuses and lockbits, which is silently ignored
+# also loads signature, which is compared with the signature
+# given when inoking pyavrocd
+    fuses : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'jtag', 'pdi', 'updi', 'nonarduino', 'noadc',
+         'noautopc'),
+    fuses,
+    ,
+    ,
+    ((set logging file log/fuses.log
+        response: ),) + prolog + \
+    ((load
+        response: Start address 0x),) + epilog),
+
+# tests of the ability to simulate a two-word call/jmp instruction
+# on a ATmega2560 in the high area of the memory (for all others
+# it is just computing the average of 10 numbers)
+    simhigh : (
+    ('huge', 'dw', 'jtag', 'pdi', 'updi', 'arduino', 'noadc'),
+    sim2word_highjmp,
+    ,
+    ,
+    ((set logging file log/sim2word_highjmp.log
+        response: ),) + prolog + \
+    ((load
+        response: Start address 0x
+      - stimulus: monitor break soft
+        response: 
+      - stimulus: break loop
+        response: 
+      - stimulus: continue
+        response: Breakpoint 1, loop ()
+      - stimulus: break +4
+        response: Breakpoint 2
+      - stimulus: break +8
+        response: Breakpoint 3
+      - stimulus: continue
+        response: val = random();
+      - stimulus: continue
+        response: val = random();
+      - stimulus: continue
+        response: val = random();
+      - stimulus: delete 2
+        response: 
+      - stimulus: continue
+        response: Serial.println(avg);
+      - stimulus: print avg
+        response: = -7196),) + epilog),
+
+# check that MCU is categorized as a MCU with a dirty PC
+    dirty : (
+    ('dirty', 'dw', 'jtag'),
+    ,
+    ,
+    ,
+    ((set logging file log/dirty.log
+        response: ),) + prolog[0:6] + \
+    ((monitor debugwire enable,  Fatal error:
+        response: This is not a debugWIRE target
+      - stimulus: monitor info
+        response: stuck-at-1 bit
+        response: Stuck-at-1 bit)) + epilog),
+
+# switch off debugWIRE mode (if applicable)
+# this test script should be run last in each sequence in order to disable debugWIRE
+# We will check that SIGHUP is generated for debugWIRE targets
+    off : (
+    ('small', 'medium', 'large', 'huge', 'dw', 'arduino', 'nonarduino', 'noadc',
+         'noautopc'),
+    ,
+    ,
+    ,
+    ((set logging file log/off.log
+        response: ),) + prolog + \
+    ((monitor debugwire disable,  
+      - stimulus: $SUCCESS_IF
+        response: This is not a debugWIRE target
+      - stimulus: continue
+        response: SIGHUP),) + epilog) }
+

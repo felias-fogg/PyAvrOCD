@@ -27,20 +27,23 @@ tests:
           - <wildcard expression>
           - <wildcard expression>
       - stimulus: <gdb command>
-        success_if: <wildcard expressions> # terminate and count it as success
-        fail_if: <wildcard expressions> # terminate and fail
-        interrupt_after: <number> # interrupt after this number of seconds
+        success: <wildcard expressions> # terminate and count it as success
+        fail: <wildcard expressions> # terminate and fail
+        interrupt: <number> # interrupt after this number of seconds
+      - timeout: <number>
 ```
 
-A <capability> could be
+Instead or in addition to steps, one can specify `upload`, which will call avrdude with the right -c and -p and -P options.
 
-- ram: <number> # requested number of kbytes
-- flash: <number> # requested number of kbytes flash
+A \<capability> could be
+
+- ram: \<number> # requested number of kbytes
+- flash: \<number> # requested number of kbytes flash
 - dw: true # debugging interface
 - jtag: true
 - updi: true
 - arduino: true  # only possible with Arduino support
-- adc: true # needs an adc
+- cadc: true # needs a classic adc
 - autopower: true # requires auto power-cycle (on xminis)
 - dirty: true # needs dirty PC
 
@@ -52,7 +55,7 @@ Board specifications are also given in YAML syntax in the file devices.yml. A ty
 
 ```
 devices:
-  - device: <device-id> # board or mcu id, which is used when starting a test
+  <device-id>: # board or mcu id, which is used when starting a test
     virtual: <bool> # when true, then one can only import the description
     import: <deviced-id> # import the description
     mcu: <mcu-name>
@@ -64,3 +67,13 @@ devices:
     setup: <test-setup String>
 ```
 
+## Clock Specs
+```
+clocks:
+  <Core name>:
+    "<number>":
+      code: <code for arduino-cli>
+      value: < value in Hz>
+
+  <Core name>:
+    import: <Core name>

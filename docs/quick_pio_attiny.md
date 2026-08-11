@@ -7,7 +7,7 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
 
 - how to install the PyAvrOCD GDB server,
 
-- how to turn an Arduino UNO R3 into a [debugWIRE](https://debugwire.de/) debug probe using the [dw-link](https://felias-fogg.github.io/dw-link/) firmware,
+- how to turn an Arduino UNO R3 into a [debugWIRE](https://en.wikipedia.org/wiki/DebugWIRE) debug probe using the [dw-link](https://felias-fogg.github.io/dw-link/) firmware,
 - how to set up the breadboard with the ATtiny85 on it, and
 - how to use PlatformIO for debugging a program on the ATtiny.
 
@@ -58,10 +58,12 @@ default_envs = debug
 
 [env:debug]
 ;; enables debugging
+build_type = debug
 ...
 
 [env:release]
 ;; supports uploading in release mode
+build_type = release
 ...
 ```
 
@@ -138,7 +140,7 @@ After starting the debugger, program execution will stop in the first line of th
 
 ### Step 5: Start over or terminate the debugging session
 
-If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
+If you have found the bug you were hunting, you can now leave the debugger(red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.
 
 Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command `monitor debugwire disable` into the input line of the `DEBUG CONSOLE` window (1) just before terminating the debugger (2).
 

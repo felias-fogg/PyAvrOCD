@@ -1,0 +1,1509 @@
+tests:
+  prolog:
+    virtual: true
+    steps:
+      - stimulus: set style enabled off
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging on
+      - stimulus: "target remote :2000"
+        timeout: 5
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor debugwire enable
+        timeout: 40
+        responses:
+          - enabled
+          - This is not a debugWIRE target
+
+  epilog:
+    virtual: true
+    steps:
+      - stimulus: detach
+        response: Detaching from
+      - stimulus: quit
+
+  # check whether we can recognize a set lockbit
+  nolock: 
+    sketch: nolock
+    requires:
+      updi: false
+    steps:
+      - stimulus: set logging file log/nolock.log
+      - stimulus: set style enabled off
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging enabled on
+      - stimulus: "target remote :2000"
+        timeout: 5
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor info
+        success: mEDBG CMSIS-DAP           # ignore on Xplained Mini boards
+      - stimulus: monitor debugwire enable # try to move us into debugwire mode (if possible)
+        timeout: 40
+      - stimulus: monitor info
+        responses:                          # There should be an error message
+          - "Last critical error:      Debugging is impossible when lockbits are set."
+          - "Lock bits are set, but not managed by dw-link"
+      - import: epilog
+
+  # start 'LiveTests' monitor command 
+  live: 
+    steps:
+      - stimulus: set logging file log/live.log
+      - import: prolog
+      - stimulus: monitor reset
+      - stimulus: info reg pc              # after reset PC should have value 0x0
+        response: "0x0"
+      - stimulus: monitor LiveTests
+        timeout: 20
+        responses:
+          - live tests successfully finished
+          - Not implemented
+      - import: epilog
+
+  # This is a blink program in C not using Arduino
+  cblink:
+    sketch: cblink
+    steps:
+      - stimulus: set logging file log/cblink.log
+      - import: prolog
+      - stimulus: monitor atexit stay
+        responses:
+          - MCU will stay in debug mode on exit
+          - Stay in debugWIRE at exit
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: break episode
+        response: Breakpoint 1
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: next
+        response: setBit(LED2_PORT, LED2)
+      - stimulus: break
+        response: Breakpoint 2
+      - stimulus: ignore 2 3
+      - stimulus: delete 1
+      - stimulus: continue
+        timeout: 5
+        response: Breakpoint 2
+      - stimulus: next
+        response: _delay_ms
+      - stimulus: next
+        timeout: 5
+        response: clearBit(LED1_PORT, LED1);
+      - import: epilog
+
+  # Attaches to the previously run program
+  attach: 
+    serverargs: --attach
+    steps:
+      - stimulus: file sketches/cblink/cblink.elf
+      - stimulus: set logging file log/attach.log
+      - stimulus: set style enabled off
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging on
+      - stimulus: target remote :2000
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor info
+        success: dw-link  # dw-link cannot attach
+      - stimulus: backtrace
+        response: in main
+      - stimulus: break episode
+        response: Breakpoint 1
+      - stimulus: continue
+      - stimulus: print cnt
+      - stimulus: print cnt > 3
+        responses:
+          - = 1
+          - = true
+      - import: epilog
+
+  # Basic peek and poke tha works on all classic MCUs
+  basicpeekpoke:
+    virtual: true
+    steps:
+      - stimulus: set logging file log/peekpoke.log
+      - import: prolog
+      - stimulus: "x/i 0x0"                # instruction at RESET vector
+        responses:
+          - "0x0:\trjmp"
+          - "0x0:\tjmp"
+      - stimulus: set {char}0x800000=0xcd   # set sram location 0x0/0x1
+      - stimulus: set {char}0x800001=0xab
+      - stimulus: x/hx 0x800000             # check that 0x0/0x1 have been set the the value above
+        response: "0x800000:\t0xabcd"
+      - stimulus: info reg r1               # and that 0x1 is the same as R1
+        response: "r1             0xab"
+      - stimulus: set {char}0x800005=0x56   # set 0x5
+      - stimulus: set $r5=0x8c              # set R5
+      - stimulus: info reg r5              # should be the value set to r5
+        response: "r5             0x8c"
+      - stimulus: "x/bx 0x800005"           # which is identical to 0x5
+        response: "0x800005:\t0x8c"          
+      - stimulus: set {char}0x80005F=0x1F   # set sram location 0x5f
+      - stimulus: info reg SREG             # this is SREG!
+        response: "SREG           0x1f"
+      - stimulus: x/bx 0x80005F             # still same value
+        response: "0x80005f:\t0x1f"
+      - stimulus: set $SREG=0xF1            # change SREG
+      - stimulus: x/bx 0x80005F             # should now be the same as in 0x5f
+        response: "0x80005f:\t0xf1"
+      - stimulus: set {char}0x810000=0xdc   # set EEPROM loc
+      - stimulus: set {char}0x810001=0xfe
+      - stimulus: x/hx 0x810000             # and test
+        response: "0x810000:\t0xfedc"
+        
+
+  # Peek and poke for small classic MCUs
+  smallpeekpoke:
+    requires:
+      updi: false
+      ram_atmost: 0.125
+    steps:
+      - import: basicpeekpoke
+      - stimulus: set $SP=0x123             # Set stack pointer
+        timeout: 20
+      - stimulus: monitor onlywhenloaded disable 
+      - stimulus: si                        # make a jump
+      - stimulus: x/hx 0x80005D             # MSB should be zero!
+        response: "0x80005d:	0x0023"
+      - stimulus: info reg SP               # identical value when quering SP
+        response: "SP             0x23"
+      - stimulus: set {int}0x80005D=0x00FF # set LSB to 0xff
+      - stimulus: si
+      - stimulus: info reg SP               # and check register
+        response: "SP             0xff"
+      - stimulus: set {char}0x800060=0x34   # set RAM locations
+      - stimulus: set {char}0x800061=0x12
+      - stimulus: x/hx 0x800060             # and test
+        response:  "0x800060:\t0x1234"
+      - import: epilog
+
+# set/read memory cells (medium MCUs, some ram at 0x100)
+  mediumpeekpoke:
+    requires:
+      updi: false
+      ram_atleast: 0.25
+      ram_atmost: 0.5
+    steps:
+      - import: basicpeekpoke
+      - stimulus: set $SP=0x123
+        timeout: 20
+      - stimulus: monitor onlywhenloaded disable
+      - stimulus: si
+      - stimulus: x/hx 0x80005D
+        response: "0x80005d:	0x0123"
+      - stimulus: info reg SP
+        response: SP             0x123
+      - stimulus: set {int}0x80005D=0x00FF
+      - stimulus: si
+      - stimulus: info reg SP
+        response: SP             0xff
+      - import: epilog
+
+## set/read memory cells (large MCUs, some ram at 0x3ff)
+  mediumpeekpoke:
+    requires:
+      updi: false
+      ram_atleast: 1
+    steps:
+      - import: basicpeekpoke
+      - stimulus: set $SP=0x223
+      - stimulus: monitor onlywhenloaded disable
+      - stimulus: si
+      - stimulus: x/hx 0x80005D
+        response: "0x80005d:	0x0223"
+      - stimulus: info reg SP
+        response: SP             0x223
+      - stimulus: set {int}0x80005D=0x03FF
+      - stimulus: si
+      - stimulus: info reg SP
+        response: SP             0x3ff
+      - import: epilog
+
+## set/read memory cells (UPDI targets)
+  updipeekpoke:
+    requires:
+      updi: true
+    steps:
+      - stimulus: set logging file log/peekpoke.log
+      - import: prolog
+      - stimulus: set {char}0x800000=0xcd
+      - stimulus: set {char}0x800001=0xab
+      - stimulus: x/hx 0x800000
+        response: "0x800000:\t0xabcd"       # virtual port A / not general registers!
+      - stimulus: info reg r1
+        response: "r1             0x0"
+      - stimulus: set {char}0x800001=0x56
+      - stimulus: set $r1=0x8c
+      - stimulus: info reg r1
+        response: "r1             0x8c"     # general registers
+      - stimulus: x/bx 0x800001
+        response: "0x800001:\t0x56"         # versus virtual port A
+      - stimulus: set {char}0x80003F=0x1F   # SREG
+      - stimulus: info reg SREG
+        response: "SREG           0x1f"
+      - stimulus: x/bx 0x80003F
+        response: "0x80003f:\t0x1f"
+      - stimulus: set $SREG=0xF1
+      - stimulus: x/bx 0x80003F
+        response: "0x80003f:\t0xf1"
+      - stimulus: set $SP=0xFFFF            # SP
+        timeout: 20
+      - stimulus: "print $SP==(*0x80003D+0x800000)"
+        responses:
+          - "= 1"
+          - "= true"
+      - stimulus: set {char}0x802800=0x34   # internal SRAM
+      - stimulus: set {char}0x802801=0x12
+      - stimulus: x/hx 0x802800
+        response: "0x802800:\t0x1234"
+      - stimulus: set {char}0x810000=0xdc   # EEPROM
+      - stimulus: set {char}0x810001=0xfe
+      - stimulus: x/hx 0x810000
+        response: "0x810000:\t0xfedc"
+      - stimulus: x/hx 0x801400
+        response: "0x801400:\t0xfedc"       # EEPROM addressed through data space
+      - stimulus: set {char}0x850000=0x56   # USER ROW
+      - stimulus: set {char}0x850001=0x34
+      - stimulus: x/hx 0x850000
+        response: "0x850000:\t0x3456"
+      # - stimulus: x/hx 0x801300
+      #   response: "0x801300:\t0x3456" # USER ROW addressed in data space; is different for diff. families
+      - import: epilog
+
+# Tests all ways how signals are raised
+# SIGHUP will be tested in the "off" script, SIGABRT cannot be tested
+  signals: 
+    sketch: break
+    steps:
+      - stimulus: set logging file log/signals.log
+      - import: prolog
+      - stimulus: cont
+        response: SIGSEGV
+      - stimulus: load 
+        response: Start address 0x
+      - stimulus: monitor break hardware
+      - stimulus: break main
+        response: Breakpoint 1
+      - stimulus: cont
+        response: "break.c:25"
+      - stimulus: break 26
+        response: line 26
+      - stimulus: break 27
+        response: line 27
+      - stimulus: break 28
+        response: line 28
+      - stimulus: break 30
+        response: line 30
+      - stimulus: cont
+        response: SIGSYS
+      - stimulus: delete 1-5
+      - stimulus: cont
+        response: SIGTRAP
+      - stimulus: cont
+        response: SIGILL
+      - stimulus: next
+        response: SIGILL
+      - stimulus: step
+        response: SIGILL
+      - stimulus: monitor reset
+      - stimulus: break 32
+      - stimulus: cont
+      - stimulus: monitor info
+        success: "Debugging interface:      updi" # skip next test for UPDI targets
+      - stimulus: set $sp=0x5e
+      - stimulus: cont
+        response: SIGBUS
+      - import: epilog
+
+# Checks range stepping for debugWIRE targets
+# _delay_ms (will be fast), loop with 2 exits (one of them a function call) will be fast,
+# loop with real 2 exits will be slow, and one with 0 exits will be fast again.
+# Finally, after a manual reset, we check that we indeed stop at the set (hardware) breakpoint
+# and that executing the second loop is still fast.
+  range_dw:
+    requires:
+      arduino: true
+      dw: true
+    sketch: range
+    steps:
+      - stimulus: set logging file log/range_dw.log
+      - import: prolog
+      - stimulus: load  
+        response: Start address 0x
+        timeout: 10
+      - stimulus: "break range.ino:setup"
+        response: Breakpoint 1
+      - stimulus: cont
+        response: LedInit
+      - stimulus: next
+        response: LedOn
+      - stimulus: next
+        response: _delay_ms
+      - stimulus: next
+        response: LedOff
+      - stimulus: delete 1
+      - stimulus: "break range.ino:loop"
+        response: Breakpoint 2
+      - stimulus: cont
+        response: cnt = 0
+      - stimulus: monitor info
+        success: dw-link                    # dw-link will fail on the difficult tests
+      - stimulus: next
+        response: while
+      - stimulus: next
+        response: LedOff
+      - stimulus: next
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        interrupt: 2                        # interrupt after 2 seconds
+      - stimulus: print cnt
+      - stimulus: print cnt > 1
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: print cnt < 100
+        responses:
+          - "= true"
+          - "= 1"
+      - stimulus: set cnt = 5000
+      - stimulus: next
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: monitor breakpoints hardware
+      - stimulus: next
+        interrupt: 3
+      - stimulus: print cnt
+      - stimulus: print cnt > 50000
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: monitor reset
+        response: reset
+      - stimulus: cont
+        response: loop
+      - import: epilog
+
+
+# Checks range stepping for UPDI targets
+# We will reduce the number of available HWBPs by one using hardware breakpoints only
+# By doing so, we can reuse the rage_dw sketch.
+# _delay_ms (will be fast), loop with 2 exits (one of them a function call) will be fast,
+# loop with real 2 exits will be slow, and one with 0 exits will be fast again.
+# Finally, after a manual reset, we check that we indeed stop at the set (hardware) breakpoint
+# and that executing the second loop is still fast.
+  range_updi:
+    requires:
+      arduino: true
+      updi: true
+    sketch: range
+    steps:
+      - stimulus: set logging file log/range_updi.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: monitor breakpoints hardware
+        response: hardware
+      - stimulus: "break range.ino:setup"
+        response: Breakpoint 1
+      - stimulus: cont
+        response: LedInit
+      - stimulus: next
+        response: LedOn
+      - stimulus: next
+        response: _delay_ms
+      - stimulus: next
+        response: LedOff
+      - stimulus: delete 1
+      - stimulus: break range.ino:loop
+        response: Breakpoint 2
+      - stimulus: cont
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        response: LedOff
+      - stimulus: next
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        interrupt: 4
+      - stimulus: print cnt
+      - stimulus: print cnt > 1
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: print cnt < 100
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: set cnt = 5000
+      - stimulus: next
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        interrupt: 4
+      - stimulus: print cnt
+      - stimulus: print cnt > 50000
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: monitor reset
+        response: reset
+      - stimulus: cont
+        response: Breakpoint 2, loop
+      - stimulus: next
+        response: while
+      - stimulus: next
+        response: LedOff
+      - import: epilog
+
+# Checks range stepping for JTAG targets
+# Similar to above, but reserve 3 HWBPs
+  range_jtag: 
+    requires:
+      arduino: true
+      jtag: true
+    sketch: range
+    steps:
+      - stimulus: set logging file log/range_jtag.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: monitor breakpoints hardware
+        response: hardware
+      - stimulus: break range.ino:setup
+        response: Breakpoint 1
+      - stimulus: "break range.ino:loop"
+        response: Breakpoint 2
+      - stimulus: "break main.cpp:main"
+        response: Breakpoint 3
+      - stimulus: cont
+        response: init
+      - stimulus: cont
+        response: LedInit
+      - stimulus: next
+        response: LedOn
+      - stimulus: next
+        response: _delay_ms
+      - stimulus: next
+        response: LedOff
+      - stimulus: cont
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        response: LedOff
+      - stimulus: next
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        interrupt: 2
+      - stimulus: print cnt
+      - stimulus: print cnt > 1
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: print cnt < 100
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: set cnt = 5000
+      - stimulus: next
+        response: cnt = 0
+      - stimulus: next
+        response: while
+      - stimulus: next
+        interrupt: 3
+      - stimulus: print cnt
+      - stimulus: print cnt > 50000
+        responses: 
+          - "= true"
+          - "= 1"
+      - stimulus: monitor reset
+        response: reset
+      - stimulus: cont
+        response: init
+      - stimulus: next
+        responses:
+          - initVariant
+          - setup
+      - import: epilog
+
+# Test sleep walking
+  sleepwalk:
+    requires:
+      arduino: true
+    sketch: sleepwalk
+    steps:
+      - stimulus: set logging file log/sleepwalk.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: "break sleepwalk.ino:13"
+        response: Breakpoint 1
+      - stimulus: "break sleepwalk.ino:loop"
+        response: Breakpoint 2
+      - stimulus: cont
+        response: Breakpoint 2
+      - stimulus: set TIMSK=0
+      - stimulus: set TIMSK0=0
+      - stimulus: cont
+        response: sei
+      - stimulus: next
+        response: sleep_cpu
+      - stimulus: p $pc
+      - stimulus: step
+        interrupt: 1
+      - stimulus: p $pc
+      - stimulus: print 1
+      - import: epilog
+
+# tests monitor commands across different gdb servers
+# start always with the universal default setting, if it exists
+  monitor: 
+    steps:
+      - stimulus: set logging file log/monitor.log
+      - import: prolog
+      - stimulus: monitor help
+        responses:
+          - "help                                - this help text"
+          - "monitor help                 - help function"
+      - stimulus: monitor info
+        response: "Target:"
+      - stimulus: monitor version
+        response: version
+      - stimulus: monitor atexit leave
+        responses:
+          - MCU will leave debug mode on exit
+          - Leave debugWIRE at exit
+      - stimulus: monitor atexit
+        responses:
+          - MCU will leave debug mode on exit
+          - Leave debugWIRE at exit
+      - stimulus: monitor atexit s
+        responses:
+          - MCU will stay in debug mode on exit
+          - Stay in debugWIRE at exit
+      - stimulus: monitor atexit
+        responses:
+          - MCU will stay in debug mode on exit
+          - Stay in debugWIRE at exit
+      - stimulus: monitor breakpoints
+        responses:
+          - All breakpoints are allowed
+          - On this MCU, only hardware breakpoints are allowed
+      - stimulus: monitor breakpoints s
+        responses:
+          - Only software breakpoints
+          - Breakpoint mode cannot be changed on this MCU
+      - stimulus: monitor breakpoints
+        responses:
+          - Only software breakpoints
+          - On this MCU, only hardware breakpoints are allowed
+      - stimulus: monitor breakpoints hardware
+        responses:
+          - Only hardware breakpoints
+          - Breakpoint mode cannot be changed on this MCU
+      - stimulus: monitor breakpoints
+        responses:
+          - Only hardware breakpoints
+          - On this MCU, only hardware breakpoints are allowed
+      - stimulus: monitor breakpoints all
+        responses:
+          - All breakpoints are allowed
+          - Breakpoint mode cannot be changed on this MCU
+      - stimulus: monitor breakpoints
+        responses:
+          - All breakpoints are allowed
+          - On this MCU, only hardware breakpoints are allowed
+      - stimulus: monitor caching
+        responses:
+          - Flash memory will be cached
+          - Not implemented
+      - stimulus: monitor caching disable
+        responses:
+          - Flash memory will not be cached
+          - Not implemented
+      - stimulus: monitor caching
+        responses:
+          - Flash memory will not be cached
+          - Not implemented
+      - stimulus: monitor caching enable
+        responses:
+          - Flash memory will be cached
+          - Not implemented
+      - stimulus: monitor caching
+        responses:
+          - Flash memory will be cached
+          - Not implemented
+      - stimulus: monitor erasebeforeload
+        responses:
+          - Flash memory will be erased before loading executable
+          - Flash memory will not be erased before loading executable
+          - On debugWIRE targets, flash memory cannot be erased before loading executable
+          - Not implemented
+      - stimulus: monitor erasebeforeload disable
+        responses:
+          - Flash memory will not be erased before loading executable
+          - On debugWIRE targets, flash memory cannot be erased before loading executable
+          - Not implemented
+      - stimulus: monitor erasebeforeload
+          - Flash memory will not be erased before loading executable
+          - On debugWIRE targets, flash memory cannot be erased before loading executable
+          - Not implemented
+      - stimulus: monitor erasebeforeload enable
+        responses:
+          - Flash memory will be erased before loading executable
+          - On debugWIRE targets, flash memory cannot be erased before loading executable
+          - Not implemented
+      - stimulus: monitor load noinitialload
+        responses:
+          - Only reading, but no flashing
+          - Only caching when loading
+      - stimulus: monitor load
+        responses:
+          - Only reading, but no flashing
+          - Only caching when loading
+      - stimulus: monitor load readbeforewrite
+        response: Reading before writing when loading
+      - stimulus: monitor load
+        response: Reading before writing when loading
+      - stimulus: monitor load writeonly
+        response: No reading before writing when loading
+      - stimulus: monitor load
+        response: No reading before writing when loading
+      - stimulus: monitor rangestepping
+        responses:
+          - Range stepping is enabled
+          - Range stepping allowed
+      - stimulus: monitor rangestepping disable
+        responses:
+          - Range stepping is disabled
+          - No range stepping
+      - stimulus: monitor rangestepping
+        responses:
+          - Range stepping is disabled
+          - No range stepping
+      - stimulus: monitor rangestepping enable
+        responses:
+          - Range stepping is enabled
+          - Range stepping allowed
+      - stimulus: monitor rangestepping
+        responses:
+          - Range stepping is enabled
+          - Range stepping allowed
+      - stimulus: monitor verify
+        response: Verifying flash after load
+      - stimulus: monitor verify disable
+        response: Load operations are not verified
+      - stimulus: monitor verify
+        response: Load operations are not verified
+      - stimulus: monitor verify enable
+        response: Verifying flash after load
+      - stimulus: monitor verify
+        response: Verifying flash after load
+      - stimulus: monitor onlywhenloaded
+        response: Execution is only possible after a previous load command
+      - stimulus: monitor onlywhenloaded disable
+        response: Execution is always possible
+      - stimulus: monitor onlywhenloaded
+        response: Execution is always possible
+      - stimulus: monitor onlywhenloaded enable
+        response: Execution is only possible after a previous load command
+      - stimulus: monitor onlywhenloaded
+        response: Execution is only possible after a previous load command
+      - stimulus: monitor timers
+        responses:
+          - Timers will run when execution is stopped
+          - On (U)PDI targets, timers are frozen when execution is stopped
+      - stimulus: monitor timers freeze
+        responses:
+          - Timers are frozen when execution is stopped
+          - On (U)PDI targets, timers are frozen when execution is stopped
+      - stimulus: monitor timers
+        responses:
+          - Timers are frozen when execution is stopped
+          - On (U)PDI targets, timers are frozen when execution is stopped
+      - stimulus: monitor timers run
+        responses:
+          - Timers will run when execution is stopped
+          - On (U)PDI targets, timers are frozen when execution is stopped
+      - stimulus: monitor timers
+        responses:
+          - Timers will run when execution is stopped
+          - On (U)PDI targets, timers are frozen when execution is stopped
+      - stimulus: monitor singlestep
+        response: Single-stepping is interrupt-safe
+      - stimulus: monitor singlestep interruptible
+        response: Single-stepping is interruptible
+      - stimulus: monitor singlestep
+        response: Single-stepping is interruptible
+      - stimulus: monitor singlestep safe
+        response: Single-stepping is interrupt-safe
+      - stimulus: monitor singlestep
+        response: Single-stepping is interrupt-safe
+      - stimulus: monitor ver
+        response: Ambiguous 'monitor' command string
+      - stimulus: monitor xxx
+        response: Unknown 'monitor' command
+      - stimulus: monitor load xxx
+        response: Unknown argument in 'monitor' command
+        response: Unknown 'monitor' option
+      - import: epilog
+
+# test whether CLI options concerning monitor commands are correctly passed
+# on to GDB server
+  monitor-options:
+    serverargs: "--atexit=l --break=s --cach d --era d --load noinitialload --onlywhen=d --ra=d --single=i --ti f --verify disable"
+    steps:
+      - stimulus: set logging file log/monitor-options.log
+      - import: prolog
+      - stimulus: monitor atexit
+        responses:
+          - MCU will leave debug mode on exit
+          - Leave debugWIRE at exit
+      - stimulus: monitor atexit stay
+        responses:
+          - MCU will stay in debug mode on exit
+          - Stay in debugWIRE at exit
+      - stimulus: monitor breakpoints
+        responses:
+          - Only software breakpoints
+          - On this MCU, only hardware breakpoints are allowed
+      - stimulus: monitor caching
+        responses:
+          - Flash memory will not be cached,
+          - Not implemented
+      - stimulus: monitor erasebeforeload
+        responses:
+          - Flash memory will not be erased before loading executable
+          - On debugWIRE targets, flash memory cannot be erased before loading executable
+          - Not implemented
+      - stimulus: monitor load
+        responses:
+          - Only reading, but no flashing
+          - Only caching when loading
+      - stimulus: monitor onlywhenloaded
+        response: Execution is always possible
+      - stimulus: monitor rangestepping
+        responses:
+          - Range stepping is disabled
+          - No range stepping
+      - stimulus: monitor singlestep interruptible
+        response: Single-stepping is interruptible
+      - stimulus: monitor timers
+        responses:
+          - Timers are frozen when execution is stopped,
+          - On (U)PDI targets, timers are frozen when execution is stopped
+      - stimulus: monitor verify
+        response: Load operations are not verified
+      - import: epilog
+
+# test timer settings
+  timers:
+    requires:
+      updi: false
+      arduino: true
+    sketch: timers
+    steps:
+      - stimulus: set logging file log/timers.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Loading
+      - stimulus: "break timers.ino:17"
+        response: Breakpoint 1
+      - stimulus: monitor timers freeze
+        response: Timers are frozen when execution is stopped
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: set $t=curr
+      - stimulus: print curr
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: print curr
+      - stimulus: print curr-$t < 1000
+        responses:
+          - "= 1"
+          - "= true"
+      - stimulus: monitor timers run
+        response: Timers will run when execution is stopped
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: set $t=curr
+      - stimulus: print curr
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: print curr
+      - stimulus: print curr-$t > 1000
+        responses:
+          - "= 1"
+          - "= true"
+      - import: epilog
+
+# tests extended-remote target
+  extended:
+    sketch: cblink
+    steps: 
+      - stimulus: set style enabled off
+      - stimulus: set logging file log/extended.log
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging on
+      - stimulus: "target extended-remote :2000"
+        response: 0x00000000 in
+      - stimulus: monitor debugwire enable
+        response: enabled
+        response: This is not a debugWIRE target
+      - stimulus: monitor reset
+      - stimulus: load
+        response: Start address 0x
+      - stimulus: break main
+        response: Breakpoint 1
+      - stimulus: "run\ny"
+        response: "Starting program:"
+      - stimulus: "kill\nn"
+        response: Not confirmed
+      - import: epilog
+
+# Arduino sketch to measure supply voltage (needs Vcc library)
+  measure:
+    requires:
+      updi: false
+      cadc: true
+      arduino: true
+    sketch: measure
+    steps:
+      - stimulus: set logging file log/measure.log
+      - import: prolog 
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: "break Vcc.cpp:Vcc::setIntref"
+        response: Breakpoint 1
+      - stimulus: cont
+      - stimulus: p intref
+        response: $1 = 1
+        response: $1 = 550
+      - stimulus: fin
+        response: result =
+      - stimulus: next
+        response: "if (result"
+      - stimulus: p result
+        response: $2 = 
+      - stimulus: b success
+        response: Breakpoint 2
+      - stimulus: b fail
+        response: Breakpoint 3
+      - stimulus: cont
+        response: success () at
+      - import: epilog
+
+# tests breaks in ISRs
+# tests asynchronous stop
+# tests display
+# tests conditional breakpoints
+  blink:
+    requires:
+      arduino: true
+    sketch: blink
+    steps:
+      - stimulus: set logging file log/blink.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: break irq_routine
+        response: Breakpoint 1
+      - stimulus: continue
+        response: if (cycle < 5)
+      - stimulus: display privmillis
+        response: privmillis = 0
+      - stimulus: continue
+        response: privmillis =
+      - stimulus: print cycle
+        response: $1 = 0
+      - stimulus: break loop
+        response: Breakpoint 2
+      - stimulus: delete 1
+      - stimulus: continue
+        response: Breakpoint 2, loop
+      - stimulus: next
+        response: mydelay
+      - stimulus: break irq_routine
+        response: Breakpoint 3 at
+      - stimulus: continue
+        response: if (cycle < 5)
+      - stimulus: continue
+        response: if (cycle < 5)
+      - stimulus: print cycle
+        response: "$2 = "
+      - stimulus: delete 3
+      - stimulus: break test_cycle
+        response: Breakpoint 4
+      - stimulus: cond 4 cycle == 4
+      - stimulus: disable 2
+      - stimulus: info b
+        response: stop only if cycle == 4
+      - stimulus: continue
+        response: Breakpoint 4
+      - stimulus: delete 1-10
+        response: No breakpoint number 10
+      - stimulus: continue
+        interrupt: 2
+      - stimulus: i b
+        response: No breakpoints
+      - import: epilog
+
+# Testing 'hardware-only' breakpoints for debugWIRE targets (1 HWBP only)
+  break_dw:
+    requires:
+      arduino: true
+      dw: true
+    sketch: blink
+    steps:
+      - stimulus: set logging file log/break_dw.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: monitor breakpoints hardware
+        response: hardware
+      - stimulus: tbreak blink.ino:setup
+        response: Temporary breakpoint 1
+      - stimulus: break loop
+        response: Breakpoint 2
+      - stimulus: continue
+        response: SIGSYS
+      - stimulus: delete 2
+      - stimulus: continue
+        response: Temporary breakpoint 1
+      - stimulus: info breakpoints
+        response: No breakpoints
+      - stimulus: break loop
+        response: Breakpoint 3
+      - stimulus: continue
+        response: Breakpoint 3, loop
+      - stimulus: next
+        response: SIGSYS
+      - stimulus: finish
+        response: SIGSYS
+      - stimulus: monitor breakpoints all
+        response: All breakpoints
+      - stimulus: "break blink.ino:test_cycle"
+        response: Breakpoint 4
+      - stimulus: continue
+        response: Breakpoint 4, test_cycle
+      - stimulus: continue
+        response: Breakpoint 3, loop
+      - stimulus: next
+        response: mydelay
+      - import: epilog
+
+# Testing 'hardware-only' breakpoints for JTAG targets (4 HWBPs)
+  break_jtag:
+    requires:
+      jtag: true
+      arduino: true
+    sketch: blink
+    steps:
+      - stimulus: set logging file log/break_jtag.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: monitor breakpoints hardware
+        response: hardware
+      - stimulus: "break blink.ino:setup"
+        response: Breakpoint 1
+      - stimulus: break loop
+        response: Breakpoint 2
+      - stimulus: break LedOn
+        response: Breakpoint 3
+      - stimulus: break LedOff
+        response: Breakpoint 4
+      - stimulus: break LedInit
+        response: Breakpoint 5
+      - stimulus: continue
+        response: SIGSYS
+      - stimulus: delete 3
+      - stimulus: continue
+        response: Breakpoint 1, setup
+      - stimulus: continue
+        response: Breakpoint 5, LedInit
+      - stimulus: continue
+        response: Breakpoint 4, LedOff
+      - stimulus: next
+        response: SIGSYS
+      - stimulus: delete 5
+      - stimulus: finish
+        response: LedOff
+      - stimulus: monitor breakpoints all
+      - success: Breakpoint mode cannot be changed on this MCU
+      - stimulus: break LedInit
+        response: Breakpoint 6
+      - stimulus: continue
+        response: LedOn
+      - stimulus: next
+        response: mydelay
+      - stimulus: next
+        response: LedOff
+      - import: epilog
+
+
+# Testing 'hardware-only' breakpoints for UPDI targets (2 HWBPs)
+  break_updi:
+    requires:
+      updi: true
+      arduino: true
+    sketch: blink
+    steps:
+      - stimulus: set logging file log/break_jtag.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: monitor breakpoints hardware
+        response: hardware
+      - stimulus: "break blink.ino:setup"
+        response: Breakpoint 1
+      - stimulus: break loop
+        response: Breakpoint 2
+      - stimulus: break LedOn
+        response: Breakpoint 3
+      - stimulus: continue
+        response: SIGSYS
+      - stimulus: delete 3
+      - stimulus: continue
+        response: Breakpoint 1, setup
+      - stimulus: continue
+        response: Breakpoint 2, loop
+      - stimulus: continue
+        response: Breakpoint 2, loop
+      - stimulus: next
+        response: SIGSYS
+      - stimulus: delete 1
+      - stimulus: continue
+        response: loop
+      - stimulus: monitor breakpoints all
+      - stimulus: break LedOn
+        response: Breakpoint 4
+      - stimulus: continue
+        response: LedOn
+      - stimulus: next
+        response: mydelay
+      - stimulus: next
+        response: LedOff
+      - import: epilog
+
+# test whether flash memory is loaded without any error
+  flash:
+    requires:
+      arduino: true
+    sketch: flashed
+    steps:
+      - stimulus: set logging file log/flash.log
+      - import: prolog
+      - stimulus: load
+        timeout: 90
+        response: Start address 0x
+      - stimulus: break blink_exit
+        response: Breakpoint 1 at
+      - stimulus: continue
+        response: (OK=true)
+      - import: epilog
+
+
+# test recursive functions
+# test up/down
+# test conditional stop
+# test run command
+# software watchpoint
+  fibonacci:
+    requires:
+      arduino: true
+    sketch: fibonacci
+    steps:
+      - stimulus: set logging file log/fib.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: list loop
+        response: int result, arg;
+      - stimulus: b 62
+        response: Breakpoint 1 at
+      - stimulus: b 84
+        response: Breakpoint 2 at
+      - stimulus: cont
+        response: Breakpoint 1, loop ()
+      - stimulus: p result
+        response: $1 = 13
+      - stimulus: p callcnt
+        response: $2 = 25
+      - stimulus: continue
+        response: "84	  delay(result);"
+      - stimulus: p result
+        response: $3 = 1
+      - stimulus: p callcnt
+        response: $4 = 1
+      - stimulus: b fib
+        response: Breakpoint 3
+      - stimulus: b mfib
+        response: Breakpoint 4
+      - stimulus: dis 1
+      - stimulus: continue
+        response: Breakpoint 3, fib (n=7)
+      - stimulus: continue
+        response: Breakpoint 3, fib (n=6)
+      - stimulus: continue
+        response: Breakpoint 3, fib (n=5)
+      - stimulus: continue
+        response: Breakpoint 3, fib (n=4)
+      - stimulus: continue
+        response: Breakpoint 3, fib (n=3)
+      - stimulus: backtrace
+        response: "#0  fib (n=3)"
+      - stimulus: up
+        response: "#1"
+      - stimulus: up
+        response: "#2"
+      - stimulus: up
+        response: "#3"
+      - stimulus: down
+        response: "#2"
+      - stimulus: down
+        response: "#1"
+      - stimulus: clear fib
+        response: Deleted breakpoint 3
+      - stimulus: continue
+        response: Breakpoint 4, mfib (n=7)
+      - stimulus: set remote hardware-watchpoint-limit 0
+      - stimulus: watch memo[7]
+        response: "Watchpoint 5: memo[7]"
+      - stimulus: continue
+        response: "Watchpoint 5: memo[7]"
+      - stimulus: p memo[7]
+        response: " = 1"
+      - stimulus: p memo
+        response: " = {0, 0, 0, 0, 0, 0, 0}"
+      - stimulus: set memo[7] = 0
+      - stimulus: p callcnt
+        response: " = 0"
+      - stimulus: dis 4-5
+      - stimulus: continue
+        response: Breakpoint 2
+      - stimulus: p result
+        response: " = 13"
+      - stimulus: p callcnt
+        response: " = 13"
+      - stimulus: enable 1
+      - stimulus: monitor reset
+        response: reset
+      - stimulus: continue
+        response: Breakpoint 1)
+      - import: epilog
+
+# test OOP debugging - make sure, that LTO is disabled!
+# Only with disabled LTO you get sensible output
+  oop:
+    requires:
+      arduino: true
+      nolto: true
+    sketch: oop
+    steps:
+      - stimulus: set logging file log/oop.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: whatis r
+        response: Rectangle
+      - stimulus: ptype r
+        response: "type = class Rectangle : public TwoDObject"
+      - stimulus: print r
+        response: $1 = {<TwoDObject> = {x =
+      - stimulus: "list oop.ino:setup"
+        response: setup(void)
+      - stimulus: b 83
+        response: Breakpoint 1
+      - stimulus: b 92
+        response: Breakpoint 2
+      - stimulus: b 111
+        response: Breakpoint 3
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: print r
+        response: height = 5, width = 8
+      - stimulus: continue
+        response: "Serial.println(F(\"Move s by +10, +10:\"));"
+      - stimulus: dis 1
+      - stimulus: continue
+        response: Breakpoint 3
+      - stimulus: print s
+        response: "$3 = {<Rectangle> = {<TwoDObject> = {x = 15, y = 15}, height = 5"
+      - import: epilog
+
+#tests terminal I/O and heavy IRQ load
+  tictactoe:
+    requires:
+      arduino: true
+      flash_atleast: 8
+    sketch: tictactoe
+    steps:
+      - stimulus: set logging file log/tictactoe.log
+      - import: prolog
+      - stimulus: load
+        timeout: 15
+        response: Start address 0x
+      - stimulus: "b tictactoe.ino:210"
+        response: line 210
+      - stimulus: "b tictactoe.ino:176"
+        response: line 176
+      - stimulus: b minimax
+        response: Breakpoint 3
+      - stimulus: cont
+        response: "210"
+      - stimulus: "set key='y'"
+      - stimulus: p key
+        response: "$1 = 121 'y'"
+      - stimulus: next
+        response: "211"
+      - stimulus: p key
+        response: "$2 = 89 'Y'"
+      - stimulus: next
+        response: "212"
+      - stimulus: cont
+        timeout: 20
+        response: "176"
+      - stimulus: "set key='9'"               # we play 9
+      - stimulus: cont
+        timeout: 20
+        response: "Breakpoint 3, minimax (player=1"
+      - stimulus: cont
+        timeout: 20
+        response: "Breakpoint 3, minimax (player=player@entry=-1"
+      - stimulus: disable 3
+      - stimulus: cont
+        timeout: 20
+        response: "176" # player played 5
+      - stimulus: "set key='3'" # we play 3
+      - stimulus: cont
+        timeout: 20
+        response: "176" # player played 6
+      - stimulus: set key='1' # we play 1
+      - stimulus: cont
+        timeout: 20
+        response: "210" # player played 4 -- and won
+      - stimulus: set key='N'  # we do not want play any longer
+      - stimulus: cont
+        timeout: 20
+        response: "210"
+      - import: epilog
+
+# tests safe and interruptible single-step execution
+# INT 0 is enabled and switched active by setting the IRQ pin as an output
+  singlestep:
+    requires:
+      arduino: true
+    sketch: isr
+    steps:
+      - stimulus: set logging file log/isr.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: "b isr.ino:shortwait"
+        response: Breakpoint 1
+      - stimulus: cont
+        response: shortwait
+      - stimulus: next
+        responses:
+          - "}"
+          - outsidecount
+          - delay (ms=1)
+      - stimulus: next
+        responses:
+          - outsidecount
+          - digitalWrite
+          - _delay_ms(1)
+      - stimulus: cont
+        response: shortwait
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: cont
+        response: shortwait
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: next
+        fail: __vectors
+      - stimulus: cont
+        response: shortwait
+      - stimulus: monitor singlestep interruptible
+        response: interruptible
+      - stimulus: next
+        success: __vectors
+      - stimulus: next
+        success: __vectors
+      - stimulus: next
+        success: __vectors
+      - stimulus: next
+        success: __vectors
+      - import: epilog
+
+# load something into EEPROM
+  eeprom:
+    requires:
+      arduino: true
+    sketch: eeprom
+    steps:
+      - stimulus: set logging file log/eeprom.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: break loop
+      - stimulus: continue
+        response: Breakpoint 1, loop
+      - stimulus: p ee_data
+        response: "data that's loaded straight into EEPROM"
+      - stimulus: p ver
+        response: "data that's loaded straight into EEPROM"
+      - stimulus: delete 1
+      - stimulus: break blink_exit
+        response: Breakpoint 2
+      - stimulus: cont
+        response: (OK=true)
+      - stimulus: "set var ee_data[0] = 'X'"
+      - stimulus: p ee_data
+        response: "Xata that's loaded straight into EEPROM"
+      - import: epilog
+
+# loads fuses and lockbits, which is silently ignored
+# also loads signature, which is compared with the signature
+# given when inoking pyavrocd
+  fuse: 
+    sketch: fuses
+    steps:
+      - stimulus: set logging file log/fuses.log
+      - import: prolog
+      - stimulus: load
+        timeout: 5
+        response: Start address 0x
+      - import: epilog
+
+# tests of the ability to simulate a two-word call/jmp instruction
+# on a ATmega2560 in the high area of the memory 
+  simhigh:
+    requires:
+      arduino: true
+      flash_atleast: 256
+    sketch: sim2word_highjmp
+    steps:
+      - stimulus: set logging file log/sim2word_highjmp.log
+      - import: prolog
+      - stimulus: load
+        timeout: 10
+        response: Start address 0x
+      - stimulus: monitor break soft
+      - stimulus: break loop
+      - stimulus: continue
+        response: Breakpoint 1, loop ()
+      - stimulus: break +4
+        response: Breakpoint 2
+      - stimulus: break +8
+        response: Breakpoint 3
+      - stimulus: continue
+        response: val = random();
+      - stimulus: continue
+        response: val = random();
+      - stimulus: continue
+        response: val = random();
+      - stimulus: delete 2
+      - stimulus: continue
+        response: Serial.println(avg);
+      - stimulus: print avg
+        response: " = -7196 "
+      - import: epilog
+
+# check that MCU is categorized as a MCU with a dirty PC
+  dirty:
+    requires:
+      dirty: true
+    steps:
+      - stimulus: set logging file log/dirty.log
+      - stimulus: set style enabled off
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging on
+      - stimulus: "target remote :2000"
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor debugwire enable
+        responses:
+          - "Fatal error:"
+          - "This is not a debugWIRE target"
+      - stimulus: monitor info
+        responses:
+          - stuck-at-1 bit
+          - Stuck-at-1 bit
+      - import: epilog
+
+# Switch off debugWIRE mode. This test script should be run last in each sequence on debugWIRE targets
+# in order to disable debugWIRE. We will check that SIGHUP is generated for debugWIRE targets
+  dwoff:
+    requires:
+      arduino: true
+      dw: true
+    steps:
+      - stimulus: set logging file log/dwoff.log
+      - import: prolog
+      - stimulus: monitor debugwire disable
+      - stimulus: continue
+        response: SIGHUP
+      - import: epilog
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+

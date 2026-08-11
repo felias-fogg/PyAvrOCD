@@ -1,190 +1,538 @@
 # List of all covered boards and MCUs in YAML format
 devices:
 
-
 # some virtual devices that can be imported to make the actual
 # specifications more concise
-  - device: classic_tiny
+
+  classic_tiny:
     virtual: true
     provides:
       dw: true
       arduino: true
-      adc: true
-    clock: [ 1, 4, 8, 16 ]
+      cadc: true
+    clocks: [ 1, 4, 8, 16 ]
+    architecture: avr
     core: TinyCore
 
-  - device: classic_tinymega
+  classic_tiny_mega:
     virtual: true
     provides:
       dw: true
       arduino: true
-      adc: true
-    clock: [ 1, 4, 8, 16 ]
-    core: MinyCore
+      cadc: true
+      nolto: true
+    clocks: [ 1, 4, 8, 16 ]
+    LTO: Os
+    architecture: avr
+    core: MiniCore
 
-  - device: classic_mega
+  classic_tiny_mega_nocore:
+    virtual: true
+    import: classic_tiny_mega
+    clocks: [ 1, 8, 16 ]
+    core: NoCore 
+
+  arduino_avr:
+    virtual: true
+    provides:
+      cadc: true
+      arduino: true
+      nolto: true
+    architecture: avr
+    core: arduino
+
+  classic_mega:
     virtual: true
     provides:
       jtag: true
       arduino: true
-      adc: true
-    clock: [ 1, 4, 8, 16 ]
+      cadc: true
+      nolto: true
+    clocks: [ 1, 4, 8, 16 ]
+    LTO: Os
+    architecture: avr
 
-  - device: modern_tiny
+  modern_tiny:
     virtual: true
     provides:
       updi: true
       arduino: true
-    clock: [ 1, 4, 8, 16, 20 ]
-    core: tinyMega
+    clocks: [ 1, 2, 4, 5, 8, 10, 16, 20 ]
+    core: megaTinyCore
+    architecture: megaavr
 
-  - device: modern_mega
+  modern_mega:
     virtual: true
-    provides:
-      updi: true
-      arduino: true
-    clock: [ 1, 4, 8, 16, 20 ]
+    import: modern_tiny
     core: MegaCoreX
 
-  - device: modern_avr
+  modern_avr:
     virtual: true
-    provides:
-      updi: true
-      arduino: true
-    clock: [ 1, 4, 8, 16, 20 ]
+    import: modern_tiny
     core: DxCore
 
-####################### Classic ATinys ##################################
+  arduino_megaavr:
+    virtual: true
+    provides:
+      cadc: false
+      arduino: true
+      nolto: true
+    architecture: megaavr
+    core: arduino
 
-  - device: attiny13
+####################### Classic MicroTinys (MicroCore) ##################################
+
+  attiny13:
     mcu: attiny13
     provides:
       dw: true
       arduino: true
       ram: 0.0625
       flash: 1
-    clock: [ 1.2, 9.6 ]
+    clocks: [ 1.2, 9.6 ]
     core: MicroCore
+    board: '13'
     setup: ATtiny85/13 dev Board or Programmer-ZF socket
 
-  - device: attiny13a
+  attiny13a:
     mcu: attiny13a
     import: attiny13
 
-  - device: attiny2313
+####################### Classic Tinys (TinyCore) ##################################
+
+  attiny2313:
     mcu: attiny2313
     import: classic_tiny
     provides:
-      adc: false
+      cadc: false
       ram: 0.125
       flash: 2
+    board: 'x313'
+    chip: '2313'
     setup: MCUdude dev board or Programmer-ZF socket
 
-  - device: attiny2313
-    mcu: attiny2313
+  attiny2313a:
+    mcu: attiny2313a
+    chip: 2313a
     import: attiny2313
 
-  - device: attiny4313
+  attiny4313:
     mcu: attiny4313
-    import: 2313
+    import: attiny2313
+    chip: '4313'
     provides:
       ram: 0.25
       flash: 4
 
-  - device: attiny43u
+  attiny43u:
     mcu: attiny43u
     import: classic_tiny
     provides:
-      adc: false # is present, but does not work
+      cadc: false # is present, but does not work
       ram: 0.25
       flash: 4
+    board: '43'
     setup: AZduino breakout board
 
-  - device: attiny24
+  attiny24:
     mcu: attiny24
     import: classic_tiny
     provides:
       ram: 0.125
       flash: 2
+    board: 'x4'
+    chip: '24'
     setup: MCUdude dev board or Programmer-ZF socket
 
-  - device: attiny44
+  attiny44:
     mcu: attiny44
     import: classic_tiny
     provides:
       ram: 0.25
       flash: 4
+    board: 'x4'
+    chip: '44'
     setup: MCUdude dev board or Programmer-ZF socket
 
-  - device: attiny84
+  attiny84:
     mcu: attiny84
     import: classic_tiny
     provides:
       ram: 0.5
       flash: 8
+    board: 'x4'
+    chip: '84'
     setup: MCUdude dev board or Programmer-ZF socket
 
-  - device: attiny441
+  attiny441:
     mcu: attiny441
     import: classic_tiny
     provides:
       ram: 0.25
       flash: 4
+    board: 'x41'
+    chip: '441'    
     setup: Breakout board on breadboard
 
-  - device: attiny841
+  attiny841:
     mcu: attiny841
     import: classic_tiny
     provides:
       ram: 0.5
       flash: 8
+    board: 'x41'
+    chip: '841'    
     setup: AZduino breakout board
 
-  - device: attiny25
+  attiny25:
     mcu: attiny25
     import: classic_tiny
     provides:
       ram: 0.125
       flash: 2
+    board: 'x5'
+    chip: '25'
     setup: ATtiny85/13 dev Board or Programmer-ZF socket
 
-  - device: attiny45
+  attiny45:
     mcu: attiny45
     import: classic_tiny
     provides:
       ram: 0.25
       flash: 4
+    board: 'x5'
+    chip: '45'
     setup: ATtiny85/13 dev Board or Programmer-ZF socket
 
-  - device: attiny85
+  attiny85:
     mcu: attiny85
     import: classic_tiny
     provides:
       ram: 0.5
       flash: 8
+    board: 'x5'
+    chip: '85'
     setup: ATtiny85/13 dev Board or Programmer-ZF socket
 
-  - device: attiny261
+  attiny261:
     mcu: attiny261
     import: classic_tiny
     provides:
       ram: 0.125
       flash: 2
+    board: 'x61'
+    chip: '261'
     setup: MCUDude dev board
 
-  - device: attiny461
+  attiny461:
     mcu: attiny461
     import: classic_tiny
     provides:
       ram: 0.25
       flash: 4
+    board: 'x61'
+    chip: '461'
     setup: MCUDude dev board
 
-  - device: attiny861
+  attiny861:
     mcu: attiny861
     import: classic_tiny
     provides:
       ram: 0.5
       flash: 8
+    board: 'x61'
+    chip: '861'
     setup: MCUDude dev board
+
+  attiny87:
+    mcu: attiny87
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'x7'
+    chip: '87'
+    setup: Breakout Board
+
+  attiny167:
+    mcu: attiny167
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 16
+    board: 'x7'
+    chip: '167'
+    setup: Breakout Board
+
+  attiny48:
+    mcu: attiny48
+    import: classic_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'x8'
+    chip: '48'
+    setup: Programmer-ZF
+    
+  attiny88:
+    mcu: attiny88
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'x8'
+    chip: '88'
+    variant: standard
+    setup: Programmer-ZF 
+
+  mh-tiny:
+    import: attiny88
+    variant: mhtiny
+    setup: MH-Tiny board
+    
+  attiny828:
+    mcu: attiny828
+    import: classic_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: '828'
+    setup: Breakout board
+
+  attiny1634:
+    mcu: attiny1634
+    import: classic_tiny
+    provides:
+      ram: 1
+      flash: 16
+    board: '1634'
+    setup: Breakout board
+
+
+####################### Classic tiny Megas (MiniCore) ##################################
+
+  atmega48:
+    mcu: atmega48
+    import: classic_tiny_mega
+    provides:
+      ram: 0.25
+      flash: 4
+      dirty: true
+    board: '48'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega48a:
+    mcu: atmega48a
+    import: classic_tiny_mega
+    provides:
+      ram: 0.25
+      flash: 4
+    board: '48'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega48pa:
+    mcu: atmega48pa
+    import: classic_tiny_mega
+    provides:
+      ram: 0.25
+      flash: 4
+    board: '48'
+    variant: modelP
+    setup: Programmer-ZF socket
+
+  atmega48pb:
+    mcu: atmega48pb
+    import: classic_tiny_mega
+    provides:
+      ram: 0.25
+      flash: 4
+    board: '48'
+    variant: modelPB
+    setup: TQFP sochet on bread board
+
+  atmega88:
+    mcu: atmega88
+    import: classic_tiny_mega
+    provides:
+      ram: 0.5
+      flash: 8
+      dirty: true
+    board: '88'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega88a:
+    mcu: atmega88a
+    import: classic_tiny_mega
+    provides:
+      ram: 0.5
+      flash: 8
+    board: '88'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega88pa:
+    mcu: atmega88pa
+    import: classic_tiny_mega
+    provides:
+      ram: 0.5
+      flash: 8
+    board: '88'
+    variant: modelP
+    setup: Programmer-ZF socket
+
+  atmega88pb:
+    mcu: atmega88pb
+    import: classic_tiny_mega
+    provides:
+      ram: 0.5
+      flash: 8
+    board: '88'
+    variant: modelPB
+    setup: TQFP socket on bread board
+
+  atmega168:
+    mcu: atmega168
+    import: classic_tiny_mega
+    provides:
+      ram: 1
+      flash: 16
+    board: '168'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega168a:
+    mcu: atmega168a
+    import: classic_tiny_mega
+    provides:
+      ram: 1
+      flash: 16
+    board: '168'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega168pa:
+    mcu: atmega168pa
+    import: classic_tiny_mega
+    provides:
+      ram: 1
+      flash: 16
+    board: '168'
+    variant: modelP
+    setup: Programmer-ZF socket
+
+  atmega168pb:
+    mcu: atmega168pb
+    import: classic_tiny_mega
+    provides:
+      ram: 1
+      flash: 16
+    board: '168'
+    variant: modelPB
+    setup: TQFP socket on bread board
+
+  atmega328:
+    mcu: atmega328
+    import: classic_tiny_mega
+    provides:
+      ram: 2
+      flash: 32
+      dirty: true
+    board: '328'
+    variant: modelNonP
+    setup: Programmer-ZF socket
+
+  atmega328p:
+    mcu: atmega328p
+    import: classic_tiny_mega
+    provides:
+      ram: 2
+      flash: 32
+    board: '328'
+    variant: modelP
+    setup: Programmer-ZF socket
+
+  atmega328pb:
+    mcu: atmega328pb
+    import: classic_tiny_mega
+    provides:
+      ram: 2
+      flash: 32
+    board: '328'
+    variant: modelPB
+    setup: TQFP socket on bread board
+
+####################### XMini Boards (XMiniCore) ##################################
+
+  xmini328p:
+    import: atmega328p
+    core: XMiniCore
+    board: atmega328p_xplained_mini
+    setup: 328P Xmini board
+    provides:
+      autopc: true
+
+  xmini328pb:
+    import: atmega328pb
+    core: XMiniCore
+    board: atmega328pb_xplained_mini
+    setup: 328PB Xmini board
+    provides:
+      autopc: true
+
+  xmini168pb:
+    import: atmega168pb
+    core: XMiniCore
+    board: atmega168pb_xplained_mini
+    setup: 168PB Xmini board
+    provides:
+      autopc: true
+
+####################### Arduino Boards (ArduinoCore-avr) ##################################
+
+  uno:
+    import: atmega328p
+    core: arduino
+    board: uno
+    setup: Uno board with open RESET EN
+
+
+####################### Classic tiny Megas (No Core) ##################################
+
+  at90usb162:
+    mcu: at90usb162
+    import: classic_tiny_mega_nocore
+    provides:
+      ram: 0.5
+      flash: 16
+      usb: true
+    setup: Olimex AVR-USB-162 board
+
+####################### Classic Megas (MightyCore) ##################################
+
+####################### Classic Megas (MegaCore) ##################################
+
+####################### Classic Megas (MajorCore) ##################################
+
+####################### Classic Megas (NoCore) ##################################
+
+####################### Modern Tinys (megaTinyCore) ##################################
+
+  attiny3217:
+    mcu: attiny3217
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 32
+    board: atxy7
+    chip: "3217"
+    setup: CNANO 3217
+      
+
+####################### Modern Megas (MegaCoreX) ##################################
+
+####################### Modern AVR (DxCore) ##################################
+
 
