@@ -125,21 +125,6 @@ jobs:
         run: |
           pyinstaller -y pyavrocd.spec
 
-      - name: Link statically and normalize for Linux binary
-        if: ${{ contains(matrix.os, 'linux') }}
-        run: |
-          sudo apt-get install -y scons
-          python -m venv env
-          . ./env/bin/activate
-          pip install patchelf-wrapper
-          pip install staticx
-          staticx dist/pyavrocd dist/pyavrocd-static
-          rm dist/pyavrocd
-          mkdir dist/pyavrocd
-          mv dist/pyavrocd-static dist/pyavrocd/pyavrocd
-          mkdir dist/pyavrocd/pyavrocd-util/
-          cp -r svd dist/pyavrocd/pyavrocd-util/
-
       - name: Run pyavrocd
         run: |
           dist/pyavrocd/pyavrocd -V
@@ -185,23 +170,6 @@ jobs:
             . ./env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
-            pip install --no-input patchelf-wrapper
-            pip install --no-input staticx
-            staticx dist/pyavrocd spyavrocd
-            ./spyavrocd -V
-            ./spyavrocd -d ? -t ?
-
-      - name: Normalize file structure
-        run: |
-          rm -rf dist
-          ls -la spyavrocd
-          sudo chmod 0755 spyavrocd
-          sudo chown runner:runner spyavrocd
-          ls -la spyavrocd
-          mkdir -p dist/pyavrocd/pyavrocd-util/svd
-          cp svd/*.svd dist/pyavrocd/pyavrocd-util/svd/
-          cp spyavrocd dist/pyavrocd/pyavrocd
-          ls -la dist/pyavrocd/*
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -38,8 +38,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure)
 
-if platform.uname().system != 'Linux':
-    exe = EXE(
+exe = EXE(
       pyz,
       a.scripts,
       [],
@@ -57,7 +56,7 @@ if platform.uname().system != 'Linux':
       entitlements_file=None,
       contents_directory='pyavrocd-util',
     )
-    coll = COLLECT(
+coll = COLLECT(
       exe,
       a.binaries,
       a.datas,
@@ -65,22 +64,5 @@ if platform.uname().system != 'Linux':
       upx=True,
       upx_exclude=[],
       name='pyavrocd',
-    )
-else:
-    exe = EXE(
-      pyz,
-      a.scripts,
-      a.binaries,
-      a.datas,
-      name='pyavrocd',
-      debug=False,
-      strip=False,
-      upx=True,
-      console=True,
-      disable_windowed_traceback=False,
-      argv_emulation=False, 
-      target_arch=None, 
-      codesign_identity=None,
-      entitlements_file=None,
     )
 
