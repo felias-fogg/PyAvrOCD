@@ -128,10 +128,6 @@ module = "e2e_tests"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "rune2e"
-ignore_errors = true
-
-[[tool.mypy.overrides]]
 module = "pyavrocd.deviceinfo.*"
 ignore_errors = true
 
