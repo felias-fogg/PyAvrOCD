@@ -8,9 +8,7 @@ After having installed [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/t
 
 ## Arduino Maker Workshop
 
-First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. In addition to the Visual Studio Code extension [Arduino Maker Workshop](https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop), one needs to add the [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension.
-
-In order to debug a particular MCU, install the right board packages from the [Arduino packages list](supporting-packages.md).
+First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. In addition to the Visual Studio Code extension [Arduino Maker Workshop](https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop), one needs to add the [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension. In order to debug a particular MCU, install the right board packages from the [Arduino packages list](supporting-packages.md).
 
 ## PlatformIO and Visual Studio Code
 
@@ -28,7 +26,7 @@ For the modern parts, i.e., UPDI targets, there is no supporting fork yet, but i
 
 ## PlatformIO and CLion
 
-Similar to Visual Studio Code, you can install a PlatfromIO plugin that exposes the most important PlatformIO commands in CLion. After you have installed CLion, follow the instructions of the [CLion documentation](https://www.jetbrains.com/help/clion/platformio.html) for installing PlatformIO. And then you can use the way described above in order to use the debug-enabled enabled fork of the platform package.
+Similar to Visual Studio Code, you can install a PlatfromIO plugin that exposes the most important PlatformIO commands in CLion. After you have installed CLion, follow the instructions of the [CLion documentation](https://www.jetbrains.com/help/clion/platformio.html) for installing PlatformIO. Then you can use the way described above in order to use the debug-enabled fork of the platform package.
 
 ## A debug GUI: Gede
 

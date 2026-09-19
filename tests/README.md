@@ -40,8 +40,7 @@ poetry run mypy .
 
 ### End-to-end tests
 
-Run end-to-end test (GDB CLI level) in folder `end-to-end` (probably only works on POSIX
-OSs). First start the server in one terminal window:
+Run end-to-end test (GDB CLI level) in folder `end-to-end` (probably only works on POSIX OSs). First start the server in one terminal window:
 
 ```
 serv.sh [<verbosity level>]
@@ -49,7 +48,7 @@ serv.sh [<verbosity level>]
 Then start the end-to-end tests in another window (also in the `end-to-end` folder)
 
 ```shell
-poetry run python3 e2e_test.py -d <mcu> -c <clock in MHz>
+poetry run python3 rune2e.py -d <mcu> -c <clock in MHz>
 ```
 
 Afterwards, you need to kill the `serv.sh` script with CTRL-C

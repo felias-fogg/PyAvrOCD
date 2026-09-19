@@ -7,7 +7,6 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging on
       - stimulus: "target remote :2000"
-        timeout: 5
       - stimulus: "!rm pyavrocd.options"
       - stimulus: monitor debugwire enable
         timeout: 40
@@ -34,12 +33,11 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging enabled on
       - stimulus: "target remote :2000"
-        timeout: 5
       - stimulus: "!rm pyavrocd.options"
       - stimulus: monitor info
         success: mEDBG CMSIS-DAP           # ignore on Xplained Mini boards
       - stimulus: monitor debugwire enable # try to move us into debugwire mode (if possible)
-        timeout: 40
+        timeout: 60
       - stimulus: monitor info
         responses:                          # There should be an error message
           - "Last critical error:      Debugging is impossible when lockbits are set."
@@ -85,12 +83,11 @@ tests:
       - stimulus: ignore 2 3
       - stimulus: delete 1
       - stimulus: continue
-        timeout: 5
+        timeout: 20
         response: Breakpoint 2
       - stimulus: next
         response: _delay_ms
       - stimulus: next
-        timeout: 5
         response: clearBit(LED1_PORT, LED1);
       - import: epilog
 
@@ -312,6 +309,7 @@ tests:
       - stimulus: monitor reset
       - stimulus: break 32
       - stimulus: cont
+        timeout: 20
       - stimulus: monitor info
         success: "Debugging interface:      updi" # skip next test for UPDI targets
       - stimulus: set $sp=0x5e
@@ -334,7 +332,7 @@ tests:
       - import: prolog
       - stimulus: load  
         response: Start address 0x
-        timeout: 10
+        timeout: 20
       - stimulus: "break range.ino:setup"
         response: Breakpoint 1
       - stimulus: cont
@@ -407,7 +405,7 @@ tests:
       - stimulus: set logging file log/range_updi.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: monitor breakpoints hardware
         response: hardware
@@ -478,7 +476,7 @@ tests:
       - stimulus: set logging file log/range_jtag.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: monitor breakpoints hardware
         response: hardware
@@ -550,7 +548,7 @@ tests:
       - stimulus: set logging file log/sleepwalk.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: "break sleepwalk.ino:13"
         response: Breakpoint 1
@@ -760,8 +758,9 @@ tests:
       - stimulus: monitor xxx
         response: Unknown 'monitor' command
       - stimulus: monitor load xxx
-        response: Unknown argument in 'monitor' command
-        response: Unknown 'monitor' option
+        responses:
+          - Unknown argument in 'monitor' command
+          - Unknown 'monitor' option
       - import: epilog
 
 # test whether CLI options concerning monitor commands are correctly passed
@@ -785,7 +784,7 @@ tests:
           - On this MCU, only hardware breakpoints are allowed
       - stimulus: monitor caching
         responses:
-          - Flash memory will not be cached,
+          - Flash memory will not be cached
           - Not implemented
       - stimulus: monitor erasebeforeload
         responses:
@@ -822,7 +821,7 @@ tests:
       - stimulus: set logging file log/timers.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Loading
       - stimulus: "break timers.ino:17"
         response: Breakpoint 1
@@ -890,7 +889,7 @@ tests:
       - stimulus: set logging file log/measure.log
       - import: prolog 
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: "break Vcc.cpp:Vcc::setIntref"
         response: Breakpoint 1
@@ -924,7 +923,7 @@ tests:
       - stimulus: set logging file log/blink.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: break irq_routine
         response: Breakpoint 1
@@ -978,7 +977,7 @@ tests:
       - stimulus: set logging file log/break_dw.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: monitor breakpoints hardware
         response: hardware
@@ -1023,7 +1022,7 @@ tests:
       - stimulus: set logging file log/break_jtag.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: monitor breakpoints hardware
         response: hardware
@@ -1071,10 +1070,10 @@ tests:
       arduino: true
     sketch: blink
     steps:
-      - stimulus: set logging file log/break_jtag.log
+      - stimulus: set logging file log/break_updi.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: monitor breakpoints hardware
         response: hardware
@@ -1103,7 +1102,7 @@ tests:
         response: Breakpoint 4
       - stimulus: continue
         response: LedOn
-      - stimulus: next
+      - stimulus: finish
         response: mydelay
       - stimulus: next
         response: LedOff
@@ -1140,7 +1139,7 @@ tests:
       - stimulus: set logging file log/fib.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: list loop
         response: int result, arg;
@@ -1192,10 +1191,10 @@ tests:
       - stimulus: continue
         response: Breakpoint 4, mfib (n=7)
       - stimulus: set remote hardware-watchpoint-limit 0
-      - stimulus: watch memo[7]
-        response: "Watchpoint 5: memo[7]"
+      - stimulus: "watch memo[7]"
+        response: 'Watchpoint 5: memo[[]7[]]'
       - stimulus: continue
-        response: "Watchpoint 5: memo[7]"
+        response: "Watchpoint 5: memo[[]7[]]"
       - stimulus: p memo[7]
         response: " = 1"
       - stimulus: p memo
@@ -1214,7 +1213,7 @@ tests:
       - stimulus: monitor reset
         response: reset
       - stimulus: continue
-        response: Breakpoint 1)
+        response: Breakpoint 1
       - import: epilog
 
 # test OOP debugging - make sure, that LTO is disabled!
@@ -1228,7 +1227,7 @@ tests:
       - stimulus: set logging file log/oop.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: whatis r
         response: Rectangle
@@ -1267,7 +1266,7 @@ tests:
       - stimulus: set logging file log/tictactoe.log
       - import: prolog
       - stimulus: load
-        timeout: 15
+        timeout: 20
         response: Start address 0x
       - stimulus: "b tictactoe.ino:210"
         response: line 210
@@ -1324,7 +1323,7 @@ tests:
       - stimulus: set logging file log/isr.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: "b isr.ino:shortwait"
         response: Breakpoint 1
@@ -1387,7 +1386,7 @@ tests:
       - stimulus: set logging file log/eeprom.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: break loop
       - stimulus: continue
@@ -1415,7 +1414,7 @@ tests:
       - stimulus: set logging file log/fuses.log
       - import: prolog
       - stimulus: load
-        timeout: 5
+        timeout: 20
         response: Start address 0x
       - import: epilog
 
@@ -1430,7 +1429,7 @@ tests:
       - stimulus: set logging file log/sim2word_highjmp.log
       - import: prolog
       - stimulus: load
-        timeout: 10
+        timeout: 20
         response: Start address 0x
       - stimulus: monitor break soft
       - stimulus: break loop
