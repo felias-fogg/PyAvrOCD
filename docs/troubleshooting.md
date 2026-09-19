@@ -111,9 +111,7 @@ It is also possible that you locked yourself out by setting the wrong fuses (thi
 
 ### After debugging, it is impossible to upload a new program using the bootloader.
 
-Usually, the bootloader is erased before debugging starts. This means that you have to [reflash the bootloader and maybe change some fuses after debugging](restore-original-state.md).
-
-
+Usually, the bootloader is erased before debugging starts. As stated in [the section on restoring your target board after debugging](restore-original-state.md), you may have to reflash the bootloader and set some fuses after debugging.
 
 ## Signals and error messages
 

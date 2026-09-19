@@ -5,13 +5,9 @@
 !!! info "Linux"
     Under Linux, users may need to add a few `udev` rules before they can use PyAvrOCD. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
-## Arduino IDE 2 & Arduino Maker Workshop
+## Arduino IDE 2, Arduino Maker Workshop, and PlatformIO
 
-If you want to use PyAvrOCD as part of Arduino IDE 2 or the Arduino Maker Workshop, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE.
-
-## PlatformIO
-
-When you want to use PyAvrOCD together with PlatformIO, you only have to set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file. Then PyAvrOCD will be automatically downloaded and installed when needed.
+If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file. 
 
 ## Downloading binaries
 

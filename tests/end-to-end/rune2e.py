@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-This an end-to-end test running both the gdbserver and avr-gdb,
-debugging different test programs testing the outputs of avr-gdb with Pexpect.
-The specification of the tests is given by the YAML files tests.yml, devices.yml, and clocks.yml
+This an end-to-end test running avr-gdb, debugging different test programs testing the 
+outputs of avr-gdb with Pexpect. The GDB server needs to be run seperately using the 
+serv.h bash script.
+
+The specification of the tests is given by the YAML file e2e.yml
 """
 
 #pylint: disable=line-too-long,too-many-locals
+import pprint
 import collections
 import argparse
 import logging
@@ -23,9 +26,11 @@ import serial
 from serial import SerialException
 import serial.tools.list_ports
 import fnmatch
+from typing import Any
 
 logger = None
-schema = { 'tests':
+schema = { 'includes': [ '<STR>' ],
+            'tests':
                  { '<STR>':
                        { 'virtual': '<BOOL>',
                          'requires': { 'ram_atmost': '<NUMBER>',
@@ -98,7 +103,7 @@ schema = { 'tests':
                                 'code': '<STR>',
                                 'value': '<STR>' } } } } }
 
-def setup_options(parser):
+def setup_options(parser : argparse.ArgumentParser) -> None:
     """
     Define the different options
     """
@@ -116,102 +121,123 @@ def setup_options(parser):
     parser.add_argument('-d', '--device',
                             type=str,
                             dest='dev',
-                            help='Device to debug',
-                            required=True)
+                            help='Device to debug')
+    parser.add_argument('-p', '--pretty-print', dest='pp', action='store_true',
+                            help="Pretty print specification and exit")
+    parser.add_argument('-s', '--spec-file', dest='spec', default='e2e.yml',
+                            help='Specfication file (default e2e.yml)')
     parser.add_argument('-t', '--test', dest='script', action='append',
                             help="Test to execute (give multiple times) (default all compatible tests)")
     parser.add_argument('-v', '--verbose',
                         default='info', choices=['debug', 'info',
                                                      'warning', 'error', 'critical'],
                         help="Logging verbosity level")
+
+def fatal_error(filename : str, *messages : list[str]):
+    logger.critical("Fatal Error with specification file: %s", filename)
+    for m in messages:
+        logger.critical(m)
+    sys.exit(1)
     
-def parse_specification():
+def parse_specification(specfile : str) -> dict [ str, Any ]:
     """
     Parse all spec files and store the result in a dict
     """
-    try:
-        result = { }
-        for id in [ 'tests', 'devices', 'cores' ]: 
-            result[id] = parse_file(id + '.yml', id, schema[id])
-        return result
-    except yaml.parser.ParserError as m:
-        logger.critical("Parsing error: %s", str(m))
-    except yaml.scanner.ScannerError as m:
-        logger.critical("Scanner error: %s", str(m))
-        sys.exit(1)
+    result = { }
+    openlist = [ specfile ]
+    closedlist = [ ]
+    while openlist:
+        nextspec = openlist.pop()
+        closedlist.append(nextspec)
+        try:
+            with open(nextspec, "r", encoding='utf-8') as f:
+                nextresult = yaml.safe_load(f)
+        except FileNotFoundError:
+            fatal_error(nextspec, "No such file!")
+        except yaml.parser.ParserError as m:
+            fatal_error(nextspec, "Parsing error: %s" % str(m))
+        except yaml.scanner.ScannerError as m:
+            fatal_error(nextspec, "Scanner error: %s" % str(m))
+        check_scheme(schema, nextresult, [], nextspec)
+        if not set(openlist+closedlist).isdisjoint(nextresult.get('includes', [ ])):
+            fatal_error("There are includes that have appeared in other files", nextspec)
+        openlist += nextresult.get('includes', [ ])
+        if 'includes' in nextresult:
+            del nextresult['includes']
+        result = merge_specs(nextspec, result, nextresult)
+    return result
 
-def parse_file(filename, id, scheme):
-    """
-    Load one YAML file and check schema
-    """
-    logger.debug("Checking '%s'", filename)
-    with open(filename, "r", encoding='utf-8') as f:
-        y = yaml.safe_load(f)
-    if [ id ] !=  list(y.keys()):
-        logger.critical("Expected only '%s' on upper level in %s, but got %s", id, filename, y.keys())
-        sys.exit()
-    check_scheme(scheme, y[id], [id])
-    return y[id]
-
-def check_scheme(scheme, d, chain):
+def check_scheme(schema : dict [ str, Any ] , d : str | float ,
+                     chain : list [ Any ], filename : str):
     """
     Check the spec against the scheme
     """
-    if scheme == '<NUMBER>':
+    if schema == '<NUMBER>':
         if not isinstance(d, (int, float)):
-            logger.critical("There is an error in path %s", chain)
-            logger.critical("Expected '%s' to be a number", d)
-            sys.exit(1)
-    elif scheme == '<BOOL>':
+            fatal_error(filename,
+                            "There is an error in path %s" % chain,
+                            "Expected '%s' to be a number" % d)
+    elif schema == '<BOOL>':
         if not isinstance(d, bool) and d is not None:
-            logger.critical("There is an error in path %s", chain)
-            logger.critical("Expected '%s' to be a bool", d)
-            sys.exit(1)
-    elif scheme == '<STR>':
+            fatal_error(filename,
+                            "There is an error in path %s" % chain,
+                            "Expected '%s' to be a bool" % d)
+    elif schema == '<STR>':
         if not isinstance(d, str):
-            logger.critical("There is an error in path %s", chain)
-            logger.critical("Expected '%s' to be a string", d)
-            sys.exit(1)
-    elif isinstance(scheme, list):
+            fatal_error(filename,
+                            "There is an error in path %s" % chain,
+                            "Expected '%s' to be a string" % d)
+    elif isinstance(schema, list):
         if not isinstance(d, list):
-            logger.critical("There is an error in path %s", chain)
-            logger.critical("Expected that '%s' is a list", d)
-            sys.exit(1)
+            fatal_error(filename,
+                            "There is an error in path %s" % chain,
+                            "Expected that '%s' is a list" % d)
         for el in d:
-            check_scheme(scheme[0], el, chain)
-    elif isinstance(scheme, dict):
+            check_scheme(schema[0], el, chain, f)
+    elif isinstance(schema, dict):
         if not isinstance(d, dict):
-            logger.critical("There is an error in path %s", chain)
-            logger.critical("Expected that '%s' is a dict", d)
-            sys.exit(1)
-        legal = list(scheme.keys())
+            fatal_error(filename,
+                            "There is an error in path %s" % chain,
+                            "Expected that '%s' is a dict" % d)
+        legal = list(schema.keys())
         used = list(d.keys())
         if legal == [ '<STR>' ]:
             if not all(isinstance(s, str) for s in used):
-                logger.critical("There is an error in path %s", chain)
-                logger.critical("Expected strings as keys but got '%s'", used)
-                sys.exit(1)
+                fatal_error(filename,
+                                "There is an error in path %s" % chain,
+                                "Expected strings as keys but got '%s'" % used)
             for k in used:
-                # logger.debug("Checking '%s : %s'", k, d[k])
-                check_scheme(scheme['<STR>'], d[k], chain + [k])
+                check_scheme(schema['<STR>'], d[k], chain + [k], f)
         elif legal == [ '<NUMBER>' ]:
             if not all(isinstance(n, (float, int)) for n in used):
-                logger.critical("There is an error in path %s", chain)
-                logger.critical("Expected only numbers as keys but got '%s'", used)
-                sys.exit(1)
+                fatal_error(filename,
+                                "There is an error in path %s" % chain,
+                                "Expected only numbers as keys but got '%s'" % used)
             for k in used:
-                # logger.debug("Checking '%s : %s'", k, d[k])
-                check_scheme(scheme['<NUMBER>'], d[k], chain + [k])
+                check_scheme(schema['<NUMBER>'], d[k], chain + [k], f)
         else:
             if not set(used) <= set(legal):
-                logger.critical("There is an error in path %s", chain)
-                logger.critical("Expected only keys %s but got %s", legal, used)
-                sys.exit(1)
+                fatal_error(filename,
+                                "There is an error in path %s" % chain,
+                                "Expected only keys %s but got %s" % (legal, used))
             for k in used:
-                # logger.debug("Checking '%s : %s'", k, d[k])
-                check_scheme(scheme[k], d[k], chain + [k])
+                check_scheme(schema[k], d[k], chain + [k], f)
 
-def deep_update(source, overrides):
+
+def merge_specs(filename : str, result : dict [ str , Any ], new : dict [ str, Any ]):
+    for top in ('tests', 'devices', 'cores'):
+        if top in new:
+            if top not in result:
+                result[top] = { }
+            for k,v in new[top].items():
+                if k in result[top]:
+                    fatal_error(filename,
+                    "Key '%s' in category '%s' has been used before" % (k,top))
+                result[top][k] = v
+    return result
+                
+
+def deep_update(source : dict [Any,Any], overrides : dict [Any,Any]):
     """
     Update a nested dictionary or similar mapping.
     Modify ``source`` in place.
@@ -224,7 +250,7 @@ def deep_update(source, overrides):
             source[key] = overrides[key]
     return source
 
-def process_imports(spec):
+def process_imports(spec : dict[ str, Any ]):
     """
     Go over the three spec categories and add specified imports (except for the steps list, which will be covered later).
     Multi level imports are possible. We only stop when no more import is requested. So, so do not to request
@@ -248,7 +274,7 @@ def process_imports(spec):
         if not importing:
             break
 
-def import_steps(spec):
+def import_steps(spec : dict [ str, Any ]):
     """
     Splice in a step list at the point where the import is mentioned. This does not work multi-level, but could
     be extended to work that way.
@@ -267,7 +293,7 @@ def import_steps(spec):
                 newlist.append(s)
         v['steps'] = newlist
 
-def select_tests(spec, dev, candidates):
+def select_tests(spec : dict[ str, Any], dev : str, candidates : list[ str ]):
     """
     Select tests according to which requirements are satisfied by the DUT.
     Returns list of all non-virtual tests, and all selected tests
@@ -286,7 +312,7 @@ def select_tests(spec, dev, candidates):
                 logger.debug("Test '%s' is not feasible for %s", t, dev)
     return alltests, testlist
 
-def requirements_met(req, prov):
+def requirements_met(req : dict[ str, Any ], prov : dict[ str, Any ]):
     """
     Check that all requirements 'req' are provided by 'prov'
     """
@@ -309,7 +335,7 @@ def requirements_met(req, prov):
                 OK = False
     return OK
 
-def check_ports(baud):
+def check_ports(baud : int):
     """
     Go through all connected serial ports and tests whether it is a dw-link server
     """
@@ -335,7 +361,7 @@ def check_ports(baud):
                 logger.critical("Error: '%s'", str(e))
     return None
         
-def identify_programmer(intf, baud):
+def identify_programmer(intf : str, baud : int):
     """
     return pair of debugger id and port name for avrdude
     intf must be one of 'isp', 'jtag', or 'updi'
@@ -364,7 +390,7 @@ def identify_programmer(intf, baud):
     logger.critical("No compatible debugger found")
     sys.exit(1)
 
-def build_fqbn(dev, clock_value, spec):
+def build_fqbn(dev : str, clock_value : str , spec : dict [ str, ANY ]) -> str:
     """
     Build up the FQBN.
     """
@@ -392,14 +418,15 @@ def build_fqbn(dev, clock_value, spec):
         sep = ','
     return fqbn
 
-def run_compile_command(cmd):
+def run_compile_command(cmd : str) -> bool:
     logger.debug("Command: %s", cmd)
     cmd_out, exit_status =  run(cmd, withexitstatus=1)
     logger.debug("Result: %s", cmd_out.decode("utf-8"))
     return exit_status == 0
 
 
-def compile_arduino(script, sketch, spec, dev, clock):
+def compile_arduino(script : str, sketch : str, spec : dict [ str, Any ],
+                        dev : str, clock : float) -> bool:
     """
     Compile an Arduino sketch
     """
@@ -410,7 +437,8 @@ def compile_arduino(script, sketch, spec, dev, clock):
     cmd += f" --optimize-for-debug --output-dir sketches/{sketch} sketches/{sketch}"
     return run_compile_command(cmd)
 
-def compile_make(script, sketch, spec, dev, clock, prog, port):
+def compile_make(script : str, sketch : str, spec : dict [ str, Any ],
+                     dev : str, clock : float, prog : str, port : str) -> bool:
     """
     Call make.
     """
@@ -420,10 +448,13 @@ def compile_make(script, sketch, spec, dev, clock, prog, port):
     cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog} fresh"
     return run_compile_command(cmd)
 
-def do_upload(sketch, upload_options, spec, dev, programmer, port):
+def do_upload(sketch : str, upload_options : str,
+                  spec : dict  [ str, Any ], dev : str,
+                  programmer : str, port : str) -> bool:
     """
     Upload a sketch
     """
+    return False
 
 def progress():
     print(".",end='')
@@ -464,7 +495,7 @@ def exec_step(child, step, spec):
         logger.debug("Sending ^C")
         sleep(1)
         resp = child.expect([ r"\(gdb\)", TIMEOUT, EOF],
-                                timeout=2)
+                                timeout=5)
         if resp >= 1:
             return report_failure(child,
                         "Received TIMEOUT/EOF in response to ^C after '%s'" %
@@ -476,11 +507,11 @@ def exec_step(child, step, spec):
         return True, 0
     resp = child.expect([r"\(gdb\)", TIMEOUT, EOF,
                              r'Please power-cycle the target system'],
-                            timeout=step.get('timeout', 2))
+                            timeout=step.get('timeout', 5))
     if resp == 3:
         print()
         logger.warning("*** Power-cycle target system! ***")
-        resp = child.expect([ r"\(gdb\)", TIMEOUT, EOF], timeout=30)
+        resp = child.expect([ r"\(gdb\)", TIMEOUT, EOF], timeout=60)
         if resp != 0:
             return report_failure(child, "Failed during power-cycling")
     logger.debug("Response: %s", remove_echo(step['stimulus'], child.before))
@@ -535,7 +566,7 @@ def exec_all_steps(script, steps, dev, spec):
             f.write("\n".join(spec['tests'][script]['serverargs'].split(" ")))
     sleep(1)
     child = spawn("avr-gdb " + binary + " -n", encoding="utf-8")
-    resp = child.expect([r"\(gdb\)", TIMEOUT, EOF],timeout=3)
+    resp = child.expect([r"\(gdb\)", TIMEOUT, EOF],timeout=5)
     logger.debug("Initial response: %s", child.before)
     if resp >= 1:
         return report_failure(child, "Failed %s calling avr-gdb" % script)
@@ -625,9 +656,19 @@ def main():
         os.remove('pyavrocd.options')
 
     # read specifications and process
-    spec = parse_specification()
+    spec = parse_specification(args.spec)
     process_imports(spec)
     import_steps(spec)
+
+    # check if only pretty printing is required
+    if args.pp:
+        pprint.pprint(spec)
+        sys.exit(0)
+
+    # check that a device argument has been given
+    if args.dev is None:
+        logger.critical("No device has been specified")
+        sys.exit(1)
 
     # check that specified device is supported
     if not spec['devices'].get(args.dev,None) or spec['devices'][args.dev].get('virtual',False):
