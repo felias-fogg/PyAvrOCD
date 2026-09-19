@@ -1,5 +1,13 @@
 # Release Notes
 
+## Release v1.5.9
+
+- Hopefully, the Linux binaries will be forward compatible more often now after not using *staticx* anymore.
+
+## Release v1.5.8
+
+- New avr-gdb client, which does not crash on Ubuntu 24.04 anymore
+
 ## Release v1.5.7
 
 - Option `--xargs` changed to `--xarg`, which can be used multiple times.
