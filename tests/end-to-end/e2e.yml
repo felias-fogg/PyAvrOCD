@@ -1,4 +1,5 @@
 includes:
-  - devices.yml
+  - mcus.yml
+  - boards.yml
   - tests.yml
   - cores.yml

@@ -32,7 +32,7 @@ cores:
         code: 16MHz_external
         value: 16000000UL
     default: 8
-  
+
   MiniCore:
     options:
       clock: true
@@ -63,6 +63,7 @@ cores:
   XMiniCore:
     options:
       clock: true
+      LTO: true
     clock:
       8:
         code: 8MHz
@@ -79,12 +80,12 @@ cores:
 
   MightyCore:
     import: MegaCore
-  
+
   MajorCore:
     import: MiniCore
     options:
       variant: false
-  
+
   MegaCoreX:
     options:
       clock: true
@@ -116,7 +117,7 @@ cores:
         code: internal_20MHz
         value: 20000000UL
     default: 16
-  
+
   megaTinyCore:
     options:
       chip: true
@@ -147,7 +148,7 @@ cores:
         code: 20internal
         value: 20000000UL
     default: 20
-  
+
   DxCore:
     import: megaTinyCore
 

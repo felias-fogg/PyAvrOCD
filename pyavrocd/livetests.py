@@ -582,7 +582,6 @@ class LiveTests():
                               opc1 == 0x0000 and opc2 == 0x9598 and
                               opc3 == 0x9598 and opc4 == 0x9598 and opc5 == 0x0000 and
                               opc6 == 0x9598)
-        self.logger.info("send1=%s", send1)
         self.mon._cache = True
         self.mon._old_exec = False
         self.mon._onlyswbps = False

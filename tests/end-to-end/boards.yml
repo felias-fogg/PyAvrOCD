@@ -1,0 +1,45 @@
+# List of all covered boards in YAML format
+devices:
+
+
+####################### XMini Boards (XMiniCore) ##################################
+
+  xmini328p:
+    import: atmega328p
+    core: XMiniCore
+    board: atmega328p_xplained_mini
+    setup: 328P Xmini board
+    provides:
+      autopc: true
+
+  xmini328pb:
+    import: atmega328pb
+    core: XMiniCore
+    board: atmega328pb_xplained_mini
+    setup: 328PB Xmini board
+    provides:
+      autopc: true
+
+  xmini168pb:
+    import: atmega168pb
+    core: XMiniCore
+    board: atmega168pb_xplained_mini
+    setup: 168PB Xmini board
+    provides:
+      autopc: true
+
+####################### Arduino Boards (ArduinoCore-avr) ##################################
+
+  uno:
+    import: atmega328p
+    core: arduino
+    board: uno
+    setup: Uno board with open RESET EN
+
+####################### Olimex boards #####################################################
+
+  avr-usb-162:
+    import: at90usb162
+    setup: Olimex AVR-USB-162
+
+####################### Curiosity Nano boards #############################################

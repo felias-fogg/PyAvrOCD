@@ -9,12 +9,12 @@ all:	$(TARGET).elf
 squeaky_clean:
 	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom
 
-lockup:
+prog_bootrst:
 	- sleep 1
 	- avrdude -c $(PROG) -p $(MCU) -P $(PORT) -e -T "config dwen=1"
-	- avrdude -c $(PROG) -p $(MCU) -P $(PORT) -e -U lock:w:0x00:m
+	- avrdude -c $(PROG) -p $(MCU) -P $(PORT) -T "config bootrst=boot_section"
 
 fresh:
 	make squeaky_clean
 	make all
-	make lockup
+	make prog_bootrst

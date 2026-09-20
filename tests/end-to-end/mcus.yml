@@ -1,9 +1,10 @@
-# List of all covered boards and MCUs in YAML format
+# List of all covered MCUs in YAML format
 devices:
 
 # some virtual devices that can be imported to make the actual
 # specifications more concise
 
+# The classic ATtinys
   classic_tiny:
     virtual: true
     provides:
@@ -14,6 +15,7 @@ devices:
     architecture: avr
     core: TinyCore
 
+# Small classic Megas with debugWIRE interface
   classic_tiny_mega:
     virtual: true
     provides:
@@ -21,26 +23,31 @@ devices:
       arduino: true
       cadc: true
       nolto: true
+      boot: true
     clocks: [ 1, 4, 8, 16 ]
     LTO: Os
     architecture: avr
     core: MiniCore
 
+# The small Megas without a core
   classic_tiny_mega_nocore:
     virtual: true
     import: classic_tiny_mega
     clocks: [ 1, 8, 16 ]
-    core: NoCore 
+    core: NoCore
 
+# Arduino boards with classic AVRs
   arduino_avr:
     virtual: true
     provides:
       cadc: true
       arduino: true
       nolto: true
+      boot: true
     architecture: avr
     core: arduino
 
+# Classic Megas with JTAG
   classic_mega:
     virtual: true
     provides:
@@ -48,35 +55,42 @@ devices:
       arduino: true
       cadc: true
       nolto: true
+      boot: true
     clocks: [ 1, 4, 8, 16 ]
     LTO: Os
     architecture: avr
 
+# Modern ATtinys (with UPDI)
   modern_tiny:
     virtual: true
     provides:
       updi: true
       arduino: true
+      boot: true
     clocks: [ 1, 2, 4, 5, 8, 10, 16, 20 ]
     core: megaTinyCore
     architecture: megaavr
 
+# Modern Megas (with UPDI)
   modern_mega:
     virtual: true
     import: modern_tiny
     core: MegaCoreX
 
+# The modern AVR series
   modern_avr:
     virtual: true
     import: modern_tiny
     core: DxCore
 
+# Arduino boards with modern Megas, e.g., Nano Every
   arduino_megaavr:
     virtual: true
     provides:
       cadc: false
       arduino: true
       nolto: true
+      boot: true
     architecture: megaavr
     core: arduino
 
@@ -171,7 +185,7 @@ devices:
       ram: 0.25
       flash: 4
     board: 'x41'
-    chip: '441'    
+    chip: '441'
     setup: Breakout board on breadboard
 
   attiny841:
@@ -181,7 +195,7 @@ devices:
       ram: 0.5
       flash: 8
     board: 'x41'
-    chip: '841'    
+    chip: '841'
     setup: AZduino breakout board
 
   attiny25:
@@ -273,7 +287,7 @@ devices:
     board: 'x8'
     chip: '48'
     setup: Programmer-ZF
-    
+
   attiny88:
     mcu: attiny88
     import: classic_tiny
@@ -283,19 +297,20 @@ devices:
     board: 'x8'
     chip: '88'
     variant: standard
-    setup: Programmer-ZF 
+    setup: Programmer-ZF
 
   mh-tiny:
     import: attiny88
     variant: mhtiny
     setup: MH-Tiny board
-    
+
   attiny828:
     mcu: attiny828
     import: classic_tiny
     provides:
       ram: 0.5
       flash: 8
+      boot: true
     board: '828'
     setup: Breakout board
 
@@ -464,40 +479,6 @@ devices:
     variant: modelPB
     setup: TQFP socket on bread board
 
-####################### XMini Boards (XMiniCore) ##################################
-
-  xmini328p:
-    import: atmega328p
-    core: XMiniCore
-    board: atmega328p_xplained_mini
-    setup: 328P Xmini board
-    provides:
-      autopc: true
-
-  xmini328pb:
-    import: atmega328pb
-    core: XMiniCore
-    board: atmega328pb_xplained_mini
-    setup: 328PB Xmini board
-    provides:
-      autopc: true
-
-  xmini168pb:
-    import: atmega168pb
-    core: XMiniCore
-    board: atmega168pb_xplained_mini
-    setup: 168PB Xmini board
-    provides:
-      autopc: true
-
-####################### Arduino Boards (ArduinoCore-avr) ##################################
-
-  uno:
-    import: atmega328p
-    core: arduino
-    board: uno
-    setup: Uno board with open RESET EN
-
 
 ####################### Classic tiny Megas (No Core) ##################################
 
@@ -511,6 +492,18 @@ devices:
     setup: Olimex AVR-USB-162 board
 
 ####################### Classic Megas (MightyCore) ##################################
+
+  atmega324pb:
+    mcu: atmega324pb
+    import: classic_mega
+    core: MightyCore
+    provides:
+      ram: 2
+      flash: 32
+    board: '324'
+    variant: modelPB
+    setup: ATmega324pb Xplained Pro
+
 
 ####################### Classic Megas (MegaCore) ##################################
 
@@ -529,7 +522,7 @@ devices:
     board: atxy7
     chip: "3217"
     setup: CNANO 3217
-      
+
 
 ####################### Modern Megas (MegaCoreX) ##################################
 

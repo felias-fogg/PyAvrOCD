@@ -37,6 +37,7 @@ schema = { 'includes': [ '<STR>' ],
                                        'ram_atleast': '<NUMBER>',
                                        'flash_atmost': '<NUMBER>',
                                        'flash_atleast': '<NUMBER>',
+                                       'boot': '<BOOL>',
                                        'dw': '<BOOL>',
                                        'jtag': '<BOOL>',
                                        'updi': '<BOOL>',
@@ -72,6 +73,7 @@ schema = { 'includes': [ '<STR>' ],
                         'provides':
                              { 'ram': '<NUMBER>',
                                'flash': '<NUMBER>',
+                               'boot': '<BOOL>',
                                'dw': '<BOOL>',
                                'jtag': '<BOOL>',
                                'updi': '<BOOL>',
@@ -84,6 +86,7 @@ schema = { 'includes': [ '<STR>' ],
                                'usb': '<BOOL>' },
                         'clocks': [ '<NUMBER>' ],
                         'core': '<STR>',
+                        'led_builtin': '<NUMBER>',
                         'setup': '<STR>' } },
            'cores':
                   { '<STR>': {
@@ -321,12 +324,15 @@ def select_tests(spec : dict[ str, Any], dev : str, candidates : list[ str ]) ->
     alltests = candidates if candidates else [ t for t in spec['tests'] if 'virtual' not in spec['tests'][t]]
     provides = spec['devices'][dev]['provides']
     for t in alltests:
+        if t not in spec['tests']:
+            logger.critical("%s is not a known test", t)
+            sys.exit(1)
         if requirements_met(spec['tests'][t].get('requires',{ }), provides):
             logger.debug("Test selected: %s", t)
             testlist.append(t)
         else:
             if candidates:
-                logger.info("Test '%s' is not feasible for %s", t, dev)
+                logger.warning("Test '%s' is not feasible for %s", t, dev)
             else:
                 logger.debug("Test '%s' is not feasible for %s", t, dev)
     return alltests, testlist
@@ -420,6 +426,7 @@ def build_fqbn(dev : str, clock_value : float , spec : dict [ str, Any ]) -> str
 
     # Determine all applicable options
     options = [o for o in options_dict if options_dict[o] and (o in spec['devices'][dev] or o == 'clock')]
+    logger.debug("Possible options: %s", options)
 
     # Now add all applicable options, first needs to be attached using ':'
     sep = ':'
@@ -523,7 +530,11 @@ def exec_step(child : pexpect.spawn, step : dict [ str, Any ]) -> tuple [ bool, 
     """
     progress()
     logger.debug("Sending command '%s'", step['stimulus'])
-    child.sendline(step['stimulus'])
+    try:
+        child.sendline(step['stimulus'])
+    except OSError:
+        child.close()
+        return False, 0
     interrupt = step.get('interrupt', None)
     if interrupt:
         child.expect(["\\+", TIMEOUT], timeout=5) # wait for the + of the GDB tracer
@@ -608,13 +619,12 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
     for s in steps:
         ok, succfail = exec_step(child, s)
         if not ok:
+            child.close()
             return False
         if succfail != 0:
             child.close()
-            print()
             return succfail == 1
     child.close()
-    print()
     return True
 
 def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
@@ -658,7 +668,10 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
         if steps and run_ok:
             run_ok = exec_all_steps(s, steps, dev, spec)
         if not run_ok:
+            print("FAILED")
             failed_run.append(s)
+        else:
+            print("OK")
     return failed_comp, failed_run
 
 
