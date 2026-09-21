@@ -84,6 +84,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
@@ -260,7 +262,7 @@
 <p>When you deal with a debugWIRE target, note that the debugWIRE mode is only left when the command <code>monitor debugwire disable</code> has been typed into the GDB command line before ending the debug session. When you are still in debugWIRE mode, you cannot use SPI programming! You first need to <a href="../limitations/#exit-debugwire-mode">exit debugwire mode</a>. Note also that debugging a debugWIRE target can have <a href="../limitations/#debugwire-can-brick-mcus">adverse effects</a>.</p>
 <p>It is also possible that you locked yourself out by setting the wrong fuses (this applies to JTAG and UPDI targets as well).</p>
 <h3 id="after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</h3>
-<p>Usually, the bootloader is erased before debugging starts. This means that you have to <a href="../restore-original-state/">reflash the bootloader and maybe change some fuses after debugging</a>.</p>
+<p>Usually, the bootloader is erased before debugging starts. As stated in <a href="../restore-original-state/">the section on restoring your target board after debugging</a>, you may have to reflash the bootloader and set some fuses after debugging.</p>
 <h2 id="signals-and-error-messages">Signals and error messages</h2>
 <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
 <table>

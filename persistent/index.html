@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/quick_pio_xmini/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/persistent/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Quick pio xmini - PyAvrOCD</title>
+    <title>Persistent debugging - PyAvrOCD</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Quick pio xmini";
-        var mkdocs_page_input_path = "quick_pio_xmini.md";
-        var mkdocs_page_url = "/quick_pio_xmini/";
+        var mkdocs_page_name = "Persistent debugging";
+        var mkdocs_page_input_path = "persistent.md";
+        var mkdocs_page_url = "/persistent/";
       </script>
     
     <!--[if lt IE 9]>
@@ -71,7 +71,7 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Usage</span></p>
-              <ul>
+              <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
@@ -84,7 +84,15 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Persistent debugging</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#extended-debugging-session">Extended debugging session</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#disconnecting-from-the-mcu">Disconnecting from the MCU</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#disconnecting-from-pyavrocd">Disconnecting from PyAvrOCD</a>
+    </li>
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
@@ -133,9 +141,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Quick pio xmini</li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Persistent debugging</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_pio_xmini.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/persistent.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -143,50 +152,77 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="quickstart-atmega328p-xplained-mini">Quickstart: ATmega328P Xplained Mini</h2>
-<p>The <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">Atmega328P Xplained Mini</a> development board, which has an Arduino Uno footprint, is ideal for making a first experience with embedded debugging because it already contains an onboard debugger. It is simply plug-and-play.</p>
-<h3 id="required-hardware">Required hardware</h3>
-<p>The only thing needed is the XPlained Mini board and a USB cable to connect it to your computer.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/xplained.png" width="35%">
-</p>
-
-<h3 id="step-1-set-up-a-project-with-the-right-platform">Step 1: Set up a project with the right platform</h3>
-<p>Set up a PlatformIO project, e.g., by importing arduino-blink from the example projects. Add the following to your <code>platformio.ini</code> configuration file, making the new <code>xmini</code> environment the default environment:</p>
-<pre><code class="language-python-repl">[platformio]
-default_envs = xmini
-
-[env:xmini]
-platform = https://github.com/felias-fogg/platform-atmelavr.git
-framework = arduino
-board = xmini328p
-build_type = debug
-debug_tool = pyavrocd
-</code></pre>
-<h3 id="step-2-debug-the-program">Step 2: Debug the program</h3>
-<p>Click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
-</p>
-
-<p>This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the <code>main</code> function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the <a href="../debugging/">debugging section</a>.</p>
-<h3 id="step-3-start-over-or-terminate-the-debugging-session">Step 3: Start over or terminate the debugging session</h3>
-<p>If you have found the bug you were hunting, you can now leave the debugger (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
-<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
-</p>
-
-<p>Alternatively, you can also use the <code>Disable debugWIRE</code>  project task under the <code>Platform</code> heading to disable debugWIRE mode.</p>
-<h3 id="potential-problems">Potential Problems</h3>
-<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections of the PyAvrOCD manual.</p>
-<div class="admonition danger">
-<p class="admonition-title">Warning:  Use IOREF to source attached circuits</p>
-<p>If you have any attached circuitry, be it on a breadboard or a shield, use the <code>IOREF</code> pin to power it. If this is not possible, check out the <a href="https://github.com/felias-fogg/XMiniCore?tab=readme-ov-file#powering-external-circuitry"><code>README</code> file of XminiCore for a solution</a>.</p>
-</div>
+                <h1 id="persistent-debugging">Persistent Debugging</h1>
+<p>Most of the time, one-shot debugging will be enough to locate a problem. Sometimes, however, you may need to have a more persistent debugging scenario. If a bug shows up only after some time, you may want to leave the MCU running until the point at which something goes wrong, and then continue with your debugging efforts. There are basically three possible ways to achieve that.</p>
+<h2 id="extended-debugging-session">Extended debugging session</h2>
+<p>The most straightforward way is to start a debugging session and then run the program on the MCU until something happens, even if this takes a couple of days. However, it may be the case that you need the debug probe for something different, or that you want to terminate the debugging session temporarily. For these situations, the two approaches below can be helpful.</p>
+<h2 id="disconnecting-from-the-mcu">Disconnecting from the MCU</h2>
+<p>One could think about disconnecting the debug probe from the MCU and then waiting for the disaster to happen. Only then, one reconnects the debug probe to the MCU and studies the state the program is in. In order to support such an approach, PyAvrOCD provides the command-line option <code>--attach</code>. If this option is specified, PyAvrOCD will try to connect to the on-chip debugging module without setting any fuses and without a reset. If successful, you can then inspect the state of the program, change things, and continue execution. </p>
+<p>This works always for UPDI targets. For debugWIRE targets, you need to have started the target using a debugger and switched the target to debugWIRE mode. For JTAG targets, you need to have started the MCU using a debugger and used the command <code>monitor atexit stay</code> before terminating the debugging session.</p>
+<h2 id="disconnecting-from-pyavrocd">Disconnecting from PyAvrOCD</h2>
+<p>Instead of disconnecting from the MCU and terminating the GDB server, one could leave the GDB server running. This is supported in the <em>extended remote mode</em>, which you enter when you use the GDB command <code>target extended-remote &lt;port&gt;</code> instead of <code>target remote &lt;port&gt;</code>. When disconnecting, quitting, detaching, or killing, PyAvrOCD will not terminate but will wait for GDB to reconnect, attach, or run again. In addition, in this mode, the <code>run</code> and <code>attach</code> commands are available.</p>
+<p>If PyAvrOCD is invoked with the <code>--once</code> option, the GDB commands <code>disconnect</code>, <code>detach</code>, and <code>quit</code> will immediately terminate the GDB server, even when in extended remote mode. The command <code>monitor exit</code> will also lead to the immediate termination of PyAvrOCD, regardless of mode and option. The following table summarizes this somewhat complicated state of affairs.</p>
+<table>
+<thead>
+<tr>
+<th>GDB Command</th>
+<th>Normal remote mode</th>
+<th>Extended remote mode</th>
+<th>Extended remote mode with option <code>--once</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>disconnect</code></td>
+<td>Terminates PyAvrOCD</td>
+<td>Disconnects GDB from PyAvrOCD</td>
+<td>Terminates PyAvrOCD</td>
+</tr>
+<tr>
+<td><code>detach</code></td>
+<td>Terminates PyAvrOCD</td>
+<td>Continues execution of the current program and detaches from it, but does not disconnect from PyAvrOCD</td>
+<td>Terminates PyAvrOCD</td>
+</tr>
+<tr>
+<td><code>kill</code></td>
+<td>Terminates PyAvrOCD</td>
+<td>MCU reset</td>
+<td>MCU reset</td>
+</tr>
+<tr>
+<td><code>quit</code></td>
+<td>Terminates PyAvrOCD and GDB</td>
+<td>Continues execution of the current program, detaches from it, and terminates GDB</td>
+<td>Terminates PyAvrOCD and GDB</td>
+</tr>
+<tr>
+<td><code>run</code></td>
+<td>Not available</td>
+<td>Restarts execution of the current program (arguments are ignored)</td>
+<td>Restarts execution of the current program (arguments are ignored)</td>
+</tr>
+<tr>
+<td><code>attach &lt;num&gt;</code></td>
+<td>Not available</td>
+<td>Attaches to detached program (argument is ignored)</td>
+<td>Useless because it is not possible to detach from a program</td>
+</tr>
+<tr>
+<td><code>monitor exit</code></td>
+<td>Terminates PyAvrOCD</td>
+<td>Terminates PyAvrOCD</td>
+<td>Terminates PyAvrOCD</td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../debugging/" class="btn btn-neutral float-left" title="Debugging on the target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../monitor-commands/" class="btn btn-neutral float-right" title="Monitor commands">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -212,6 +248,10 @@ debug_tool = pyavrocd
         </span>
     
     
+      <span><a href="../debugging/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../monitor-commands/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

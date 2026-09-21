@@ -92,6 +92,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
@@ -244,6 +246,10 @@
 <tr>
 <td><code>--xarg</code><br> <code>-x</code></td>
 <td>Extra argument for <code>simavr</code>. Can be specified multiple times to pass multiple arguments. When you want to pass a simavr option, e.g., <code>--add-trace</code>, use the notation with an equal sign to avoid the interpretation of this option as a PyAvrOCD option: <code>--xarg=--add-trace</code>.</td>
+</tr>
+<tr>
+<td><code>--once</code></td>
+<td>The GDB server is terminated when GDB disconnects or detaches, even when GDB runs in <code>extended-remote</code> mode.</td>
 </tr>
 <tr>
 <td><code>--reboot-debugger</code></td>

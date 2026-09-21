@@ -105,10 +105,16 @@
     <li class="toctree-l2"><a class="reference internal" href="#debugging-using-gede">Debugging using Gede</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#debugging-with-a-command-line-interface">Debugging with a command-line interface</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#inspecting-io-registers">Inspecting I/O registers</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#persistent-debugging">Persistent Debugging</a>
+    <li class="toctree-l3"><a class="reference internal" href="#structured-uis">Structured UIs</a>
+    </li>
+        </ul>
     </li>
     </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
                   </li>
@@ -254,6 +260,7 @@ Note: automatically using hardware breakpoints for read-only addresses.
 ...
 </code></pre>
 <p>In the above dialog, note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command <code>monitor debugwire disable</code>.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.</p>
+<h3 id="inspecting-io-registers">Inspecting I/O registers</h3>
 <p>If you have reached this point, I trust that you are familiar with GDB and know how to proceed. I should point out one very convenient command, however: <code>monitor ioregister &lt;ioreg-expression&gt;</code> [<code>&lt;int&gt;</code>] (which does not work with dw-link, though). It will output the descriptions and contents of the I/O registers and/or bitfields that are referred to by <code>&lt;ioreg-expression&gt;</code>. This is a wildcard, case-insensitive expression over the names of the I/O registers and bitfields using the notation [<code>&lt;peripheral&gt;</code>.]<code>&lt;register&gt;</code>[<code>.&lt;field&gt;</code>], as shown below.</p>
 <pre><code>...
 (gdb) monitor ioregister *int*
@@ -291,16 +298,15 @@ EXINT.EICRA.ISC0 (@0x800069[1:0]) = 0x0, 0b0, 0 (External Interrupt Sense Contro
 EXINT.EICRA.ISC0 = 3 (old value was: 0)
 (gdb)
 </code></pre>
-<h2 id="persistent-debugging">Persistent Debugging</h2>
-<p>Most of the time, one-shot debugging will be enough to locate a problem. This means that you start the debugger, switch the MCU into debugging mode, upload the program, start it, and then try to find the bug. After you have located and fixed the bug, the MCU will then be brought into the normal mode again.</p>
-<p>Sometimes, however, you may want to have a more persistent debugging scenario. If a bug shows up only after some time, you may want to leave the MCU running without the debug probe connected to it until the point that something goes wrong, and then <em>attach</em> to the MCU without going through the motion of setting fuses and resetting the MCU. This is supported by the monitor command <code>monitor atexit stay</code> and the command-line option <code>--attach</code>. With the mentioned monitor command, PyAvrOCD is instructed not to leave the debugging mode when the GDB server is terminated. When later PyAvrOCD is started with the command line option <code>--attach</code>, it will try to connect to the on-chip debugging module without setting any fuses and without a reset. If successful, you can then inspect the state of the program, change things, and continue execution.</p>
-<p>Note that for UPDI targets, it is not necessary to use the <code>monitor atexit stay</code> command because UPDI targets do not have any special debug fuses. So, you can always attach.</p>
+<h3 id="structured-uis">Structured UIs</h3>
+<p>In addition to the command-line interface, GDB also supports more structured user interfaces. The <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI.html"><em>Text User Interface</em></a>, or TUI, is one of them. In order to use it, GDB has to be compiled with TUI enabled. Another very nice text-based interface is <a href="https://github.com/cyrus-and/gdb-dashboard">gdb-dashboard</a>. A setup for debugging an AVR chip with gdb-dashboard is described <a href="https://github.com/lkoepsel/AVR64DD/blob/main/docs/gdb-dashboard.md">here</a>. For this, the GDB client needs to be compiled with Python support.</p>
+<p>Note that the GDB binaries shipped with PyAvrOCD do not support TUI or Python. So, you have to look somewhere else for a client. This also means that <a href="https://arduino-craft-corner.de/index.php/2026/01/19/when-unused-program-counter-bits-go-rogue/">for some Microchip MCUs, debugging will not work</a>.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../command-line-options/" class="btn btn-neutral float-left" title="Invoking the server"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../monitor-commands/" class="btn btn-neutral float-right" title="Monitor commands">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../persistent/" class="btn btn-neutral float-right" title="Persistent debugging">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -330,7 +336,7 @@ EXINT.EICRA.ISC0 = 3 (old value was: 0)
       <span><a href="../command-line-options/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../monitor-commands/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../persistent/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
