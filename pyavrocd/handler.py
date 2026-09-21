@@ -52,11 +52,12 @@ class GdbHandler():
         self._rs_stage : int = 0 # stage 1: vCont;r, 2: Z1, 3: vCont;c, 4: z1; 5: vCont;r
         self._dw_start : bool = bool(args.debugwire and args.debugwire[0])
         self._nomm : bool = args.nomm
-        self._comsocket : socket.socket = comsocket
+        self._once : bool = args.once
+        self.comsocket : socket.socket = comsocket
         self._devicename : str = devicename
         self.last_sigval : int | None = 0
         self._lastmessage : str | None = ""
-        self._extended_remote_mode : bool = False
+        self.extended_remote_mode : bool = False
         self._vflashdone : bool = False # set to True after vFlashDone received
         self.critical : str | None = None # first critical error
         self._live_tests : LiveTests = LiveTests(self)
@@ -72,12 +73,12 @@ class GdbHandler():
             'g'           : self._get_register_handler,
             'G'           : self._set_register_handler,
             'H'           : self._set_thread_handler,
-            'k'           : self._kill_handler, # kill - never used because vKill is supported
+          # 'k'           : self._kill_handler, # kill - never used because vKill is supported
             'm'           : self._get_memory_handler,
             'M'           : self._set_memory_handler,
             'p'           : self._get_one_register_handler,
             'P'           : self._set_one_register_handler,
-            'qAttached'   : self._attached_handler,
+            'qAttached'   : self._qattached_handler,
             'qOffsets'    : self._offsets_handler,
             'qRcmd'       : self._monitor_cmd_handler,
             'qSupported'  : self._supported_handler,
@@ -89,6 +90,7 @@ class GdbHandler():
             's'           : self._step_handler,
             'S'           : self._step_with_signal_handler, # signal will be ignored
             'T'           : self._thread_alive_handler,
+            'vAttach'     : self._vattach_handler,
             'vCont'       : self._vcont_handler,
             'vFlashDone'  : self._vflash_done_handler,
             'vFlashErase' : self._vflash_erase_handler,
@@ -143,7 +145,7 @@ class GdbHandler():
         '!': GDB tries to switch to extended remote mode and we accept
         """
         self.logger.debug("RSP packet: set extended remote")
-        self._extended_remote_mode = True
+        self.extended_remote_mode = True
         self.send_packet("OK")
 
     def _stop_reason_handler(self, _ : bytes) -> None:
@@ -223,11 +225,19 @@ class GdbHandler():
 
     def _detach_handler(self, _ : bytes) -> None:
         """
-       'D': Detach. All the real housekeeping will take place when the connection is terminated
+        'D': Detach. All the real housekeeping will take place when the connection is terminated.
+        When in extended-remote mode, we simply start the MCU.
         """
         self.logger.debug("RSP packet: Detach")
         self.send_packet("OK")
-        raise EndOfSession("Session ended by client ('detach')")
+        if self.extended_remote_mode and not self._once:
+            self.logger.info("Detaching ...")
+            if self.__debugger_is_active():
+                self.bp.cleanup_breakpoints()
+                self.bp.resume_execution(None)
+                self.logger.info("MCU is running")
+        else:
+            raise EndOfSession("Session ended by client ('detach')")
 
     def _get_register_handler(self, _ : bytes) -> None:
         """
@@ -387,9 +397,9 @@ class GdbHandler():
         self.send_packet("OK")
 
 
-    def _attached_handler(self, _ : bytes) -> None:
+    def _qattached_handler(self, _ : bytes) -> None:
         """
-        'qAttached': whether detach or kill will be used when quitting GDB
+        'qAttached': Returns 1 in order to signal that quit should use 'detach' before disconnecting.
         """
         self.logger.debug("RSP packet: attached query, will answer '1'")
         self.send_packet("1")
@@ -508,8 +518,8 @@ class GdbHandler():
         """
         'qSupported': query for features supported by the gbdserver; in our case
         packet size and memory map. Because this is also the command send after a
-        connection with 'target remote' is made,
-        we will try to establish a connection to the target OCD
+        connection with 'target remote' is made, we will try to establish a connection to the target OCD,
+        if we do not have it already
         """
         self.logger.debug("RSP packet: qSupported query.")
         answer : str = 'PacketSize=%X' % self.packet_size
@@ -520,15 +530,20 @@ class GdbHandler():
         # one has to use the 'monitor debugwire enable' command later on
         # If a fatal error is raised, we will remember that and print it again
         # when a request for enabling debugWIRE is made
-        try:
-            if self.dbg.start_debugging(warmstart=self.dbg.get_iface()=='debugwire'):
-                self.mon.set_debug_mode_active()
-        except FatalError as e:
-            self.logger.critical("%s", str(e))
-            if self.critical is None:
-                self.critical = str(e)
-            self.dbg.stop_debugging(skip=True,graceful=True)
-        self.logger.debug("debugger_active=%d",self.mon.is_debugger_active())
+        if not self.mon.is_debugger_active():
+            try:
+                if self.dbg.start_debugging(warmstart=self.dbg.get_iface()=='debugwire'):
+                    self.mon.set_debug_mode_active()
+            except FatalError as e:
+                self.logger.critical("%s", str(e))
+                if self.critical is None:
+                    self.critical = str(e)
+                self.dbg.stop_debugging(skip=True,graceful=True)
+            self.logger.debug("debugger_active=%d",self.mon.is_debugger_active())
+        else:
+            self.logger.info("Reconnected to GDB")
+            self.dbg.stop()
+            self.logger.info("MCU stopped")
         self.send_packet(answer)
 
     def _first_thread_info_handler(self, _ : bytes) -> None:
@@ -584,6 +599,15 @@ class GdbHandler():
         """
         self.logger.debug("RSP packet: thread alive query, will answer 'OK'")
         self.send_packet('OK')
+
+    def _vattach_handler(self, _ : bytes) -> None:
+        """
+        'vAttach': Attach to the only process running on the MCU
+        """
+        self.logger.debug("RSP packet: attach to process, will replay with stop package")
+        self.dbg.stop()
+        self.logger.info("MCU stopped")
+        self.send_signal(SIGTRAP)
 
     def _vcont_handler(self, packet : bytes) -> None:
         """
@@ -753,7 +777,7 @@ class GdbHandler():
         if self.mon.is_debugger_active():
             self.dbg.reset()
         self.send_packet("OK")
-        if not self._extended_remote_mode:
+        if not self.extended_remote_mode:
             self.logger.debug("Terminating session ...")
             raise EndOfSession
 
@@ -910,7 +934,7 @@ class GdbHandler():
         message : str = "$" + packet_data + "#" + format(checksum, '02x')
         self.rsp_logger.debug("<- %s", message)
         self._lastmessage = packet_data
-        self._comsocket.sendall(message.encode("ascii"))
+        self.comsocket.sendall(message.encode("ascii"))
 
     def send_reply_packet(self, mes : str) -> None:
         """
@@ -986,10 +1010,10 @@ class GdbHandler():
                     self.logger.warning("Checksum Wrong in packet: %s", data)
                     valid_data = False
                 if not valid_data:
-                    self._comsocket.sendall(b"-")
+                    self.comsocket.sendall(b"-")
                     self.rsp_logger.debug("<- -")
                 else:
-                    self._comsocket.sendall(b"+")
+                    self.comsocket.sendall(b"+")
                     self.rsp_logger.debug("<- +")
                     # now split into command and data (or parameters) and dispatch
                     if chr(packet_data[0]) not in {'v', 'q', 'Q'}:

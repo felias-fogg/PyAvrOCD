@@ -646,7 +646,7 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
         # compile sketch (if necessary)
         if sketch:
             if sketch in compiled:
-                logger.info("Program % has been compiled already", sketch)
+                logger.info("Program %s has been compiled already", sketch)
             elif os.path.exists(f"sketches/{sketch}/{sketch}.ino"):
                 comp_ok = compile_arduino(sketch, spec, dev, clock)
             elif os.path.exists(f"sketches/{sketch}/Makefile"):

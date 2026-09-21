@@ -71,7 +71,9 @@ tests:
       - import: short_prolog
       - stimulus: monitor debugwire enable
       - stimulus: monitor info
-        response: Debugging is impossible when DWEN is not programmed
+        responses:
+          - Debugging is impossible when DWEN is not programmed
+          - DWEN is not set, but not managed by dw-link. Cannot continue.
       - import: epilog
 
 # check whether bootrst is untouched when it is not managed
@@ -901,6 +903,7 @@ tests:
 
 # tests extended-remote target
   extended:
+    serverargs: "--once"
     sketch: cblink
     steps:
       - stimulus: set style enabled off

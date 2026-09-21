@@ -1,12 +1,15 @@
 # Release Notes
 
-## Release v1.5.9
+## Release v1.6.0
 
-- Hopefully, the Linux binaries will be forward compatible more often now after not using *staticx* anymore.
+- Hopefully, the Linux binaries will be forward-compatible more often now that we are not using *staticx* anymore.
+- The *extended remote mode* has now been implemented according to the GDB specifications. For example, after a disconnect, the GDB server will wait for a reconnect.
+- A new option `--once` has been added (inspired by the gdbserver option of the same name). it forces termination of the GDB server when the GDB client quits, even when in *extended remote mode*. This is important for situations when PyAvrOCD is used in IDEs.
+- Internally, the end-to-end tests have been refactored. Now tests, devices, and cores are specified using YAML files.
 
 ## Release v1.5.8
 
-- New avr-gdb client, which does not crash on Ubuntu 24.04 anymore
+- New avr-gdb (17.2.2) client, which does not crash on Ubuntu 24.04 anymore.
 
 ## Release v1.5.7
 

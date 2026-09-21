@@ -1,9 +1,12 @@
 # Changelog
 
-## 1.5.9 (18-Sep-2026)
+## 1.6.0 (21-Sep-2026)
 
 - **Fixed:**
-     - Using *staticx* on the PyAvrOCD did more harm than good. In fact, PyAvrOCD generated under Ubuntu 24.04 did crash under Ubuntu 26.04 when using staticx, but worked perfectly without it. For this reason, it has been removed from the build process.
+     - Using *staticx* on PyAvrOCD did more harm than good. In fact, PyAvrOCD generated under Ubuntu 24.04 did crash under Ubuntu 26.04 when using staticx, but worked perfectly without it. For this reason, it has been removed from the build process.
+     - Extended remote mode has now been implemented as specified in the GDB documentation (see https://pyavrocd.io/persistent/).
+- **Added:**
+     - New option `--once`: Even when in extended remote mode, terminate on `disconnect` or `detach`.
 - **Changed:**
      - The e2e test suite has been refactored to use multiple YAML files instead of Python files with dict declarations.
 

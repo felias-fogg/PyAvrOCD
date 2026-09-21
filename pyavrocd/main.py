@@ -44,10 +44,10 @@ def options(cmd: list[str]) -> argparse.Namespace:
     """
     parser : argparse.ArgumentParser
     parser = argparse.ArgumentParser(prog="pyavrocd",
-            usage="%(prog)s [options]", #\nThis is a GDB server for AVR8 MCUs",
+            usage="%(prog)s [options]\nGDB server for AVR MCUs",
             fromfile_prefix_chars='@',
-            formatter_class=argparse.RawTextHelpFormatter, #ArgumentDefaultsHelpFormatter,
-            description='GDB server for 8-bit AVR MCUs'
+            formatter_class=argparse.RawTextHelpFormatter,
+            #description='GDB server for 8-bit AVR MCUs'
                                          )
     parser.add_argument("-H", "--webhelp",
                             action='store_true',
@@ -156,6 +156,11 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             type=str,
                             action='append',
                             help="Extra argument for simavr (give multiple times)")
+
+    parser.add_argument("--once",
+                            dest='once',
+                            action='store_true',
+                            help="Terminate when GDB disconnects or detaches")
 
     parser.add_argument("--dw-link-baud",
                             dest='baud',

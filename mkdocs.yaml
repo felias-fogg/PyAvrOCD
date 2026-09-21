@@ -46,6 +46,7 @@ nav:
     - Compiling the program: 'compilation-options.md'
     - Invoking the server: 'command-line-options.md'
     - Debugging on the target: 'debugging.md'
+    - Persistent debugging: 'persistent.md'
     - Monitor commands: 'monitor-commands.md'
     - Restoring the target: 'restore-original-state.md'
     - Troubleshooting: 'troubleshooting.md'

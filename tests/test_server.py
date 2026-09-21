@@ -22,6 +22,7 @@ class TestRspServer(TestCase):
         mock_dbg.device = 'atmega328p'
         args = SimpleNamespace()
         args.port = 2000
+        args.once = False
         self.rs = RspServer(mock_dbg, "atemga328p", args, "Tool")
         self.rs.logger = Mock()
         self.rs.logger.info = Mock()
@@ -42,14 +43,35 @@ class TestRspServer(TestCase):
         self.set_up()
         mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
         mock_socket.return_value.accept.return_value[0].recv.side_effect = [b'123', b'123', b'']
-        mock_handler.return_value = Mock(mon=None, spec=GdbHandler)
+        mock_handler.return_value = Mock(spec=GdbHandler, mon=None, extended_remote_mode=False)
         mock_select.side_effect = [(1,0,0), (1,0,0), (1,0,0)]
         self.assertEqual(self.rs.serve(), 0)
         self.rs.logger.info.assert_has_calls([call('Listening on port %s for gdb connection', 2000),
                                               call('Connection from %s', '111.222.333.444'),
                                               call('Connection closed by GDB'),
                                               call('Leaving GDB server')])
-        self.assertEqual(self.rs.logger.info.call_count,7)
+        self.assertEqual(self.rs.logger.info.call_count, 6)
+
+    @patch('pyavrocd.server.time.sleep',Mock())
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
+    def test_serve_extended_remote_mode(self, mock_handler, mock_select, mock_socket):
+        self.set_up()
+        mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
+        mock_socket.return_value.accept.return_value[0].recv.side_effect = [b'123', b'123', b'',KeyboardInterrupt]
+        mock_handler.return_value = Mock(spec=GdbHandler, mon=None, extended_remote_mode=True, _once=False)
+        mock_select.side_effect = [(1,0,0), (1,0,0), (1,0,0), (1,0,0)]
+        self.assertEqual(self.rs.serve(), 1)
+        self.rs.logger.info.assert_has_calls([call('Listening on port %s for gdb connection', 2000),
+                                              call('Connection from %s', '111.222.333.444'),
+                                              call('Connection closed by GDB'),
+                                              call('Listening on port %s for gdb connection', 2000),
+                                              call('Connection from %s', '111.222.333.444'),
+                                              call('Terminated by Ctrl-C'),
+                                              call('Leaving GDB server')])
+        self.assertEqual(self.rs.logger.info.call_count, 10)
 
 
     @patch('pyavrocd.server.time.sleep',Mock())

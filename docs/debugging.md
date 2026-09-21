@@ -128,6 +128,8 @@ Note: automatically using hardware breakpoints for read-only addresses.
 
 In the above dialog, note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD needs to delete the bootloader as well, you also cannot upload anything over the serial line.
 
+### Inspecting I/O registers
+
 If you have reached this point, I trust that you are familiar with GDB and know how to proceed. I should point out one very convenient command, however: `monitor ioregister <ioreg-expression>` [`<int>`] (which does not work with dw-link, though). It will output the descriptions and contents of the I/O registers and/or bitfields that are referred to by `<ioreg-expression>`. This is a wildcard, case-insensitive expression over the names of the I/O registers and bitfields using the notation [`<peripheral>`.]`<register>`[`.<field>`], as shown below.
 
 ```
@@ -177,11 +179,8 @@ EXINT.EICRA.ISC0 = 3 (old value was: 0)
 (gdb)
 ```
 
-## Persistent Debugging
+### Structured UIs
 
-Most of the time, one-shot debugging will be enough to locate a problem. This means that you start the debugger, switch the MCU into debugging mode, upload the program, start it, and then try to find the bug. After you have located and fixed the bug, the MCU will then be brought into the normal mode again.
+In addition to the command-line interface, GDB also supports more structured user interfaces. The [*Text User Interface*](https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI.html), or TUI, is one of them. In order to use it, GDB has to be compiled with TUI enabled. Another very nice text-based interface is [gdb-dashboard](https://github.com/cyrus-and/gdb-dashboard). A setup for debugging an AVR chip with gdb-dashboard is described [here](https://github.com/lkoepsel/AVR64DD/blob/main/docs/gdb-dashboard.md). For this, the GDB client needs to be compiled with Python support.
 
-Sometimes, however, you may want to have a more persistent debugging scenario. If a bug shows up only after some time, you may want to leave the MCU running without the debug probe connected to it until the point that something goes wrong, and then *attach* to the MCU without going through the motion of setting fuses and resetting the MCU. This is supported by the monitor command `monitor atexit stay` and the command-line option `--attach`. With the mentioned monitor command, PyAvrOCD is instructed not to leave the debugging mode when the GDB server is terminated. When later PyAvrOCD is started with the command line option `--attach`, it will try to connect to the on-chip debugging module without setting any fuses and without a reset. If successful, you can then inspect the state of the program, change things, and continue execution.
-
-Note that for UPDI targets, it is not necessary to use the `monitor atexit stay` command because UPDI targets do not have any special debug fuses. So, you can always attach.
-
+Note that the GDB binaries shipped with PyAvrOCD do not support TUI or Python. So, you have to look somewhere else for a client. This also means that [for some Microchip MCUs, debugging will not work](https://arduino-craft-corner.de/index.php/2026/01/19/when-unused-program-counter-bits-go-rogue/).

@@ -50,40 +50,66 @@ class RspServer():
         self.logger.info("System requested termination using SIGTERM signal")
         self._terminate = True
 
+    def _establish_connection(self) -> socket.socket:
+        """
+        Establish communication with the GDB client.
+        """
+        # make sure that this message can be seen
+        self.logger.info("Listening on port %s for gdb connection", self.port)
+        if self.logger.getEffectiveLevel() not in {logging.DEBUG, logging.INFO}:
+            print("Listening on port {} for gdb connection".format(self.port))
+        while self.connection is None:
+            try:
+                if self.gdb_socket:
+                    self.connection, self.address = self.gdb_socket.accept()
+            except socket.timeout:
+                pass
+        self.connection.setblocking(False)
+        self.logger.info('Connection from %s', self.address)
+        return self.connection
+
+    def _handle_communication_drop(self) -> None:
+        """
+        Reestablish communication or terminate
+        """
+        if self.connection:
+            self.connection.close()
+        self.connection = None
+        if self.handler and self.handler.extended_remote_mode and not self.args.once:
+            self.handler.comsocket = self._establish_connection()
+        else:
+            self._terminate = True
+
     def serve(self) -> int:
         """
         Serve away ...
         """
         signal.signal(signal.SIGTERM, self._signal_server)
-        self.gdb_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.logger.info("Listening on port %s for gdb connection", self.port)
-        # make sure that this message can be seen
-        if self.logger.getEffectiveLevel() not in {logging.DEBUG, logging.INFO}:
-            print("Listening on port {} for gdb connection".format(self.port))
-        self.gdb_socket.bind(("127.0.0.1", self.port))
         try:
-            self.gdb_socket.listen()
+            self.gdb_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.gdb_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.gdb_socket.bind(("127.0.0.1", self.port))
+            self.gdb_socket.listen(1)
             self.gdb_socket.settimeout(0.5) # necessary in order to allow for Ctrl-C under Windows
-            while self.connection is None:
-                try:
-                    self.connection, self.address = self.gdb_socket.accept()
-                except socket.timeout:
-                    pass
-            self.connection.setblocking(False)
-            self.logger.info('Connection from %s', self.address)
-            self.handler = GdbHandler(self.connection, self.avrdebugger, self.devicename, self.args, self.toolname)
+            self.handler = GdbHandler(self._establish_connection(), self.avrdebugger, self.devicename,
+                                          self.args, self.toolname)
             while not self._terminate:
-                ready = select.select([self.connection], [], [], 0.2)
-                if ready[0]:
-                    data : bytes = self.connection.recv(RECEIVE_BUFFER)
-                    if len(data) > 0:
-                        self.handler.handle_data(data)
+                try:
+                    assert self.connection, "Connection socket is None"
+                    ready = select.select([self.connection], [], [], 0.2)
+                    if ready[0]:
+                        data : bytes = self.connection.recv(RECEIVE_BUFFER)
+                        if len(data) > 0:
+                            self.handler.handle_data(data)
+                        else:
+                            self.logger.info("Connection closed by GDB")
+                            self._handle_communication_drop()
                     else:
-                        self._terminate = True
-                        self.logger.info("Connection closed by GDB")
-                else:
-                    self.handler.handle_data(None)
-                self.handler.poll_events()
+                        self.handler.handle_data(None)
+                    self.handler.poll_events()
+                except ConnectionError:
+                    self.logger.warning("Connection reset by GDB")
+                    self._handle_communication_drop()
             return 0 # termination because of dropped connection or SIGTERM signal
         except EndOfSession: # raised by 'detach' command
             self.logger.info("End of session")
@@ -92,7 +118,7 @@ class RspServer():
             self.logger.info("Terminated by Ctrl-C")
             return 1
         except Exception as e:
-            self.logger.critical("Forced exit: %s", e)
+            self.logger.info("Forced exit: %s", e)
             return 1
         finally:
             self.logger.info("Leaving GDB server")
