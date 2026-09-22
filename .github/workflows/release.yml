@@ -157,7 +157,6 @@ jobs:
           cpu: arm1176
           import_github_env: true
           base_image: raspios_lite:latest
-          copy_artifact_path: spyavrocd
           image_additional_mb: 2048
           commands: |
             uname -a
