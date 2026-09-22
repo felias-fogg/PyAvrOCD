@@ -4,37 +4,48 @@ on: [workflow_dispatch]
 
 jobs:
   build-linux32-arm:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: pguyot/arm-runner-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Qemu run
+        uses: pguyot/arm-runner-action@v2
         id: build_image
         with:
           cpu: arm1176
+          import_github_env: true
+          copy_artifact_path: dist
           base_image: raspios_lite:latest
-          copy_artifact_path: spyavrocd
           image_additional_mb: 2048
           commands: |
             uname -a
             python3 --version
             ldd --version
             df -h /
-            apt update -y
-            apt install -y scons
-            apt install -y python3-pip
-            apt install -y python3.13-venv
+            sudo apt update -y
+            sudo apt upgrade -y
+            sudo apt install -y git
+            sudo apt install -y scons
+            sudo apt install -y python3-pip
+            sudo apt install -y python3.13-venv
             python3 -m venv env
             . ./env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
-            pip install --no-input patchelf-wrapper
-            pip install --no-input staticx
-            staticx dist/pyavrocd spyavrocd
-            ./spyavrocd -V
-            ./spyavrocd -d ? -t ?
+            ls -la .
+            ls -la dist
 
-      - name: upload
-        uses: actions/upload-artifact@v6
+      - name: Check file system
+        run: |
+          ls -la .
+          ls -la dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: Linux32arm
-          path: spyavrocd
+          name: arm-linux-gnueabihf
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
