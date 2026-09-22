@@ -156,6 +156,7 @@ jobs:
         with:
           cpu: arm1176
           import_github_env: true
+          copy_artifact_path: dist
           base_image: raspios_lite:latest
           image_additional_mb: 2048
           commands: |
