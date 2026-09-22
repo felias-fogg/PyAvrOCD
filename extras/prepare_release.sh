@@ -49,7 +49,7 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "Setting up virtual environment ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; python -m venv env; env/bin/python -m pip install --upgrade pip"
+ssh ${SERVER} "cd GitHub/PyAvrOCD; python3 -m venv env; env/bin/python3 -m pip install --upgrade pip"
 if [[ $? != 0 ]]; then
     exit 1
 fi
