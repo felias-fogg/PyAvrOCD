@@ -20,7 +20,7 @@ jobs:
             ldd --version
             df -h /
             mkdir -p dist/pyavrocd/pyavrocd-util
-            cp extras/svd/* dist/pyavrocd/pyavrocd-util/
+            cp svd/* dist/pyavrocd/pyavrocd-util/
             touch dist/pyavrocd/pyavrocd
 
 
