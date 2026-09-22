@@ -14,7 +14,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-24.04"
     steps:
       - name: Check out repository
         if: ${{ github.event.release.tag_name != '' }}
@@ -141,7 +141,7 @@ jobs:
 
   build-armhf-binary:
     needs: check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -182,7 +182,7 @@ jobs:
 
   build-assets:
     needs: [build-binaries, build-armhf-binary]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -240,7 +240,7 @@ jobs:
   build-pypi-distribution:
     name: Build distribution
     needs: build-assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: check for tag
@@ -276,7 +276,7 @@ jobs:
     if: ${{ !contains(github.event.release.name,'a') && !contains(github.event.release.name,'b') && github.event.release.name != '' }}
     needs:
     - build-pypi-distribution
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: pypi
       url: https://pypi.org/p/PyAvrOCD  # Replace <package-name> with your PyPI project name
