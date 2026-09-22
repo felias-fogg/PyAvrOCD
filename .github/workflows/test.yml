@@ -1,0 +1,34 @@
+# build a arm-eabihf binary
+name: Test arm-runner
+on: [workflow_dispatch]
+
+jobs:
+  build-linux32-arm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pguyot/arm-runner-action@v2
+        id: build_image
+        with:
+          cpu: arm1176
+          base_image: raspios_lite:latest
+          copy_artifact_path: dist
+          image_additional_mb: 2048
+          commands: |
+            uname -a
+            python3 --version
+            ldd --version
+            df -h /
+            mkdir -p dist/pyavrocd/pyavrocd-util
+            cp extras/svd/* dist/pyavrocd/pyavrocd-util/
+            touch dist/pyavrocd/pyavrocd
+
+
+      - name: upload
+        uses: actions/upload-artifact@v6
+        with:
+          name: Linux32arm
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
