@@ -1,5 +1,5 @@
 #!/bin/bash
-DEFAULT_SERVER=fattrixie
+DEFAULT_SERVER=bookworm
 if [[ "$(pwd)" != "/Users/nebel/GitHub/PyAvrOCD" ]]; then
     echo "Invoke the script only in the root folder of the repo!"
     exit 1
@@ -36,6 +36,9 @@ if ping -c 3 ${SERVER} &>/dev/null; then
     echo "... ${SERVER} is reachable"
 else
     echo "${SERVER} is not reachable"
+    echo "Start Ubuntu on Intel machine and login"
+    echo "Start QEMU/KVM (Virtuelle Maschinenverwaltung)"
+    echo "Boot debian12-fresh"
     exit 1
 fi
 
@@ -76,23 +79,23 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "Remove old version ..."
-rm -rf extras/binaries/arm-linux-gnueabihf/pyavrocd*
+rm -rf extras/binaries/i686-linux-gnu/pyavrocd*
 
 echo "Download new version from server ..."
-scp -r ${SERVER}:./GitHub/PyAvrOCD/dist/pyavrocd/* extras/binaries/arm-linux-gnueabihf/
+scp -r ${SERVER}:./GitHub/PyAvrOCD/dist/pyavrocd/* extras/binaries/i686-linux-gnu/
 if [[ $? != 0 ]]; then
     exit 1
 fi
 
 echo "Delete duplicate gensvd.py ..."
-rm -f extras/binaries/arm-linux-gnueabihf/pyavrocd-util/svd/gensvd.py
+rm -f extras/binaries/i686-linux-gnu/pyavrocd-util/svd/gensvd.py
 
 echo "Add VERSION file ..."
-echo -n "${VERSTR}" > extras/binaries/arm-linux-gnueabihf/VERSION
+echo -n "${VERSTR}" > extras/binaries/i686-linux-gnu/VERSION
 
 echo "Commit and upload to GitHub remote repo ..."
-git add extras/binaries/arm-linux-gnueabihf/
-git commit -m "New arm-linux-gnueabihf binaries ${VERSTR}"
+git add extras/binaries/i686-linux-gnu/
+git commit -m "New i686-linux-gnu binaries ${VERSTR}"
 git push
 
 echo "Now you can create a new release ..."
