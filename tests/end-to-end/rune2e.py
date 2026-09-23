@@ -67,6 +67,7 @@ schema = { 'includes': [ '<STR>' ],
                         'mcu': '<STR>',
                         'board': '<STR>',
                         'variant': '<STR>',
+                        'pinout': '<STR>',
                         'chip': '<STR>',
                         'architecture': '<STR>',
                         'LTO': '<STR>',
@@ -298,22 +299,37 @@ def process_imports(spec : dict[ str, Any ]) -> None:
 
 def import_steps(spec : dict [ str, Any ]) -> None:
     """
-    Splice in a step list at the point where the import is mentioned. This does not work multi-level, but could
-    be extended to work that way.
+    Splice in a step list at the point where the import is mentioned. The imports are
+    resolved recursively, so an imported test may import other tests itself, and the
+    order in which the tests appear in the specification does not matter. Cyclic imports
+    are reported instead of being expanded until we run out of memory.
     """
-    for t, v in spec['tests'].items():
-        steplist = v.get('steps',[])
-        newlist = []
-        for s in steplist:
+    resolved : dict [ str, list [ dict [ str, Any ] ] ] = { }
+    pending : list [ str ] = [ ]
+
+    def resolve(name : str, importer : str) -> list [ dict [ str, Any ] ]:
+        if name in resolved:
+            return resolved[name]
+        if name in pending:
+            logger.critical("Cyclic step imports: %s", " -> ".join(pending + [ name ]))
+            sys.exit(1)
+        test = spec['tests'].get(name, None)
+        if test is None:
+            logger.critical("Could not import '%s' steps into '%s'.", name, importer)
+            sys.exit(1)
+        pending.append(name)
+        newlist : list [ dict [ str, Any ] ] = [ ]
+        for s in test.get('steps', [ ]):
             if 'import' in s:
-                exporter = spec['tests'].get(s['import'], None)
-                if exporter is None:
-                    logger.critical("Could not import '%s' steps into '%s'.", s['import'], t)
-                    sys.exit(1)
-                newlist += exporter.get('steps', [])
+                newlist += resolve(s['import'], name)
             else:
                 newlist.append(s)
-        v['steps'] = newlist
+        pending.pop()
+        resolved[name] = newlist
+        return newlist
+
+    for t in spec['tests']:
+        spec['tests'][t]['steps'] = resolve(t, t)
 
 def select_tests(spec : dict[ str, Any], dev : str, candidates : list[ str ]) -> tuple [ list [str ], list [ str ] ]:
     """
