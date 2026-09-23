@@ -7,7 +7,7 @@
 
 ## Arduino IDE 2, Arduino Maker Workshop, and PlatformIO
 
-If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file. 
+If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file.
 
 ## Downloading binaries
 
