@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.1 (23-Sep-2026)
+
+- **Fixed:**
+     - On UPDI targets, a chip erase deleted the EEPROM although EESAVE was managed. On these MCUs, EESAVE is active high (1 = EEPROM is retained) and a fuse value only takes effect after a reset, which is now taken care of. Since the debug-enabled cores start PyAvrOCD with `--manage all`, this hit everybody who enabled `monitor erasebeforeload`.
+     - The test for a dirty program counter on ATmega48 and ATmega88 erases the chip twice and thereby deleted the EEPROM. If EESAVE is managed, it is now programmed temporarily for the duration of the test.
+     - Writing the 16-bit registers `ADC0.WINLT` and `ADC0.WINHT` with `monitor ioregister` lost the low byte on the modern AVRs. In contrast to all other peripherals, a write to the high byte of these registers transfers the TEMP register into the low byte, even when the write comes from the debugger (see the notes in `docs/UPDI-notes.md`).
+     - The error message about a value that does not fit into an I/O register field said "cannot be store".
+- **Changed:**
+     - The end-to-end test specification now covers the modern MCUs and boards, and `rune2e.py` checks that every clock frequency a device offers is described by its core.
+     - Unit test coverage is now at 91%, with `monitor.py` and `xavr8target.py` fully covered.
+
 ## 1.6.0 (21-Sep-2026)
 
 - **Fixed:**
