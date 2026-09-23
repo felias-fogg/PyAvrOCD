@@ -1,6 +1,6 @@
 #!/bin/bash
 DEFAULT_SERVER=bookworm
-if [[ "$(pwd)" != "/Users/nebel/GitHub/PyAvrOCD" ]]; then
+if [[ "$(pwd)" != "/Users/nebel/GitHub/DEBUG/PyAvrOCD" ]]; then
     echo "Invoke the script only in the root folder of the repo!"
     exit 1
 fi
