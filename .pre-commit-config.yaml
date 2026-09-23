@@ -17,32 +17,22 @@ repos:
     hooks:
     -   id: pylint
         name: pylint
-        entry: poetry run pylint
-        language: python
+        entry: env -u VIRTUAL_ENV -u PYTHONHOME -u PYTHONPATH poetry run pylint
+        language: system
         types: [python]
         require_serial: true
         args: ["-rn", "-sn", "--ignore-pattern=((attiny|atmega|at90|avr16|avr32|avr64|avr128|avr256).*\\.py)", "--ignore=harvest.py,alldevices.py,collect.py",
           "--disable=similarities,import-error"]
-        additional_dependencies:
-        -   pyedbglib
-        -   pymcuprog
     -   id: unittest
         name: unittest
-        entry: poetry run python -m unittest discover
-        language: python
+        entry: env -u VIRTUAL_ENV -u PYTHONHOME -u PYTHONPATH poetry run python -m unittest discover
+        language: system
         types: [python]
         args: []
         pass_filenames: false
-        additional_dependencies:
-        -   pyedbglib
-        -   pymcuprog
-        -   pyusb
     -   id: typecheck
         name: typecheck
-        entry: poetry run mypy
-        language: python
+        entry: env -u VIRTUAL_ENV -u PYTHONHOME -u PYTHONPATH poetry run mypy
+        language: system
         types: [python]
         args: []
-        additional_dependencies:
-        -   pyedbglib
-        -   pymcuprog
