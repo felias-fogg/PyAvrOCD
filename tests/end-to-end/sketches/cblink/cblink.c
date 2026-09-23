@@ -17,7 +17,7 @@ void episode() {
   setBit(LED1_PORT, LED1);
   setBit(LED2_PORT, LED2);
   _delay_ms(DELAYTIME);
-  
+
   clearBit(LED1_PORT, LED1);
   clearBit(LED2_PORT, LED2);
   _delay_ms(DELAYTIME);
