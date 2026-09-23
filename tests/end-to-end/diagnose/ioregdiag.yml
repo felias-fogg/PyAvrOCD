@@ -1,0 +1,85 @@
+# Diagnostic script for the 16-bit I/O register write problem on AVR8X.
+# It contains no assertions on purpose: every step is logged, and the log
+# file log/ioreg-diag.log shows what actually arrives in the registers.
+#
+# Run it with:  ./rune2e.py -s diagnose/ioregdiag.yml -d <device> -t ioreg-diag
+#
+# The hard-wired addresses are the ones of an ATtiny3217:
+#   ADC0.WINLT @ 0x800612/13, ADC0.WINHT @ 0x800614/15
+
+includes:
+  - mcus.yml
+  - boards.yml
+  - tests.yml
+  - cores.yml
+
+tests:
+  ioreg-diag:
+    requires:
+      updi: true
+    steps:
+      - stimulus: set logging file log/ioreg-diag.log
+      # prolog and epilog are spelled out here: 'import' is resolved only one
+      # level deep and in dictionary order, and the tests of this file come
+      # before those of tests.yml, where 'prolog' itself imports 'short_prolog'
+      - stimulus: set style enabled off
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging enabled on
+      - stimulus: "target remote :2000"
+        timeout: 10
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor debugwire enable
+        timeout: 40
+        responses:
+          - enabled
+          - This is not a debugWIRE target
+
+      # (1) is the problem specific to ADC0.WINHT or does it show up
+      #     for every 16-bit register, i.e. in every peripheral?
+      - stimulus: monitor ioreg ADC0.WINHT 0x1234
+      - stimulus: monitor ioreg ADC0.WINHT
+      - stimulus: monitor ioreg ADC0.WINLT 0x1234
+      - stimulus: monitor ioreg ADC0.WINLT
+      - stimulus: monitor ioreg TCB0.CCMP 0x1234
+      - stimulus: monitor ioreg TCB0.CCMP
+      - stimulus: monitor ioreg RTC.PER 0x1234
+      - stimulus: monitor ioreg RTC.PER
+      - stimulus: monitor ioreg USART0.BAUD 0x1234
+      - stimulus: monitor ioreg USART0.BAUD
+
+      # (2) does it make a difference when the peripheral is enabled,
+      #     i.e. when it is clocked?
+      - stimulus: monitor ioreg ADC0.CTRLA.ENABLE 1
+      - stimulus: monitor ioreg ADC0.WINHT 0x5678
+      - stimulus: monitor ioreg ADC0.WINHT
+      - stimulus: monitor ioreg ADC0.CTRLA.ENABLE 0
+
+      # (3) two single byte writes issued by GDB itself, low byte first
+      - stimulus: monitor ioreg ADC0.WINHT 0
+      - stimulus: set {char}0x800614 = 0x34
+      - stimulus: set {char}0x800615 = 0x12
+      - stimulus: monitor ioreg ADC0.WINHT
+
+      # (4) the same, but with the high byte first
+      - stimulus: monitor ioreg ADC0.WINHT 0
+      - stimulus: set {char}0x800615 = 0x12
+      - stimulus: set {char}0x800614 = 0x34
+      - stimulus: monitor ioreg ADC0.WINHT
+
+      # (5) read back byte by byte, so that the read does not go
+      #     through the TEMP register of the 16-bit read path
+      - stimulus: x/1xb 0x800614
+      - stimulus: x/1xb 0x800615
+
+      # (6) and finally the low byte alone, without any read in between
+      - stimulus: monitor ioreg ADC0.WINLT 0
+      - stimulus: set {char}0x800612 = 0x34
+      - stimulus: x/1xb 0x800613
+      - stimulus: set {char}0x800613 = 0x12
+      - stimulus: x/1xb 0x800612
+      - stimulus: x/1xb 0x800613
+
+      - stimulus: detach
+        response: Detaching from
+      - stimulus: quit

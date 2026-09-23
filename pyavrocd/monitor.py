@@ -707,7 +707,7 @@ Timers:                   """ + ("frozen when stopped"
                 newregval = self._set_bitfield(oldregval, newvalue, fields[0]['bits'])
                 self._sram_write16bitreg(fields[0]['address'], newregval.to_bytes(fields[0]['size']//8, 'little'))
             except OverflowError:
-                return("", "Value out of range, cannot be store")
+                return("", "Value out of range, cannot be stored")
             mess = ""
             if fields[0]['address'] & 0xFFFF in self._dbg.masked_registers: #pylint: disable='protected-access'
                 mess = " register is read-protected"
@@ -719,11 +719,29 @@ Timers:                   """ + ("frozen when stopped"
 
     def _sram_write16bitreg(self, addr : int, data : bytes) -> None:
         """
-        If writing to a 16 bit register on the classic MCUs, you first have to write the high, then the low byte.
-        On modern MCUs, it is the other way around.
+        16-bit I/O registers are buffered by a TEMP register, so the two bytes have to
+        be written one after the other and in the right order: on the classic MCUs the
+        high byte first (it is buffered in TEMP and is written into the register
+        together with the low byte), on the modern MCUs the low byte first.
+
+        That is what the CPU does. Writes coming from the debugger, however, do not
+        go through TEMP at all on the modern MCUs: both bytes are written directly and
+        the order does not matter - except for ADC0.WINLT and ADC0.WINHT, where writing
+        the high byte additionally triggers the TEMP transfer and thereby destroys a low
+        byte written before it. On the classic MCUs, debugger writes do use TEMP, so
+        there the documented order is required.
+
+        Writing low, high, low is correct in all of these cases: the final write either
+        repeats a byte that is already in place or restores the low byte that the high
+        byte write has just destroyed. Verified on an ATtiny3217 and an ATmega4809, with
+        TCB0.CCMP, RTC.PER and USART0.BAUD as controls; see docs/UPDI-notes.md.
         """
-        if len(data) != 2 or self._dbg.get_architecture() == 'avr8x':
+        if len(data) != 2:
             self._dbg.sram_masked_write(addr, data)
+        elif self._dbg.get_architecture() == 'avr8x':
+            self._dbg.sram_masked_write(addr, data[:1])
+            self._dbg.sram_masked_write(addr+1, data[1:])
+            self._dbg.sram_masked_write(addr, data[:1])
         else:
             self._dbg.sram_masked_write(addr+1, data[1:])
             self._dbg.sram_masked_write(addr, data[:1])

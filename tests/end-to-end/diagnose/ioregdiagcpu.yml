@@ -1,0 +1,40 @@
+# Does the 16-bit write anomaly of the AVR8X ADC also apply when the CPU itself
+# writes the register, or only to accesses through UPDI while the target is
+# halted? The sketch 'adcwin' performs the three write variants for ADC0.WINHT
+# and, as a control, for TCB0.CCMP; this script loads it, runs it and prints the
+# results. No assertions: the numbers are the result.
+#
+# Run it with:  ./rune2e.py -s diagnose/ioregdiagcpu.yml -d <device> -t ioreg-diag-cpu
+#
+# How to read the output:
+#   {single = 0x1234, low_first = 0x1234, high_first = 0x1200}
+#       -> the register behaves as documented in section 8.5.6
+#   {single = 0x1200, low_first = 0x1200, high_first = 0x1234}
+#       -> the anomaly applies to CPU accesses too, i.e. it also hits ordinary
+#          application code and is not a property of the debug access path
+
+includes:
+  - mcus.yml
+  - boards.yml
+  - tests.yml
+  - cores.yml
+
+tests:
+  ioreg-diag-cpu:
+    requires:
+      updi: true
+    sketch: adcwin
+    steps:
+      - stimulus: set logging file log/ioreg-diag-cpu.log
+      - import: prolog
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: b done
+        response: Breakpoint 1
+      - stimulus: c
+        timeout: 20
+        response: Breakpoint 1
+      - stimulus: p/x winht_result     # the ADC window comparator threshold
+      - stimulus: p/x ccmp_result      # the control
+      - import: epilog

@@ -812,6 +812,106 @@ tests:
           - Unknown 'monitor' option
       - import: epilog
 
+# test the 'monitor ioregister' command on classic AVRs. Only registers
+# are used that exist on every classic MCU covered by the test suite:
+# CPU.MCUSR (read-only on some MCUs), EEPROM.EEDR and EEPROM.EECR (scratch
+# registers as long as EEPE is not set), and TC1.OCR1A, which is the only
+# 16-bit register that is present on almost all of them
+  ioreg-classic:
+    requires:
+      updi: false
+    steps:
+      - stimulus: set logging file log/ioreg-classic.log
+      - import: prolog
+      - stimulus: monitor ioreg CPU.MCUSR        # register and all its bitfields
+        response: "CPU.MCUSR.WDRF (@0x"
+      - stimulus: monitor ioreg mcusr            # lower case and no peripheral name
+        response: "MCUSR (@0x"
+      - stimulus: monitor ioreg CPU.MCUSR.WDRF   # a single bitfield
+        response: "CPU.MCUSR.WDRF (@0x"
+      - stimulus: monitor ioreg CPU.*            # all registers of one peripheral
+        response: "CPU.SREG (@0x"
+      - stimulus: monitor ioreg EEPROM.EEDR 0xa5 # write a full register
+        response: "EEPROM.EEDR = 165 (old value was:"
+      - stimulus: monitor ioreg EEPROM.EEDR
+        response: "8-bits) = 0xA5, 0b10100101, 165"
+      - stimulus: monitor ioreg EEPROM.EECR.EEPM 2  # write a bitfield
+        response: "EEPROM.EECR.EEPM = 2 (old value was:"
+      - stimulus: monitor ioreg EEPROM.EECR.EEPM
+        response: ") = 0x2, 0b10, 2 ("
+      - stimulus: monitor ioreg EEPROM.EECR.EEPM 0  # and restore it
+        response: "EEPROM.EECR.EEPM = 0 (old value was: 2)"
+      - stimulus: monitor ioreg TC1.OCR1A 0x1234 # 16-bit write: high byte first
+        responses:
+          - "TC1.OCR1A = 4660 (old value was:"
+          - "Value out of range, cannot be stored"   # MCUs with an 8-bit timer 1
+          - "No matching I/O register or field"      # MCUs without timer 1
+      - stimulus: monitor ioreg TC1.OCR1A
+        responses:
+          - "16-bits) = 0x1234, 0b1001000110100, 4660"
+          - "TC1.OCR1A (@0x"                         # MCUs with an 8-bit timer 1
+          - "No matching I/O registers or fields identified"
+      - import: epilog
+
+# test the 'monitor ioregister' command on modern AVRs. Again only registers
+# that all AVR8X MCUs have: RSTCTRL.RSTFR, CLKCTRL.MCLKCTRLA (read-only here),
+# and the unused ADC window comparator registers ADC0.WINHT (16 bit) and
+# ADC0.MUXPOS as scratch registers
+  ioreg-modern:
+    requires:
+      updi: true
+    steps:
+      - stimulus: set logging file log/ioreg-modern.log
+      - import: prolog
+      - stimulus: monitor ioreg RSTCTRL.RSTFR    # register and all its bitfields
+        response: "RSTCTRL.RSTFR.UPDIRF (@0x"
+      - stimulus: monitor ioreg rstfr            # lower case and no peripheral name
+        response: "RSTCTRL.RSTFR (@0x"
+      - stimulus: monitor ioreg CLKCTRL.MCLKCTRLA.CLKSEL  # bitfield with enumerated values
+        responses:
+          - ": OSC"
+      - stimulus: monitor ioreg RSTCTRL.*        # all registers of one peripheral
+        response: "RSTCTRL.RSTFR (@0x"
+      - stimulus: monitor ioreg ADC0.WINHT 0x1234  # 16-bit write
+        response: "ADC0.WINHT = 4660 (old value was:"
+      - stimulus: monitor ioreg ADC0.WINHT
+        response: "16-bits) = 0x1234, 0b1001000110100, 4660"
+      - stimulus: monitor ioreg ADC0.WINHT 0     # and restore it
+        response: "ADC0.WINHT = 0 (old value was: 4660)"
+      - stimulus: monitor ioreg ADC0.MUXPOS.MUXPOS 3  # write a bitfield
+        response: "ADC0.MUXPOS.MUXPOS = 3 (old value was:"
+      - stimulus: monitor ioreg ADC0.MUXPOS.MUXPOS
+        response: ") = 0x3, 0b11, 3 ("
+      - stimulus: monitor ioreg ADC0.MUXPOS.MUXPOS 0  # and restore it
+        response: "ADC0.MUXPOS.MUXPOS = 0 (old value was: 3)"
+      - import: epilog
+
+# error cases of the 'monitor ioregister' command; CPU.SREG and its bitfields
+# exist on classic as well as on modern MCUs
+  ioreg-errors:
+    steps:
+      - stimulus: set logging file log/ioreg-errors.log
+      - import: prolog
+      - stimulus: monitor ioreg
+        response: "The 'ioregister' command requires 1 or 2 arguments"
+      - stimulus: monitor ioreg CPU.SREG 1 2
+        response: "The 'ioregister' command requires 1 or 2 arguments"
+      - stimulus: monitor ioreg NOSUCHREGISTER
+        response: "No matching I/O registers or fields identified"
+      - stimulus: monitor ioreg NOSUCHREGISTER 1
+        response: "No matching I/O register or field"
+      - stimulus: monitor ioreg CPU.SREG xyz
+        response: "Second argument must be a well-formed integer literal"
+      - stimulus: monitor ioreg *.* 1            # matches more than one register
+        response: "No unique I/O register addressed"
+      - stimulus: monitor ioreg *.SREG.*         # all bitfields of the status register
+        response: "CPU.SREG.I (@0x"
+      - stimulus: monitor ioreg *.SREG.* 1       # matches more than one bitfield
+        response: "No unique I/O register field addressed"
+      - stimulus: monitor ioreg CPU.SREG.I 2     # does not fit into a 1-bit field
+        response: "Value out of range, cannot be stored"
+      - import: epilog
+
 # test whether CLI options concerning monitor commands are correctly passed
 # on to GDB server
   monitor-options:

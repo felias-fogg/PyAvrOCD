@@ -4,7 +4,7 @@ The test suit for the MonitorCommand class
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 import importlib
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 from pyavrocd.monitor import MonitorCommand, monopts
 from pyavrocd.main import options
 from pyavrocd.errors import FatalError
@@ -419,3 +419,204 @@ class TestMonitorCommand(TestCase):
         self.mo._debugger_active = True
         self.assertEqual(self.mo.dispatch(['LiveTests']),
                              ("live_tests", "Tests done"))
+
+    def test_dispatch_breakpoints_internal_confusion(self):
+        self.set_up()
+        self.mo._onlyhwbps = True
+        self.mo._onlyswbps = True
+        self.assertEqual(self.mo.dispatch(['breakpoints']),
+                             ("", "Internal confusion: No breakpoints are allowed"))
+
+    def test_dispatch_breakpoints_fixed_hardware_only(self):
+        self.set_up()
+        self.assertTrue(self.moj._onlyhwbps)
+        self.assertTrue(self.moj._bpfixed)
+        self.assertEqual(self.moj.dispatch(['breakpoints']),
+                             ("", "On this MCU, only hardware breakpoints are allowed"))
+
+    def test_dispatch_disconnect(self):
+        self.set_up()
+        self.assertEqual(self.mo.dispatch(['disconnect']), ("", "No connection to debug tool"))
+        self.mo._debugger_active = True
+        self.assertEqual(self.mo.dispatch(['disconnect']), ("disconnect", "Disconnected from debug tool"))
+
+    def test_dispatch_exit(self):
+        self.set_up()
+        self.assertEqual(self.mo.dispatch(['exit']), ("exit", "Exiting from GDB server"))
+
+    def test_dispatch_test(self):
+        self.set_up()
+        self.assertEqual(self.mo.dispatch(['Test']),
+                             ("", "Cannot execute test because debugging is not enabled"))
+        self.mo._debugger_active = True
+        self.assertEqual(self.mo.dispatch(['Test']), ("test", "Tests done"))
+
+    def test_dispatch_timers_on_avr8x(self):
+        self.set_up()
+        self.mo._arch = 'avr8x'
+        self.assertEqual(self.mo.dispatch(['timers']),
+                             ("", "On (U)PDI targets, timers are frozen when execution is stopped"))
+        self.assertEqual(self.mo.dispatch(['timers', 'run']),
+                             ("", "On (U)PDI targets, timers are frozen when execution is stopped"))
+
+
+SVD = { 'device' : { 'peripherals' : { 'peripheral' : [
+    { 'name' : 'TCA0', 'baseAddress' : 0x0A00, 'registers' : { 'register' : [
+        { 'name' : 'CTRLA', 'addressOffset' : 0x00, 'size' : 8, 'description' : 'Control A',
+          'fields' : { 'field' : [
+              { 'name' : 'ENABLE', 'bitRange' : '[0:0]', 'description' : 'Module Enable',
+                'enumeratedValues' : { 'enumeratedValue' : [
+                    { 'value' : '0x0', 'name' : 'DISABLED', 'description' : 'off' },
+                    { 'value' : '0x1', 'name' : 'ENABLED', 'description' : 'on' } ] } },
+              { 'name' : 'CLKSEL', 'bitRange' : '[3:1]', 'description' : 'Clock Selection' } ] } },
+        { 'name' : 'CNT', 'addressOffset' : 0x20, 'size' : 16, 'description' : 'Count' } ] } },
+    { 'name' : 'TCB0', 'baseAddress' : 0x0B00, 'registers' : { 'register' : [
+        { 'name' : 'CTRLA', 'addressOffset' : 0x00, 'size' : 8, 'description' : 'Control A',
+          'fields' : { 'field' : [
+              { 'name' : 'ENABLE', 'bitRange' : '[0:0]', 'description' : 'Module Enable' } ] } } ] } } ] } } }
+
+
+class TestMonitorIORegister(TestCase):
+    """
+    Tests for the 'monitor ioregister' command, i.e., for reading and writing
+    I/O registers and bitfields described by the SVD file of the target.
+    """
+
+    def setUp(self):
+        self.mockdbg = MagicMock()
+        self.mockdbg.device_info = { 'svd' : SVD }
+        self.mockdbg.get_devicename.return_value = 'atmega328p'
+        self.mockdbg.get_architecture.return_value = 'avr8'
+        self.mockdbg.masked_registers = []
+        self.mo = MonitorCommand('debugwire', options(['-f', 'foo', '-d', 'atmega328p']), "Tool",
+                                     self.mockdbg)
+        self.mo._arch = 'avr8'
+
+    # --- reading ---------------------------------------------------------
+
+    def test_ioreg_without_svd(self):
+        self.mockdbg.device_info = {}
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT']),
+                             ("", "No SVD information for 'atmega328p'"))
+
+    def test_ioreg_wrong_number_of_arguments(self):
+        self.assertEqual(self.mo.dispatch(['ioreg']),
+                             ("", "The 'ioregister' command requires 1 or 2 arguments"))
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT', '1', '2']),
+                             ("", "The 'ioregister' command requires 1 or 2 arguments"))
+
+    def test_ioreg_read_unique_register_without_fields(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x34, 0x12])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'tca0.cnt']),
+                             ("", "TCA0.CNT (@0xA20, 16-bits) = 0x1234, 0b1001000110100, 4660 (Count)"))
+        self.mockdbg.sram_masked_read.assert_called_with(0x0A20, 2)
+
+    def test_ioreg_read_ambigious_register(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x03])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'CTRLA']),
+                             ("", "TCA0.CTRLA (@0xA00, 8-bits) = 0x3, 0b11, 3 (Control A)\n" +
+                                  "TCB0.CTRLA (@0xB00, 8-bits) = 0x3, 0b11, 3 (Control A)"))
+
+    def test_ioreg_read_unique_register_with_fields(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x03])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CTRLA']),
+                             ("", "TCA0.CTRLA (@0xA00, 8-bits) = 0x3, 0b11, 3 (Control A)\n" +
+                                  "TCA0.CTRLA.ENABLE (@0xA00[0:0]) = 0x1, 0b1, 1 (Module Enable)\n" +
+                                  "TCA0.CTRLA.CLKSEL (@0xA00[3:1]) = 0x1, 0b1, 1 (Clock Selection)"))
+
+    def test_ioreg_read_unique_field_with_enumerated_values(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x03])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CTRLA.ENABLE']),
+                             ("", "TCA0.CTRLA.ENABLE (@0xA00[0:0]) = 0x1, 0b1, 1 (Module Enable)\n" +
+                                  "   0x0: DISABLED (off)\n" +
+                                  "   0x1: ENABLED (on)"))
+
+    def test_ioreg_read_ambigious_field(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x03])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'ENABLE']),
+                             ("", "TCA0.CTRLA.ENABLE (@0xA00[0:0]) = 0x1, 0b1, 1 (Module Enable)\n" +
+                                  "TCB0.CTRLA.ENABLE (@0xB00[0:0]) = 0x1, 0b1, 1 (Module Enable)"))
+
+    def test_ioreg_read_empty_expression(self):
+        self.assertEqual(self.mo.dispatch(['ioreg', '']),
+                             ("", "No matching I/O registers or fields identified"))
+
+    def test_ioreg_read_no_match(self):
+        self.assertEqual(self.mo.dispatch(['ioreg', 'FOO']),
+                             ("", "No matching I/O registers or fields identified"))
+
+    # --- writing ---------------------------------------------------------
+
+    def test_ioreg_write_malformed_value(self):
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT', 'xyz']),
+                             ("", "Second argument must be a well-formed integer literal"))
+
+    def test_ioreg_write_ambigious_register(self):
+        self.assertEqual(self.mo.dispatch(['ioreg', 'CTRLA', '1']),
+                             ("", "No unique I/O register addressed"))
+
+    def test_ioreg_write_register(self):
+        self.mockdbg.sram_masked_read.side_effect = [ bytes([0x00, 0x00]), bytes([0x34, 0x12]) ]
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT', '0x1234']),
+                             ("", "TCA0.CNT = 4660 (old value was: 0)"))
+        self.assertEqual(self.mockdbg.sram_masked_write.mock_calls,
+                             [ call(0x0A21, b'\x12'), call(0x0A20, b'\x34') ])
+
+    def test_ioreg_write_register_value_too_large(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x00, 0x00])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT', '0x12345']),
+                             ("", "Value out of range, cannot be stored"))
+        self.mockdbg.sram_masked_write.assert_not_called()
+
+    def test_ioreg_write_register_read_protected(self):
+        self.mockdbg.masked_registers = [ 0x0A20 ]
+        self.mockdbg.sram_masked_read.return_value = bytes([0x00, 0x00])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT', '0x1234']),
+                             ("", "TCA0.CNT = 4660 (old value was: 0) register is read-protected"))
+
+    def test_ioreg_write_register_unsuccessful(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x00, 0x00])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CNT', '0x1234']),
+                             ("", "TCA0.CNT = 4660 (old value was: 0) was unsuccessful"))
+
+    def test_ioreg_write_ambigious_field(self):
+        self.assertEqual(self.mo.dispatch(['ioreg', 'ENABLE', '1']),
+                             ("", "No unique I/O register field addressed"))
+
+    def test_ioreg_write_field(self):
+        self.mockdbg.sram_masked_read.side_effect = [ bytes([0x01]), bytes([0x07]) ]
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CTRLA.CLKSEL', '3']),
+                             ("", "TCA0.CTRLA.CLKSEL = 3 (old value was: 0)"))
+        self.assertEqual(self.mockdbg.sram_masked_write.mock_calls, [ call(0x0A00, b'\x07') ])
+
+    def test_ioreg_write_field_value_too_large(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x01])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CTRLA.CLKSEL', '8']),
+                             ("", "Value out of range, cannot be stored"))
+        self.mockdbg.sram_masked_write.assert_not_called()
+
+    def test_ioreg_write_field_read_protected(self):
+        self.mockdbg.masked_registers = [ 0x0A00 ]
+        self.mockdbg.sram_masked_read.return_value = bytes([0x01])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CTRLA.CLKSEL', '3']),
+                             ("", "TCA0.CTRLA.CLKSEL = 3 (old value was: 0) register is read-protected"))
+
+    def test_ioreg_write_field_unsuccessful(self):
+        self.mockdbg.sram_masked_read.return_value = bytes([0x01])
+        self.assertEqual(self.mo.dispatch(['ioreg', 'TCA0.CTRLA.CLKSEL', '3']),
+                             ("", "TCA0.CTRLA.CLKSEL = 3 (old value was: 0) was unsuccessful"))
+
+    def test_ioreg_write_no_match(self):
+        self.assertEqual(self.mo.dispatch(['ioreg', 'FOO', '1']),
+                             ("", "No matching I/O register or field"))
+
+    def test_sram_write16bitreg_on_modern_mcus(self):
+        self.mockdbg.get_architecture.return_value = 'avr8x'
+        self.mo._sram_write16bitreg(0x0A20, b'\x34\x12')   # low, high, low
+        self.assertEqual(self.mockdbg.sram_masked_write.mock_calls,
+                             [ call(0x0A20, b'\x34'), call(0x0A21, b'\x12'),
+                                   call(0x0A20, b'\x34') ])
+
+    def test_sram_write16bitreg_single_byte(self):
+        self.mo._sram_write16bitreg(0x0A00, b'\x07')
+        self.assertEqual(self.mockdbg.sram_masked_write.mock_calls, [ call(0x0A00, b'\x07') ])

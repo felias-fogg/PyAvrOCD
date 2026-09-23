@@ -1,0 +1,74 @@
+# Diagnostic script for 16-bit I/O register writes on classic AVRs, the
+# counterpart of ioregdiag.yml. No assertions: every step is logged, and
+# log/ioreg-diag-classic.log shows what arrives in the registers.
+#
+# Run it with:  ./rune2e.py -s diagnose/ioregdiagclassic.yml -d <device> -t ioreg-diag-classic
+#
+# The hard-wired addresses in the last two blocks are the ones of an
+# ATmega328P: TC1.OCR1A @ 0x800088/89. Everything else is device independent.
+#
+# Note: ADC.ADC is read-only on the classic AVRs (it is the result register),
+# so there is no writable 16-bit ADC register that could show the anomaly we
+# see on the AVR8X parts. EEAR (10 bits) and UBRR0 (12 bits) are therefore
+# written with 0x0234 instead of 0x1234.
+
+includes:
+  - mcus.yml
+  - boards.yml
+  - tests.yml
+  - cores.yml
+
+tests:
+  ioreg-diag-classic:
+    requires:
+      updi: false
+    steps:
+      - stimulus: set logging file log/ioreg-diag-classic.log
+      - stimulus: set style enabled off
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging enabled on
+      - stimulus: "target remote :2000"
+        timeout: 10
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor debugwire enable
+        timeout: 40
+        responses:
+          - enabled
+          - This is not a debugWIRE target
+
+      # (1) the documented order for classic AVRs is high byte first;
+      #     does it hold for every 16-bit register?
+      - stimulus: monitor ioreg TC1.OCR1A 0x1234
+      - stimulus: monitor ioreg TC1.OCR1A
+      - stimulus: monitor ioreg TC1.ICR1 0x1234
+      - stimulus: monitor ioreg TC1.ICR1
+      - stimulus: monitor ioreg EEPROM.EEAR 0x0234
+      - stimulus: monitor ioreg EEPROM.EEAR
+      - stimulus: monitor ioreg USART0.UBRR0 0x0234
+      - stimulus: monitor ioreg USART0.UBRR0
+
+      # (2) the read-only result register as a control: this one must fail
+      - stimulus: monitor ioreg ADC.ADC 0x1234
+      - stimulus: monitor ioreg ADC.ADC
+
+      # (3) two single byte writes issued by GDB itself, high byte first
+      #     (the documented order)
+      - stimulus: monitor ioreg TC1.OCR1A 0
+      - stimulus: set {char}0x800089 = 0x12
+      - stimulus: set {char}0x800088 = 0x34
+      - stimulus: monitor ioreg TC1.OCR1A
+      - stimulus: x/1xb 0x800088
+      - stimulus: x/1xb 0x800089
+
+      # (4) the same with the low byte first
+      - stimulus: monitor ioreg TC1.OCR1A 0
+      - stimulus: set {char}0x800088 = 0x34
+      - stimulus: set {char}0x800089 = 0x12
+      - stimulus: monitor ioreg TC1.OCR1A
+      - stimulus: x/1xb 0x800088
+      - stimulus: x/1xb 0x800089
+
+      - stimulus: detach
+        response: Detaching from
+      - stimulus: quit
