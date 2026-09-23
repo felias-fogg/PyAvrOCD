@@ -4,8 +4,11 @@ The test suit for the BreakAndExec class
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 from unittest.mock import Mock, call, create_autospec, patch, MagicMock
 from unittest import TestCase
+from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
+from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.monitor import MonitorCommand
+from pyavrocd.hardwarebp import HardwareBP
 from pyavrocd.breakexec import BreakAndExec, SIGTRAP, SIGILL, SIGBUS, SIGSYS, BREAKCODE, \
      SLEEPCODE, SWBP, HWBP
 
@@ -746,3 +749,46 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(self.bp._sim_two_word_instr(0x940E, 0x2244, 0x2002), 0x4488)
         self.bp.dbg.stack_pointer_write.assert_called_with(bytearray([0x00, 0x01]))
         self.bp.dbg.sram_write.assert_called_with(0x101, bytearray([0x10, 0x03]))
+
+
+    # --- characterization tests: invalid address during lds simulation, big flash call, HWBP reset ---
+
+    def test_sim_two_word_instr_lds_invalid_address(self):
+        self.set_up()
+        self.bp.dbg.sram_read.side_effect = Jtagice3ResponseError("invalid",
+                                                Avr8Protocol.AVR8_FAILURE_INVALID_ADDRESS)
+        self.assertEqual(self.bp._sim_two_word_instr(0x90F0, 0x1000, 0x2002), 0x2006)
+        self.bp.dbg.register_write.assert_called_with(15, bytearray([0]))
+
+    def test_sim_two_word_instr_lds_other_error(self):
+        self.set_up()
+        self.bp.dbg.sram_read.side_effect = Jtagice3ResponseError("other", 0x77)
+        with self.assertRaises(Jtagice3ResponseError):
+            self.bp._sim_two_word_instr(0x90F0, 0x1000, 0x2002)
+        self.bp.dbg.register_write.assert_not_called()
+
+    def test_sim_two_word_instr_call_big(self):
+        self.set_up()
+        self.bp._big_flash_mem = True
+        self.bp.dbg.stack_pointer_read.return_value = bytearray([0x02, 0x01])
+        self.assertEqual(self.bp._sim_two_word_instr(0x940F, 0x2244, 0x2002), 0x24488)
+        self.bp.dbg.stack_pointer_write.assert_called_with(bytearray([0xFF, 0x00]))
+        self.bp.dbg.sram_write.assert_called_with(0x100, bytearray([0x00, 0x10, 0x03]))
+
+    def test_reset_hardware_breakpoints(self):
+        self.set_up()
+        self.bp.dbg.get_hwbpnum.return_value = 2
+        self.bp.hwbp = HardwareBP(self.bp.dbg)
+        self.bp.hwbp._hwbplist = [ 100, 300 ]
+        self.bp._bp = {100: { 'active': True, 'allocated' : HWBP, 'inuse' : True, 'opcode': 0x1111,
+                                'secondword' : 0x0000, 'timestamp' : 1 },
+                       200: { 'active': True, 'allocated' : SWBP, 'inuse' : True, 'opcode': 0x2222,
+                                'secondword' : 0x0000, 'timestamp' : 2 },
+                       300: { 'active': True, 'allocated' : HWBP, 'inuse' : True, 'opcode': 0x3333,
+                                'secondword' : 0x0000, 'timestamp' : 3 }}
+        self.bp.reset_hardware_breakpoints()
+        self.assertIsNone(self.bp._bp[100]['allocated'])
+        self.assertEqual(self.bp._bp[200]['allocated'], SWBP)
+        self.assertIsNone(self.bp._bp[300]['allocated'])
+        self.assertEqual(self.bp.hwbp._hwbplist, [ None, None ])
+        self.bp.dbg.hardware_breakpoint_clear.assert_called_once_with(1)

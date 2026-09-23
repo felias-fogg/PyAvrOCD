@@ -941,3 +941,58 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.handle_data(rsp('Z0,2,111,2'))
         self.gh.dispatch.assert_called_with('Z',b'0,2,111,2') #pylint: disable=no-member
+
+
+    # --- characterization tests for the remaining monitor command branches ---
+
+    def test_monitorCommand_no_edbg_protocol(self):
+        # current behavior: without an EDBG protocol instance, every monitor command fails
+        self.set_up()
+        self.gh.dbg.edbg_protocol = None
+        self.gh.dispatch('qRcmd', b',696E666F') # info
+        self.gh.mon.dispatch.assert_not_called()
+        self.assertEqual(self.gh.critical, "EDBG protocol not initialized")
+        self.gh.comsocket.sendall.assert_called_with(
+            rsp("466174616C206572726F723A20454442472070726F746F636F6C206E6F7420696E697469616C697A65640A"))
+            # Fatal error: EDBG protocol not initialized
+
+    def test_monitorCommand_test(self):
+        self.set_up()
+        self.gh.mon.dispatch.return_value = ('test', 'Bla')
+        self.gh.dispatch('qRcmd', b',74657374') # test
+        self.gh.dbg.reactivate.assert_called_once()
+        self.gh.comsocket.sendall.assert_called_with(rsp("426C610A"))
+
+    def test_monitorCommand_disconnect(self):
+        self.set_up()
+        self.gh.mon.dispatch.return_value = ('disconnect', 'Bla')
+        self.gh.mon.is_leaveonexit.return_value = True
+        self.gh.dispatch('qRcmd', b',646973636F6E6E656374') # disconnect
+        self.gh.dbg.stop_debugging.assert_called_once_with(leave=True, graceful=True)
+        self.gh.mon.set_debug_mode_active.assert_called_once_with(False)
+        self.gh.comsocket.sendall.assert_called_with(rsp("426C610A"))
+
+    @patch('pyavrocd.handler.time.sleep')
+    def test_monitorCommand_exit_debugger_active(self, mock_sleep):
+        self.set_up()
+        self.gh.mon.dispatch.return_value = ('exit', 'Bye')
+        self.gh.mon.is_debugger_active.return_value = True
+        self.gh.mon.is_leaveonexit.return_value = False
+        with self.assertRaises(EndOfSession):
+            self.gh.dispatch('qRcmd', b',65786974') # exit
+        self.gh.dbg.stop_debugging.assert_called_once_with(leave=False, graceful=True)
+        self.gh.mon.set_debug_mode_active.assert_called_once_with(False)
+        self.gh.comsocket.sendall.assert_called_with(rsp("4279650A"))
+        mock_sleep.assert_called_once_with(1)
+
+    @patch('pyavrocd.handler.time.sleep')
+    def test_monitorCommand_exit_debugger_inactive(self, mock_sleep):
+        self.set_up()
+        self.gh.mon.dispatch.return_value = ('exit', 'Bye')
+        self.gh.mon.is_debugger_active.return_value = False
+        with self.assertRaises(EndOfSession):
+            self.gh.dispatch('qRcmd', b',65786974') # exit
+        self.gh.dbg.stop_debugging.assert_not_called()
+        self.gh.mon.set_debug_mode_active.assert_not_called()
+        self.gh.comsocket.sendall.assert_called_with(rsp("4279650A"))
+        mock_sleep.assert_called_once_with(1)
