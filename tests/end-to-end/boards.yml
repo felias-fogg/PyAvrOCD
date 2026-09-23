@@ -36,6 +36,12 @@ devices:
     board: uno
     setup: Uno board with open RESET EN
 
+####################### Arduino Boards (ArduinoCore-megaavr) ##################################
+
+  uno-wifi:
+    import: atmega4809
+    pinout: uno_wifi
+
 ####################### Olimex boards #####################################################
 
   avr-usb-162:

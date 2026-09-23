@@ -525,6 +525,14 @@ devices:
 
 
 ####################### Modern Megas (MegaCoreX) ##################################
+  atmega4809:
+    mcu: atmega4809
+    import: modern_mega
+    provides:
+      ram: 6
+      flash: 48
+    board: '4809'
+    pinout: 48pin_standard
 
 ####################### Modern AVR (DxCore) ##################################
 
