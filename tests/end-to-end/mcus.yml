@@ -82,6 +82,14 @@ devices:
     virtual: true
     import: modern_tiny
     core: DxCore
+    clocks: [ 1, 4, 5, 8, 10, 16, 20 ]
+
+# The AVR DU series needs at least 12 MHz for USB, so DxCore offers only
+# 12, 16, 20 and 24 MHz for it, of which 16 and 20 can be selected here
+  modern_avr_du:
+    virtual: true
+    import: modern_avr
+    clocks: [ 16, 20 ]
 
 # Arduino boards with modern Megas, e.g., Nano Every
   arduino_megaavr:
@@ -521,7 +529,353 @@ devices:
       flash: 32
     board: atxy7
     chip: "3217"
-    setup: CNANO 3217
+    setup: Curiosity Nano
+
+
+  attiny202:
+    mcu: attiny202
+    import: modern_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    board: 'atxy2'
+    chip: '202'
+    setup: SOIC8 narrow socket
+
+  attiny204:
+    mcu: attiny204
+    import: modern_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    board: 'atxy4'
+    chip: '204'
+    setup: SOIC14 narrow socket
+
+  attiny212:
+    mcu: attiny212
+    import: modern_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    board: 'atxy2'
+    chip: '212'
+    setup: SOIC8 narrow socket
+
+  attiny214:
+    mcu: attiny214
+    import: modern_tiny
+    provides:
+      ram: 0.125
+      flash: 2
+    board: 'atxy4'
+    chip: '214'
+    setup: SOIC14 narrow socket
+
+  attiny402:
+    mcu: attiny402
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy2'
+    chip: '402'
+    setup: SOIC8 narrow socket
+
+  attiny404:
+    mcu: attiny404
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy4'
+    chip: '404'
+    setup: SOIC14 narrow socket
+
+  attiny406:
+    mcu: attiny406
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy6'
+    chip: '406'
+    setup: SOIC20 socket
+
+  attiny412:
+    mcu: attiny412
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy2'
+    chip: '412'
+    setup: SOIC8 narrow socket
+
+  attiny414:
+    mcu: attiny414
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy4'
+    chip: '414'
+    setup: SOIC14 narrow socket
+
+  attiny416:
+    mcu: attiny416
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy6'
+    chip: '416'
+    setup: SOIC20 socket
+
+  attiny417:
+    mcu: attiny417
+    import: modern_tiny
+    provides:
+      ram: 0.25
+      flash: 4
+    board: 'atxy7'
+    chip: '417'
+
+  attiny424:
+    mcu: attiny424
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 4
+    board: 'atxy4'
+    chip: '424'
+    setup: SOIC14 narrow socket
+
+  attiny426:
+    mcu: attiny426
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 4
+    board: 'atxy6'
+    chip: '426'
+    setup: SOIC20 socket
+
+  attiny427:
+    mcu: attiny427
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 4
+    board: 'atxy7'
+    chip: '427'
+
+  attiny804:
+    mcu: attiny804
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'atxy4'
+    chip: '804'
+    setup: SOIC14 narrow socket
+
+  attiny806:
+    mcu: attiny806
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'atxy6'
+    chip: '806'
+    setup: SOIC20 socket
+
+  attiny814:
+    mcu: attiny814
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'atxy4'
+    chip: '814'
+    setup: SOIC14 narrow socket
+
+  attiny816:
+    mcu: attiny816
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'atxy6'
+    chip: '816'
+    setup: SOIC20 socket
+
+  attiny817:
+    mcu: attiny817
+    import: modern_tiny
+    provides:
+      ram: 0.5
+      flash: 8
+    board: 'atxy7'
+    chip: '817'
+    setup: Adafruit Seesaw ATtiny817
+
+  attiny824:
+    mcu: attiny824
+    import: modern_tiny
+    provides:
+      ram: 1
+      flash: 8
+    board: 'atxy4'
+    chip: '824'
+    setup: SOIC14 narrow socket
+
+  attiny826:
+    mcu: attiny826
+    import: modern_tiny
+    provides:
+      ram: 1
+      flash: 8
+    board: 'atxy6'
+    chip: '826'
+    setup: SOIC20 socket
+
+  attiny827:
+    mcu: attiny827
+    import: modern_tiny
+    provides:
+      ram: 1
+      flash: 8
+    board: 'atxy7'
+    chip: '827'
+
+  attiny1604:
+    mcu: attiny1604
+    import: modern_tiny
+    provides:
+      ram: 1
+      flash: 16
+    board: 'atxy4'
+    chip: '1604'
+    setup: SOIC14 narrow socket
+
+  attiny1606:
+    mcu: attiny1606
+    import: modern_tiny
+    provides:
+      ram: 1
+      flash: 16
+    board: 'atxy6'
+    chip: '1606'
+    setup: Adafruit Seesaw Attiny1606
+
+  attiny1607:
+    mcu: attiny1607
+    import: modern_tiny
+    provides:
+      ram: 1
+      flash: 16
+    board: 'atxy7'
+    chip: '1607'
+    setup: Curiosity Nano ATtiny1607
+
+  attiny1614:
+    mcu: attiny1614
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 16
+    board: 'atxy4'
+    chip: '1614'
+    setup: SOIC14 narrow socket
+
+  attiny1616:
+    mcu: attiny1616
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 16
+    board: 'atxy6'
+    chip: '1616'
+    setup: Adafruit Seesaw Attiny1616
+
+  attiny1617:
+    mcu: attiny1617
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 16
+    board: 'atxy7'
+    chip: '1617'
+
+  attiny1624:
+    mcu: attiny1624
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 16
+    board: 'atxy4'
+    chip: '1624'
+    setup: SOIC14 narrow socket
+
+  attiny1626:
+    mcu: attiny1626
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 16
+    board: 'atxy6'
+    chip: '1626'
+    setup: SOIC20 socket
+
+  attiny1627:
+    mcu: attiny1627
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 16
+    board: 'atxy7'
+    chip: '1627'
+
+  attiny3216:
+    mcu: attiny3216
+    import: modern_tiny
+    provides:
+      ram: 2
+      flash: 32
+    board: 'atxy6'
+    chip: '3216'
+    setup: SOIC20 socket
+
+  attiny3224:
+    mcu: attiny3224
+    import: modern_tiny
+    provides:
+      ram: 3
+      flash: 32
+    board: 'atxy4'
+    chip: '3224'
+    setup: SOIC14 narrow socket
+
+  attiny3226:
+    mcu: attiny3226
+    import: modern_tiny
+    provides:
+      ram: 3
+      flash: 32
+    board: 'atxy6'
+    chip: '3226'
+    setup: Breakout board
+
+  attiny3227:
+    mcu: attiny3227
+    import: modern_tiny
+    provides:
+      ram: 3
+      flash: 32
+    board: 'atxy7'
+    chip: '3227'
+    setup: Curiosity Nano
 
 
 ####################### Modern Megas (MegaCoreX) ##################################
@@ -533,7 +887,357 @@ devices:
       flash: 48
     board: '4809'
     pinout: 48pin_standard
+    setup: Curiosity Nano or Uno WiFi Rev2 or Nano Every
+
+  atmega808:
+    mcu: atmega808
+    import: modern_mega
+    provides:
+      ram: 1
+      flash: 8
+    board: '808'
+    pinout: 32pin_standard
+    setup: QFP32 socket
+
+  atmega809:
+    mcu: atmega809
+    import: modern_mega
+    provides:
+      ram: 1
+      flash: 8
+    board: '809'
+    pinout: 48pin_standard
+    setup: QFP48 socket
+
+  atmega1608:
+    mcu: atmega1608
+    import: modern_mega
+    provides:
+      ram: 2
+      flash: 16
+    board: '1608'
+    pinout: 32pin_standard
+    setup: QFP32 socket
+
+  atmega1609:
+    mcu: atmega1609
+    import: modern_mega
+    provides:
+      ram: 2
+      flash: 16
+    board: '1609'
+    pinout: 48pin_standard
+    setup: QFP48 socket
+
+  atmega3208:
+    mcu: atmega3208
+    import: modern_mega
+    provides:
+      ram: 4
+      flash: 32
+    board: '3208'
+    pinout: 32pin_standard
+    setup: QFP32 socket
+
+  atmega3209:
+    mcu: atmega3209
+    import: modern_mega
+    provides:
+      ram: 4
+      flash: 32
+    board: '3209'
+    pinout: 48pin_standard
+    setup: QFP48 socket
+
+  atmega4808:
+    mcu: atmega4808
+    import: modern_mega
+    provides:
+      ram: 6
+      flash: 48
+    board: '4808'
+    pinout: 32pin_standard
+    setup: Thinary Nano Every
+
 
 ####################### Modern AVR (DxCore) ##################################
 
+  avr32sd32:
+    mcu: avr32sd32
+    import: modern_avr
+    provides:
+      ram: 4
+      flash: 32
+    setup: Curiosity Nano
+# No board/chip entry: DxCore has no board definition for the SD series, so this
+# chip cannot be built with arduino-cli. Debugging a separately built ELF works.
+
+
+
+
+  avr16dd28:
+    mcu: avr16dd28
+    import: modern_avr
+    provides:
+      ram: 2
+      flash: 16
+    board: 'avrdd'
+    chip: 'avr16dd28'
+    setup: Breadboard
+
+  avr16du28:
+    mcu: avr16du28
+    import: modern_avr_du
+    provides:
+      ram: 2
+      flash: 16
+    board: 'avrdu'
+    chip: 'avr16du28'
+    setup: Breadboard
+
+  avr16ea28:
+    mcu: avr16ea28
+    import: modern_avr
+    provides:
+      ram: 2
+      flash: 16
+    board: 'avrea'
+    chip: 'avr16ea28'
+    setup: Breadboard
+
+  avr16eb28:
+    mcu: avr16eb28
+    import: modern_avr
+    provides:
+      ram: 2
+      flash: 16
+    board: 'avreb'
+    chip: 'avr16eb28'
+    setup: Breadboard
+
+  avr16eb32:
+    mcu: avr16eb32
+    import: modern_avr
+    provides:
+      ram: 2
+      flash: 16
+    board: 'avreb'
+    chip: 'avr16eb32'
+    setup: Curiosity Nano
+
+  avr32da28:
+    mcu: avr32da28
+    import: modern_avr
+    provides:
+      ram: 4
+      flash: 32
+    board: 'avrda'
+    chip: 'avr32da28'
+    setup: Breadboard
+
+  avr32db28:
+    mcu: avr32db28
+    import: modern_avr
+    provides:
+      ram: 4
+      flash: 32
+    board: 'avrdb'
+    chip: 'avr32db28'
+    setup: Breadboard
+
+  avr32dd28:
+    mcu: avr32dd28
+    import: modern_avr
+    provides:
+      ram: 4
+      flash: 32
+    board: 'avrdd'
+    chip: 'avr32dd28'
+    setup: Breadboard
+
+  avr32du28:
+    mcu: avr32du28
+    import: modern_avr_du
+    provides:
+      ram: 4
+      flash: 32
+    board: 'avrdu'
+    chip: 'avr32du28'
+    setup: Breadboard
+
+  avr32ea28:
+    mcu: avr32ea28
+    import: modern_avr
+    provides:
+      ram: 4
+      flash: 32
+    board: 'avrea'
+    chip: 'avr32ea28'
+    setup: Breadboard
+
+  avr32eb28:
+    mcu: avr32eb28
+    import: modern_avr
+    provides:
+      ram: 3
+      flash: 32
+    board: 'avreb'
+    chip: 'avr32eb28'
+    setup: Breadboard
+
+  avr64da28:
+    mcu: avr64da28
+    import: modern_avr
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrda'
+    chip: 'avr64da28'
+    setup: Breadboard
+
+  avr64db28:
+    mcu: avr64db28
+    import: modern_avr
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdb'
+    chip: 'avr64db28'
+    setup: Breadboard
+
+  avr64dd14:
+    mcu: avr64dd14
+    import: modern_avr
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdd'
+    chip: 'avr64dd14'
+
+  avr64dd20:
+    mcu: avr64dd20
+    import: modern_avr
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdd'
+    chip: 'avr64dd20'
+
+  avr64dd28:
+    mcu: avr64dd28
+    import: modern_avr
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdd'
+    chip: 'avr64dd28'
+    setup: Breadboard
+
+  avr64dd32:
+    mcu: avr64dd32
+    import: modern_avr
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdd'
+    chip: 'avr64dd32'
+    setup: Curiosity Nano
+
+  avr64du28:
+    mcu: avr64du28
+    import: modern_avr_du
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdu'
+    chip: 'avr64du28'
+    setup: Breadboard
+
+  avr64du32:
+    mcu: avr64du32
+    import: modern_avr_du
+    provides:
+      ram: 8
+      flash: 64
+    board: 'avrdu'
+    chip: 'avr64du32'
+    setup: Curiosity Nano
+
+  avr64ea28:
+    mcu: avr64ea28
+    import: modern_avr
+    provides:
+      ram: 6
+      flash: 64
+    board: 'avrea'
+    chip: 'avr64ea28'
+    setup: Breadboard
+
+  avr64ea48:
+    mcu: avr64ea48
+    import: modern_avr
+    provides:
+      ram: 6
+      flash: 64
+    board: 'avrea'
+    chip: 'avr64ea48'
+    setup: Curiosity Nano
+
+  avr128da28:
+    mcu: avr128da28
+    import: modern_avr
+    provides:
+      ram: 16
+      flash: 128
+    board: 'avrda'
+    chip: 'avr128da28'
+    setup: Breadboard
+
+  avr128da48:
+    mcu: avr128da48
+    import: modern_avr
+    provides:
+      ram: 16
+      flash: 128
+    board: 'avrda'
+    chip: 'avr128da48'
+    setup: Curiosity Nano
+
+  avr128db28:
+    mcu: avr128db28
+    import: modern_avr
+    provides:
+      ram: 16
+      flash: 128
+    board: 'avrdb'
+    chip: 'avr128db28'
+    setup: Breadboard
+
+  avr128db32:
+    mcu: avr128db32
+    import: modern_avr
+    provides:
+      ram: 16
+      flash: 128
+    board: 'avrdb'
+    chip: 'avr128db32'
+
+  avr128db48:
+    mcu: avr128db48
+    import: modern_avr
+    provides:
+      ram: 16
+      flash: 128
+    board: 'avrdb'
+    chip: 'avr128db48'
+    setup: Curiosity Nano
+
+  avr128db64:
+    mcu: avr128db64
+    import: modern_avr
+    provides:
+      ram: 16
+      flash: 128
+    board: 'avrdb'
+    chip: 'avr128db64'
 

@@ -331,6 +331,39 @@ def import_steps(spec : dict [ str, Any ]) -> None:
     for t in spec['tests']:
         spec['tests'][t]['steps'] = resolve(t, t)
 
+def check_clocks(spec : dict [ str, Any ]) -> None:
+    """
+    Check that every clock frequency a device offers has an entry in the clock table of
+    its core, and that the core's default clock is one the device offers. Both can go
+    wrong unnoticed when a device inherits its clock list from a chip but overrides the
+    core, or when a core inherits a clock table from a core with a different set.
+    """
+    cores = spec.get('cores', { })
+    problems : list [ str ] = [ ]
+    for name, dev in spec.get('devices', { }).items():
+        if dev.get('virtual'):
+            continue
+        core = dev.get('core', None)
+        if core is None:
+            continue
+        if core not in cores:
+            problems.append(f"{name}: core '{core}' is not described in the specification")
+            continue
+        table = cores[core].get('clock', { })
+        clocks = dev.get('clocks', [ ])
+        unknown = [c for c in clocks if c not in table]
+        if unknown:
+            problems.append(f"{name}: core '{core}' has no clock entry for "
+                                f"{', '.join(str(u) for u in unknown)} MHz")
+        default = cores[core].get('default', None)
+        if default is not None and clocks and default not in clocks:
+            problems.append(f"{name}: default clock {default} MHz of core '{core}' "
+                                f"is not among the clocks of this device")
+    if problems:
+        for p in problems:
+            logger.critical("%s", p)
+        sys.exit(1)
+
 def select_tests(spec : dict[ str, Any], dev : str, candidates : list[ str ]) -> tuple [ list [str ], list [ str ] ]:
     """
     Select tests according to which requirements are satisfied by the DUT.
@@ -722,6 +755,7 @@ def main() -> int:
     spec = parse_specification(args.spec)
     process_imports(spec)
     import_steps(spec)
+    check_clocks(spec)
 
     # check if only pretty printing is required
     if args.pp:

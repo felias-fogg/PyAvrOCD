@@ -150,7 +150,32 @@ cores:
     default: 20
 
   DxCore:
-    import: megaTinyCore
+    options:
+      chip: true
+      clock: true
+    clock:
+      1:
+        code: 1internal
+        value: 1000000UL
+      4:
+        code: 4internal
+        value: 4000000UL
+      5:
+        code: 5internal
+        value: 5000000UL
+      8:
+        code: 8internal
+        value: 8000000UL
+      10:
+        code: 10internal
+        value: 10000000UL
+      16:
+        code: 16internal
+        value: 16000000UL
+      20:
+        code: 20internal
+        value: 20000000UL
+    default: 20
 
   arduino:
     options:

@@ -114,7 +114,7 @@ Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rat
 
 - <u>ATtiny1627</u>
 
-- **ATtiny3237**
+- **ATtiny3227**
 
 
 
@@ -339,7 +339,9 @@ No support yet
 
 ### AVR SD series
 
-No support yet. Since DxCore will most probably not support these chips, it is questionable whether PyAvrOCD will.
+No support yet. Since DxCore will most probably not support these chips, it is questionable whether PyAvrOCD will. The device descriptions are in place, though, and one board is waiting on my desk.
+
+- AVR32SD20, AVR32SD28, <u>AVR32SD32</u>
 
 ## XMegas
 
