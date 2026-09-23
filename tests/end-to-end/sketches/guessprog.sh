@@ -27,4 +27,3 @@ elif [[ "$1" == "isp" ]]; then
 else
     echo -n "unknown"
 fi
-    
