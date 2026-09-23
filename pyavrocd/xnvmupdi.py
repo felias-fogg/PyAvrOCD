@@ -147,38 +147,52 @@ class XNvmAccessProviderCmsisDapUpdi(NvmAccessProviderCmsisDapUpdi):
 
     def erase_chip(self, prog_mode : bool) -> bool :
         """
-        Erasing entire chip. Save EEPROM by, potentially, reprogramming EESAVE fuse.
+        Erasing entire chip. If EESAVE is managed, preserve EEPROM.
+
+        On AVR8X, EESAVE (SYSCFG0) is active high (1 = EEPROM is retained), and a fuse value
+        only takes effect after a reset. So, if EESAVE is not set, we set it temporarily,
+        reset the MCU, erase the chip, write back the original value, and reset again.
         Lockbits will never be set when this function is called since this is handled
         in _manage_fuses.
         """
-        eesave_fuse_byte = None
         eesave_mask = self.device_info.get('eesave_mask')
         eesave_base = self.device_info.get('eesave_base')
-        self.logger_local.debug("Erase Chip: Manage:=%s, Mask=0x%X, Base=0x%X", self.manage,
+        self.logger_local.debug("Erase Chip: Manage:=%s, Mask=%s, Base=%s", self.manage,
                                     eesave_mask, eesave_base)
         if not prog_mode:
             self.avr.switch_to_progmode()
-        eesave_fuse_byte = None
+        original_fuse_byte = None
         if 'eesave' in self.manage:
-            if eesave_base and eesave_mask:
-                self.logger_local.debug("Trying to preserve EEPROM")
-                eesave_fuse_byte = self.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_FUSES,
-                                                        eesave_base, 1)
-                if  eesave_fuse_byte[0] & eesave_mask: # needs to be temporarily programmed
-                    self.logger_local.info("EESAVE will be temporarily programmed")
+            if eesave_base is not None and eesave_mask:
+                fuse_byte = self.avr.memory_read(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base, 1)
+                if not fuse_byte[0] & eesave_mask: # EEPROM would be erased
+                    self.logger_local.info("EESAVE will be temporarily set")
                     self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base,
-                                            bytearray([eesave_fuse_byte[0] & ~eesave_mask & 0xFF]))
-                    self.logger_local.debug("Programmed EESAVE fuse temporarily")
+                                            bytearray([fuse_byte[0] | eesave_mask]))
+                    self._reload_fuses()
+                    original_fuse_byte = fuse_byte
+                    self.logger_local.debug("EESAVE temporarily set and activated")
             else:
                 self.logger_local.error("EESAVE fuse data unknown. EEPROM will be deleted")
         self.avr.erase(Avr8Protocol.ERASE_CHIP, 0)
         self.logger_local.info("Flash memory erased")
-        if eesave_fuse_byte: # needs to be restored
-            self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base, eesave_fuse_byte)
+        if original_fuse_byte is not None: # needs to be restored
+            self.avr.memory_write(Avr8Protocol.AVR8_MEMTYPE_FUSES, eesave_base,
+                                      bytearray(original_fuse_byte))
+            self._reload_fuses()
             self.logger_local.info("EESAVE fuse restored")
         if not prog_mode:
             self.avr.switch_to_debmode()
         return True
+
+    def _reload_fuses(self) -> None:
+        """
+        AVR8X fuses take effect only after a reset. Leaving the programming mode
+        resets the MCU, so leaving and re-entering it activates the new fuse values.
+        (To be verified on hardware by the e2e test 'eesave'.)
+        """
+        self.avr.leave_progmode()
+        self.avr.enter_progmode()
 
     def read_device_id(self) -> bytearray:
         """

@@ -707,6 +707,7 @@ tests:
           - On debugWIRE targets, flash memory cannot be erased before loading executable
           - Not implemented
       - stimulus: monitor erasebeforeload
+        responses:
           - Flash memory will not be erased before loading executable
           - On debugWIRE targets, flash memory cannot be erased before loading executable
           - Not implemented
@@ -1454,6 +1455,31 @@ tests:
       - stimulus: "set var ee_data[0] = 'X'"
       - stimulus: p ee_data
         response: "Xata that's loaded straight into EEPROM"
+      - import: epilog
+
+# EEPROM content has to survive a chip erase when the EESAVE fuse is managed
+# (chip erase is triggered by 'load' when erasebeforeload is enabled; not possible under debugWIRE)
+  eesave:
+    requires:
+      dw: false
+    serverargs: "-m eesave"
+    sketch: cblink
+    steps:
+      - stimulus: set logging file log/eesave.log
+      - import: prolog
+      - stimulus: monitor erasebeforeload enable
+        response: Flash memory will be erased before loading executable
+      - stimulus: set {char}0x810000=0xa5   # EEPROM marker
+      - stimulus: set {char}0x810001=0x5a
+      - stimulus: x/hx 0x810000
+        response: "0x810000:\t0x5aa5"
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: x/hx 0x810000
+        response: "0x810000:\t0x5aa5"      # marker must still be there
+      - stimulus: monitor erasebeforeload disable
+        response: Flash memory will not be erased before loading executable
       - import: epilog
 
 # loads fuses and lockbits, which is silently ignored

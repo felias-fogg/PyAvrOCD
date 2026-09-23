@@ -1,6 +1,8 @@
 """
 Python AVR MCU debugger
 """
+# module will be split up when moving to the backend architecture (v2)
+#pylint: disable=too-many-lines
 from typing import Any #pylint disable=unused-import
 from collections.abc import Callable
 
@@ -107,7 +109,7 @@ class XAvrDebugger(AvrDebugger):
             self._nolock = 0xC5
             self.flashmemtype = Avr8Protocol.AVR8_MEMTYPE_BOOT_FLASH_ATOMIC
         elif iface == "debugwire":
-            self.manage = [ m for m in args.manage if m in [ 'lockbits', 'bootrst', 'dwen' ]]
+            self.manage = [ m for m in args.manage if m in [ 'lockbits', 'bootrst', 'dwen', 'eesave' ]]
             self.device = XNvmAccessProviderCmsisDapDebugwire(self.transport, self.device_info, manage=self.manage)
             self._hwbpnum = 1
             self._sregaddr = 0x5F
@@ -601,9 +603,51 @@ class XAvrDebugger(AvrDebugger):
         if self.args.skipsig:
             return
         self.logger.info("Test for dirty PC on ATmega48/88")
-        # erase flash (and maybe EEPROM)
         if self.spidevice is None or  self.spidevice.isp is None:
             raise FatalError("SPI module is not initialized")
+        # The test erases the chip twice. If EESAVE is managed, program it temporarily in order
+        # to preserve the EEPROM (on classic AVRs, EESAVE takes effect immediately).
+        original_fuse_byte : bytes | None = self._program_eesave_temporarily()
+        try:
+            self._dirty_pc_test(device_id)
+        finally:
+            if original_fuse_byte is not None:
+                self.spidevice.isp.write_fuse_byte(self.device_info['eesave_base'],
+                                                       bytearray(original_fuse_byte))
+                self.logger.info("EESAVE fuse restored")
+
+    def _program_eesave_temporarily(self) -> bytes | None:
+        """
+        Program EESAVE via ISP if it is managed and not programmed yet.
+        Returns the original fuse byte if it was changed, otherwise None.
+        """
+        if self.spidevice is None or  self.spidevice.isp is None:
+            raise FatalError("SPI module is not initialized")
+        if 'eesave' not in self.manage:
+            self.logger.warning("The EEPROM will be erased while testing for a dirty PC.")
+            self.logger.warning("Let PyAvrOCD manage the EESAVE fuse in order to preserve it: '-m eesave'.")
+            return None
+        eesave_base : int | None = self.device_info.get('eesave_base')
+        eesave_mask : int | None = self.device_info.get('eesave_mask')
+        if eesave_base is None or not eesave_mask:
+            self.logger.warning("EESAVE fuse data unknown. EEPROM will be deleted")
+            return None
+        fuse_byte : bytes = self.spidevice.isp.read_fuse_byte(eesave_base)
+        if fuse_byte[0] & eesave_mask == 0: # already programmed (active low)
+            return None
+        self.spidevice.isp.write_fuse_byte(eesave_base,
+                                               bytearray([fuse_byte[0] & ~eesave_mask & 0xFF]))
+        self.logger.info("EESAVE temporarily programmed to preserve EEPROM")
+        return fuse_byte
+
+    def _dirty_pc_test(self, device_id : int) -> None:
+        """
+        Flash a test program that checks the boot_signature, run it, and check the result
+        in the lock bits. Erases the chip before and after.
+        """
+        if self.spidevice is None or  self.spidevice.isp is None:
+            raise FatalError("SPI module is not initialized")
+        # erase flash (EEPROM is preserved by EESAVE)
         self.spidevice.isp.erase()
         # change option value of 'load' option if necessary
         if self.args.load is None or self.args.load[0] == 'n': # the 'no initial load' option value

@@ -32,8 +32,8 @@ Sometimes it may be necessary to change a few fuses before debugging is possible
 
 - `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash and EEPROM memory, provided PyAvrOCD has been instructed to manage the lockbits by `--manage all` or `--manage lockbits`.
 - `BOOTRST`: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including `bootrst` as a fuse to be managed by the server when starting the GDB server from the command line.
-- `DWEN`: This fuse needs to be programmed to access the debugWIRE on-chip debugger module. PyAvrOCD will program this fuse when asked to do so by the command `monitor debugwire enable`. After the fuse has been programmed, you must power-cycle the target board to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed. 
-- `OCDEN`: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterward. 
+- `DWEN`: This fuse needs to be programmed to access the debugWIRE on-chip debugger module. PyAvrOCD will program this fuse when asked to do so by the command `monitor debugwire enable`. After the fuse has been programmed, you must power-cycle the target board to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed.
+- `OCDEN`: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterward.
 - `EESAVE`: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM. However, it does not help you when you need to clear the lock bits. If any lock bits are set, it is not possible to change fuses, which means you cannot change the EESAVE fuse temporarily.
 
 If you want to leave all the fuse management to PyAvrOCD, then specify `--manage all`. If you want to play it safe instead, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
@@ -44,7 +44,7 @@ In almost all cases, you do not need to change any fuses on a debugWIRE target b
 
 ### Fuse settings when PyAvrOCD manages the fuse
 
-The `DWEN` and `BOOTRST` fuses and the `lockbits` will be taken care of by PyAvrOCD, if this is permitted. `EESAVE` is not managed because the only situation where a chip erase can happen is when you clear the lockbits. And in this situation, `EESAVE` cannot be activated.
+The `DWEN`, `BOOTRST`, and `EESAVE` fuses and the `lockbits` will be taken care of by PyAvrOCD, if this is permitted. `EESAVE` is only relevant for the ATmega48 and ATmega88 (without A or P suffix). Before debugWIRE is enabled on these MCUs, PyAvrOCD has to erase the chip twice in order to test for a dirty program counter. If `EESAVE` is managed, it is programmed temporarily for this test so that the EEPROM content survives, and it is restored afterwards. In all other situations under debugWIRE, a chip erase only happens when the lockbits are cleared, and then `EESAVE` cannot be activated.
 
 ### Fuse settings when fuses are managed manually
 
@@ -58,11 +58,11 @@ When you want complete control over the fuses, then make sure that the fuses are
 
 Now, you should be able to connect to the OCD on the target MCU.
 
-After you have finished debugging and issued the `monitor debugwire disable` command, you can connect again with an SPI programmer and unprogram the `DWEN` fuse. 
+After you have finished debugging and issued the `monitor debugwire disable` command, you can connect again with an SPI programmer and unprogram the `DWEN` fuse.
 
 ## Preparing a JTAG target
 
-Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  `JTAGEN` fuse before debugging can start. For this purpose, you need the SPI programming interface. 
+Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  `JTAGEN` fuse before debugging can start. For this purpose, you need the SPI programming interface.
 
 As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled. Otherwise, [high-voltage programming](limitations.md#high-voltage-programming) is necessary.
 

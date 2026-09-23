@@ -476,6 +476,7 @@ class TestXAvrDebugger(TestCase):
     def test__check_atmega48_and_88_atmega48_fail(self):
         self.set_up()
         self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
         self.xa.spidevice.read.side_effect=[bytes([0x00])]
         self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E9205)
 
@@ -483,6 +484,7 @@ class TestXAvrDebugger(TestCase):
     def test__check_atmega48_and_88_atmega48_ok(self):
         self.set_up()
         self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
         self.xa.spidevice.read.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9205)
 
@@ -490,6 +492,7 @@ class TestXAvrDebugger(TestCase):
     def test__check_atmega48_and_88_atmega88_fail(self):
         self.set_up()
         self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
         self.xa.spidevice.read.side_effect=[bytes([0x00])]
         self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E930A)
 
@@ -497,6 +500,7 @@ class TestXAvrDebugger(TestCase):
     def test__check_atmega48_and_88_atmega88_ok(self):
         self.set_up()
         self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
         self.xa.spidevice.read.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E930A)
 
@@ -836,3 +840,61 @@ class TestXAvrDebugger(TestCase):
         self.xa.sram_masked_write(1, bytearray([0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]))
         self.assertEqual(self.xa.device.write.call_count, 2)
 
+    # --- EESAVE handling during the dirty-PC test (attiny85 device info: EESAVE = hfuse bit 3) ---
+
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
+    def test__check_atmega48_and_88_eesave_already_programmed(self):
+        self.set_up()
+        self.xa.manage.append('eesave')
+        self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7])
+        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa._check_atmega48_and_88(0x1E9205)
+        self.xa.spidevice.isp.write_fuse_byte.assert_not_called()
+
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
+    def test__check_atmega48_and_88_eesave_temporarily_programmed(self):
+        self.set_up()
+        self.xa.manage.append('eesave')
+        self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xDF])
+        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa._check_atmega48_and_88(0x1E9205)
+        isp_calls = [c for c in self.xa.spidevice.isp.mock_calls
+                         if c[0] in ('write_fuse_byte', 'erase')]
+        self.assertEqual(isp_calls, [call.write_fuse_byte(1, bytearray([0xD7])),
+                                     call.erase(),
+                                     call.erase(),
+                                     call.write_fuse_byte(1, bytearray([0xDF]))])
+
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
+    def test__check_atmega48_and_88_eesave_restored_on_failure(self):
+        self.set_up()
+        self.xa.manage.append('eesave')
+        self.xa.spidevice = Mock()
+        self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xDF])
+        self.xa.spidevice.read.side_effect=[bytes([0x00])]
+        self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E9205)
+        self.assertEqual(self.xa.spidevice.isp.write_fuse_byte.call_args_list[-1],
+                         call(1, bytearray([0xDF])))
+
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
+    def test__check_atmega48_and_88_eesave_unknown(self):
+        self.set_up()
+        self.xa.manage.append('eesave')
+        self.xa.spidevice = Mock()
+        self.xa.device_info = {k: v for k, v in self.xa.device_info.items()
+                                   if k not in ('eesave_base', 'eesave_mask')}
+        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa._check_atmega48_and_88(0x1E9205)
+        self.xa.spidevice.isp.read_fuse_byte.assert_not_called()
+        self.xa.spidevice.isp.write_fuse_byte.assert_not_called()
+
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
+    def test__check_atmega48_and_88_eesave_not_managed(self):
+        self.set_up()
+        self.xa.spidevice = Mock()
+        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa._check_atmega48_and_88(0x1E9205)
+        self.xa.spidevice.isp.read_fuse_byte.assert_not_called()
+        self.xa.spidevice.isp.write_fuse_byte.assert_not_called()
