@@ -85,7 +85,6 @@ schema = { 'includes': [ '<STR>' ],
                                'autopower': '<BOOL>',
                                'dirty': '<BOOL>',
                                'nolto': '<BOOL>',
-                               'nolock': '<BOOL>',
                                'usb': '<BOOL>' },
                         'clocks': [ '<NUMBER>' ],
                         'core': '<STR>',
@@ -583,15 +582,11 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     provides = spec['devices'][dev]['provides']
     caps = " ".join(f"{name.upper()}={'yes' if provides.get(name) else 'no'}"
                     for name in ('dw', 'jtag', 'updi'))
-    # A board that declares 'nolock' cannot have its lock bits written, so a
-    # Makefile that wants to lock a part has to know whether that is worth trying.
-    # An mEDBG cannot do it either, whatever the device entry says: an Xplained
-    # Mini run as the bare chip it carries would otherwise fail here.
-    medbg = prog.startswith('xplainedmini')
-    if medbg and not provides.get('nolock'):
-        logger.warning("The attached debugger is an mEDBG, which cannot write lock bits, "
-                       "although device '%s' does not declare 'nolock'", dev)
-    caps += " LOCK=" + ("no" if provides.get('nolock') or medbg else "yes")
+    # Writing lock bits is a property of the debugger, not of the board: the mEDBG
+    # of an Xplained Mini cannot do it, while a dw-link or an Atmel-ICE attached to
+    # the same board can. So a Makefile that wants to lock a part is told what is
+    # currently connected.
+    caps += " LOCK=" + ("no" if prog.startswith('xplainedmini') else "yes")
     cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog}"
     cmd += f" {caps} fresh"
     return run_compile_command(cmd)

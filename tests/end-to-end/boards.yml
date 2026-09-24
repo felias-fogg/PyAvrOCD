@@ -10,8 +10,6 @@ devices:
     clocks: [ 8, 16 ]
     board: atmega328p_xplained_mini
     setup: 328P Xmini board
-    provides:
-      nolock: true        # the mEDBG cannot write lock bits
 
   xmini328pb:
     import: atmega328pb
@@ -19,8 +17,6 @@ devices:
     clocks: [ 8, 16 ]
     board: atmega328pb_xplained_mini
     setup: 328PB Xmini board
-    provides:
-      nolock: true        # the mEDBG cannot write lock bits
 
   xmini168pb:
     import: atmega168pb
@@ -28,8 +24,6 @@ devices:
     clocks: [ 8, 16 ]
     board: atmega168pb_xplained_mini
     setup: 168PB Xmini board
-    provides:
-      nolock: true        # the mEDBG cannot write lock bits
 
   xmini817:
     import: attiny817
