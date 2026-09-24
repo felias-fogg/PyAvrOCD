@@ -172,6 +172,14 @@ the log:
     python3 extras/testbed/submit.py --shared ~/GitHub/DEBUG/testbed \
             --host raspi --action pytest
 
+To follow what the machines are doing, `watch.py` prints the output of every job
+as it is written, and says when a host goes idle or stops beating:
+
+    python3 extras/testbed/watch.py --shared ~/GitHub/DEBUG/testbed
+
+It reads the shared folder and nothing else, so it can run anywhere the folder is
+mounted, next to a `submit.py` in another window or on its own.
+
 Old jobs stay in `taken/` and `results/`; clean them out when they get in the way.
 
 ## What this is not
