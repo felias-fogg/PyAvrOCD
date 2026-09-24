@@ -212,16 +212,23 @@ class Runner:
 
     def run_job(self, job: dict, logpath: str) -> dict:
         """Execute one job, streaming the output of every command into the log file."""
+        def rejected(message: str) -> dict:
+            """Say no, and leave the reason in the log as well as in the result."""
+            os.makedirs(os.path.dirname(logpath), exist_ok=True)
+            with open(logpath, "w", encoding="utf-8") as log:
+                log.write(message + "\n")
+            return {"status": "rejected", "exit_code": None, "message": message}
+
         action = job.get("action", "")
         allowed = self.cfg.get("actions", list(ACTIONS))
-        if action not in ACTIONS or action not in allowed:
-            return {"status": "rejected", "exit_code": None,
-                    "message": f"action '{action}' is not available on this host"}
+        if action not in ACTIONS:
+            return rejected(f"action '{action}' does not exist")
+        if action not in allowed:
+            return rejected(f"action '{action}' is not in this host's actions list")
         try:
             commands, cwd = ACTIONS[action](self.cfg, job.get("params", {}))
         except KeyError as err:
-            return {"status": "rejected", "exit_code": None,
-                    "message": f"parameter {err} is missing for action '{action}'"}
+            return rejected(f"parameter {err} is missing for action '{action}'")
 
         timeout = int(job.get("timeout", 900))
         outdir = os.path.dirname(logpath)

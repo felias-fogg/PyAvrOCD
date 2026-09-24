@@ -577,7 +577,14 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     logger.info("Compile '%s' with make for %s / clock: %s MHz", sketch, dev, clock)
     mcu = spec['devices'][dev]['mcu']
     cclock = spec['cores'][spec['devices'][dev]['core']]['clock'][clock]['value']
-    cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog} fresh"
+    # A Makefile that sets fuses needs to know which the part has. DWEN in
+    # particular exists only on debugWIRE parts, and some tests run on JTAG parts
+    # as well.
+    provides = spec['devices'][dev]['provides']
+    caps = " ".join(f"{name.upper()}={'yes' if provides.get(name) else 'no'}"
+                    for name in ('dw', 'jtag', 'updi'))
+    cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog}"
+    cmd += f" {caps} fresh"
     return run_compile_command(cmd)
 
 #pylint: disable=unused-argument
