@@ -53,6 +53,8 @@ back as `rejected`.
 
 1. Create the folder, e.g. `~/GitHub/DEBUG/testbed`. Keeping it inside a folder
    that is already shared with Claude means no further permissions are needed.
+   It can also be this directory itself; the repository's `.gitignore` keeps the
+   runtime state out of git in that case.
 2. System Settings → General → Sharing → File Sharing: add that folder, make sure
    SMB is enabled for your user.
 3. Note the machine's name (`Sharing → Local hostname`, e.g. `macbook.local`).

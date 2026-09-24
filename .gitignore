@@ -22,3 +22,9 @@ build/**
 .coverage
 cov/**
 fuse.txt
+
+# Testbed runtime state, when the shared folder is extras/testbed itself
+extras/testbed/hosts/
+extras/testbed/jobs/
+extras/testbed/taken/
+extras/testbed/results/
