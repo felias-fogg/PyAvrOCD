@@ -30,11 +30,6 @@ from datetime import datetime, timezone
 POLL_SECONDS = 2
 HEARTBEAT_SECONDS = 10
 
-# A file the shared folder must contain. An unmounted mount point is an ordinary
-# empty directory, and a runner started against one works away at nothing while
-# looking perfectly healthy from its own side.
-MARKER = ".testbed"
-
 
 
 def now() -> str:
@@ -326,10 +321,6 @@ def main() -> int:
         return 1
     if not os.path.isdir(cfg["shared"]):
         print(f"shared folder not found: {cfg['shared']}")
-        return 1
-    if not os.path.exists(os.path.join(cfg["shared"], MARKER)):
-        print(f"{cfg['shared']} does not contain '{MARKER}', so this is not the shared "
-              "folder but most likely a mount point with nothing mounted on it")
         return 1
 
     runner = Runner(cfg)

@@ -78,20 +78,16 @@ it and put the machine back on a revision with `checkout`.
    that is already shared with Claude means no further permissions are needed.
    It can also be this directory itself; the repository's `.gitignore` keeps the
    runtime state out of git in that case.
-2. Put an empty file named `.testbed` in it. A runner refuses to start without
-   it, which catches the case where its mount point holds nothing: the runner
-   would otherwise create its directories in the empty local folder and work
-   away at nothing, looking healthy from its own side and dead from here.
-3. System Settings → General → Sharing → File Sharing: add that folder, make sure
+2. System Settings → General → Sharing → File Sharing: add that folder, make sure
    SMB is enabled for your user.
-4. Note the machine's name (`Sharing → Local hostname`, e.g. `macbook.local`).
+3. Note the machine's name (`Sharing → Local hostname`, e.g. `macbook.local`).
 
 ### On a Linux machine or a Raspberry Pi
 
     sudo apt update && sudo apt install cifs-utils git python3-venv
     mkdir -p ~/testbed
     sudo mount -t cifs //macbook.local/testbed ~/testbed \
-         -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0,soft
+         -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0
     git clone -b v2 https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
     cd ~/GitHub/PyAvrOCD && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
     cp extras/testbed/runner.example.json ~/runner.json
@@ -104,32 +100,8 @@ guess in the example. The copy lives outside the repository so that local paths
 do not end up in git, which also means it does not follow when the example
 changes; copy it again after a `git pull` that touched it.
 
-`soft` matters: without it a cifs mount retries forever when the share goes
-away, and every access blocks in the kernel instead of returning an error. The
-runner then hangs silently — it neither works nor says anything, and even its
-heartbeat stops, which is how you notice. With `soft` the access fails, the
-runner reports that the shared folder is unreachable and picks up again once it
-is back.
-
-To have the mount survive a reboot, put the password in a file of its own,
-readable only by you:
-
-    printf 'username=nebel\npassword=SECRET\n' > ~/.smbcred && chmod 600 ~/.smbcred
-
-and add one line to `/etc/fstab`:
-
-    //macbook.local/testbed /home/nebel/testbed cifs credentials=/home/nebel/.smbcred,uid=1000,gid=1000,vers=3.0,soft,_netdev,nofail,x-systemd.automount 0 0
-
-`_netdev` and `nofail` keep the machine from waiting for the share at boot, and
-`x-systemd.automount` mounts it on first access rather than at boot, which is
-what you want when the Mac is not always on. Use `id -u` and `id -g` for the two
-numbers. If the name `macbook.local` is not resolvable early enough, use the
-Mac's address instead. Then:
-
-    sudo systemctl daemon-reload && sudo mount -a
-
-For hardware tests the usual udev rule for the debugger and membership in
-`dialout` are needed.
+Add the mount to `/etc/fstab` if it should survive a reboot. For hardware tests
+the usual udev rule for the debugger and membership in `dialout` are needed.
 
 ### On Windows
 
