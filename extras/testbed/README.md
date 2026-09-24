@@ -103,3 +103,23 @@ it can make the runners check out a revision and run the test suite. That is fin
 on a private network and nowhere else. A runner does one job at a time and does
 not queue across restarts — a job that was claimed when the runner died stays in
 `taken/` and has to be moved back by hand.
+
+## Note: e2e under Windows
+
+The e2e framework uses `pexpect.spawn`, which needs a pty and therefore does not
+run under Windows. That is a limitation worth removing at some point, because the
+USB/HID layer is exactly what can behave differently there, and the unit tests say
+nothing about it.
+
+What it would take: `pexpect.popen_spawn.PopenSpawn` works under Windows and has
+the same API, using pipes instead of a pty (gdb flushes its `(gdb)` prompt into a
+pipe, so the expect patterns still work). Then `child.close()` needs a wrapper
+around `kill()`/`wait()`, `pexpect.run` in `run_compile_command` becomes
+`subprocess.run`, and `serv.sh` needs a portable `serv.py`. The one hard part is
+`child.sendcontrol('C')`: without a pty there is no line discipline, so writing
+0x03 into the pipe raises no SIGINT. The way out is to signal the process group
+instead — SIGINT on Linux and macOS, `CREATE_NEW_PROCESS_GROUP` plus
+`CTRL_BREAK_EVENT` on Windows.
+
+Not done, because switching the Unix path from pty to pipes puts tests at risk
+that currently work.
