@@ -9,3 +9,5 @@ second machine and nowhere else.
 - `progmem_far` (MIT, Bernhard Nebel) — used by the `flashed` sketch. Shipped
   with MightyCore and MegaCore, but not with megaTinyCore or DxCore. Copied here
   from MightyCore; update it from there when it changes.
+- `Vcc` 2.3.2 (Bernhard Nebel) — used by the `measure` sketch. From
+  https://github.com/felias-fogg/Vcc; update it from there when it changes.

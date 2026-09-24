@@ -1,0 +1,3 @@
+Vcc	KEYWORD1
+measure	KEYWORD2
+setIntref	KEYWORD2
