@@ -374,7 +374,17 @@ def main() -> int:
     parser.add_argument("--once", action="store_true", help="one pass, then exit")
     args = parser.parse_args()
 
-    cfg = read_json(args.config)
+    try:
+        with open(args.config, encoding="utf-8") as src:
+            cfg = json.load(src)
+    except OSError as err:
+        print(f"cannot read the configuration {args.config}: {err}")
+        return 1
+    except ValueError as err:
+        print(f"{args.config} is not valid JSON: {err}")
+        print("a lone backslash is an escape in JSON, so a Windows path needs "
+              "them doubled: \"C:\\\\Users\\\\...\"")
+        return 1
     for key in ("host", "shared", "repo"):
         if key not in cfg:
             print(f"configuration is missing '{key}'")
