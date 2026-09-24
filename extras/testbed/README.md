@@ -40,6 +40,7 @@ runner can only ever do these six things:
 | `typecheck` | mypy over `pyavrocd`                         | –                        |
 | `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose`, `baud` |
 | `sync`      | copy staged files into the repository        | `restore`                |
+| `cores`     | install or update an Arduino core            | `core`, `urls`           |
 
 For `e2e` the runner starts `serv.sh` before the test and stops it afterwards;
 what the server printed ends up next to the test output as `server.log`. Besides
@@ -55,7 +56,16 @@ unset, `serv.sh` keeps using `poetry run`, as before.
 The e2e framework needs `pexpect`, which does not work under Windows — leave
 `e2e` out of the `actions` list there.
 
-Each host's configuration lists which of the seven it offers; anything else comes
+`cores` is the only action that puts something on a host instead of just looking
+at it. It runs `arduino-cli core update-index`, installs the core the job names,
+and prints `core list`, so the log says what the machine has afterwards. A host
+that should not be changed this way simply leaves it out of its `actions`.
+
+    {"id": "0044-core", "action": "cores",
+     "params": {"core": "XMiniCore:avr",
+                "urls": ["https://.../package_XMiniCore_index.json"]}}
+
+Each host's configuration lists which of the eight it offers; anything else comes
 back as `rejected`.
 
 `sync` is the short way round while trying something out: files placed under

@@ -123,6 +123,20 @@ def act_checkout(cfg: dict, params: dict) -> tuple:
              ["git", "log", "--oneline", "-1"]], cfg["repo"])
 
 
+def act_cores(cfg: dict, params: dict) -> tuple:
+    """
+    Install or update an Arduino core. This is the one action that puts software on
+    a host rather than only looking at it, which is why the core is named by the job
+    and the list of what is installed afterwards ends up in the log.
+    """
+    extra = []
+    for url in params.get("urls", []):
+        extra += ["--additional-urls", str(url)]
+    return ([["arduino-cli", "core", "update-index"] + extra,
+             ["arduino-cli", "core", "install", str(params["core"])] + extra,
+             ["arduino-cli", "core", "list"]], cfg["repo"])
+
+
 def act_sync(cfg: dict, params: dict) -> tuple:
     """
     Copy what has been staged for this host in the shared folder into the repository,
@@ -139,7 +153,7 @@ def act_sync(cfg: dict, params: dict) -> tuple:
 
 ACTIONS = {"info": act_info, "pytest": act_pytest, "lint": act_lint,
            "typecheck": act_typecheck, "e2e": act_e2e, "checkout": act_checkout,
-           "sync": act_sync}
+           "sync": act_sync, "cores": act_cores}
 
 
 # --------------------------------------------------------------------------- #
