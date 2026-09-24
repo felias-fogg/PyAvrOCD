@@ -161,7 +161,16 @@ Map the share to a drive letter. Use the Mac's address rather than its name:
 profile is private and the firewall lets UDP 5353 through, and the failure looks
 like `System error 67`.
 
-    net use Z: \\192.168.1.23\testbed /user:nebel
+    net use Z: \\192.168.1.23\testbed /user:nebel * /persistent:yes
+    cmdkey /add:192.168.1.23 /user:nebel /pass
+
+Use PowerShell or cmd for that, not a bash: bash reads a backslash as an escape,
+so `\\host\testbed` arrives as a tab followed by `estbed`, and the failure
+looks like a missing share.
+
+The runner itself is better off without the drive letter, because a mapped drive
+belongs to the session that mapped it and is not there for a service or a
+scheduled task. Give it the UNC path instead, as `runner.windows.json` does.
 
 Clone the branch under test (`git clone -b v2 ...`), create a virtual
 environment, then start the runner. It can be started straight from the share,

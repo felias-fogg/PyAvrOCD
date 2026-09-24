@@ -1,6 +1,6 @@
 {
  "host": "win-cores",
- "shared": "Z:\\",
+ "shared": "\\\\192.168.2.131\\testbed",
  "repo": "C:\\Users\\nebel\\GitHub\\XMiniCore",
  "python": "python",
  "run": [],
