@@ -333,6 +333,11 @@ def import_steps(spec : dict [ str, Any ]) -> None:
     for t in spec['tests']:
         spec['tests'][t]['steps'] = resolve(t, t)
 
+# Libraries the sketches need, kept here so that every machine compiles the same
+# thing. Without this the compilation depends on what happens to sit in the
+# sketchbook of whoever runs the tests.
+LIBRARIES = "libraries"
+
 AVRDUDE_MIN = (8, 0)
 
 def avrdude_version() -> tuple [ int, int ] | None:
@@ -560,6 +565,7 @@ def compile_arduino(sketch : str, spec : dict [ str, Any ],
     fqbn = build_fqbn(dev, clock, spec)
     logger.info("FQBN: %s", fqbn)
     cmd = f"arduino-cli compile --clean -b {fqbn} --export-binaries"
+    cmd += f" --libraries {LIBRARIES}"     # so that a host's sketchbook does not matter
     cmd += f" --optimize-for-debug --output-dir sketches/{sketch} sketches/{sketch}"
     return run_compile_command(cmd)
 
