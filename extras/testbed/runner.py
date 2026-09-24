@@ -74,6 +74,23 @@ def read_json(path: str) -> dict:
         return {}
 
 
+def kill_tree(proc) -> None:
+    """
+    Stop a process and everything it has started. Killing the one we started is
+    not enough: under Windows its children carry on, holding the log file open
+    and the build running, and under Unix a test that spawned a server would
+    leave it behind.
+    """
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], check=False,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    proc.kill()
+    try:
+        proc.wait(timeout=30)
+    except subprocess.TimeoutExpired:
+        pass
+
+
 # --------------------------------------------------------------------------- #
 # The repertoire. Every action returns a list of commands and the directory they
 # run in. Parameters become separate arguments, never a shell string.
@@ -278,7 +295,7 @@ class Runner:
         try:
             handle.wait(timeout=10)
         except subprocess.TimeoutExpired:
-            handle.kill()
+            kill_tree(handle)
         if getattr(handle, "logfile", None):
             handle.logfile.close()
 
@@ -314,11 +331,12 @@ class Runner:
                     log.write(f"$ {readable(command)}\n  (in {cwd})\n\n")
                     log.flush()
                     proc = subprocess.Popen(command, cwd=cwd, stdout=log,
-                                            stderr=subprocess.STDOUT)
+                                            stderr=subprocess.STDOUT,
+                                            stdin=subprocess.DEVNULL)
                     try:
                         code = proc.wait(timeout=timeout)
                     except subprocess.TimeoutExpired:
-                        proc.kill()
+                        kill_tree(proc)
                         code, status = None, "timeout"
                         break
                     log.write(f"\n[exit {code}]\n\n")
