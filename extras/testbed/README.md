@@ -65,8 +65,15 @@ back as `rejected`.
          -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0
     git clone -b v2 https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
     cd ~/GitHub/PyAvrOCD && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
-    cp extras/testbed/runner.example.json ~/runner.json    # adjust the paths
+    cp extras/testbed/runner.example.json ~/runner.json
+    $EDITOR ~/runner.json
     python3 extras/testbed/runner.py --config ~/runner.json
+
+The copy has to be edited before the runner is started: `host` is the name this
+machine answers to, and every path in it — `shared`, `repo`, `python` — is a
+guess in the example. The copy lives outside the repository so that local paths
+do not end up in git, which also means it does not follow when the example
+changes; copy it again after a `git pull` that touched it.
 
 Add the mount to `/etc/fstab` if it should survive a reboot. For hardware tests
 the usual udev rule for the debugger and membership in `dialout` are needed.
@@ -78,8 +85,8 @@ branch under test (`git clone -b v2 ...`), create a virtual environment, then:
 
     python extras\testbed\runner.py --config runner.json
 
-`runner.windows.json` is a starting point. Note the doubled backslashes — JSON
-needs them.
+`runner.windows.json` is a starting point and needs the same editing. Note the
+doubled backslashes — JSON needs them.
 
 ## Handing out work
 
