@@ -735,6 +735,14 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
     if resp >= 1:
         report_failure(child, "Failed %s calling avr-gdb" % script)
         return False
+    # Responses are matched line by line, so a line gdb wrapped to the terminal
+    # width does not match any more. Where the wrap falls depends on the length of
+    # the paths it prints, which differs from machine to machine.
+    for setting in ("set width unlimited", "set height unlimited"):
+        child.sendline(setting)
+        if child.expect([r"\(gdb\)", TIMEOUT, EOF], timeout=5) >= 1:
+            report_failure(child, "Failed %s sending '%s'" % (script, setting))
+            return False
     for s in steps:
         ok, succfail = exec_step(child, s)
         if not ok:
