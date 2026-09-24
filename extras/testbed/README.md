@@ -87,7 +87,7 @@ it and put the machine back on a revision with `checkout`.
     sudo apt update && sudo apt install cifs-utils git python3-venv
     mkdir -p ~/testbed
     sudo mount -t cifs //macbook.local/testbed ~/testbed \
-         -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0
+         -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0,soft
     git clone -b v2 https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
     cd ~/GitHub/PyAvrOCD && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
     cp extras/testbed/runner.example.json ~/runner.json
@@ -99,6 +99,13 @@ machine answers to, and every path in it — `shared`, `repo`, `python` — is a
 guess in the example. The copy lives outside the repository so that local paths
 do not end up in git, which also means it does not follow when the example
 changes; copy it again after a `git pull` that touched it.
+
+`soft` matters: without it a cifs mount retries forever when the share goes
+away, and every access blocks in the kernel instead of returning an error. The
+runner then hangs silently — it neither works nor says anything, and even its
+heartbeat stops, which is how you notice. With `soft` the access fails, the
+runner reports that the shared folder is unreachable and picks up again once it
+is back.
 
 Add the mount to `/etc/fstab` if it should survive a reboot. For hardware tests
 the usual udev rule for the debugger and membership in `dialout` are needed.
