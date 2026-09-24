@@ -11,7 +11,7 @@ squeaky_clean:
 	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom
 
 unprog_ocden:
-	- avrdude -c $(PROG) -p $(MCU) -P $(PORT) -T "config ocden=ocd_disabled"
+	python3 ../setfuse.py -- -c $(PROG) -p $(MCU) -P $(PORT) -T "config ocden=ocd_disabled"
 
 fresh:
 	make squeaky_clean
