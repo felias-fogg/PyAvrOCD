@@ -31,12 +31,13 @@ POLL_SECONDS = 2
 HEARTBEAT_SECONDS = 10
 
 INFO_SCRIPT = (
-    "import platform, shutil, sys;"
-    "print('platform:', platform.platform());"
-    "print('python  :', sys.version.split()[0]);"
-    "print('avr-gdb :', shutil.which('avr-gdb'));"
-    "print('avrdude :', shutil.which('avrdude'));"
-    "print('git     :', shutil.which('git'))"
+    "import importlib.util as u, platform, shutil, sys;"
+    "print('platform   :', platform.platform());"
+    "print('python     :', sys.version.split()[0]);"
+    "[print('%-11s:' % t, shutil.which(t)) for t in "
+    "('avr-gdb', 'avrdude', 'git', 'poetry', 'arduino-cli', 'pyavrocd')];"
+    "[print('%-11s:' % m, 'yes' if u.find_spec(m) else 'MISSING') for m in "
+    "('pexpect', 'pytest', 'pylint', 'mypy', 'pyavrocd')]"
 )
 
 
@@ -166,11 +167,14 @@ class Runner:
 
     # -- execution ---------------------------------------------------------- #
 
-    def start_server(self):
-        """Start the GDB server the e2e tests connect to."""
+    def start_server(self, logpath: str):
+        """Start the GDB server the e2e tests connect to, keeping its output."""
         where = os.path.join(self.cfg["repo"], "tests", "end-to-end")
-        return subprocess.Popen(["bash", os.path.join(where, "serv.sh"), "info"], cwd=where,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        log = open(logpath, "w", encoding="utf-8", errors="replace")   # closed in stop_server
+        proc = subprocess.Popen(["bash", os.path.join(where, "serv.sh"), "info"], cwd=where,
+                                stdout=log, stderr=subprocess.STDOUT)
+        proc.logfile = log
+        return proc
 
     @staticmethod
     def stop_server(handle) -> None:
@@ -182,6 +186,8 @@ class Runner:
             handle.wait(timeout=10)
         except subprocess.TimeoutExpired:
             handle.kill()
+        if getattr(handle, "logfile", None):
+            handle.logfile.close()
 
     def run_job(self, job: dict, logpath: str) -> dict:
         """Execute one job, streaming the output of every command into the log file."""
@@ -197,9 +203,11 @@ class Runner:
                     "message": f"parameter {err} is missing for action '{action}'"}
 
         timeout = int(job.get("timeout", 900))
-        server = self.start_server() if action == "e2e" else None
+        outdir = os.path.dirname(logpath)
+        os.makedirs(outdir, exist_ok=True)
+        server = (self.start_server(os.path.join(outdir, "server.log"))
+                  if action == "e2e" else None)
         started, code, status = now(), None, "ok"
-        os.makedirs(os.path.dirname(logpath), exist_ok=True)
         try:
             with open(logpath, "w", encoding="utf-8", errors="replace") as log:
                 for command in commands:

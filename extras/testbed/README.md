@@ -33,14 +33,19 @@ runner can only ever do these six things:
 
 | action      | what it does                                | parameters               |
 |-------------|---------------------------------------------|--------------------------|
-| `info`      | platform, Python version, tools found, HEAD  | –                        |
+| `info`      | platform, Python, tools and modules, HEAD    | –                        |
 | `checkout`  | `git fetch`, then check out a revision       | `rev`, required          |
 | `pytest`    | the unit test suite                          | –                        |
 | `lint`      | pylint over `pyavrocd` and `tests`           | –                        |
 | `typecheck` | mypy over `pyavrocd`                         | –                        |
 | `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec` |
 
-For `e2e` the runner starts `serv.sh` before the test and stops it afterwards.
+For `e2e` the runner starts `serv.sh` before the test and stops it afterwards;
+what the server printed ends up next to the test output as `server.log`. Besides
+the debugger and its udev rule, an e2e host needs `poetry` (that is how `serv.sh`
+starts the server), `arduino-cli` with the cores the specs compile against, and
+`avr-gdb`. The `info` action reports whether they are there.
+
 The e2e framework needs `pexpect`, which does not work under Windows — leave
 `e2e` out of the `actions` list there.
 
