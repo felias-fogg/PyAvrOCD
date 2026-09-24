@@ -115,7 +115,7 @@ def act_e2e(cfg: dict, params: dict) -> tuple:
 
 def act_checkout(cfg: dict, params: dict) -> tuple:
     """Fetch and check out a revision, so that a job can name what it wants tested."""
-    rev = str(params.get("rev", "origin/main"))
+    rev = str(params["rev"])
     return ([["git", "fetch", "--all", "--quiet"],
              ["git", "-c", "advice.detachedHead=false", "checkout", "--quiet", rev],
              ["git", "log", "--oneline", "-1"]], cfg["repo"])

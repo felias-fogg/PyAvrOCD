@@ -23,6 +23,9 @@ nothing else.
 `<host>` is the name in the runner's configuration, not the machine's hostname,
 so two checkouts on one machine can act as two hosts.
 
+The work happens on `v2`, so that is what the instructions below clone. Use the
+`checkout` action to move a runner to a different revision afterwards.
+
 ## Actions
 
 A job selects an action and its parameters. It never carries a command line, so a
@@ -31,7 +34,7 @@ runner can only ever do these six things:
 | action      | what it does                                | parameters               |
 |-------------|---------------------------------------------|--------------------------|
 | `info`      | platform, Python version, tools found, HEAD  | –                        |
-| `checkout`  | `git fetch`, then check out a revision       | `rev` (default `origin/main`) |
+| `checkout`  | `git fetch`, then check out a revision       | `rev`, required          |
 | `pytest`    | the unit test suite                          | –                        |
 | `lint`      | pylint over `pyavrocd` and `tests`           | –                        |
 | `typecheck` | mypy over `pyavrocd`                         | –                        |
@@ -56,11 +59,11 @@ back as `rejected`.
 
 ### On a Linux machine or a Raspberry Pi
 
-    sudo apt install cifs-utils git python3-venv
+    sudo apt update && sudo apt install cifs-utils git python3-venv
     mkdir -p ~/testbed
     sudo mount -t cifs //macbook.local/testbed ~/testbed \
          -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0
-    git clone https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
+    git clone -b v2 https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
     cd ~/GitHub/PyAvrOCD && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
     cp extras/testbed/runner.example.json ~/runner.json    # adjust the paths
     python3 extras/testbed/runner.py --config ~/runner.json
@@ -71,7 +74,7 @@ the usual udev rule for the debugger and membership in `dialout` are needed.
 ### On Windows
 
 Map the share to a drive letter (`net use Z: \\macbook.local\testbed`), clone the
-repository, create a virtual environment, then:
+branch under test (`git clone -b v2 ...`), create a virtual environment, then:
 
     python extras\testbed\runner.py --config runner.json
 
