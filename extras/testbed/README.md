@@ -33,7 +33,7 @@ runner can only ever do these six things:
 
 | action      | what it does                                | parameters               |
 |-------------|---------------------------------------------|--------------------------|
-| `info`      | platform, Python, tools and modules, HEAD    | –                        |
+| `info`      | `hostinfo.py`: tools with versions, modules  | –                        |
 | `checkout`  | `git fetch`, then check out a revision       | `rev`, required          |
 | `pytest`    | the unit test suite                          | –                        |
 | `lint`      | pylint over `pyavrocd` and `tests`           | –                        |

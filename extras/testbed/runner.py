@@ -30,15 +30,6 @@ from datetime import datetime, timezone
 POLL_SECONDS = 2
 HEARTBEAT_SECONDS = 10
 
-INFO_SCRIPT = (
-    "import importlib.util as u, platform, shutil, sys;"
-    "print('platform   :', platform.platform());"
-    "print('python     :', sys.version.split()[0]);"
-    "[print('%-11s:' % t, shutil.which(t)) for t in "
-    "('avr-gdb', 'avrdude', 'git', 'poetry', 'arduino-cli', 'pyavrocd')];"
-    "[print('%-11s:' % m, 'yes' if u.find_spec(m) else 'MISSING') for m in "
-    "('pexpect', 'pytest', 'pylint', 'mypy', 'pyavrocd')]"
-)
 
 
 def now() -> str:
@@ -73,7 +64,8 @@ def read_json(path: str) -> dict:
 def act_info(cfg: dict, params: dict) -> tuple:
     """Report what this machine is and which tools it has."""
     del params
-    return ([[cfg["python"], "-c", INFO_SCRIPT],
+    script = os.path.join(cfg["repo"], "extras", "testbed", "hostinfo.py")
+    return ([[cfg["python"], script],
              ["git", "log", "--oneline", "-1"]], cfg["repo"])
 
 
