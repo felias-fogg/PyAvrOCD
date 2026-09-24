@@ -22,6 +22,16 @@ MODULES = ("pyavrocd", "pymcuprog", "pyedbglib", "pexpect", "pytest", "pylint", 
 # without arguments, arduino-cli wants a subcommand.
 VERSION_ARGS = {"avrdude": [], "arduino-cli": ["version"]}
 
+# The sketch Makefiles of nolock, nodwen, noocden and nobootrst set fuses with
+# 'avrdude -T "config ..."', which arrived with avrdude 8.
+AVRDUDE_MIN = (8, 0)
+
+
+def too_old(reported: str) -> bool:
+    """Whether the avrdude that said this is older than the fuse tests need."""
+    found = re.search(r"version\s+(\d+)\.(\d+)", reported, re.IGNORECASE)
+    return bool(found) and (int(found.group(1)), int(found.group(2))) < AVRDUDE_MIN
+
 
 def version_of(tool: str) -> str:
     """What the tool says about itself, or why that did not work."""
@@ -51,7 +61,10 @@ def main() -> None:
         if where is None:
             print(f"{tool:<12} MISSING")
         else:
-            print(f"{tool:<12} {version_of(tool)}")
+            reported = version_of(tool)
+            note = "   <- older than 8.0, the fuse-setting tests need that" \
+                   if tool == "avrdude" and too_old(reported) else ""
+            print(f"{tool:<12} {reported}{note}")
             print(f"{'':<12} {where}")
     print()
     missing = [m for m in MODULES if importlib.util.find_spec(m) is None]
