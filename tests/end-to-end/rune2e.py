@@ -583,6 +583,9 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     provides = spec['devices'][dev]['provides']
     caps = " ".join(f"{name.upper()}={'yes' if provides.get(name) else 'no'}"
                     for name in ('dw', 'jtag', 'updi'))
+    # The mEDBG of an Xplained Mini board cannot write lock bits, so a Makefile
+    # that wants to lock a part has to know whether that is worth trying.
+    caps += " LOCK=" + ("no" if prog.startswith("xplainedmini") else "yes")
     cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog}"
     cmd += f" {caps} fresh"
     return run_compile_command(cmd)
