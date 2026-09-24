@@ -101,6 +101,8 @@ def act_e2e(cfg: dict, params: dict) -> tuple:
         cmd += ["-t", str(test)]
     if params.get("verbose"):
         cmd += ["-v", str(params["verbose"])]
+    if params.get("baud"):
+        cmd += ["-b", str(params["baud"])]
     if params.get("clock") is not None:
         cmd += ["-c", str(params["clock"])]
     if params.get("spec"):

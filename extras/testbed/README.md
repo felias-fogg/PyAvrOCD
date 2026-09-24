@@ -38,7 +38,7 @@ runner can only ever do these six things:
 | `pytest`    | the unit test suite                          | –                        |
 | `lint`      | pylint over `pyavrocd` and `tests`           | –                        |
 | `typecheck` | mypy over `pyavrocd`                         | –                        |
-| `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose` |
+| `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose`, `baud` |
 | `sync`      | copy staged files into the repository        | `restore`                |
 
 For `e2e` the runner starts `serv.sh` before the test and stops it afterwards;

@@ -15,6 +15,11 @@ import shutil
 import subprocess
 import sys
 
+try:
+    import grp                                     # not available under Windows
+except ImportError:
+    grp = None
+
 TOOLS = ("avr-gdb", "avrdude", "arduino-cli", "git", "poetry", "pyavrocd")
 MODULES = ("pyavrocd", "pymcuprog", "pyedbglib", "pexpect", "pytest", "pylint", "mypy")
 
@@ -70,6 +75,19 @@ def main() -> None:
     missing = [m for m in MODULES if importlib.util.find_spec(m) is None]
     print("modules  :", ", ".join(MODULES))
     print("missing  :", ", ".join(missing) if missing else "none")
+    print()
+    print("serial ports and the right to use them, which is what dw-link needs:")
+    ports = sorted(glob.glob("/dev/ttyUSB*") + glob.glob("/dev/ttyACM*")
+                   + glob.glob("/dev/cu.usb*"))
+    print("  ports  :", ", ".join(ports) if ports else "none found")
+    try:
+        names = [] if grp is None else sorted(grp.getgrgid(gid).gr_name for gid in os.getgroups())
+        print("  groups :", ", ".join(names))
+        for needed in ("dialout", "uucp"):
+            if needed in names:
+                print(f"  member of {needed}")
+    except (AttributeError, KeyError, OSError):    # no groups under Windows
+        pass
     print()
     print("avrdude shipped with the installed cores, which is what uploads use:")
     found = sorted(glob.glob(os.path.join(
