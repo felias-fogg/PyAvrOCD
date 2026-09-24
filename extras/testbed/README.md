@@ -41,6 +41,8 @@ runner can only ever do these six things:
 | `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose`, `baud` |
 | `sync`      | copy staged files into the repository        | `restore`                |
 | `cores`     | install or update an Arduino core            | `core`, `urls`           |
+| `corebuild` | compile a core for its boards and menus      | `prefix`, `coverage`, `max-builds`, `menus`, `work-dir`, `all-menus` |
+| `corehooks` | check that a core's prebuild hook works      | `fqbn`, `work-dir`       |
 
 For `e2e` the runner starts `serv.sh` before the test and stops it afterwards;
 what the server printed ends up next to the test output as `server.log`. Besides
@@ -70,6 +72,12 @@ a host that has them in its `arduino-cli.yaml` can install by name alone.
 
 Each host's configuration lists which of the eight it offers; anything else comes
 back as `rejected`.
+
+`corebuild` and `corehooks` are for a host whose `repo` is one of the Arduino
+cores rather than PyAvrOCD; they run the scripts that live in `extras/` there.
+A machine of one's own beats a CI run when the question is how long something
+takes: a compile can be repeated at once, with the virus scanner on and off, and
+with a single board rather than all of them.
 
 `sync` is the short way round while trying something out: files placed under
 `staging/<host>/` in the shared folder, with the paths they have in the

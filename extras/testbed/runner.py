@@ -37,6 +37,15 @@ MARKER = ".testbed"
 
 
 
+def readable(command: list) -> str:
+    """
+    A command as one line, with quotes where an argument contains a blank. The
+    runner passes argument lists and never a command line, but a log that drops
+    the quotes reads like something that would not work.
+    """
+    return " ".join(f'"{part}"' if " " in part else part for part in command)
+
+
 def now() -> str:
     """Timestamp in UTC, seconds resolution."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -137,6 +146,34 @@ def act_cores(cfg: dict, params: dict) -> tuple:
              ["arduino-cli", "core", "list"]], cfg["repo"])
 
 
+def act_corebuild(cfg: dict, params: dict) -> tuple:
+    """
+    Compile an Arduino core for its boards and menu combinations, with the script
+    that lives in the core. For a host whose 'repo' is a core rather than
+    PyAvrOCD: measuring how long Windows takes needs a machine one can ask again
+    without waiting twelve minutes for a CI run.
+    """
+    script = os.path.join(cfg["repo"], "extras", "compile_all.py")
+    cmd = [cfg["python"], script, "--fqbn-prefix", str(params["prefix"])]
+    for name in ("coverage", "menus", "work-dir"):
+        if params.get(name):
+            cmd += [f"--{name}", str(params[name])]
+    if params.get("max-builds"):
+        cmd += ["--max-builds", str(params["max-builds"])]
+    if params.get("all-menus"):
+        cmd += ["--all-menus"]
+    return ([cmd], cfg["repo"])
+
+
+def act_corehooks(cfg: dict, params: dict) -> tuple:
+    """Check that the core's prebuild hook delivers the pragma flags."""
+    script = os.path.join(cfg["repo"], "extras", "check_hooks.py")
+    cmd = [cfg["python"], script, "--fqbn", str(params["fqbn"])]
+    if params.get("work-dir"):
+        cmd += ["--work-dir", str(params["work-dir"])]
+    return ([cmd], cfg["repo"])
+
+
 def act_sync(cfg: dict, params: dict) -> tuple:
     """
     Copy what has been staged for this host in the shared folder into the repository,
@@ -157,7 +194,8 @@ def act_sync(cfg: dict, params: dict) -> tuple:
 
 ACTIONS = {"info": act_info, "pytest": act_pytest, "lint": act_lint,
            "typecheck": act_typecheck, "e2e": act_e2e, "checkout": act_checkout,
-           "sync": act_sync, "cores": act_cores}
+           "sync": act_sync, "cores": act_cores,
+           "corebuild": act_corebuild, "corehooks": act_corehooks}
 
 
 # --------------------------------------------------------------------------- #
@@ -264,7 +302,7 @@ class Runner:
         try:
             with open(logpath, "w", encoding="utf-8", errors="replace") as log:
                 for command in commands:
-                    log.write(f"$ {' '.join(command)}\n  (in {cwd})\n\n")
+                    log.write(f"$ {readable(command)}\n  (in {cwd})\n\n")
                     log.flush()
                     proc = subprocess.Popen(command, cwd=cwd, stdout=log,
                                             stderr=subprocess.STDOUT)
