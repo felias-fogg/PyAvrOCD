@@ -39,6 +39,7 @@ runner can only ever do these six things:
 | `lint`      | pylint over `pyavrocd` and `tests`           | –                        |
 | `typecheck` | mypy over `pyavrocd`                         | –                        |
 | `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose` |
+| `sync`      | copy staged files into the repository        | `restore`                |
 
 For `e2e` the runner starts `serv.sh` before the test and stops it afterwards;
 what the server printed ends up next to the test output as `server.log`. Besides
@@ -54,8 +55,20 @@ unset, `serv.sh` keeps using `poetry run`, as before.
 The e2e framework needs `pexpect`, which does not work under Windows — leave
 `e2e` out of the `actions` list there.
 
-Each host's configuration lists which of the six it offers; anything else comes
+Each host's configuration lists which of the seven it offers; anything else comes
 back as `rejected`.
+
+`sync` is the short way round while trying something out: files placed under
+`staging/<host>/` in the shared folder, with the paths they have in the
+repository, are copied into the runner's checkout. No commit, no push, no pull.
+
+    testbed/staging/raspi/tests/end-to-end/rune2e.py   ->   <repo>/tests/end-to-end/rune2e.py
+
+Pass `restore: true` to run `git restore .` first, which throws away what an
+earlier sync left behind. The action prints `git status --short` at the end,
+because after a sync the working tree matches no revision: a result from it shows
+whether something works, not that a given commit works. Once it does work, commit
+it and put the machine back on a revision with `checkout`.
 
 ## Setting it up
 

@@ -116,8 +116,23 @@ def act_checkout(cfg: dict, params: dict) -> tuple:
              ["git", "log", "--oneline", "-1"]], cfg["repo"])
 
 
+def act_sync(cfg: dict, params: dict) -> tuple:
+    """
+    Copy what has been staged for this host in the shared folder into the repository,
+    so that a change can be tried without a commit and a push. The working tree then
+    matches no revision, which is why the git status at the end is part of the output.
+    """
+    staging = os.path.join(cfg["shared"], "staging", cfg["host"])
+    script = os.path.join(cfg["repo"], "extras", "testbed", "syncfiles.py")
+    commands = [["git", "restore", "."]] if params.get("restore") else []
+    commands += [[cfg["python"], script, staging, cfg["repo"]],
+                 ["git", "status", "--short"]]
+    return (commands, cfg["repo"])
+
+
 ACTIONS = {"info": act_info, "pytest": act_pytest, "lint": act_lint,
-           "typecheck": act_typecheck, "e2e": act_e2e, "checkout": act_checkout}
+           "typecheck": act_typecheck, "e2e": act_e2e, "checkout": act_checkout,
+           "sync": act_sync}
 
 
 # --------------------------------------------------------------------------- #
