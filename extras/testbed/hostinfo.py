@@ -38,6 +38,20 @@ def too_old(reported: str) -> bool:
     return bool(found) and (int(found.group(1)), int(found.group(2))) < AVRDUDE_MIN
 
 
+def arduino_data_dirs() -> list:
+    """
+    Where arduino-cli keeps what it installed. Windows puts it under LOCALAPPDATA,
+    the others in the home directory, and looking in the wrong place says 'nothing
+    installed' about a machine that has everything.
+    """
+    home = os.path.expanduser("~")
+    candidates = [os.path.join(home, ".arduino15"),
+                  os.path.join(home, "Library", "Arduino15")]
+    if os.environ.get("LOCALAPPDATA"):
+        candidates.append(os.path.join(os.environ["LOCALAPPDATA"], "Arduino15"))
+    return [c for c in candidates if os.path.isdir(c)]
+
+
 def version_of(tool: str) -> str:
     """What the tool says about itself, or why that did not work."""
     try:
@@ -90,14 +104,17 @@ def main() -> None:
         pass
     print()
     print("avrdude shipped with the installed cores, which is what uploads use:")
-    found = sorted(glob.glob(os.path.join(
-        os.path.expanduser("~"), ".arduino15", "packages", "*", "tools",
-        "avrdude", "*", "bin", "avrdude")))
+    found = []
+    for data in arduino_data_dirs():
+        found += glob.glob(os.path.join(data, "packages", "*", "tools", "avrdude",
+                                        "*", "bin", "avrdude*"))
+    found = sorted(found)
     for binary in found:
         print(f"  {version_of(binary)}")
         print(f"    {binary}")
     if not found:
-        print("  none found under ~/.arduino15")
+        where = ", ".join(arduino_data_dirs()) or "anywhere arduino-cli keeps them"
+        print(f"  none found under {where}")
 
 
 if __name__ == "__main__":

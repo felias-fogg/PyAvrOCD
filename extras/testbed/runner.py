@@ -157,8 +157,10 @@ def act_corebuild(cfg: dict, params: dict) -> tuple:
     PyAvrOCD: measuring how long Windows takes needs a machine one can ask again
     without waiting twelve minutes for a CI run.
     """
-    script = os.path.join(cfg["repo"], "extras", "compile_all.py")
-    cmd = [cfg["python"], script, "--fqbn-prefix", str(params["prefix"])]
+    core = str(params.get("core") or cfg["repo"])
+    script = os.path.join(core, "extras", "compile_all.py")
+    cmd = [cfg["python"], script, "--fqbn-prefix", str(params["prefix"]),
+           "--root", core]
     for name in ("coverage", "menus", "work-dir"):
         if params.get(name):
             cmd += [f"--{name}", str(params[name])]
@@ -166,16 +168,19 @@ def act_corebuild(cfg: dict, params: dict) -> tuple:
         cmd += ["--max-builds", str(params["max-builds"])]
     if params.get("all-menus"):
         cmd += ["--all-menus"]
-    return ([cmd], cfg["repo"])
+    if params.get("timeout"):
+        cmd += ["--timeout", str(params["timeout"])]
+    return ([cmd], core)
 
 
 def act_corehooks(cfg: dict, params: dict) -> tuple:
     """Check that the core's prebuild hook delivers the pragma flags."""
-    script = os.path.join(cfg["repo"], "extras", "check_hooks.py")
+    core = str(params.get("core") or cfg["repo"])
+    script = os.path.join(core, "extras", "check_hooks.py")
     cmd = [cfg["python"], script, "--fqbn", str(params["fqbn"])]
     if params.get("work-dir"):
         cmd += ["--work-dir", str(params["work-dir"])]
-    return ([cmd], cfg["repo"])
+    return ([cmd], core)
 
 
 def act_sync(cfg: dict, params: dict) -> tuple:
