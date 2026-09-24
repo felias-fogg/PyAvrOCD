@@ -6,9 +6,11 @@ but useful on its own when setting a machine up.
 Standard library only, like the rest of the testbed.
 """
 
+import glob
 import importlib.util
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -30,7 +32,7 @@ def version_of(tool: str) -> str:
         return f"({err})"
     out = (done.stdout + done.stderr).strip().splitlines()
     for line in out:                       # avrdude buries it in its usage text
-        if "ersion" in line:
+        if re.search(r"\d+\.\d+", line):
             return line.strip()
     return out[0].strip() if out else "(said nothing)"
 
@@ -55,6 +57,16 @@ def main() -> None:
     missing = [m for m in MODULES if importlib.util.find_spec(m) is None]
     print("modules  :", ", ".join(MODULES))
     print("missing  :", ", ".join(missing) if missing else "none")
+    print()
+    print("avrdude shipped with the installed cores, which is what uploads use:")
+    found = sorted(glob.glob(os.path.join(
+        os.path.expanduser("~"), ".arduino15", "packages", "*", "tools",
+        "avrdude", "*", "bin", "avrdude")))
+    for binary in found:
+        print(f"  {version_of(binary)}")
+        print(f"    {binary}")
+    if not found:
+        print("  none found under ~/.arduino15")
 
 
 if __name__ == "__main__":
