@@ -145,7 +145,11 @@ def act_sync(cfg: dict, params: dict) -> tuple:
     """
     staging = os.path.join(cfg["shared"], "staging", cfg["host"])
     script = os.path.join(cfg["repo"], "extras", "testbed", "syncfiles.py")
-    commands = [["git", "restore", "."]] if params.get("restore") else []
+    # 'restore' has to remove what an earlier sync left behind completely: files it
+    # changed, and files it added, which would otherwise block the next checkout.
+    # 'git clean -fd' leaves ignored files such as build output alone.
+    commands = ([["git", "restore", "."], ["git", "clean", "-fd"]]
+                if params.get("restore") else [])
     commands += [[cfg["python"], script, staging, cfg["repo"]],
                  ["git", "status", "--short"]]
     return (commands, cfg["repo"])

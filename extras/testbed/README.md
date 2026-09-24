@@ -74,8 +74,10 @@ repository, are copied into the runner's checkout. No commit, no push, no pull.
 
     testbed/staging/raspi/tests/end-to-end/rune2e.py   ->   <repo>/tests/end-to-end/rune2e.py
 
-Pass `restore: true` to run `git restore .` first, which throws away what an
-earlier sync left behind. The action prints `git status --short` at the end,
+Pass `restore: true` to run `git restore .` and `git clean -fd` first, which
+throws away what an earlier sync left behind, both the files it changed and the
+ones it added. Ignored files such as build output are left alone. Without this a
+later `checkout` refuses to work, because it will not overwrite them. The action prints `git status --short` at the end,
 because after a sync the working tree matches no revision: a result from it shows
 whether something works, not that a given commit works. Once it does work, commit
 it and put the machine back on a revision with `checkout`.
