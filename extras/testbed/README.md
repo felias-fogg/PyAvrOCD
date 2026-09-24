@@ -61,6 +61,9 @@ at it. It runs `arduino-cli core update-index`, installs the core the job names,
 and prints `core list`, so the log says what the machine has afterwards. A host
 that should not be changed this way simply leaves it out of its `actions`.
 
+`board-manager-urls.txt` next to this file lists the urls the cores come from;
+a host that has them in its `arduino-cli.yaml` can install by name alone.
+
     {"id": "0044-core", "action": "cores",
      "params": {"core": "XMiniCore:avr",
                 "urls": ["https://.../package_XMiniCore_index.json"]}}

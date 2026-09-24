@@ -1,0 +1,13 @@
+# Board manager urls for the cores the tests build against. Feed them to a host
+# with 'arduino-cli config add board_manager.additional_urls <url>', or hand a
+# single one to a cores job as its 'urls' parameter.
+https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
+https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
+https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
+https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
+http://drazzy.com/package_drazzy.com_index.json
+https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json
+https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
+https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
+https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
