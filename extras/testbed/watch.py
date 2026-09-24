@@ -14,7 +14,6 @@ import json
 import os
 import sys
 import time
-from datetime import datetime, timezone
 
 POLL_SECONDS = 1
 STALE_SECONDS = 40
@@ -29,13 +28,16 @@ def read_json(path: str) -> dict:
         return {}
 
 
-def age_of(beat: dict) -> float:
-    """How many seconds ago this host last said anything."""
+def age_of(path: str) -> float:
+    """
+    How long ago this host last wrote its heartbeat, by the age of the file rather
+    than the time written inside it. Machines disagree about the time - a clock
+    two hours out would otherwise look like a host that died two hours ago.
+    """
     try:
-        when = datetime.strptime(beat["time"], "%Y-%m-%dT%H:%M:%SZ")
-    except (KeyError, ValueError):
+        return max(0.0, time.time() - os.path.getmtime(path))
+    except OSError:
         return 1e9
-    return (datetime.now(timezone.utc) - when.replace(tzinfo=timezone.utc)).total_seconds()
 
 
 def hosts(shared: str, only: str) -> list:
@@ -45,8 +47,10 @@ def hosts(shared: str, only: str) -> list:
     for name in sorted(os.listdir(folder)) if os.path.isdir(folder) else []:
         if not name.endswith(".json"):
             continue
-        beat = read_json(os.path.join(folder, name))
+        path = os.path.join(folder, name)
+        beat = read_json(path)
         if beat and (only is None or beat.get("host") == only):
+            beat["age"] = age_of(path)
             found.append(beat)
     return found
 
@@ -104,12 +108,12 @@ def main() -> int:
     while True:
         for beat in hosts(shared, args.host):
             host, job = beat.get("host"), beat.get("job")
-            stale = age_of(beat) > STALE_SECONDS
+            stale = beat["age"] > STALE_SECONDS
             was = state.get(host)
             now = "silent" if stale else (f"busy:{job}" if job else "idle")
             if was != now:
                 if stale:
-                    print(f"[{host}] no heartbeat for {int(age_of(beat))} s")
+                    print(f"[{host}] no heartbeat for {int(beat['age'])} s")
                 elif not job:
                     print(f"[{host}] idle "
                           f"({', '.join(beat.get('actions', []))})")
