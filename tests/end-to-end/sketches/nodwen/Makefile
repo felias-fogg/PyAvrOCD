@@ -12,7 +12,7 @@ squeaky_clean:
 
 unprog_dwen:
 	sleep 1
-	python3 ../setfuse.py -- -c $(PROG) -p $(MCU) -P $(PORT) -e -T "config dwen=dw_off"
+	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -T "config dwen=dw_off"
 
 fresh:
 	make squeaky_clean

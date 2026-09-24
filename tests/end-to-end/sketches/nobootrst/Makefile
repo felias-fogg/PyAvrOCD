@@ -17,9 +17,9 @@ squeaky_clean:
 prog_bootrst:
 	sleep 1
 ifeq ($(DW),yes)
-	python3 ../setfuse.py -- -c $(PROG) -p $(MCU) -P $(PORT) -e -T "config dwen=1"
+	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -T "config dwen=1"
 endif
-	python3 ../setfuse.py -- -c $(PROG) -p $(MCU) -P $(PORT) -T "config bootrst=boot_section"
+	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -T "config bootrst=boot_section"
 
 fresh:
 	make squeaky_clean

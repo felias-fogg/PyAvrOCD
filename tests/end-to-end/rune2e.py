@@ -583,10 +583,10 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     provides = spec['devices'][dev]['provides']
     caps = " ".join(f"{name.upper()}={'yes' if provides.get(name) else 'no'}"
                     for name in ('dw', 'jtag', 'updi'))
-    # A board that declares 'nolock' cannot have its lock bits written, so a
-    # Makefile that wants to lock a part has to know whether that is worth trying.
-    # An mEDBG cannot do it either, whatever the device entry says: an Xplained
-    # Mini run as the bare chip it carries would otherwise fail here.
+    # A board that declares 'nolock' cannot have its lock bits written, whatever
+    # debugger is attached to it: on the Xplained Mini boards the SUFFER fuses
+    # prevent it. An mEDBG counts as well, because an Xplained Mini run as the
+    # bare chip it carries picks a device entry that knows nothing of the board.
     medbg = prog.startswith('xplainedmini')
     if medbg and not provides.get('nolock'):
         logger.warning("The attached debugger is an mEDBG, which cannot write lock bits, "

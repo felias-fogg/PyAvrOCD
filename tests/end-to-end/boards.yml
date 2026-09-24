@@ -11,7 +11,7 @@ devices:
     board: atmega328p_xplained_mini
     setup: 328P Xmini board
     provides:
-      nolock: true        # the mEDBG cannot write lock bits
+      nolock: true        # SUFFER fuses on this board prevent it
 
   xmini328pb:
     import: atmega328pb
@@ -20,7 +20,7 @@ devices:
     board: atmega328pb_xplained_mini
     setup: 328PB Xmini board
     provides:
-      nolock: true        # the mEDBG cannot write lock bits
+      nolock: true        # SUFFER fuses on this board prevent it
 
   xmini168pb:
     import: atmega168pb
@@ -29,7 +29,7 @@ devices:
     board: atmega168pb_xplained_mini
     setup: 168PB Xmini board
     provides:
-      nolock: true        # the mEDBG cannot write lock bits
+      nolock: true        # SUFFER fuses on this board prevent it
 
   xmini817:
     import: attiny817

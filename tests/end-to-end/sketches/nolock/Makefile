@@ -20,10 +20,10 @@ squeaky_clean:
 lockup:
 	sleep 1
 ifeq ($(DW),yes)
-	python3 ../setfuse.py -- -c $(PROG) -p $(MCU) -P $(PORT) -e -T "config dwen=1"
+	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -T "config dwen=1"
 endif
 ifeq ($(LOCK),yes)
-	python3 ../setfuse.py -- -c $(PROG) -p $(MCU) -P $(PORT) -e -U lock:w:0x00:m
+	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -U lock:w:0x00:m
 else
 	@echo "nolock: this debugger cannot write lock bits, the test will skip itself"
 endif
