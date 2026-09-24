@@ -1,0 +1,8 @@
+{
+ "host": "win",
+ "shared": "Z:\\testbed",
+ "repo": "C:\\Users\\nebel\\GitHub\\PyAvrOCD",
+ "python": "C:\\Users\\nebel\\GitHub\\PyAvrOCD\\.venv\\Scripts\\python.exe",
+ "run": [],
+ "actions": ["info", "checkout", "pytest", "lint", "typecheck"]
+}
