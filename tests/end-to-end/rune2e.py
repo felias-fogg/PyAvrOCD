@@ -17,6 +17,8 @@ import logging
 import textwrap
 import sys
 import copy
+import re
+import subprocess
 from time import sleep
 import os
 import pexpect
@@ -330,6 +332,52 @@ def import_steps(spec : dict [ str, Any ]) -> None:
 
     for t in spec['tests']:
         spec['tests'][t]['steps'] = resolve(t, t)
+
+AVRDUDE_MIN = (8, 0)
+
+def avrdude_version() -> tuple [ int, int ] | None:
+    """
+    Version of the avrdude on PATH, which is the one the sketch Makefiles call.
+    That is not the avrdude arduino-cli uses for uploads; a core brings its own.
+    """
+    try:
+        done = subprocess.run(["avrdude"], capture_output=True, text=True,
+                              timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    found = re.search(r"version\s+(\d+)\.(\d+)", done.stdout + done.stderr, re.IGNORECASE)
+    return (int(found.group(1)), int(found.group(2))) if found else None
+
+def check_avrdude(spec : dict [ str, Any ], script_list : list [ str ]) -> bool:
+    """
+    Some sketch Makefiles set fuses with 'avrdude -T "config ..."', which needs
+    avrdude 8 or later. Those recipes are prefixed with '-', so make swallows the
+    failure and the test then runs against fuses that were never changed. Refuse
+    to start instead of measuring the wrong thing.
+    """
+    needy = [ ]
+    for test in script_list:
+        sketch = spec['tests'][test].get('sketch')
+        if not sketch:
+            continue
+        makefile = os.path.join('sketches', sketch, 'Makefile')
+        if not os.path.exists(makefile):
+            continue
+        with open(makefile, encoding="utf-8") as src:
+            if any('avrdude' in line and ' -T' in line for line in src):
+                needy.append(test)
+    if not needy:
+        return True
+    version = avrdude_version()
+    if version is None:
+        logger.critical("No avrdude on PATH, but %s set fuses with it", sorted(needy))
+        return False
+    if version < AVRDUDE_MIN:
+        logger.critical("avrdude %d.%d is too old for %s, which need 'avrdude -T config' "
+                        "from version %d.%d on", version[0], version[1], sorted(needy),
+                        AVRDUDE_MIN[0], AVRDUDE_MIN[1])
+        return False
+    return True
 
 def check_clocks(spec : dict [ str, Any ]) -> None:
     """
@@ -793,6 +841,9 @@ def main() -> int:
 
     # create list of feasible tests
     all_scripts, script_list = select_tests(spec, args.dev, args.script)
+
+    if not check_avrdude(spec, script_list):
+        return 1
 
     # run scripts
     try:
