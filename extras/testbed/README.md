@@ -42,9 +42,14 @@ runner can only ever do these six things:
 
 For `e2e` the runner starts `serv.sh` before the test and stops it afterwards;
 what the server printed ends up next to the test output as `server.log`. Besides
-the debugger and its udev rule, an e2e host needs `poetry` (that is how `serv.sh`
-starts the server), `arduino-cli` with the cores the specs compile against, and
-`avr-gdb`. The `info` action reports whether they are there.
+the debugger and its udev rule, an e2e host needs `avr-gdb` and `arduino-cli`
+with the cores the specs compile against. The `info` action reports whether they
+are there.
+
+poetry is not among them: the runner points `serv.sh` at the `pyavrocd` of the
+virtual environment it was configured with, through `$PYAVROCD`. Set `server` in
+the configuration to override that. Where poetry is installed and `$PYAVROCD` is
+unset, `serv.sh` keeps using `poetry run`, as before.
 
 The e2e framework needs `pexpect`, which does not work under Windows — leave
 `e2e` out of the `actions` list there.

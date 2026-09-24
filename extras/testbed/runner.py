@@ -167,12 +167,24 @@ class Runner:
 
     # -- execution ---------------------------------------------------------- #
 
+    def server_env(self) -> dict:
+        """
+        Tell serv.sh which pyavrocd to start. Without this it falls back to poetry,
+        which not every machine has.
+        """
+        env = os.environ.copy()
+        server = self.cfg.get("server") or os.path.join(
+            os.path.dirname(os.path.abspath(self.cfg["python"])), "pyavrocd")
+        if os.path.exists(server):
+            env["PYAVROCD"] = server
+        return env
+
     def start_server(self, logpath: str):
         """Start the GDB server the e2e tests connect to, keeping its output."""
         where = os.path.join(self.cfg["repo"], "tests", "end-to-end")
         log = open(logpath, "w", encoding="utf-8", errors="replace")   # closed in stop_server
         proc = subprocess.Popen(["bash", os.path.join(where, "serv.sh"), "info"], cwd=where,
-                                stdout=log, stderr=subprocess.STDOUT)
+                                env=self.server_env(), stdout=log, stderr=subprocess.STDOUT)
         proc.logfile = log
         return proc
 
