@@ -1,4 +1,4 @@
-# Will only  be used for boards with autopc, i.e., the Xplained Mini boards
+# Only used for the Xplained Mini boards
 TARGET = $(lastword $(subst /, ,$(CURDIR)))
 
 
