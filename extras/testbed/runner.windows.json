@@ -1,8 +1,8 @@
 {
- "host": "win",
- "shared": "Z:\\testbed",
- "repo": "C:\\Users\\nebel\\GitHub\\PyAvrOCD",
- "python": "C:\\Users\\nebel\\GitHub\\PyAvrOCD\\.venv\\Scripts\\python.exe",
+ "host": "win-cores",
+ "shared": "Z:\\",
+ "repo": "C:\\Users\\nebel\\GitHub\\XMiniCore",
+ "python": "python",
  "run": [],
- "actions": ["info", "checkout", "pytest", "lint", "typecheck"]
+ "actions": ["info", "sync", "corebuild", "corehooks"]
 }

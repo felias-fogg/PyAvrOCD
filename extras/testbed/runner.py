@@ -35,6 +35,10 @@ HEARTBEAT_SECONDS = 10
 # looking perfectly healthy from its own side.
 MARKER = ".testbed"
 
+# The helper scripts live next to this file, not in whatever repository a host
+# was pointed at: a host that tests a core has no extras/testbed of its own.
+HERE = os.path.dirname(os.path.abspath(__file__))
+
 
 
 def readable(command: list) -> str:
@@ -78,7 +82,7 @@ def read_json(path: str) -> dict:
 def act_info(cfg: dict, params: dict) -> tuple:
     """Report what this machine is and which tools it has."""
     del params
-    script = os.path.join(cfg["repo"], "extras", "testbed", "hostinfo.py")
+    script = os.path.join(HERE, "hostinfo.py")
     return ([[cfg["python"], script],
              ["git", "log", "--oneline", "-1"]], cfg["repo"])
 
@@ -181,7 +185,7 @@ def act_sync(cfg: dict, params: dict) -> tuple:
     matches no revision, which is why the git status at the end is part of the output.
     """
     staging = os.path.join(cfg["shared"], "staging", cfg["host"])
-    script = os.path.join(cfg["repo"], "extras", "testbed", "syncfiles.py")
+    script = os.path.join(HERE, "syncfiles.py")
     # 'restore' has to remove what an earlier sync left behind completely: files it
     # changed, and files it added, which would otherwise block the next checkout.
     # 'git clean -fd' leaves ignored files such as build output alone.

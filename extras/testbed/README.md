@@ -156,10 +156,18 @@ For hardware tests the usual udev rule for the debugger and membership in
 
 ### On Windows
 
-Map the share to a drive letter (`net use Z: \\macbook.local\testbed`), clone the
-branch under test (`git clone -b v2 ...`), create a virtual environment, then:
+Map the share to a drive letter. Use the Mac's address rather than its name:
+`.local` names are resolved by mDNS, which Windows only does when the network
+profile is private and the firewall lets UDP 5353 through, and the failure looks
+like `System error 67`.
 
-    python extras\testbed\runner.py --config runner.json
+    net use Z: \\192.168.1.23\testbed /user:nebel
+
+Clone the branch under test (`git clone -b v2 ...`), create a virtual
+environment, then start the runner. It can be started straight from the share,
+which saves copying it and keeps it up to date with what the other hosts run:
+
+    python Z:\runner.py --config runner.json
 
 `runner.windows.json` is a starting point and needs the same editing. Note the
 doubled backslashes — JSON needs them.
