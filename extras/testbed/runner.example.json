@@ -1,8 +1,8 @@
 {
  "host": "raspi",
- "shared": "/home/pi/testbed",
- "repo": "/home/pi/GitHub/PyAvrOCD",
- "python": "/home/pi/GitHub/PyAvrOCD/.venv/bin/python",
+ "shared": "/home/nebel/testbed",
+ "repo": "/home/nebel/GitHub/PyAvrOCD",
+ "python": "/home/nebel/GitHub/PyAvrOCD/.venv/bin/python",
  "run": [],
  "actions": ["info", "checkout", "pytest", "lint", "typecheck", "e2e"]
 }
