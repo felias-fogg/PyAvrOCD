@@ -71,12 +71,20 @@ jobs:
           fi
           echo "Release name and preloaded i686 binary have identical version numbers; we continue."
 
-      - name: Run type checks linting and unit-tests
+      # Also three steps, for a different reason than in unit-tests.yml: here
+      # all three are meant to stop the release, but a single run block would
+      # report only the first of them. With !cancelled() each one runs and the
+      # job still fails, so one release attempt tells you everything that is
+      # wrong rather than one thing at a time.
+      - name: Type check
         if: ${{ github.event.release.tag_name != '' }}
-        run: |
-          mypy .
-          pylint pyavrocd
-          pytest tests
+        run: mypy .
+      - name: Lint
+        if: ${{ !cancelled() && github.event.release.tag_name != '' }}
+        run: pylint pyavrocd
+      - name: Unit tests
+        if: ${{ !cancelled() && github.event.release.tag_name != '' }}
+        run: pytest tests
 
   build-binaries:
     needs: check
