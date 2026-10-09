@@ -608,7 +608,7 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     startup_helper_prog(args, logger)
     return run_server(server, logger)
 
-def main() -> str:
+def main() -> int:
     """
     This generates the root logger and forwards it as well as the arguments to the startup function
     """
