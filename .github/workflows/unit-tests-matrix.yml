@@ -1,6 +1,15 @@
 name: Unit test matrix
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:   # to run it manually
+  # Once a week, so that the day a dependency drops Python 3.10 (or 3.14 breaks
+  # something) shows up here and not in a user's report. Two things about cron
+  # in Actions: a schedule only ever runs the copy of this file on the default
+  # branch, and GitHub disables scheduled workflows in a repository that has
+  # seen no activity for 60 days. The minute is not 0 on purpose -- most
+  # schedules sit on the hour, and runs there get queued behind them.
+  schedule:
+    - cron: '37 5 * * 1'   # Mondays, 05:37 UTC
 
 jobs:
   check-all:
