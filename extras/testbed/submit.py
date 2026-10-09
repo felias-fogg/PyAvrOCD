@@ -17,8 +17,24 @@ import tempfile
 import time
 from datetime import datetime
 
-ACTIONS = ("info", "checkout", "pytest", "lint", "typecheck", "e2e")
-LIST_PARAMS = ("tests",)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from runner import ACTIONS as REPERTOIRE    # pylint: disable=wrong-import-position
+
+ACTIONS = tuple(sorted(REPERTOIRE))         # one list, and the runner owns it
+LIST_PARAMS = ("tests", "urls")
+
+
+def as_value(text: str):
+    """
+    What the runner should see. A job is JSON, so 'true' and '1' have to arrive as
+    a boolean and a number rather than as the words for them.
+    """
+    if text.lower() in ("true", "false"):
+        return text.lower() == "true"
+    try:
+        return int(text)
+    except ValueError:
+        return text
 
 
 def parse_params(pairs: list) -> dict:
@@ -28,7 +44,7 @@ def parse_params(pairs: list) -> dict:
         if "=" not in pair:
             raise SystemExit(f"--param needs key=value, got '{pair}'")
         key, value = pair.split("=", 1)
-        params[key] = value.split(",") if key in LIST_PARAMS else value
+        params[key] = value.split(",") if key in LIST_PARAMS else as_value(value)
     return params
 
 

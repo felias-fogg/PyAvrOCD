@@ -33,12 +33,12 @@ runner can only ever do these six things:
 
 | action      | what it does                                | parameters               |
 |-------------|---------------------------------------------|--------------------------|
-| `info`      | `hostinfo.py`: tools with versions, modules  | –                        |
+| `info`      | `hostinfo.py`: tools with versions, modules  | `python`                 |
 | `checkout`  | `git fetch`, then check out a revision       | `rev`, required          |
-| `pytest`    | the unit test suite                          | –                        |
-| `lint`      | pylint over `pyavrocd` and `tests`           | –                        |
-| `typecheck` | mypy over `pyavrocd`                         | –                        |
-| `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose`, `baud` |
+| `pytest`    | the unit test suite                          | `python`                 |
+| `lint`      | pylint over `pyavrocd` and `tests`           | `python`                 |
+| `typecheck` | mypy over `pyavrocd`                         | `python`                 |
+| `e2e`       | `rune2e.py` against attached hardware        | `device`, `tests`, `clock`, `spec`, `verbose`, `baud`, `python` |
 | `sync`      | copy staged files into the repository        | `restore`                |
 | `cores`     | install or update an Arduino core            | `core`, `urls`           |
 | `corebuild` | compile a core for its boards and menus      | `prefix`, `core`, `coverage`, `max-builds`, `menus`, `work-dir`, `all-menus`, `timeout` |
@@ -93,6 +93,21 @@ later `checkout` refuses to work, because it will not overwrite them. The action
 because after a sync the working tree matches no revision: a result from it shows
 whether something works, not that a given commit works. Once it does work, commit
 it and put the machine back on a revision with `checkout`.
+
+### The `python` parameter
+
+Every action that runs Python takes it, and without it the host uses the
+interpreter from its own configuration. With it, the job says which one:
+
+```
+python3 submit.py --shared ~/testbed --host raspi --action pytest \
+        --param python=/opt/py310/bin/python
+```
+
+That is how the oldest supported version gets tested on a machine whose own
+Python is the newest -- the host keeps one virtual environment per version, and
+the job picks. For `e2e` the server is started from the same environment as the
+test, so an old client is not quietly measured against the newest server.
 
 ## Setting it up
 
@@ -201,7 +216,7 @@ the log:
 To follow what the machines are doing, `watch.py` prints the output of every job
 as it is written, and says when a host goes idle or stops beating:
 
-    python3 extras/testbed/watch.py --shared ~/GitHub/DEBUG/testbed
+    python3 extras/testbed/watch.py --shared ~/GitHub/DEBUG/PyAvrOCD/extras/testbed
 
 It reads the shared folder and nothing else, so it can run anywhere the folder is
 mounted, next to a `submit.py` in another window or on its own.

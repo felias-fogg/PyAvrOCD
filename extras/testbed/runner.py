@@ -96,33 +96,41 @@ def kill_tree(proc) -> None:
 # run in. Parameters become separate arguments, never a shell string.
 # --------------------------------------------------------------------------- #
 
+def interpreter(cfg: dict, params: dict) -> str:
+    """
+    Which Python runs the job. The host's own by default, and a different one when
+    the job names it -- that is how a run against the oldest supported version
+    happens on a machine whose default Python is the newest: the host keeps one
+    virtual environment per version, and the job says which to use.
+    """
+    return str(params.get("python") or cfg["python"])
+
+
 def act_info(cfg: dict, params: dict) -> tuple:
     """Report what this machine is and which tools it has."""
-    del params
     script = os.path.join(HERE, "hostinfo.py")
-    return ([[cfg["python"], script],
+    return ([[interpreter(cfg, params), script],
              ["git", "log", "--oneline", "-1"]], cfg["repo"])
 
 
 def act_pytest(cfg: dict, params: dict) -> tuple:
     """Run the unit test suite."""
-    del params
-    return ([cfg["run"] + [cfg["python"], "-m", "pytest", "-q", "-p", "no:cacheprovider"]],
+    return ([cfg["run"] + [interpreter(cfg, params), "-m", "pytest", "-q",
+                           "-p", "no:cacheprovider"]],
             cfg["repo"])
 
 
 def act_lint(cfg: dict, params: dict) -> tuple:
     """Run pylint over package and tests."""
-    del params
-    return ([cfg["run"] + [cfg["python"], "-m", "pylint", "-rn", "-sn",
+    return ([cfg["run"] + [interpreter(cfg, params), "-m", "pylint", "-rn", "-sn",
                            "--disable=similarities,import-error", "pyavrocd", "tests"]],
             cfg["repo"])
 
 
 def act_typecheck(cfg: dict, params: dict) -> tuple:
     """Run mypy over the package."""
-    del params
-    return ([cfg["run"] + [cfg["python"], "-m", "mypy", "pyavrocd"]], cfg["repo"])
+    return ([cfg["run"] + [interpreter(cfg, params), "-m", "mypy", "pyavrocd"]],
+            cfg["repo"])
 
 
 def act_e2e(cfg: dict, params: dict) -> tuple:
@@ -131,7 +139,7 @@ def act_e2e(cfg: dict, params: dict) -> tuple:
     server around the test (see run_job). The e2e framework uses pexpect, so this
     action is not available under Windows.
     """
-    cmd = cfg["run"] + [cfg["python"], "rune2e.py", "-d", str(params["device"])]
+    cmd = cfg["run"] + [interpreter(cfg, params), "rune2e.py", "-d", str(params["device"])]
     for test in params.get("tests", []):
         cmd += ["-t", str(test)]
     if params.get("verbose"):
@@ -202,20 +210,29 @@ def act_corehooks(cfg: dict, params: dict) -> tuple:
 
 def act_sync(cfg: dict, params: dict) -> tuple:
     """
-    Copy what has been staged for this host in the shared folder into the repository,
-    so that a change can be tried without a commit and a push. The working tree then
-    matches no revision, which is why the git status at the end is part of the output.
+    Copy what has been staged for this host in the shared folder into a repository
+    on it, so that a change can be tried without a commit and a push. The working
+    tree then matches no revision, which is why the git status at the end is part
+    of the output.
+
+    Files for the host's own repository sit directly in staging/<host>. A host may
+    have more than one checkout on it, a core beside PyAvrOCD say; 'target' names
+    where the files go and 'from' the subfolder of staging they come from, so that
+    the two do not get in each other's way.
     """
-    staging = os.path.join(cfg["shared"], "staging", cfg["host"])
+    repo = str(params.get("target") or cfg["repo"])
+    staging = os.path.join(cfg["shared"], "staging", cfg["host"],
+                           str(params.get("from", "")))
     script = os.path.join(HERE, "syncfiles.py")
     # 'restore' has to remove what an earlier sync left behind completely: files it
     # changed, and files it added, which would otherwise block the next checkout.
     # 'git clean -fd' leaves ignored files such as build output alone.
     commands = ([["git", "restore", "."], ["git", "clean", "-fd"]]
                 if params.get("restore") else [])
-    commands += [[cfg["python"], script, staging, cfg["repo"]],
-                 ["git", "status", "--short"]]
-    return (commands, cfg["repo"])
+    commands += [[cfg["python"], script, staging, repo]]
+    if os.path.isdir(os.path.join(repo, ".git")):   # a target need not be a checkout
+        commands += [["git", "status", "--short"]]
+    return (commands, repo)
 
 
 ACTIONS = {"info": act_info, "pytest": act_pytest, "lint": act_lint,
@@ -265,24 +282,26 @@ class Runner:
 
     # -- execution ---------------------------------------------------------- #
 
-    def server_env(self) -> dict:
+    def server_env(self, params: dict) -> dict:
         """
         Tell serv.sh which pyavrocd to start. Without this it falls back to poetry,
-        which not every machine has.
+        which not every machine has. The server has to come from the same
+        environment as the test -- a job that asks for an older Python and then
+        talks to the newest server would measure nothing.
         """
         env = os.environ.copy()
         server = self.cfg.get("server") or os.path.join(
-            os.path.dirname(os.path.abspath(self.cfg["python"])), "pyavrocd")
+            os.path.dirname(os.path.abspath(interpreter(self.cfg, params))), "pyavrocd")
         if os.path.exists(server):
             env["PYAVROCD"] = server
         return env
 
-    def start_server(self, logpath: str):
+    def start_server(self, logpath: str, params: dict):
         """Start the GDB server the e2e tests connect to, keeping its output."""
         where = os.path.join(self.cfg["repo"], "tests", "end-to-end")
         log = open(logpath, "w", encoding="utf-8", errors="replace")   # closed in stop_server
         proc = subprocess.Popen(["bash", os.path.join(where, "serv.sh"), "info"], cwd=where,
-                                env=self.server_env(), stdout=log, stderr=subprocess.STDOUT)
+                                env=self.server_env(params), stdout=log, stderr=subprocess.STDOUT)
         proc.logfile = log
         return proc
 
@@ -314,15 +333,16 @@ class Runner:
             return rejected(f"action '{action}' does not exist")
         if action not in allowed:
             return rejected(f"action '{action}' is not in this host's actions list")
+        params = job.get("params", {})
         try:
-            commands, cwd = ACTIONS[action](self.cfg, job.get("params", {}))
+            commands, cwd = ACTIONS[action](self.cfg, params)
         except KeyError as err:
             return rejected(f"parameter {err} is missing for action '{action}'")
 
         timeout = int(job.get("timeout", 900))
         outdir = os.path.dirname(logpath)
         os.makedirs(outdir, exist_ok=True)
-        server = (self.start_server(os.path.join(outdir, "server.log"))
+        server = (self.start_server(os.path.join(outdir, "server.log"), params)
                   if action == "e2e" else None)
         started, code, status = now(), None, "ok"
         try:
