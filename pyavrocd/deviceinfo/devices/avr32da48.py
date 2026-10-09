@@ -1,3 +1,15 @@
+# Device description for avr32da48, generated from Microchip's AVR32DA48.atdf by
+# pyavrocd/deviceinfo/harvest.py; the SVD part is added by addsvd.py.
+#
+# The ATDF and SVD data are Copyright (c) 2026 Microchip Technology Inc. and are
+# licensed under the Apache License, Version 2.0. The license text is in
+# LICENSE-APACHE-2.0 in the root of this distribution, the notice as it ships
+# inside the device packs in extras/atdf/LICENSE.microchip. This file is a
+# modified extract of that data: only the fields PyAvrOCD needs, restructured as
+# a Python dictionary.
+#
+# Do not edit by hand. A correction belongs in a patch for the ATDF file, see
+# extras/atdf/README.md.
 
 from pymcuprog.deviceinfo.eraseflags import ChiperaseEffect
 

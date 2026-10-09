@@ -732,6 +732,26 @@ def harvest_from_file(filename : str) -> tuple[ str, list[str]]:
     output += "    'interface': '" + '+'.join(interfaces) + "'\n"
     return output, crit_fields
 
+# Every generated device file carries this. The data comes from Microchip's ATDF
+# files, which are under Apache-2.0, and section 4(b) of that license asks a
+# modified file to say that it was modified. It also saves the next reader the
+# question of where these numbers come from and where a correction belongs.
+NOTICE = """\
+# Device description for {device}, generated from Microchip's {source} by
+# pyavrocd/deviceinfo/harvest.py; the SVD part is added by addsvd.py.
+#
+# The ATDF and SVD data are Copyright (c) 2026 Microchip Technology Inc. and are
+# licensed under the Apache License, Version 2.0. The license text is in
+# LICENSE-APACHE-2.0 in the root of this distribution, the notice as it ships
+# inside the device packs in extras/atdf/LICENSE.microchip. This file is a
+# modified extract of that data: only the fields PyAvrOCD needs, restructured as
+# a Python dictionary.
+#
+# Do not edit by hand. A correction belongs in a patch for the ATDF file, see
+# extras/atdf/README.md.
+"""
+
+
 def main() -> None:
     """
     Main function for the harvest utility
@@ -767,7 +787,9 @@ def main() -> None:
         print("Parsing %s" % os.path.splitext(file)[0])
         dict_content, _ = harvest_from_file(os.path.join(path, file))
         if arguments.interface is None or arguments.interface.lower() in dict_content.lower():
-            content = "\nfrom pymcuprog.deviceinfo.eraseflags import ChiperaseEffect\n\n"
+            content = NOTICE.format(device=os.path.splitext(file)[0].lower(),
+                                    source=file)
+            content += "\nfrom pymcuprog.deviceinfo.eraseflags import ChiperaseEffect\n\n"
             content += "DEVICE_INFO = {{\n{}}}".format(dict_content)
             if arguments.output_path:
                 with open(os.path.join(arguments.output_path,(os.path.splitext(file)[0].lower() + '.py')),
