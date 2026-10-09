@@ -104,3 +104,38 @@ jobs:
           valColorRange: ${{ env.PYCOV }}
           maxColorRange: 90.0
           minColorRange: 30.0
+
+  # The job above tests the newest Python. This one tests the oldest the project
+  # says it supports, because that is the one nobody develops on and therefore
+  # the one that breaks unnoticed. Two deliberate differences from the job above:
+  # the version is read out of pyproject.toml rather than written here, so that
+  # raising the floor does not leave a stale number behind; and the install goes
+  # through pip rather than poetry, resolving afresh instead of from the lock
+  # file -- that is what a user gets, and it is the only way the day a dependency
+  # drops the floor version becomes visible here.
+  floor:
+    defaults:
+      run:
+        shell: bash
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+      - name: Read the lowest supported version out of pyproject.toml
+        id: floor
+        run: |
+          VER=$(grep -oE 'requires-python *= *"[^"]*"' pyproject.toml \
+                | grep -oE '>=3\.[0-9]+' | cut -c3-)
+          test -n "$VER" || { echo "no >=3.x in requires-python"; exit 1; }
+          echo "Untergrenze laut pyproject.toml: $VER"
+          echo "version=$VER" >> $GITHUB_OUTPUT
+      - name: Set up python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ steps.floor.outputs.version }}
+      - name: Install the package the way a user would
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+      - name: Unit tests
+        run: pytest -q
