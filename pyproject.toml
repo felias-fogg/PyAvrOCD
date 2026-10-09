@@ -118,6 +118,23 @@ max-positional-arguments=7
 [tool.mypy]
 disallow_untyped_defs = true
 disable_error_code = ["import-untyped"]
+# Only effective when mypy walks the tree itself (mypy .), not for file names
+# given on the command line -- which is how pre-commit calls it. dist, build and
+# cov are local build output; staging holds the copies the testbed syncs to its
+# hosts. Both contain second copies of modules that already exist in the tree,
+# and a duplicate module name stops mypy before it checks anything at all.
+exclude = [
+    '^(dist|build|cov|draft)/',
+    '^extras/testbed/staging/',
+    # 394 MB of generated device descriptions, each one a single huge literal.
+    # mypy needs 1.2 GB for the largest file alone, so holding all of them in one
+    # build does not fit; ignore_errors would not help, it suppresses the messages
+    # but still analyses the files. Excluding them only skips discovery: the three
+    # that something imports by name (alldevices, attiny85, attiny3217) are still
+    # checked, the rest is reached through importlib, which mypy cannot follow
+    # anyway.
+    '^pyavrocd/deviceinfo/devices/',
+]
 
 [[tool.mypy.overrides]]
 module = "tests.*"
@@ -125,6 +142,10 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = "e2e_tests"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "extras.testbed.*"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
