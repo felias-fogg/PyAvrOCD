@@ -44,3 +44,12 @@ extras/binaries/*/include/
 extras/binaries/*/lib/*.a
 extras/binaries/*/lib/pkgconfig/
 extras/binaries/*/lib/libsimavr*.so
+
+# The i686 Linux client is built in the release workflow now, in a 32-bit
+# Debian container on an ordinary x86_64 runner, so it no longer has to sit in
+# the repository -- this was the one folder that added an 11 MB blob to the
+# history with every release. The VERSION file beside it was a reminder to
+# rebuild the client by hand; nothing ever read it.
+extras/binaries/i686-linux-gnu/pyavrocd
+extras/binaries/i686-linux-gnu/pyavrocd-util/
+extras/binaries/i686-linux-gnu/VERSION

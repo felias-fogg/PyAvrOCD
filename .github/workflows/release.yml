@@ -16,6 +16,19 @@ jobs:
         shell: bash
     runs-on: "ubuntu-24.04"
     steps:
+      # Before anything is checked out or built: a release is cut from main. The
+      # local prepare_release.sh says the same, but that is a pre-flight check
+      # one runs by hand, while a tag can be created in the web interface on any
+      # branch -- and then the whole release would ship whatever that branch
+      # happens to contain. target_commitish is what the tag was created on, a
+      # branch name or, if it was made on a commit, that commit's SHA, which is
+      # not main either and fails here just as well.
+      - name: A release comes from main
+        if: ${{ github.event.release.tag_name != '' }}
+        run: |
+          echo "Release was created on: ${{ github.event.release.target_commitish }}"
+          test "${{ github.event.release.target_commitish }}" = main
+
       - name: Check out repository
         if: ${{ github.event.release.tag_name != '' }}
         uses: actions/checkout@v5
@@ -32,10 +45,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .  # Install dependencies
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install zlib1g:i386
-          sudo apt-get install libc6:i386
 
       - name: Test release against system version
         if: ${{ github.event.release.name != '' }}
@@ -55,21 +64,6 @@ jobs:
              exit 1
           fi
           echo "Release and system version are identical, now we continue"
-
-      - name: Check presence of correct i686 Linux version
-        if: ${{ github.event.release.tag_name != '' }}
-        run: |
-          I686_VER=$(extras/binaries/i686-linux-gnu/pyavrocd -V)
-          I686_VERS=v${I686_VER#*version }
-          I686_VERSTRING=${I686_VERS%rc*}
-          REL_NAME=${{ github.event.release.name }}
-          echo "i686 Linux system version string: $I686_VERSTRING"
-          echo "Github release name: $REL_NAME"
-          if [[ "$REL_NAME" != "$I686_VERSTRING" ]]; then
-             echo "Wrong i686 version in repo!"
-             exit 1
-          fi
-          echo "Release name and preloaded i686 binary have identical version numbers; we continue."
 
       # Also three steps, for a different reason than in unit-tests.yml: here
       # all three are meant to stop the release, but a single run block would
@@ -192,8 +186,80 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
+  build-i686-linux-binary:
+    needs: check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build in a 32-bit Debian container
+        # PyInstaller cannot cross-compile: it packs the interpreter it is
+        # running under, so a 32-bit client needs a 32-bit Python on a machine
+        # that executes 32-bit code. GitHub has no i686 Linux runner -- but an
+        # x86_64 runner runs i386 code natively, so a container is enough and no
+        # QEMU is involved, unlike the armhf job above.
+        #
+        # The container has to be Debian: Ubuntu reduced i386 to a handful of
+        # library packages and has no python3 for it. Bookworm brings Python
+        # 3.11, and GLIBC 2.36 is the floor that follows from it.
+        #
+        # The script goes in through stdin ('bash -s'), which keeps it free of
+        # the quoting a 'bash -c' string would need. -e stops at the first
+        # failure, -x puts every command in the log.
+        run: |
+          docker run --rm -i --platform linux/386 \
+            -v "$PWD":/src -w /src \
+            i386/debian:bookworm bash -exs <<'SCRIPT'
+          uname -m
+          apt-get update
+          # Python plus a compiler, and no more than that: hidapi arrives as a
+          # prebuilt manylinux_2_28_i686 wheel, so no libusb or libudev headers
+          # are needed, and svd2py is pure Python and pulls no lxml. What does
+          # get built from source is markupsafe and pyyaml.
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            python3 python3-venv python3-dev build-essential
+          python3 --version
+          ldd --version | head -1
+          python3 -m venv /tmp/env
+          /tmp/env/bin/pip install --upgrade pip
+          /tmp/env/bin/pip install .
+          rm -rf dist build
+          /tmp/env/bin/pyinstaller -y pyavrocd.spec
+          # Does the packed client start? -V answers from the frozen interpreter,
+          # the two lists walk the device and tool tables, which is where a
+          # missing hidden import shows up.
+          ./dist/pyavrocd/pyavrocd -V
+          ./dist/pyavrocd/pyavrocd -d '?' -t '?'
+          SCRIPT
+
+      - name: Hand the files back
+        # The container runs as root, so everything it wrote belongs to root on
+        # the host too, and the upload step could not read it.
+        run: sudo chown -R "$(id -u):$(id -g)" dist build
+
+      - name: What it demands of the system
+        # Measured, not assumed. readelf reads i386 ELF on an x86_64 host
+        # without further ado.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          readelf -d dist/pyavrocd/pyavrocd | grep NEEDED || echo "(nothing)"
+          echo "highest glibc requirement over everything shipped:"
+          find dist/pyavrocd -type f -print0 \
+            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+            | sort -uV | tail -1
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: i686-linux-gnu
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error
+
   build-assets:
-    needs: [build-binaries, build-armhf-binary]
+    needs: [build-binaries, build-armhf-binary, build-i686-linux-binary]
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
@@ -240,6 +306,12 @@ jobs:
         with:
           name: x86_64-linux-gnu
           path: extras/binaries/x86_64-linux-gnu
+
+      - name: Download i686-linux-gnu
+        uses: actions/download-artifact@v7
+        with:
+          name: i686-linux-gnu
+          path: extras/binaries/i686-linux-gnu
 
       - name: Packing
         run: bash extras/packer.sh
