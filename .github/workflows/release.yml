@@ -312,6 +312,13 @@ jobs:
             cd ../../..
             bash extras/gdb-simavr-test.sh extras/binaries/arm-linux-gnueabihf
 
+      - name: Hand the files back
+        # dist was created inside the QEMU image and copied out by the action,
+        # so on the host it belongs to root and the measurement step cannot
+        # write its SYSTEM_BASELINE into it. Reading worked, which is why this
+        # only showed up once something wrote.
+        run: sudo chown -R "$(id -u):$(id -g)" dist
+
       - name: What it demands of the system
         # On the host, not in the image: readelf parses ELF directly instead of
         # going through a target backend, so an armhf tree can be read on x86.
