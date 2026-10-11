@@ -73,6 +73,16 @@ for dir in binaries/*; do
                     echo "Unknown OS type: $type"
                     exit 1
                 fi
+		# What the build measured about itself, written by the release
+		# workflow's floor check. Missing -- an older artifact, or a folder
+		# filled by hand -- means the field is left out rather than guessed.
+		if [ -f $dir/SYSTEM_BASELINE ]; then
+		    BASEFRAG="\"systemBaseline\": \"$(cat $dir/SYSTEM_BASELINE)\", "
+		    echo "System baseline: $(cat $dir/SYSTEM_BASELINE)"
+		else
+		    BASEFRAG=""
+		    echo "No SYSTEM_BASELINE in $dir, package.json will not carry one"
+		fi
 		echo "Packing tools for: $type"
 		rm -rf tools
                 rm -rf tool
@@ -85,7 +95,7 @@ for dir in binaries/*; do
                 rm -rf tool
                 rm -f ${type}.tar.gz
                 popd
-                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tools/package.json
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", ${BASEFRAG}\"system\": \"${SYSTEM}\"} > tools/package.json
 		cp -r $dir/* tools/
 		# The simavr archives come from 'make install-simavr', so they also
 		# carry its development files: the headers, the static library, the
@@ -103,7 +113,7 @@ for dir in binaries/*; do
 		tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
                 cp -r $dir/pyavrocd* tool/
-                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", \"system\": \"${SYSTEM}\"} > tool/package.json
+                echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", ${BASEFRAG}\"system\": \"${SYSTEM}\"} > tool/package.json
                 rm -rf tool/pyavrocd-util/svd
                 if [[ $type == *"linux"* ]];then
                     rm -rf tool/pyavrocd-util

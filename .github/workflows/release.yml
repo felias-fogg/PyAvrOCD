@@ -210,6 +210,8 @@ jobs:
                 exit 1
               fi
               echo "OK: nothing demands more than GLIBC $want"
+              # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+              echo "glibc $want" > dist/pyavrocd/SYSTEM_BASELINE
               ldd --version | sed -n 1p
               ;;
             macOS)
@@ -226,6 +228,8 @@ jobs:
                 exit 1
               fi
               echo "OK: nothing demands more than macOS $want"
+              # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+              echo "macOS $want" > dist/pyavrocd/SYSTEM_BASELINE
               echo "--- where the libusb beside the binary comes from ---"
               otool -L dist/pyavrocd/pyavrocd-util/libusb-1.0.0.dylib 2>/dev/null | sed -n '1,5p' || true
               ;;
@@ -234,6 +238,7 @@ jobs:
               # Windows 10 since 3.9; there is nothing to measure that would
               # say otherwise.
               echo "bundled CPython: $(python -V), floor is Windows 10"
+              echo "Windows 10" > dist/pyavrocd/SYSTEM_BASELINE
               ;;
           esac
       - name: Upload artifact
@@ -288,6 +293,21 @@ jobs:
             . ./env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
+            # Can the two shipped clients debug together on armhf? Only answerable
+            # in here: emulation is the only armhf userland available. avr-gdb comes
+            # from its own release, simavr from extras/binaries -- the same two files
+            # packer.sh puts side by side -- and the session itself is the assertion.
+            # The matrix job clients-debug-test does this for the other platforms,
+            # natively; armhf cannot be done natively anywhere, hence the ride along
+            # with a job that already pays for QEMU.
+            sudo apt install -y curl libncursesw6 libtinfo6
+            cd extras/binaries/arm-linux-gnueabihf
+            curl -sSL -o tool.tar.gz https://github.com/felias-fogg/avr-gdb/releases/latest/download/arm-linux-gnueabihf.tar.gz
+            tar xzf tool.tar.gz
+            mv tool/avr-gdb* .
+            rm -rf tool tool.tar.gz
+            cd ../../..
+            bash extras/gdb-simavr-test.sh extras/binaries/arm-linux-gnueabihf
 
       - name: What it demands of the system
         # On the host, not in the image: readelf parses ELF directly instead of
@@ -314,6 +334,8 @@ jobs:
             exit 1
           fi
           echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want, ARMv6 hard float" > dist/pyavrocd/SYSTEM_BASELINE
           echo "--- ARM ABI of the bootloader ---"
           readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
       - name: Upload artifact
@@ -403,6 +425,8 @@ jobs:
             exit 1
           fi
           echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want" > dist/pyavrocd/SYSTEM_BASELINE
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -412,14 +436,96 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
 
+  clients-debug-test:
+    # Can the two programs we ship actually debug together, on each platform?
+    # Nothing is built here: the test uses avr-gdb from its own release and the
+    # simavr committed in extras/binaries -- the same two files packer.sh puts
+    # side by side. So this job needs no artifacts, runs in parallel with the
+    # builds and works on a manual run as well.
+    #
+    # "Built from the same sources" is not an argument for these two: simavr's
+    # arm builds did lose DWARF support once because the image's libdwarf was
+    # too old, and avr-gdb is linked differently on every platform. Whether
+    # avr-gdb starts at all (on Linux it needs ncurses from the system), whether
+    # simavr finds its bundled libelf through the RPATH, and whether the DWARF
+    # information can be read -- all of that is per platform.
+    #
+    # Two platforms are missing on purpose. x86_64-linux-gnu, because
+    # build-assets runs the same test there, on the files packer.sh has just
+    # packed. And arm-linux-gnueabihf, because it has no native runner
+    # anywhere: that one runs inside the QEMU image of build-armhf-binary,
+    # which pays for the emulation anyway.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: aarch64-linux-gnu
+            runner: ubuntu-22.04-arm
+          - os: i686-linux-gnu
+            runner: ubuntu-22.04
+          - os: arm64-apple-darwin
+            runner: macos-14
+          - os: x86_64-apple-darwin
+            runner: macos-14-large
+          - os: x86_64-mingw32
+            runner: windows-2022
+          - os: i686-mingw32
+            runner: windows-2022
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Fetch avr-gdb for this triple
+        # The same archive packer.sh fetches, and it lands in the same place:
+        # beside bin/simavr in the triple folder.
+        run: |
+          cd "extras/binaries/${{ matrix.os }}"
+          curl -sSL -o tool.tar.gz \
+            "https://github.com/felias-fogg/avr-gdb/releases/latest/download/${{ matrix.os }}.tar.gz"
+          tar xzf tool.tar.gz
+          mv tool/avr-gdb* .
+          rm -rf tool tool.tar.gz
+          ls -la
+
+      - name: What avr-gdb needs from the system (Linux)
+        # avr-gdb is linked against the system ncurses -- everything else is
+        # static. The runners usually have it; asking costs ten seconds and
+        # turns a confusing loader error into an obvious one.
+        if: ${{ matrix.os == 'aarch64-linux-gnu' }}
+        run: sudo apt-get update && sudo apt-get install -y libncursesw6 libtinfo6
+
+      - name: Debug session
+        if: ${{ matrix.os != 'i686-linux-gnu' }}
+        run: bash extras/gdb-simavr-test.sh "extras/binaries/${{ matrix.os }}"
+
+      - name: Debug session (32-bit container)
+        # i686 needs a 32-bit userland, and an x86_64 runner executes i386 code
+        # natively, so a container is enough -- the same trick the i686 build
+        # uses. 'file' is in the list because the test reports with it.
+        if: ${{ matrix.os == 'i686-linux-gnu' }}
+        run: |
+          docker run --rm -i --platform linux/386 \
+            -v "$PWD":/src -w /src \
+            i386/debian:bookworm bash -exs <<'SCRIPT'
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libncursesw6 libtinfo6 file
+          bash extras/gdb-simavr-test.sh extras/binaries/i686-linux-gnu
+          SCRIPT
+
   build-assets:
-    needs: [build-binaries, build-armhf-binary, build-i686-linux-binary]
+    needs: [build-binaries, build-armhf-binary, build-i686-linux-binary, clients-debug-test]
     # A skipped dependency skips the dependent job as well, so the armhf job
     # being optional has to be spelled out here: the other two must have
     # succeeded, and armhf may have succeeded or been skipped.
     if: ${{ !cancelled()
             && needs.build-binaries.result == 'success'
             && needs.build-i686-linux-binary.result == 'success'
+            && needs.clients-debug-test.result == 'success'
             && (needs.build-armhf-binary.result == 'success'
                 || needs.build-armhf-binary.result == 'skipped') }}
     runs-on: ubuntu-24.04

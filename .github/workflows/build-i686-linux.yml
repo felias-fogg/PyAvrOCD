@@ -98,6 +98,8 @@ jobs:
             exit 1
           fi
           echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want" > dist/pyavrocd/SYSTEM_BASELINE
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

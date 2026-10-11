@@ -38,6 +38,21 @@ jobs:
             . ./env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
+            # Can the two shipped clients debug together on armhf? Only answerable
+            # in here: emulation is the only armhf userland available. avr-gdb comes
+            # from its own release, simavr from extras/binaries -- the same two files
+            # packer.sh puts side by side -- and the session itself is the assertion.
+            # The matrix job clients-debug-test does this for the other platforms,
+            # natively; armhf cannot be done natively anywhere, hence the ride along
+            # with a job that already pays for QEMU.
+            sudo apt install -y curl libncursesw6 libtinfo6
+            cd extras/binaries/arm-linux-gnueabihf
+            curl -sSL -o tool.tar.gz https://github.com/felias-fogg/avr-gdb/releases/latest/download/arm-linux-gnueabihf.tar.gz
+            tar xzf tool.tar.gz
+            mv tool/avr-gdb* .
+            rm -rf tool tool.tar.gz
+            cd ../../..
+            bash extras/gdb-simavr-test.sh extras/binaries/arm-linux-gnueabihf
             ls -la .
             ls -la dist
 
@@ -66,6 +81,8 @@ jobs:
             exit 1
           fi
           echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want, ARMv6 hard float" > dist/pyavrocd/SYSTEM_BASELINE
           echo "--- ARM ABI of the bootloader ---"
           readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
       - name: Upload artifact
