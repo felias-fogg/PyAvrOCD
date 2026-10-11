@@ -1,6 +1,6 @@
 # Binaries for avrocd-tools
 
-The binaries in this folder provide debug support for AVR chips to be used in the Arduino IDE 2. For each host architecture, there is an avr-gdb program, a simavr program, and a  PyAvrOCD server. The avr-gdb programs have version 17.2.2 and have been generated using the `avr-gdb-build.sh` script in the [avr-gdb repo](https://github.com/felias-fogg/avr-gdb).
+The binaries in this folder provide debug support for AVR chips to be used in the Arduino IDE 2. For each host architecture, there is an avr-gdb program, a simavr program, and a  PyAvrOCD server. The avr-gdb programs have version 17.2.3 and have been generated using the `avr-gdb-build.sh` script in the [avr-gdb repo](https://github.com/felias-fogg/avr-gdb).
 
 PyAvrOCD is generated using PyInstaller on GitHub runners:
 

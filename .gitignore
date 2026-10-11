@@ -29,3 +29,18 @@ extras/testbed/jobs/
 extras/testbed/taken/
 extras/testbed/results/
 extras/testbed/staging/
+
+# The simavr archives come from "make install-simavr", so they bring its
+# headers along. Nothing reads them at run time, and packer.sh drops them
+# from the tool package -- eight copies of the same 190 KB are not worth
+# carrying in the repository.
+extras/binaries/*/include/
+
+# Same for the rest of the simavr development files: the static library, the
+# pkg-config files (whose prefix is the CI build directory anyway) and the bare
+# .so symlink that only the linker uses. What has to ship is bin/ plus the
+# versioned .so.1 files beside it; the development files live in the simavr
+# release archives, where they belong.
+extras/binaries/*/lib/*.a
+extras/binaries/*/lib/pkgconfig/
+extras/binaries/*/lib/libsimavr*.so
