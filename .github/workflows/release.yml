@@ -91,7 +91,12 @@ jobs:
            runner: macos-14
            arch: arm64
          - os: aarch64-linux-gnu
-           runner: ubuntu-24.04-arm
+           # Not -24.04-arm: the glibc of the build host becomes the user's
+           # requirement, because PyInstaller bundles the host's libpython,
+           # libcrypto, libreadline, libudev and libusb. Measured on the 1.6.1
+           # archives that was GLIBC 2.38, which excludes Debian 12 and Ubuntu
+           # 22.04; this runner has 2.35.
+           runner: ubuntu-22.04-arm
            arch: arm64
          - os: x86_64-mingw32
            runner: windows-2022
@@ -100,7 +105,8 @@ jobs:
            runner: macos-14-large
            arch: x64
          - os: x86_64-linux-gnu
-           runner: ubuntu-24.04
+           # See aarch64-linux-gnu above: 22.04 has GLIBC 2.35, 24.04 has 2.39.
+           runner: ubuntu-22.04
            arch: x64
          - os: i686-mingw32
            runner: windows-2022
@@ -113,12 +119,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      # Linux used to skip this step and use the system Python -- the comment
+      # said staticx needed it, and staticx is long gone, while the system
+      # Python decided both the version (3.12 on 24.04, 3.10 on 22.04) and,
+      # through the bundled libpython, the GLIBC floor.
+      # actions/python-versions builds its Linux interpreters per Ubuntu
+      # release, so on a 22.04 runner this is a 3.14 built against GLIBC 2.35.
+      # The architecture asked for is each runner's native one, except for
+      # i686-mingw32, where x86 is the whole point.
       - name: Set up Python
-
         uses: actions/setup-python@v6
-        if: ${{ !contains(matrix.os, 'linux') }}
         with:
-          # for Linux use native Python so that staticx can work!
           python-version: '3.14'
           architecture: ${{ matrix.arch }}
 
@@ -135,6 +146,36 @@ jobs:
         run: |
           dist/pyavrocd/pyavrocd -V
           dist/pyavrocd/pyavrocd -d ? -t ?
+
+      - name: What it demands of the system
+        # Measured over everything that is shipped, not just over the
+        # executable: the executable is PyInstaller's bootloader, a small C
+        # program, while the real requirement sits in the libraries bundled
+        # beside it. Reporting only for now -- once the numbers are known and
+        # stable, each platform gets a ceiling here that fails the build when it
+        # rises.
+        run: |
+          case "$RUNNER_OS" in
+            Linux)
+              echo "highest glibc requirement over everything shipped:"
+              find dist/pyavrocd -type f -print0 \
+                | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+                | sort -uV | tail -1
+              ldd --version | head -1
+              ;;
+            macOS)
+              echo "deployment targets of the Mach-O files:"
+              find dist/pyavrocd -type f -print0 \
+                | xargs -0 -I{} sh -c 'vtool -show-build "{}" 2>/dev/null | awk "/minos/ {print \$2}"' \
+                | sort -uV | uniq -c
+              ;;
+            Windows)
+              # The floor here comes from the bundled CPython, which needs
+              # Windows 10 from 3.9 on; there is nothing to measure that would
+              # say otherwise.
+              echo "bundled CPython: $(python -V), floor is Windows 10"
+              ;;
+          esac
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -159,7 +200,14 @@ jobs:
           cpu: arm1176
           import_github_env: true
           copy_artifact_path: dist
-          base_image: raspios_lite:latest
+          # Pinned, and by URL rather than by tag. 'latest' now means trixie,
+          # whose GLIBC is 2.38 -- measured on the 1.6.1 archives, and that
+          # excludes Raspberry Pi OS bookworm, which is where most users still
+          # are. The action's dated raspios_lite tags stop at 2023-05-03, which
+          # is bullseye, and its Debian raspi_N_bookworm images are not armv6
+          # hard float, so neither shortcut gives what is needed here: the last
+          # bookworm Pi OS, GLIBC 2.36 and Python 3.11.
+          base_image: https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2026-10-06/2026-10-06-raspios-bookworm-armhf-lite.img.xz
           image_additional_mb: 2048
           commands: |
             uname -a
@@ -171,11 +219,23 @@ jobs:
             sudo apt install -y git
             sudo apt install -y scons
             sudo apt install -y python3-pip
-            sudo apt install -y python3.13-venv
+            sudo apt install -y python3.11-venv   # bookworm's Python
             python3 -m venv env
             . ./env/bin/activate
             pip install --no-input .
             pyinstaller -y pyavrocd.spec
+
+      - name: What it demands of the system
+        # On the host, not in the image: readelf parses ELF directly instead of
+        # going through a target backend, so an armhf tree can be read on x86.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          echo "highest glibc requirement over everything shipped:"
+          find dist/pyavrocd -type f -print0 \
+            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+            | sort -uV | tail -1
+          echo "--- ARM ABI of the bootloader ---"
+          readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -316,7 +376,28 @@ jobs:
       - name: Packing
         run: bash extras/packer.sh
 
+      - name: Do the shipped clients actually debug?
+        # After packing, because that is when packer.sh has put avr-gdb beside
+        # bin/simavr in the triple folder -- the arrangement the user gets.
+        # avr-gdb attaches to simavr's GDB stub, resolves a breakpoint through
+        # the firmware's line table and reads a local variable out of SRAM;
+        # none of that works if avr-gdb was built without usable DWARF support
+        # or if simavr cannot read the ELF file. The two release workflows
+        # measure what the binaries demand of a system, which is a different
+        # question from whether they work.
+        #
+        # Only for the architecture of this runner. The other seven cannot run
+        # here, and this is deliberately not worth a matrix: the clients are
+        # built from the same sources on every platform, and what differs per
+        # platform -- the floors -- is measured where they are built.
+        run: bash extras/gdb-simavr-test.sh extras/binaries/x86_64-linux-gnu
+
       - name: Asset upload
+        # Only on a real release. Started by hand, everything above still runs
+        # and nothing is published -- that is the dry run. Without this guard
+        # action-gh-release has no release event to read and falls back to
+        # github.ref, which on a branch is not a tag at all.
+        if: ${{ github.event.release.tag_name != '' }}
         uses: softprops/action-gh-release@v3
         with:
           files: extras/assets/*.tar.gz
@@ -324,13 +405,12 @@ jobs:
   build-pypi-distribution:
     name: Build distribution
     needs: build-assets
+    # No tag, no distribution: a run started by hand skips this job
+    # instead of failing in it, so that a dry run comes out green.
+    if: ${{ github.event.release.tag_name != '' }}
     runs-on: ubuntu-24.04
 
     steps:
-    - name: check for tag
-      if: ${{ github.event.release.tag_name == '' }}
-      run: exit 1
-
     - uses: actions/checkout@v5
       with:
         persist-credentials: false

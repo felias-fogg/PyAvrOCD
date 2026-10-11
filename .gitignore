@@ -53,3 +53,8 @@ extras/binaries/*/lib/libsimavr*.so
 extras/binaries/i686-linux-gnu/pyavrocd
 extras/binaries/i686-linux-gnu/pyavrocd-util/
 extras/binaries/i686-linux-gnu/VERSION
+
+# The smoke firmware for the avr-gdb/simavr test. The *.elf rule above would
+# swallow it, and it is a build product on purpose: it is committed so that the
+# test needs no avr-gcc.
+!extras/ci/*.elf
