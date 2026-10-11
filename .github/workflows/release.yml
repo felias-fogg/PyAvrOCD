@@ -301,6 +301,9 @@ jobs:
             # natively; armhf cannot be done natively anywhere, hence the ride along
             # with a job that already pays for QEMU.
             sudo apt install -y curl libncursesw6 libtinfo6
+            # The PyAvrOCD just built goes beside them, the way packer.sh
+            # arranges it, because the test runs the whole chain.
+            cp -r dist/pyavrocd/* extras/binaries/arm-linux-gnueabihf/
             cd extras/binaries/arm-linux-gnueabihf
             curl -sSL -o tool.tar.gz https://github.com/felias-fogg/avr-gdb/releases/latest/download/arm-linux-gnueabihf.tar.gz
             tar xzf tool.tar.gz
@@ -437,11 +440,13 @@ jobs:
           if-no-files-found: error
 
   clients-debug-test:
-    # Can the two programs we ship actually debug together, on each platform?
-    # Nothing is built here: the test uses avr-gdb from its own release and the
-    # simavr committed in extras/binaries -- the same two files packer.sh puts
-    # side by side. So this job needs no artifacts, runs in parallel with the
-    # builds and works on a manual run as well.
+    # Can the three programs we ship actually debug together, on each platform?
+    # The arrangement is the one the Arduino IDE uses: avr-gdb talks to
+    # PyAvrOCD, and PyAvrOCD starts simavr as the target -- that is what the
+    # simavr entry in the cores' programmers.txt sets up. So this job needs the
+    # built PyAvrOCD of its platform, hence the artifact; avr-gdb comes from
+    # its own release and simavr from extras/binaries, the two files packer.sh
+    # puts beside it.
     #
     # "Built from the same sources" is not an argument for these two: simavr's
     # arm builds did lose DWARF support once because the image's libdwarf was
@@ -455,6 +460,7 @@ jobs:
     # packed. And arm-linux-gnueabihf, because it has no native runner
     # anywhere: that one runs inside the QEMU image of build-armhf-binary,
     # which pays for the emulation anyway.
+    needs: [build-binaries, build-i686-linux-binary]
     strategy:
       fail-fast: false
       matrix:
@@ -478,6 +484,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Download the PyAvrOCD built for this platform
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ matrix.os }}
+          path: extras/binaries/${{ matrix.os }}
+
+      - name: Give it back its executable bit
+        # upload-artifact packs into a ZIP, which does not carry the bit.
+        if: ${{ !contains(matrix.os, 'mingw32') }}
+        run: chmod +x "extras/binaries/${{ matrix.os }}/pyavrocd"
 
       - name: Fetch avr-gdb for this triple
         # The same archive packer.sh fetches, and it lands in the same place:
