@@ -1,0 +1,88 @@
+name: Build the i686 Linux client
+
+# A trial run, started by hand, for the one client that is still built on a
+# virtual machine at home.
+#
+# PyInstaller cannot cross-compile: it packs the interpreter it is itself
+# running under, so a 32-bit client needs a 32-bit Python on a machine that
+# executes 32-bit code. GitHub has no i686 Linux runner -- but an x86_64 runner
+# runs i386 code natively, so a 32-bit container is enough and no QEMU is
+# involved, unlike the armhf job.
+#
+# The container has to be Debian. Ubuntu reduced i386 to a handful of library
+# packages years ago and has no python3 for it; Debian still carries the
+# architecture in full. Bookworm brings Python 3.11, which is what the machine
+# at home uses as well, so the result does not change: GLIBC 2.36 is the floor
+# either way. Bullseye would lower that to 2.31 but only offers Python 3.9,
+# below what this project supports.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-i686-linux-gnu:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build in a 32-bit Debian container
+        # The script goes in through stdin ('bash -s'), which keeps it free of
+        # the quoting that a 'bash -c' string would need. -e stops at the first
+        # failure, -x puts every command in the log.
+        run: |
+          docker run --rm -i --platform linux/386 \
+            -v "$PWD":/src -w /src \
+            i386/debian:bookworm bash -exs <<'SCRIPT'
+          uname -m
+          apt-get update
+          # Python, plus what a source build of the compiled dependencies needs:
+          # hidapi (via pyedbglib) wants libusb and libudev, lxml (via svd2py)
+          # wants libxml2 and libxslt. For i686 there is often no wheel left on
+          # PyPI, so pip falls back to building, and then the headers have to be
+          # there. svd2py itself is only used to generate the device
+          # descriptions, long before PyInstaller runs, but 'pip install .'
+          # installs it all the same.
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            python3 python3-venv python3-dev \
+            build-essential pkg-config \
+            libusb-1.0-0-dev libudev-dev libxml2-dev libxslt1-dev
+          python3 --version
+          ldd --version | head -1
+          python3 -m venv /tmp/env
+          /tmp/env/bin/pip install --upgrade pip
+          /tmp/env/bin/pip install .
+          rm -rf dist build
+          /tmp/env/bin/pyinstaller -y pyavrocd.spec
+          # Does the packed client actually start? -V answers from the frozen
+          # interpreter, the two lists walk the device and tool tables, which is
+          # where a missing hidden import usually shows up.
+          ./dist/pyavrocd/pyavrocd -V
+          ./dist/pyavrocd/pyavrocd -d '?' -t '?'
+          file dist/pyavrocd/pyavrocd
+          SCRIPT
+
+      - name: Hand the files back
+        # The container runs as root, so everything it wrote belongs to root on
+        # the host too, and the upload step cannot read it.
+        run: sudo chown -R "$(id -u):$(id -g)" dist build
+
+      - name: What it demands of the system
+        # Measured, not assumed -- the same question the simavr workflow asks.
+        # readelf reads i386 ELF on an x86_64 host without further ado.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          readelf -d dist/pyavrocd/pyavrocd | grep NEEDED || echo "(nothing)"
+          echo "highest glibc requirement over everything shipped:"
+          find dist/pyavrocd -type f -print0 \
+            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+            | sort -uV | tail -1
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: i686-linux-gnu
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error
