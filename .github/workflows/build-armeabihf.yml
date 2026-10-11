@@ -16,7 +16,12 @@ jobs:
           cpu: arm1176
           import_github_env: true
           copy_artifact_path: dist
-          base_image: raspios_lite:latest
+          # Pinned, like in release.yml, and for the same reason: 'latest' is
+          # trixie now, whose GLIBC is 2.38, and that excludes Raspberry Pi OS
+          # bookworm. Keep this line and the one in release.yml in step -- this
+          # workflow exists to try the armhf build without a release, so it has
+          # to build the same thing.
+          base_image: https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2026-10-06/2026-10-06-raspios-bookworm-armhf-lite.img.xz
           image_additional_mb: 2048
           commands: |
             uname -a
@@ -24,11 +29,11 @@ jobs:
             ldd --version
             df -h /
             sudo apt update -y
-            sudo apt upgrade -y
+            # No 'apt upgrade': it undoes the pinning above and costs minutes
+            # under emulation. 'scons' was there for staticx, which is gone.
             sudo apt install -y git
-            sudo apt install -y scons
             sudo apt install -y python3-pip
-            sudo apt install -y python3.13-venv
+            sudo apt install -y python3.11-venv   # bookworm's Python
             python3 -m venv env
             . ./env/bin/activate
             pip install --no-input .
@@ -36,10 +41,18 @@ jobs:
             ls -la .
             ls -la dist
 
-      - name: Check file system
+      - name: What it demands of the system
+        # On the host: readelf parses ELF directly, so an armhf tree can be read
+        # on x86. Same step as in release.yml.
         run: |
-          ls -la .
           ls -la dist
+          file dist/pyavrocd/pyavrocd
+          echo "--- the ten highest, with the file that asks for it ---"
+          find dist/pyavrocd -type f -print0 \
+            | xargs -0 -I{} sh -c 'v=$(readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" | sort -uV | tail -1); [ -n "$v" ] && echo "$v {}" || true' \
+            | sort -rV | head -10
+          echo "--- ARM ABI of the bootloader ---"
+          readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

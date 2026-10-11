@@ -8,6 +8,11 @@ on:
   release:
     types: [published]
   workflow_dispatch: # to run it manually
+    inputs:
+      build_armhf:
+        description: 'Also build the armhf client (QEMU, ~13 minutes)'
+        type: boolean
+        default: false
 
 jobs:
   check:
@@ -157,17 +162,23 @@ jobs:
         run: |
           case "$RUNNER_OS" in
             Linux)
-              echo "highest glibc requirement over everything shipped:"
+              echo "--- the ten highest, with the file that asks for it ---"
               find dist/pyavrocd -type f -print0 \
-                | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" || true' \
-                | sort -uV | tail -1
+                | xargs -0 -I{} sh -c 'v=$(readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" | sort -uV | tail -1); [ -n "$v" ] && echo "$v {}" || true' \
+                | sort -rV | head -10
               ldd --version | head -1
               ;;
             macOS)
-              echo "deployment targets of the Mach-O files:"
+              # Per file, highest first, and the name beside it. Asking only for
+              # the set of values was a mistake: it showed that something wants
+              # macOS 14 without saying what, and 'sort -u | uniq -c' cannot
+              # count anything either, having just removed the duplicates.
+              echo "--- deployment targets, highest first ---"
               find dist/pyavrocd -type f -print0 \
-                | xargs -0 -I{} sh -c 'vtool -show-build "{}" 2>/dev/null | awk "/minos/ {print \$2}" || true' \
-                | sort -uV | uniq -c
+                | xargs -0 -I{} sh -c 'v=$(vtool -show-build "{}" 2>/dev/null | awk "/minos/ {print \$2}"); [ -n "$v" ] && echo "$v {}" || true' \
+                | sort -rV | head -15
+              echo "--- where the libusb beside the binary comes from ---"
+              otool -L dist/pyavrocd/pyavrocd-util/libusb-1.0.0.dylib 2>/dev/null | head -5 || true
               ;;
             Windows)
               # The floor here comes from the bundled CPython, which needs
@@ -188,6 +199,10 @@ jobs:
 
   build-armhf-binary:
     needs: check
+    # Everything here runs under QEMU, which costs some 13 minutes -- five of
+    # them PyInstaller alone. For a real release that is the price; a run
+    # started by hand skips it unless the box is ticked.
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.build_armhf }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -215,9 +230,10 @@ jobs:
             ldd --version
             df -h /
             sudo apt update -y
-            sudo apt upgrade -y
+            # Deliberately no 'apt upgrade': the image is pinned on purpose, and
+            # upgrading it undoes exactly that -- besides costing minutes under
+            # emulation. 'scons' is not used by anything here either.
             sudo apt install -y git
-            sudo apt install -y scons
             sudo apt install -y python3-pip
             sudo apt install -y python3.11-venv   # bookworm's Python
             python3 -m venv env
@@ -320,12 +336,21 @@ jobs:
 
   build-assets:
     needs: [build-binaries, build-armhf-binary, build-i686-linux-binary]
+    # A skipped dependency skips the dependent job as well, so the armhf job
+    # being optional has to be spelled out here: the other two must have
+    # succeeded, and armhf may have succeeded or been skipped.
+    if: ${{ !cancelled()
+            && needs.build-binaries.result == 'success'
+            && needs.build-i686-linux-binary.result == 'success'
+            && (needs.build-armhf-binary.result == 'success'
+                || needs.build-armhf-binary.result == 'skipped') }}
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
       - name: Download arm-linux-gnueabihf
+        if: ${{ needs.build-armhf-binary.result == 'success' }}
         uses: actions/download-artifact@v7
         with:
           name: arm-linux-gnueabihf
