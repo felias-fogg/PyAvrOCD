@@ -45,17 +45,14 @@ jobs:
             i386/debian:bookworm bash -exs <<'SCRIPT'
           uname -m
           apt-get update
-          # Python, plus what a source build of the compiled dependencies needs:
-          # hidapi (via pyedbglib) wants libusb and libudev, lxml (via svd2py)
-          # wants libxml2 and libxslt. For i686 there is often no wheel left on
-          # PyPI, so pip falls back to building, and then the headers have to be
-          # there. svd2py itself is only used to generate the device
-          # descriptions, long before PyInstaller runs, but 'pip install .'
-          # installs it all the same.
+          # Python, plus a compiler. The first run settled what is actually
+          # needed here: hidapi arrives as a prebuilt manylinux_2_28_i686 wheel,
+          # so libusb and libudev headers are not required, and svd2py is pure
+          # Python and pulls no lxml, so libxml2 and libxslt are not either.
+          # What does get built from source is markupsafe and pyyaml, and that
+          # is what build-essential and python3-dev are for.
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            python3 python3-venv python3-dev \
-            build-essential pkg-config \
-            libusb-1.0-0-dev libudev-dev libxml2-dev libxslt1-dev
+            python3 python3-venv python3-dev build-essential
           python3 --version
           ldd --version | head -1
           python3 -m venv /tmp/env
@@ -68,7 +65,6 @@ jobs:
           # where a missing hidden import usually shows up.
           ./dist/pyavrocd/pyavrocd -V
           ./dist/pyavrocd/pyavrocd -d '?' -t '?'
-          file dist/pyavrocd/pyavrocd
           SCRIPT
 
       - name: Hand the files back
