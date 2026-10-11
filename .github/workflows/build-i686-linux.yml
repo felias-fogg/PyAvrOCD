@@ -18,6 +18,15 @@ name: Build the i686 Linux client
 
 on:
   workflow_dispatch:
+  # Temporary, and the reason is not convenience: GitHub lists and dispatches a
+  # workflow_dispatch workflow only from the default branch, and this one lives
+  # on v2. A push trigger does not care about that -- it runs the copy on the
+  # branch it was pushed to. Narrowed to this file so that ordinary work on v2
+  # does not start a build, which also means every correction to the job starts
+  # it. Remove this block once the file has reached main.
+  push:
+    branches: [v2]
+    paths: ['.github/workflows/build-i686-linux.yml']
 
 jobs:
   build-i686-linux-gnu:
