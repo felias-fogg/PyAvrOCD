@@ -107,6 +107,7 @@ jobs:
            # 22.04; this runner has 2.35.
            runner: ubuntu-22.04-arm
            arch: arm64
+           floor: '2.35'
          - os: x86_64-mingw32
            runner: windows-2022
            arch: x64
@@ -118,6 +119,7 @@ jobs:
            # See aarch64-linux-gnu above: 22.04 has GLIBC 2.35, 24.04 has 2.39.
            runner: ubuntu-22.04
            arch: x64
+           floor: '2.35'
          - os: i686-mingw32
            runner: windows-2022
            arch: x86
@@ -201,6 +203,13 @@ jobs:
                 if [ -n "$v" ]; then echo "$v $f"; fi
               done | sort -rV > "$RUNNER_TEMP/floors.txt"
               head -10 "$RUNNER_TEMP/floors.txt"
+              want="${{ matrix.floor }}"
+              have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+              if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+                echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+                exit 1
+              fi
+              echo "OK: nothing demands more than GLIBC $want"
               ldd --version | sed -n 1p
               ;;
             macOS)
@@ -210,6 +219,13 @@ jobs:
                 if [ -n "$v" ]; then echo "$v $f"; fi
               done | sort -rV > "$RUNNER_TEMP/floors.txt"
               head -15 "$RUNNER_TEMP/floors.txt"
+              want="${{ matrix.deployment }}"
+              have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1)
+              if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+                echo "::error::a file is built for macOS $have, the deployment target is $want"
+                exit 1
+              fi
+              echo "OK: nothing demands more than macOS $want"
               echo "--- where the libusb beside the binary comes from ---"
               otool -L dist/pyavrocd/pyavrocd-util/libusb-1.0.0.dylib 2>/dev/null | sed -n '1,5p' || true
               ;;
@@ -291,6 +307,13 @@ jobs:
             if [ -n "$v" ]; then echo "$v $f"; fi
           done | sort -rV > "$RUNNER_TEMP/floors.txt"
           head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
           echo "--- ARM ABI of the bootloader ---"
           readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
       - name: Upload artifact
@@ -373,6 +396,13 @@ jobs:
             if [ -n "$v" ]; then echo "$v $f"; fi
           done | sort -rV > "$RUNNER_TEMP/floors.txt"
           head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

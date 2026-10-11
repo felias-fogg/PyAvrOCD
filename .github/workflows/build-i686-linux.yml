@@ -91,6 +91,13 @@ jobs:
             if [ -n "$v" ]; then echo "$v $f"; fi
           done | sort -rV > "$RUNNER_TEMP/floors.txt"
           head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
