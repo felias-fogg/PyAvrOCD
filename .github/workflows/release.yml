@@ -159,14 +159,14 @@ jobs:
             Linux)
               echo "highest glibc requirement over everything shipped:"
               find dist/pyavrocd -type f -print0 \
-                | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+                | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" || true' \
                 | sort -uV | tail -1
               ldd --version | head -1
               ;;
             macOS)
               echo "deployment targets of the Mach-O files:"
               find dist/pyavrocd -type f -print0 \
-                | xargs -0 -I{} sh -c 'vtool -show-build "{}" 2>/dev/null | awk "/minos/ {print \$2}"' \
+                | xargs -0 -I{} sh -c 'vtool -show-build "{}" 2>/dev/null | awk "/minos/ {print \$2}" || true' \
                 | sort -uV | uniq -c
               ;;
             Windows)
@@ -232,7 +232,7 @@ jobs:
           file dist/pyavrocd/pyavrocd
           echo "highest glibc requirement over everything shipped:"
           find dist/pyavrocd -type f -print0 \
-            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" || true' \
             | sort -uV | tail -1
           echo "--- ARM ABI of the bootloader ---"
           readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
@@ -306,7 +306,7 @@ jobs:
           readelf -d dist/pyavrocd/pyavrocd | grep NEEDED || echo "(nothing)"
           echo "highest glibc requirement over everything shipped:"
           find dist/pyavrocd -type f -print0 \
-            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*"' \
+            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" || true' \
             | sort -uV | tail -1
 
       - name: Upload artifact
