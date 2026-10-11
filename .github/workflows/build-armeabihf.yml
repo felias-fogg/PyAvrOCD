@@ -42,18 +42,25 @@ jobs:
             ls -la dist
 
       - name: What it demands of the system
-        # On the host: readelf parses ELF directly, so an armhf tree can be read
-        # on x86. Same step as in release.yml.
+        # On the host, not in the image: readelf parses ELF directly instead of
+        # going through a target backend, so an armhf tree can be read on x86.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
         run: |
-          ls -la dist
           file dist/pyavrocd/pyavrocd
           echo "--- the ten highest, with the file that asks for it ---"
-          find dist/pyavrocd -type f -print0 \
-            | xargs -0 -I{} sh -c 'v=$(readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" | sort -uV | tail -1); [ -n "$v" ] && echo "$v {}" || true' \
-            | sort -rV | head -10
+          find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+            v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+            if [ -n "$v" ]; then echo "$v $f"; fi
+          done | sort -rV > "$RUNNER_TEMP/floors.txt"
+          head -10 "$RUNNER_TEMP/floors.txt"
           echo "--- ARM ABI of the bootloader ---"
           readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

@@ -1,10 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
 import platform
 from PyInstaller.utils.hooks import collect_submodules
 
 binlist = []
 if platform.uname().system == "Darwin":
-    if platform.uname().machine == "x86_64":
+    # The release workflow builds libusb itself and points here, because
+    # Homebrew's bottle is built for the runner's own macOS and would set the
+    # deployment target of the whole package. Without the variable -- a local
+    # build on this machine -- the Homebrew copy is used as before.
+    _libusb = os.environ.get("PYAVROCD_LIBUSB_PREFIX")
+    if _libusb:
+        binlist = [(_libusb + '/lib/libusb-1.0.0.dylib', '.'),
+                   (_libusb + '/lib/libusb-1.0.a', '.'),
+                   (_libusb + '/lib/libusb-1.0.dylib', '.')]
+    elif platform.uname().machine == "x86_64":
         binlist = [('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.0.dylib','.'),
                    ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.a', '.'),
                    ('/usr/local/Cellar/libusb/1.0.*/lib/libusb-1.0.dylib', '.')]

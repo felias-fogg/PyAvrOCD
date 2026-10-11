@@ -54,7 +54,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             python3 python3-venv python3-dev build-essential
           python3 --version
-          ldd --version | head -1
+          ldd --version | sed -n 1p
           python3 -m venv /tmp/env
           /tmp/env/bin/pip install --upgrade pip
           /tmp/env/bin/pip install .
@@ -73,16 +73,24 @@ jobs:
         run: sudo chown -R "$(id -u):$(id -g)" dist build
 
       - name: What it demands of the system
-        # Measured, not assumed -- the same question the simavr workflow asks.
-        # readelf reads i386 ELF on an x86_64 host without further ado.
+        # Measured, not assumed. readelf reads i386 ELF on an x86_64 host
+        # without further ado.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
         run: |
           file dist/pyavrocd/pyavrocd
           readelf -d dist/pyavrocd/pyavrocd | grep NEEDED || echo "(nothing)"
-          echo "highest glibc requirement over everything shipped:"
-          find dist/pyavrocd -type f -print0 \
-            | xargs -0 -I{} sh -c 'readelf -V "{}" 2>/dev/null | grep -o "GLIBC_2\.[0-9]*" || true' \
-            | sort -uV | tail -1
-
+          echo "--- the ten highest, with the file that asks for it ---"
+          find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+            v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+            if [ -n "$v" ]; then echo "$v $f"; fi
+          done | sort -rV > "$RUNNER_TEMP/floors.txt"
+          head -10 "$RUNNER_TEMP/floors.txt"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
