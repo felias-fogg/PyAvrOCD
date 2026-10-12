@@ -15,4 +15,4 @@ If you want to add the SVD data structure to each device file, do the following:
 ```
 poetry run python addsvd.py -s ../../svd devices
 ```
-This will go through the devices folder and add to each device file the corresponding SVD data structure derived from the SVD files in the folder given by the -p option.
+This will go through the devices folder and add to each device file the corresponding SVD data structure derived from the SVD files in the folder given by the -s option.
