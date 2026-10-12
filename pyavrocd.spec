@@ -41,6 +41,17 @@ hiddenimports += collect_submodules('pyavrocd.deviceinfo.devices')
 # file, which left Linux users without that view.
 datalist = [('./svd','svd')]
 
+# actions/python-versions builds its CPython unstripped, and PyInstaller bundles
+# libpython as it finds it: the x86_64 and aarch64 artifacts came to 41 MB against
+# 23.5 MB for i686, whose Python comes from the distribution and is stripped
+# there. So strip on Linux. Not on macOS, where it touches the code signature and
+# PyInstaller falls back to 'strip -S' anyway, and not on Windows, where the
+# symbols live in separate .pdb files that are never collected. A missing strip
+# binary does no harm -- PyInstaller catches the failure, warns and keeps the
+# unstripped copy -- and it disables itself for libraries with an .hmac or .chk
+# file beside them.
+do_strip = platform.uname().system == 'Linux'
+
 a = Analysis(
     ['pyavrocd/main.py'],
     pathex=['pyavrocd/deviceinfo/devices/', 'pyavrocd/deviceinfo'],
@@ -64,7 +75,7 @@ exe = EXE(
       name='pyavrocd',
       debug=False,
       bootloader_ignore_signals=False,
-      strip=False,
+      strip=do_strip,
       upx=True,
       console=True,
       disable_windowed_traceback=False,
@@ -78,7 +89,7 @@ coll = COLLECT(
       exe,
       a.binaries,
       a.datas,
-      strip=False,
+      strip=do_strip,
       upx=True,
       upx_exclude=[],
       name='pyavrocd',
