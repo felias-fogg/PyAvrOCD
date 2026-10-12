@@ -8,6 +8,11 @@ on:
   release:
     types: [published]
   workflow_dispatch: # to run it manually
+    inputs:
+      build_armhf:
+        description: 'Also build the armhf client (QEMU, ~13 minutes)'
+        type: boolean
+        default: false
 
 jobs:
   check:
@@ -16,6 +21,19 @@ jobs:
         shell: bash
     runs-on: "ubuntu-24.04"
     steps:
+      # Before anything is checked out or built: a release is cut from main. The
+      # local prepare_release.sh says the same, but that is a pre-flight check
+      # one runs by hand, while a tag can be created in the web interface on any
+      # branch -- and then the whole release would ship whatever that branch
+      # happens to contain. target_commitish is what the tag was created on, a
+      # branch name or, if it was made on a commit, that commit's SHA, which is
+      # not main either and fails here just as well.
+      - name: A release comes from main
+        if: ${{ github.event.release.tag_name != '' }}
+        run: |
+          echo "Release was created on: ${{ github.event.release.target_commitish }}"
+          test "${{ github.event.release.target_commitish }}" = main
+
       - name: Check out repository
         if: ${{ github.event.release.tag_name != '' }}
         uses: actions/checkout@v5
@@ -31,11 +49,7 @@ jobs:
         if: ${{ github.event.release.tag_name != '' }}
         run: |
           python -m pip install --upgrade pip
-          pip install .  # Install dependencies
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install zlib1g:i386
-          sudo apt-get install libc6:i386
+          pip install '.[dev]'    # checks and tests need these
 
       - name: Test release against system version
         if: ${{ github.event.release.name != '' }}
@@ -56,27 +70,20 @@ jobs:
           fi
           echo "Release and system version are identical, now we continue"
 
-      - name: Check presence of correct i686 Linux version
+      # Also three steps, for a different reason than in unit-tests.yml: here
+      # all three are meant to stop the release, but a single run block would
+      # report only the first of them. With !cancelled() each one runs and the
+      # job still fails, so one release attempt tells you everything that is
+      # wrong rather than one thing at a time.
+      - name: Type check
         if: ${{ github.event.release.tag_name != '' }}
-        run: |
-          I686_VER=$(extras/binaries/i686-linux-gnu/pyavrocd -V)
-          I686_VERS=v${I686_VER#*version }
-          I686_VERSTRING=${I686_VERS%rc*}
-          REL_NAME=${{ github.event.release.name }}
-          echo "i686 Linux system version string: $I686_VERSTRING"
-          echo "Github release name: $REL_NAME"
-          if [[ "$REL_NAME" != "$I686_VERSTRING" ]]; then
-             echo "Wrong i686 version in repo!"
-             exit 1
-          fi
-          echo "Release name and preloaded i686 binary have identical version numbers; we continue."
-
-      - name: Run type checks linting and unit-tests
-        if: ${{ github.event.release.tag_name != '' }}
-        run: |
-          mypy .
-          pylint pyavrocd
-          pytest tests
+        run: mypy .
+      - name: Lint
+        if: ${{ !cancelled() && github.event.release.tag_name != '' }}
+        run: pylint pyavrocd
+      - name: Unit tests
+        if: ${{ !cancelled() && github.event.release.tag_name != '' }}
+        run: pytest tests
 
   build-binaries:
     needs: check
@@ -88,18 +95,31 @@ jobs:
          - os: arm64-apple-darwin
            runner: macos-14
            arch: arm64
+           # What every other bundled file on this platform already says,
+           # measured: the Python framework, libssl, libcrypto, hid and the
+           # bootloader are all built for 11.0.
+           deployment: '11.0'
          - os: aarch64-linux-gnu
-           runner: ubuntu-24.04-arm
+           # Not -24.04-arm: the glibc of the build host becomes the user's
+           # requirement, because PyInstaller bundles the host's libpython,
+           # libcrypto, libreadline, libudev and libusb. Measured on the 1.6.1
+           # archives that was GLIBC 2.38, which excludes Debian 12 and Ubuntu
+           # 22.04; this runner has 2.35.
+           runner: ubuntu-22.04-arm
            arch: arm64
+           floor: '2.35'
          - os: x86_64-mingw32
            runner: windows-2022
            arch: x64
          - os: x86_64-apple-darwin
            runner: macos-14-large
            arch: x64
+           deployment: '10.15'
          - os: x86_64-linux-gnu
-           runner: ubuntu-24.04
+           # See aarch64-linux-gnu above: 22.04 has GLIBC 2.35, 24.04 has 2.39.
+           runner: ubuntu-22.04
            arch: x64
+           floor: '2.35'
          - os: i686-mingw32
            runner: windows-2022
            arch: x86
@@ -111,19 +131,46 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      # Linux used to skip this step and use the system Python -- the comment
+      # said staticx needed it, and staticx is long gone, while the system
+      # Python decided both the version (3.12 on 24.04, 3.10 on 22.04) and,
+      # through the bundled libpython, the GLIBC floor.
+      # actions/python-versions builds its Linux interpreters per Ubuntu
+      # release, so on a 22.04 runner this is a 3.14 built against GLIBC 2.35.
+      # The architecture asked for is each runner's native one, except for
+      # i686-mingw32, where x86 is the whole point.
       - name: Set up Python
-
         uses: actions/setup-python@v6
-        if: ${{ !contains(matrix.os, 'linux') }}
         with:
-          # for Linux use native Python so that staticx can work!
           python-version: '3.14'
           architecture: ${{ matrix.arch }}
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install .  # Install dependencies
+          pip install '.[build]'  # pyinstaller, not the dev tools
+
+      - name: Build libusb from source (macOS)
+        if: ${{ contains(matrix.os, 'darwin') }}
+        env:
+          LIBUSB_VERSION: '1.0.29'
+          MACOSX_DEPLOYMENT_TARGET: ${{ matrix.deployment }}
+        # Homebrew builds its bottles per macOS release, so on a macos-14
+        # runner libusb carries minos 14.0 and single-handedly raised the floor
+        # of the whole package: measured, every other bundled file says 11.0 on
+        # arm64 and 10.15 on Intel. There is no older arm64 runner to get an
+        # older bottle from, so the only way to decide the target is to build
+        # it. Takes seconds, and the version is pinned.
+        run: |
+          curl -sSL -o libusb.tar.bz2 \
+            "https://github.com/libusb/libusb/releases/download/v${LIBUSB_VERSION}/libusb-${LIBUSB_VERSION}.tar.bz2"
+          tar xjf libusb.tar.bz2
+          cd "libusb-${LIBUSB_VERSION}"
+          ./configure --prefix="$RUNNER_TEMP/libusb" >/dev/null
+          make -j3 install >/dev/null
+          echo "--- what we just built ---"
+          vtool -show-build "$RUNNER_TEMP/libusb/lib/libusb-1.0.0.dylib" | sed -n '1,8p'
+          echo "PYAVROCD_LIBUSB_PREFIX=$RUNNER_TEMP/libusb" >> "$GITHUB_ENV"
 
       - name: Package PyAvrOCD with PyInstaller
         run: |
@@ -134,6 +181,66 @@ jobs:
           dist/pyavrocd/pyavrocd -V
           dist/pyavrocd/pyavrocd -d ? -t ?
 
+      - name: What it demands of the system
+        # Measured over everything that is shipped, not just over the
+        # executable: that one is PyInstaller's bootloader, a small C program,
+        # while the real requirement sits in the libraries bundled beside it.
+        # Per file and with the name, because the set of values alone showed
+        # that something wanted macOS 14 without saying what.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
+        run: |
+          case "$RUNNER_OS" in
+            Linux)
+              echo "--- the ten highest, with the file that asks for it ---"
+              find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+                v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+                if [ -n "$v" ]; then echo "$v $f"; fi
+              done | sort -rV > "$RUNNER_TEMP/floors.txt"
+              head -10 "$RUNNER_TEMP/floors.txt"
+              want="${{ matrix.floor }}"
+              have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+              if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+                echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+                exit 1
+              fi
+              echo "OK: nothing demands more than GLIBC $want"
+              # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+              echo "glibc $want" > dist/pyavrocd/SYSTEM_BASELINE
+              ldd --version | sed -n 1p
+              ;;
+            macOS)
+              echo "--- deployment targets, highest first ---"
+              find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+                v=$(vtool -show-build "$f" 2>/dev/null | awk '/minos/ {print $2}' || true)
+                if [ -n "$v" ]; then echo "$v $f"; fi
+              done | sort -rV > "$RUNNER_TEMP/floors.txt"
+              head -15 "$RUNNER_TEMP/floors.txt"
+              want="${{ matrix.deployment }}"
+              have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1)
+              if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+                echo "::error::a file is built for macOS $have, the deployment target is $want"
+                exit 1
+              fi
+              echo "OK: nothing demands more than macOS $want"
+              # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+              echo "macOS $want" > dist/pyavrocd/SYSTEM_BASELINE
+              echo "--- where the libusb beside the binary comes from ---"
+              otool -L dist/pyavrocd/pyavrocd-util/libusb-1.0.0.dylib 2>/dev/null | sed -n '1,5p' || true
+              ;;
+            Windows)
+              # The floor here comes from the bundled CPython, which has needed
+              # Windows 10 since 3.9; there is nothing to measure that would
+              # say otherwise.
+              echo "bundled CPython: $(python -V), floor is Windows 10"
+              echo "Windows 10" > dist/pyavrocd/SYSTEM_BASELINE
+              ;;
+          esac
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -145,6 +252,10 @@ jobs:
 
   build-armhf-binary:
     needs: check
+    # Everything here runs under QEMU, which costs some 13 minutes -- five of
+    # them PyInstaller alone. For a real release that is the price; a run
+    # started by hand skips it unless the box is ticked.
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.build_armhf }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
@@ -157,7 +268,14 @@ jobs:
           cpu: arm1176
           import_github_env: true
           copy_artifact_path: dist
-          base_image: raspios_lite:latest
+          # Pinned, and by URL rather than by tag. 'latest' now means trixie,
+          # whose GLIBC is 2.38 -- measured on the 1.6.1 archives, and that
+          # excludes Raspberry Pi OS bookworm, which is where most users still
+          # are. The action's dated raspios_lite tags stop at 2023-05-03, which
+          # is bullseye, and its Debian raspi_N_bookworm images are not armv6
+          # hard float, so neither shortcut gives what is needed here: the last
+          # bookworm Pi OS, GLIBC 2.36 and Python 3.11.
+          base_image: https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2026-10-06/2026-10-06-raspios-bookworm-armhf-lite.img.xz
           image_additional_mb: 2048
           commands: |
             uname -a
@@ -165,16 +283,71 @@ jobs:
             ldd --version
             df -h /
             sudo apt update -y
-            sudo apt upgrade -y
+            # Deliberately no 'apt upgrade': the image is pinned on purpose, and
+            # upgrading it undoes exactly that -- besides costing minutes under
+            # emulation. 'scons' is not used by anything here either.
             sudo apt install -y git
-            sudo apt install -y scons
             sudo apt install -y python3-pip
-            sudo apt install -y python3.13-venv
+            sudo apt install -y python3.11-venv   # bookworm's Python
             python3 -m venv env
             . ./env/bin/activate
-            pip install --no-input .
+            pip install --no-input '.[build]'
             pyinstaller -y pyavrocd.spec
+            # Can the two shipped clients debug together on armhf? Only answerable
+            # in here: emulation is the only armhf userland available. avr-gdb comes
+            # from its own release, simavr from extras/binaries -- the same two files
+            # packer.sh puts side by side -- and the session itself is the assertion.
+            # The matrix job clients-debug-test does this for the other platforms,
+            # natively; armhf cannot be done natively anywhere, hence the ride along
+            # with a job that already pays for QEMU.
+            sudo apt install -y curl libncursesw6 libtinfo6
+            # The PyAvrOCD just built goes beside them, the way packer.sh
+            # arranges it, because the test runs the whole chain.
+            cp -r dist/pyavrocd/* extras/binaries/arm-linux-gnueabihf/
+            cd extras/binaries/arm-linux-gnueabihf
+            curl -sSL -o tool.tar.gz https://github.com/felias-fogg/avr-gdb/releases/latest/download/arm-linux-gnueabihf.tar.gz
+            tar xzf tool.tar.gz
+            mv tool/avr-gdb* .
+            rm -rf tool tool.tar.gz
+            cd ../../..
+            bash extras/gdb-simavr-test.sh extras/binaries/arm-linux-gnueabihf
 
+      - name: Hand the files back
+        # dist was created inside the QEMU image and copied out by the action,
+        # so on the host it belongs to root and the measurement step cannot
+        # write its SYSTEM_BASELINE into it. Reading worked, which is why this
+        # only showed up once something wrote.
+        run: sudo chown -R "$(id -u):$(id -g)" dist
+
+      - name: What it demands of the system
+        # On the host, not in the image: readelf parses ELF directly instead of
+        # going through a target backend, so an armhf tree can be read on x86.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          echo "--- the ten highest, with the file that asks for it ---"
+          find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+            v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+            if [ -n "$v" ]; then echo "$v $f"; fi
+          done | sort -rV > "$RUNNER_TEMP/floors.txt"
+          head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want, ARMv6 hard float" > dist/pyavrocd/SYSTEM_BASELINE
+          echo "--- ARM ABI of the bootloader ---"
+          readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -184,14 +357,208 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
 
+  build-i686-linux-binary:
+    needs: check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build in a 32-bit Debian container
+        # PyInstaller cannot cross-compile: it packs the interpreter it is
+        # running under, so a 32-bit client needs a 32-bit Python on a machine
+        # that executes 32-bit code. GitHub has no i686 Linux runner -- but an
+        # x86_64 runner runs i386 code natively, so a container is enough and no
+        # QEMU is involved, unlike the armhf job above.
+        #
+        # The container has to be Debian: Ubuntu reduced i386 to a handful of
+        # library packages and has no python3 for it. Bookworm brings Python
+        # 3.11, and GLIBC 2.36 is the floor that follows from it.
+        #
+        # The script goes in through stdin ('bash -s'), which keeps it free of
+        # the quoting a 'bash -c' string would need. -e stops at the first
+        # failure, -x puts every command in the log.
+        run: |
+          docker run --rm -i --platform linux/386 \
+            -v "$PWD":/src -w /src \
+            i386/debian:bookworm bash -exs <<'SCRIPT'
+          uname -m
+          apt-get update
+          # Python plus a compiler, and no more than that: hidapi arrives as a
+          # prebuilt manylinux_2_28_i686 wheel, so no libusb or libudev headers
+          # are needed, and svd2py is pure Python and pulls no lxml. What does
+          # get built from source is markupsafe and pyyaml.
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            python3 python3-venv python3-dev build-essential
+          python3 --version
+          ldd --version | sed -n 1p
+          python3 -m venv /tmp/env
+          /tmp/env/bin/pip install --upgrade pip
+          /tmp/env/bin/pip install '.[build]'
+          rm -rf dist build
+          /tmp/env/bin/pyinstaller -y pyavrocd.spec
+          # Does the packed client start? -V answers from the frozen interpreter,
+          # the two lists walk the device and tool tables, which is where a
+          # missing hidden import shows up.
+          ./dist/pyavrocd/pyavrocd -V
+          ./dist/pyavrocd/pyavrocd -d '?' -t '?'
+          SCRIPT
+
+      - name: Hand the files back
+        # The container runs as root, so everything it wrote belongs to root on
+        # the host too, and the upload step could not read it.
+        run: sudo chown -R "$(id -u):$(id -g)" dist build
+
+      - name: What it demands of the system
+        # Measured, not assumed. readelf reads i386 ELF on an x86_64 host
+        # without further ado.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          readelf -d dist/pyavrocd/pyavrocd | grep NEEDED || echo "(nothing)"
+          echo "--- the ten highest, with the file that asks for it ---"
+          find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+            v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+            if [ -n "$v" ]; then echo "$v $f"; fi
+          done | sort -rV > "$RUNNER_TEMP/floors.txt"
+          head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want" > dist/pyavrocd/SYSTEM_BASELINE
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: i686-linux-gnu
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error
+
+  clients-debug-test:
+    # Can the three programs we ship actually debug together, on each platform?
+    # The arrangement is the one the Arduino IDE uses: avr-gdb talks to
+    # PyAvrOCD, and PyAvrOCD starts simavr as the target -- that is what the
+    # simavr entry in the cores' programmers.txt sets up. So this job needs the
+    # built PyAvrOCD of its platform, hence the artifact; avr-gdb comes from
+    # its own release and simavr from extras/binaries, the two files packer.sh
+    # puts beside it.
+    #
+    # "Built from the same sources" is not an argument for these two: simavr's
+    # arm builds did lose DWARF support once because the image's libdwarf was
+    # too old, and avr-gdb is linked differently on every platform. Whether
+    # avr-gdb starts at all (on Linux it needs ncurses from the system), whether
+    # simavr finds its bundled libelf through the RPATH, and whether the DWARF
+    # information can be read -- all of that is per platform.
+    #
+    # Two platforms are missing on purpose. x86_64-linux-gnu, because
+    # build-assets runs the same test there, on the files packer.sh has just
+    # packed. And arm-linux-gnueabihf, because it has no native runner
+    # anywhere: that one runs inside the QEMU image of build-armhf-binary,
+    # which pays for the emulation anyway.
+    needs: [build-binaries, build-i686-linux-binary]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: aarch64-linux-gnu
+            runner: ubuntu-22.04-arm
+          - os: i686-linux-gnu
+            runner: ubuntu-22.04
+          - os: arm64-apple-darwin
+            runner: macos-14
+          - os: x86_64-apple-darwin
+            runner: macos-14-large
+          - os: x86_64-mingw32
+            runner: windows-2022
+          - os: i686-mingw32
+            runner: windows-2022
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download the PyAvrOCD built for this platform
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ matrix.os }}
+          path: extras/binaries/${{ matrix.os }}
+
+      - name: Give it back its executable bit
+        # upload-artifact packs into a ZIP, which does not carry the bit.
+        if: ${{ !contains(matrix.os, 'mingw32') }}
+        run: chmod +x "extras/binaries/${{ matrix.os }}/pyavrocd"
+
+      - name: Fetch avr-gdb for this triple
+        # The same archive packer.sh fetches, and it lands in the same place:
+        # beside bin/simavr in the triple folder.
+        run: |
+          cd "extras/binaries/${{ matrix.os }}"
+          curl -sSL -o tool.tar.gz \
+            "https://github.com/felias-fogg/avr-gdb/releases/latest/download/${{ matrix.os }}.tar.gz"
+          tar xzf tool.tar.gz
+          mv tool/avr-gdb* .
+          rm -rf tool tool.tar.gz
+          ls -la
+
+      - name: What avr-gdb needs from the system (Linux)
+        # avr-gdb is linked against the system ncurses -- everything else is
+        # static. The runners usually have it; asking costs ten seconds and
+        # turns a confusing loader error into an obvious one.
+        if: ${{ matrix.os == 'aarch64-linux-gnu' }}
+        run: sudo apt-get update && sudo apt-get install -y libncursesw6 libtinfo6
+
+      - name: Debug session
+        if: ${{ matrix.os != 'i686-linux-gnu' }}
+        run: bash extras/gdb-simavr-test.sh "extras/binaries/${{ matrix.os }}"
+
+      - name: Debug session (32-bit container)
+        # i686 needs a 32-bit userland, and an x86_64 runner executes i386 code
+        # natively, so a container is enough -- the same trick the i686 build
+        # uses. 'file' is in the list because the test reports with it.
+        if: ${{ matrix.os == 'i686-linux-gnu' }}
+        run: |
+          docker run --rm -i --platform linux/386 \
+            -v "$PWD":/src -w /src \
+            i386/debian:bookworm bash -exs <<'SCRIPT'
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libncursesw6 libtinfo6 file
+          bash extras/gdb-simavr-test.sh extras/binaries/i686-linux-gnu
+          SCRIPT
+
   build-assets:
-    needs: [build-binaries, build-armhf-binary]
+    needs: [build-binaries, build-armhf-binary, build-i686-linux-binary, clients-debug-test]
+    # A skipped dependency skips the dependent job as well, so the armhf job
+    # being optional has to be spelled out here: the other two must have
+    # succeeded, and armhf may have succeeded or been skipped.
+    if: ${{ !cancelled()
+            && needs.build-binaries.result == 'success'
+            && needs.build-i686-linux-binary.result == 'success'
+            && needs.clients-debug-test.result == 'success'
+            && (needs.build-armhf-binary.result == 'success'
+                || needs.build-armhf-binary.result == 'skipped') }}
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
       - name: Download arm-linux-gnueabihf
+        if: ${{ needs.build-armhf-binary.result == 'success' }}
         uses: actions/download-artifact@v7
         with:
           name: arm-linux-gnueabihf
@@ -233,10 +600,37 @@ jobs:
           name: x86_64-linux-gnu
           path: extras/binaries/x86_64-linux-gnu
 
+      - name: Download i686-linux-gnu
+        uses: actions/download-artifact@v7
+        with:
+          name: i686-linux-gnu
+          path: extras/binaries/i686-linux-gnu
+
       - name: Packing
         run: bash extras/packer.sh
 
+      - name: Do the shipped clients actually debug?
+        # After packing, because that is when packer.sh has put avr-gdb beside
+        # bin/simavr in the triple folder -- the arrangement the user gets.
+        # avr-gdb attaches to simavr's GDB stub, resolves a breakpoint through
+        # the firmware's line table and reads a local variable out of SRAM;
+        # none of that works if avr-gdb was built without usable DWARF support
+        # or if simavr cannot read the ELF file. The two release workflows
+        # measure what the binaries demand of a system, which is a different
+        # question from whether they work.
+        #
+        # Only for the architecture of this runner. The other seven cannot run
+        # here, and this is deliberately not worth a matrix: the clients are
+        # built from the same sources on every platform, and what differs per
+        # platform -- the floors -- is measured where they are built.
+        run: bash extras/gdb-simavr-test.sh extras/binaries/x86_64-linux-gnu
+
       - name: Asset upload
+        # Only on a real release. Started by hand, everything above still runs
+        # and nothing is published -- that is the dry run. Without this guard
+        # action-gh-release has no release event to read and falls back to
+        # github.ref, which on a branch is not a tag at all.
+        if: ${{ github.event.release.tag_name != '' }}
         uses: softprops/action-gh-release@v3
         with:
           files: extras/assets/*.tar.gz
@@ -244,13 +638,12 @@ jobs:
   build-pypi-distribution:
     name: Build distribution
     needs: build-assets
+    # No tag, no distribution: a run started by hand skips this job
+    # instead of failing in it, so that a dry run comes out green.
+    if: ${{ github.event.release.tag_name != '' }}
     runs-on: ubuntu-24.04
 
     steps:
-    - name: check for tag
-      if: ${{ github.event.release.tag_name == '' }}
-      run: exit 1
-
     - uses: actions/checkout@v5
       with:
         persist-credentials: false

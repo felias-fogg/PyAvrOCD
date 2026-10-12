@@ -85,7 +85,7 @@ Now you should be able to start the GDB server. The binary is stored under <code
 </details>
 <p></p>
 
-Note that the folder with [SVD](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/) files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the [release page](https://github.com/felias-fogg/PyAvrOCD/releases/tag/v0.22.0) of the GitHub repo. The release asset is called `svd.tar.gz`.
+Note that the folder with [SVD](https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/) files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the [release page](https://github.com/felias-fogg/PyAvrOCD/releases/latest) of the GitHub repo. The release asset is called `svd.tar.gz`.
 
 ## GitHub
 

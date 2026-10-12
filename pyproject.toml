@@ -1,6 +1,6 @@
 [project]
 name = "pyavrocd"
-version = "1.6.1"
+version = "1.7.0"
 description = "A cross-platform GDB server for AVR MCUs"
 authors = [
     {name = "Bernhard Nebel",email = "nebel@arduino-craft-corner.de"}
@@ -25,21 +25,42 @@ classifiers = [
 license-files = ["LICENSE*"]
 readme = "README.md"
 requires-python = "<3.15,>=3.10"
+# What the program imports, and nothing else. Established by reading the
+# imports in pyavrocd/: pymcuprog, pyedbglib, usb, serial, elftools.
+# pyserial was missing here and worked only because pymcuprog pulls it in.
 dependencies = [
     "pymcuprog (>=3.17.3.45,<4.0.0.0)",
     "pyedbglib (>=2.24.2.18,<3.0.0.0)",
     "pyusb (>=1.3.1,<1.4.0)",
+    "pyserial (>=3.5,<4.0)",
+    "pyelftools (>=0.32, <1.0)"
+]
+
+# Everything that is not needed to run the server. Until now these sat in
+# 'dependencies', so installing the server dragged a static site generator and
+# a linter along, and in CI two of them (markupsafe, pyyaml) had to be built
+# from source in the 32-bit container.
+#   pip install '.[dev]'     checks and tests
+#   pip install '.[build]'   building the binaries
+#   poetry install --all-extras   for working on the project locally
+[project.optional-dependencies]
+dev = [
     "pre-commit (>=4.2.0,<5.0.0)",
-    "pyinstaller (>=6.12.0,<7.0.0)",
-    "pexpect (>=4.9.0,<5.0.0)",
     "pylint (>=4.0.0,<5.0.0)",
     "pytest (>=9.0.3,<10.0.0)",
     "pytest-cov (>=7.0.0,<8.0.0)",
-    "mkdocs (>=1.6.1,<2.0.0)",
-    "markdown-include (>=0.8.1,<0.9.0)",
     "mypy (>=1.19.1, <1.20.0)",
-    "pyelftools (>=0.32, <1.0)",
+    "pexpect (>=4.9.0,<5.0.0)",
+    # only pyavrocd/deviceinfo/addsvd.py needs this, and that script is run
+    # by hand when a device description is regenerated
     "svd2py (>=1.0.0,<2.0.0)"
+]
+build = [
+    "pyinstaller (>=6.12.0,<7.0.0)"
+]
+docs = [
+    "mkdocs (>=1.6.1,<2.0.0)",
+    "markdown-include (>=0.8.1,<0.9.0)"
 ]
 
 [project.urls]
@@ -55,8 +76,6 @@ pyavrocd = 'pyavrocd.main:main'
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.8"
 
-[tool.poetry.group.dev.dependencies]
-pylint = "^4.0.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -118,6 +137,23 @@ max-positional-arguments=7
 [tool.mypy]
 disallow_untyped_defs = true
 disable_error_code = ["import-untyped"]
+# Only effective when mypy walks the tree itself (mypy .), not for file names
+# given on the command line -- which is how pre-commit calls it. dist, build and
+# cov are local build output; staging holds the copies the testbed syncs to its
+# hosts. Both contain second copies of modules that already exist in the tree,
+# and a duplicate module name stops mypy before it checks anything at all.
+exclude = [
+    '^(dist|build|cov|draft)/',
+    '^extras/testbed/staging/',
+    # 394 MB of generated device descriptions, each one a single huge literal.
+    # mypy needs 1.2 GB for the largest file alone, so holding all of them in one
+    # build does not fit; ignore_errors would not help, it suppresses the messages
+    # but still analyses the files. Excluding them only skips discovery: the three
+    # that something imports by name (alldevices, attiny85, attiny3217) are still
+    # checked, the rest is reached through importlib, which mypy cannot follow
+    # anyway.
+    '^pyavrocd/deviceinfo/devices/',
+]
 
 [[tool.mypy.overrides]]
 module = "tests.*"
@@ -125,6 +161,10 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = "e2e_tests"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "extras.testbed.*"
 ignore_errors = true
 
 [[tool.mypy.overrides]]

@@ -16,7 +16,12 @@ jobs:
           cpu: arm1176
           import_github_env: true
           copy_artifact_path: dist
-          base_image: raspios_lite:latest
+          # Pinned, like in release.yml, and for the same reason: 'latest' is
+          # trixie now, whose GLIBC is 2.38, and that excludes Raspberry Pi OS
+          # bookworm. Keep this line and the one in release.yml in step -- this
+          # workflow exists to try the armhf build without a release, so it has
+          # to build the same thing.
+          base_image: https://downloads.raspberrypi.com/raspios_oldstable_lite_armhf/images/raspios_oldstable_lite_armhf-2026-10-06/2026-10-06-raspios-bookworm-armhf-lite.img.xz
           image_additional_mb: 2048
           commands: |
             uname -a
@@ -24,23 +29,69 @@ jobs:
             ldd --version
             df -h /
             sudo apt update -y
-            sudo apt upgrade -y
+            # No 'apt upgrade': it undoes the pinning above and costs minutes
+            # under emulation. 'scons' was there for staticx, which is gone.
             sudo apt install -y git
-            sudo apt install -y scons
             sudo apt install -y python3-pip
-            sudo apt install -y python3.13-venv
+            sudo apt install -y python3.11-venv   # bookworm's Python
             python3 -m venv env
             . ./env/bin/activate
-            pip install --no-input .
+            pip install --no-input '.[build]'
             pyinstaller -y pyavrocd.spec
+            # Can the two shipped clients debug together on armhf? Only answerable
+            # in here: emulation is the only armhf userland available. avr-gdb comes
+            # from its own release, simavr from extras/binaries -- the same two files
+            # packer.sh puts side by side -- and the session itself is the assertion.
+            # The matrix job clients-debug-test does this for the other platforms,
+            # natively; armhf cannot be done natively anywhere, hence the ride along
+            # with a job that already pays for QEMU.
+            sudo apt install -y curl libncursesw6 libtinfo6
+            cd extras/binaries/arm-linux-gnueabihf
+            curl -sSL -o tool.tar.gz https://github.com/felias-fogg/avr-gdb/releases/latest/download/arm-linux-gnueabihf.tar.gz
+            tar xzf tool.tar.gz
+            mv tool/avr-gdb* .
+            rm -rf tool tool.tar.gz
+            cd ../../..
+            bash extras/gdb-simavr-test.sh extras/binaries/arm-linux-gnueabihf
             ls -la .
             ls -la dist
 
-      - name: Check file system
-        run: |
-          ls -la .
-          ls -la dist
+      - name: Hand the files back
+        # dist was created inside the QEMU image and copied out by the action,
+        # so on the host it belongs to root and the measurement step cannot
+        # write its SYSTEM_BASELINE into it. Reading worked, which is why this
+        # only showed up once something wrote.
+        run: sudo chown -R "$(id -u):$(id -g)" dist
 
+      - name: What it demands of the system
+        # On the host, not in the image: readelf parses ELF directly instead of
+        # going through a target backend, so an armhf tree can be read on x86.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          echo "--- the ten highest, with the file that asks for it ---"
+          find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+            v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+            if [ -n "$v" ]; then echo "$v $f"; fi
+          done | sort -rV > "$RUNNER_TEMP/floors.txt"
+          head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want, ARMv6 hard float" > dist/pyavrocd/SYSTEM_BASELINE
+          echo "--- ARM ABI of the bootloader ---"
+          readelf -A dist/pyavrocd/pyavrocd | grep -E 'Tag_CPU_arch:|Tag_FP_arch|Tag_ABI_VFP_args' || true
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

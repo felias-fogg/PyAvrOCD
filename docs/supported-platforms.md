@@ -1,22 +1,20 @@
 # Supported platforms
 
-As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-agnostic. A critical dependence is the [HIDAPI library](https://github.com/libusb/hidapi/) and the [Python interface](https://pypi.org/project/hidapi/) to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms.
+As the name suggests, PyAvrOCD is a Python package. As such, you can install it from PyPI using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing), or even better [pipx](https://pipx.pypa.io/stable/). The main requirement is that your Python installation should have a version number between 3.10 and 3.14, inclusively. Since it is Python,  the package is basically platform-agnostic. A critical dependence is the [HIDAPI library](https://github.com/libusb/hidapi/) and the [Python interface](https://pypi.org/project/hidapi/) to it, which is needed to communicate with the EDBG-based debuggers over USB. The HIDAPI library apparently works for Linux, FreeBSD, macOS, and Windows, and there are Python wheels (binaries) that can be used for all of these platforms.
 
-One can distinguish the support of PyAvrOCD based on whether one can install the package via PyPI using [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing), or even better [pipx](https://pipx.pypa.io/stable/), or whether there is additionally Arduino support, meaning that you install an Arduino core and you get all tools (avr-gdb, simavr) and configurations (svd files) with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.
+The minimal requirements for binary packages as downloaded, e.g., by the Arduino IDE, are displayed in the following table.
 
-| Platform                                          | PyPI    | Arduino<br> support |
-| ------------------------------------------------- | ------- | ------------------- |
-| macOS 14, Intel 64-bit                            | **yes** | **yes**             |
-| macOS 14, Apple Silicon 64-bit                    | **yes** | **yes**             |
-| Linux Ubuntu 24.02, Intel 64-bit                  | **yes** | **yes**             |
-| Linux Ubuntu 24.02, ARM 64-bit                    | **yes** | **yes**             |
-| Linux Debian 12 (Bookworm), Intel 32-bit          | **yes** | **yes**             |
-| Linux Raspi Pi OS 6 (Trixie), ARM 32-bit (armv6l) | **yes** | **yes**             |
-| Windows 10 (2022), Intel 64-bit                   | **yes** | **yes**             |
-| Windows 11 (2022), ARM 64-bit<br> (emulated)      | **yes** | **yes**             |
-| Windows 10 (2022), Intel 32-bit                   | **yes** | **yes**             |
+| Computing platform                 | Minimal OS/GLIBC version             |
+| ---------------------------------- | ------------------------------------ |
+| macOS, Intel 64-bit                | macOS 10.15                          |
+| macOS, Apple Silicon 64-bit        | macOS 11.0                           |
+| Linux Ubuntu, Intel 64-bit         | GLIBC 2.35 (Ubuntu 22.04, Debian 12) |
+| Linux Ubuntu, ARM 64-bit           | GLIBC 2.35 (Ubuntu 22.04, Debian 12) |
+| Linux Debian, Intel 32-bit         | GLIBC 2.36 (Debian 12)               |
+| Linux Debian, ARM 32-bit (armv6l)  | GLIBC 2.36 (Debian 12, Pi OS 5)      |
+| Windows, Intel 64-bit              | Windows 10                           |
+| Windows, ARM 64-bit (emulated)[^*] | Windows 11                           |
+| Windows, Intel 32-bit              | Windows 10                           |
 
-As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.
-
-While some efforts have been made to make the software as broadly compatible as possible, it can happen that some tools may fail if you use a platform different from the above or an older version than the one stated above (see [Troubleshooting](troubleshooting.md) section).
+[^*]: The *libusb* library does not work for programs executed on ARM CPUs when in emulation mode. For this reason, debugging probes using USB bulk transfer are not supported on ARM CPUs. It is planned to build native ARM binaries in the future as well, which will solve this problem.
 

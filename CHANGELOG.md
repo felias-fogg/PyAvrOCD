@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.0 (12-Oct-2026)
+
+- **Fixed:**
+     - The stand-alone `pyavrocd` archives for Linux carried only the executable and could not start. The packing script removed `pyavrocd-util`, which was right while *staticx* turned the build into a single file, but since 1.6.0 the Linux builds are `onedir` and need that directory.
+     - The SVD files were missing from the Linux packages, so the peripheral register view of the IDE had nothing to read there. They are now part of every package.
+- **Changed:**
+     - The binaries ask less of the system again. Linux x86_64 and aarch64 require GLIBC 2.35 instead of 2.38, which covers Debian 12, Ubuntu 22.04 and Raspberry Pi OS bookworm once more; macOS arm64 requires 11.0 and Intel macOS 10.15, instead of 14 in both cases. For macOS this took building *libusb* from source in the workflow, because a Homebrew bottle is built for the runner's own macOS and raised the deployment target of the whole bundle.
+     - What a build demands of the system is now measured from the binaries themselves during the release workflow, compared against a ceiling that fails the build if it is exceeded, and written into the `package.json` of the Arduino tool package as `systemBaseline`.
+     - The Linux binaries are stripped, which takes some 15 MB off each 64-bit package.
+     - Every release now runs a real debug session on each platform -- avr-gdb through PyAvrOCD into simavr, including `load`, a breakpoint and reading a variable -- instead of only starting the binary once.
+     - The i686 Linux client is built by the release workflow in a 32-bit Debian container instead of a local virtual machine.
+     - simavr is now built for 32-bit Windows as well, because the old Java-based Arduino IDE downloads the 32-bit package whatever the machine. The simavr archives also no longer carry their development files, which saves about 3.7 MB per package.
+     - The device descriptions now state where their data comes from and under which license. Dependencies are declared in groups, so installing the server no longer pulls in the documentation generator and the linting tools.
+
 ## 1.6.1 (23-Sep-2026)
 
 - **Fixed:**

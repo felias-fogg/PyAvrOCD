@@ -17,6 +17,8 @@ import logging
 import textwrap
 import sys
 import copy
+import re
+import subprocess
 from time import sleep
 import os
 import pexpect
@@ -83,7 +85,7 @@ schema = { 'includes': [ '<STR>' ],
                                'autopower': '<BOOL>',
                                'dirty': '<BOOL>',
                                'nolto': '<BOOL>',
-                               'autopc': '<BOOL>',
+                               'nolock': '<BOOL>',
                                'usb': '<BOOL>' },
                         'clocks': [ '<NUMBER>' ],
                         'core': '<STR>',
@@ -331,6 +333,57 @@ def import_steps(spec : dict [ str, Any ]) -> None:
     for t in spec['tests']:
         spec['tests'][t]['steps'] = resolve(t, t)
 
+# Libraries the sketches need, kept here so that every machine compiles the same
+# thing. Without this the compilation depends on what happens to sit in the
+# sketchbook of whoever runs the tests.
+LIBRARIES = "libraries"
+
+AVRDUDE_MIN = (8, 0)
+
+def avrdude_version() -> tuple [ int, int ] | None:
+    """
+    Version of the avrdude on PATH, which is the one the sketch Makefiles call.
+    That is not the avrdude arduino-cli uses for uploads; a core brings its own.
+    """
+    try:
+        done = subprocess.run(["avrdude"], capture_output=True, text=True,
+                              timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    found = re.search(r"version\s+(\d+)\.(\d+)", done.stdout + done.stderr, re.IGNORECASE)
+    return (int(found.group(1)), int(found.group(2))) if found else None
+
+def check_avrdude(spec : dict [ str, Any ], script_list : list [ str ]) -> bool:
+    """
+    Some sketch Makefiles set fuses with 'avrdude -T "config ..."', which needs
+    avrdude 8 or later. Those recipes are prefixed with '-', so make swallows the
+    failure and the test then runs against fuses that were never changed. Refuse
+    to start instead of measuring the wrong thing.
+    """
+    needy = [ ]
+    for test in script_list:
+        sketch = spec['tests'][test].get('sketch')
+        if not sketch:
+            continue
+        makefile = os.path.join('sketches', sketch, 'Makefile')
+        if not os.path.exists(makefile):
+            continue
+        with open(makefile, encoding="utf-8") as src:
+            if any('avrdude' in line and ' -T' in line for line in src):
+                needy.append(test)
+    if not needy:
+        return True
+    version = avrdude_version()
+    if version is None:
+        logger.critical("No avrdude on PATH, but %s set fuses with it", sorted(needy))
+        return False
+    if version < AVRDUDE_MIN:
+        logger.critical("avrdude %d.%d is too old for %s, which need 'avrdude -T config' "
+                        "from version %d.%d on", version[0], version[1], sorted(needy),
+                        AVRDUDE_MIN[0], AVRDUDE_MIN[1])
+        return False
+    return True
+
 def check_clocks(spec : dict [ str, Any ]) -> None:
     """
     Check that every clock frequency a device offers has an entry in the clock table of
@@ -512,6 +565,7 @@ def compile_arduino(sketch : str, spec : dict [ str, Any ],
     fqbn = build_fqbn(dev, clock, spec)
     logger.info("FQBN: %s", fqbn)
     cmd = f"arduino-cli compile --clean -b {fqbn} --export-binaries"
+    cmd += f" --libraries {LIBRARIES}"     # so that a host's sketchbook does not matter
     cmd += f" --optimize-for-debug --output-dir sketches/{sketch} sketches/{sketch}"
     return run_compile_command(cmd)
 
@@ -523,7 +577,23 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     logger.info("Compile '%s' with make for %s / clock: %s MHz", sketch, dev, clock)
     mcu = spec['devices'][dev]['mcu']
     cclock = spec['cores'][spec['devices'][dev]['core']]['clock'][clock]['value']
-    cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog} fresh"
+    # A Makefile that sets fuses needs to know which the part has. DWEN in
+    # particular exists only on debugWIRE parts, and some tests run on JTAG parts
+    # as well.
+    provides = spec['devices'][dev]['provides']
+    caps = " ".join(f"{name.upper()}={'yes' if provides.get(name) else 'no'}"
+                    for name in ('dw', 'jtag', 'updi'))
+    # A board that declares 'nolock' cannot have its lock bits written, whatever
+    # debugger is attached to it: on the Xplained Mini boards the SUFFER fuses
+    # prevent it. An mEDBG counts as well, because an Xplained Mini run as the
+    # bare chip it carries picks a device entry that knows nothing of the board.
+    medbg = prog.startswith('xplainedmini')
+    if medbg and not provides.get('nolock'):
+        logger.warning("The attached debugger is an mEDBG, which cannot write lock bits, "
+                       "although device '%s' does not declare 'nolock'", dev)
+    caps += " LOCK=" + ("no" if provides.get('nolock') or medbg else "yes")
+    cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog}"
+    cmd += f" {caps} fresh"
     return run_compile_command(cmd)
 
 #pylint: disable=unused-argument
@@ -665,6 +735,14 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
     if resp >= 1:
         report_failure(child, "Failed %s calling avr-gdb" % script)
         return False
+    # Responses are matched line by line, so a line gdb wrapped to the terminal
+    # width does not match any more. Where the wrap falls depends on the length of
+    # the paths it prints, which differs from machine to machine.
+    for setting in ("set width unlimited", "set height unlimited"):
+        child.sendline(setting)
+        if child.expect([r"\(gdb\)", TIMEOUT, EOF], timeout=5) >= 1:
+            report_failure(child, "Failed %s sending '%s'" % (script, setting))
+            return False
     for s in steps:
         ok, succfail = exec_step(child, s)
         if not ok:
@@ -793,6 +871,9 @@ def main() -> int:
 
     # create list of feasible tests
     all_scripts, script_list = select_tests(spec, args.dev, args.script)
+
+    if not check_avrdude(spec, script_list):
+        return 1
 
     # run scripts
     try:

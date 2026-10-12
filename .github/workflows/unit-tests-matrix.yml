@@ -1,13 +1,25 @@
 name: Unit test matrix
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:   # to run it manually
+  # Once a week, so that the day a dependency drops Python 3.10 (or 3.14 breaks
+  # something) shows up here and not in a user's report. Two things about cron
+  # in Actions: a schedule only ever runs the copy of this file on the default
+  # branch, and GitHub disables scheduled workflows in a repository that has
+  # seen no activity for 60 days. The minute is not 0 on purpose -- most
+  # schedules sit on the hour, and runs there get queued behind them.
+  schedule:
+    - cron: '37 5 * * 1'   # Mondays, 05:37 UTC
 
 jobs:
   check-all:
     strategy:
+      # Without this one red cell cancels the rest, and the question "which
+      # combinations are broken" turns back into "one of them is".
+      fail-fast: false
       matrix:
         os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
     defaults:
       run:
         shell: bash
@@ -32,9 +44,11 @@ jobs:
           path: ~/.cache
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction --no-root --all-extras
       - name: Install library
-        run: poetry install --no-interaction
+        # --all-extras, because the dev tools moved from 'dependencies' into
+        # extras: without it there is no pytest in the environment.
+        run: poetry install --no-interaction --all-extras
       - name: Unit tests
         run: |
           source $VENV

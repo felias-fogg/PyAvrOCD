@@ -1,0 +1,110 @@
+name: Build the i686 Linux client
+
+# A trial run, started by hand, for the one client that is still built on a
+# virtual machine at home.
+#
+# PyInstaller cannot cross-compile: it packs the interpreter it is itself
+# running under, so a 32-bit client needs a 32-bit Python on a machine that
+# executes 32-bit code. GitHub has no i686 Linux runner -- but an x86_64 runner
+# runs i386 code natively, so a 32-bit container is enough and no QEMU is
+# involved, unlike the armhf job.
+#
+# The container has to be Debian. Ubuntu reduced i386 to a handful of library
+# packages years ago and has no python3 for it; Debian still carries the
+# architecture in full. Bookworm brings Python 3.11, which is what the machine
+# at home uses as well, so the result does not change: GLIBC 2.36 is the floor
+# either way. Bullseye would lower that to 2.31 but only offers Python 3.9,
+# below what this project supports.
+
+on:
+  workflow_dispatch:
+  # Temporary, and the reason is not convenience: GitHub lists and dispatches a
+  # workflow_dispatch workflow only from the default branch, and this one lives
+  # on v2. A push trigger does not care about that -- it runs the copy on the
+  # branch it was pushed to. Narrowed to this file so that ordinary work on v2
+  # does not start a build, which also means every correction to the job starts
+  # it. Remove this block once the file has reached main.
+  push:
+    branches: [v2]
+    paths: ['.github/workflows/build-i686-linux.yml']
+
+jobs:
+  build-i686-linux-gnu:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build in a 32-bit Debian container
+        # The script goes in through stdin ('bash -s'), which keeps it free of
+        # the quoting that a 'bash -c' string would need. -e stops at the first
+        # failure, -x puts every command in the log.
+        run: |
+          docker run --rm -i --platform linux/386 \
+            -v "$PWD":/src -w /src \
+            i386/debian:bookworm bash -exs <<'SCRIPT'
+          uname -m
+          apt-get update
+          # Python, plus a compiler. The first run settled what is actually
+          # needed here: hidapi arrives as a prebuilt manylinux_2_28_i686 wheel,
+          # so libusb and libudev headers are not required, and svd2py is pure
+          # Python and pulls no lxml, so libxml2 and libxslt are not either.
+          # What does get built from source is markupsafe and pyyaml, and that
+          # is what build-essential and python3-dev are for.
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            python3 python3-venv python3-dev build-essential
+          python3 --version
+          ldd --version | sed -n 1p
+          python3 -m venv /tmp/env
+          /tmp/env/bin/pip install --upgrade pip
+          /tmp/env/bin/pip install '.[build]'
+          rm -rf dist build
+          /tmp/env/bin/pyinstaller -y pyavrocd.spec
+          # Does the packed client actually start? -V answers from the frozen
+          # interpreter, the two lists walk the device and tool tables, which is
+          # where a missing hidden import usually shows up.
+          ./dist/pyavrocd/pyavrocd -V
+          ./dist/pyavrocd/pyavrocd -d '?' -t '?'
+          SCRIPT
+
+      - name: Hand the files back
+        # The container runs as root, so everything it wrote belongs to root on
+        # the host too, and the upload step cannot read it.
+        run: sudo chown -R "$(id -u):$(id -g)" dist build
+
+      - name: What it demands of the system
+        # Measured, not assumed. readelf reads i386 ELF on an x86_64 host
+        # without further ado.
+        # A read loop rather than 'xargs -I{}': BSD xargs has a length limit on
+        # the replacement and answers "command line cannot be assembled, too
+        # long". The '|| true' inside the substitution matters as well, because
+        # the shell runs with pipefail: grep or vtool finding nothing in a file
+        # would otherwise end the whole step. And the list goes through a file
+        # rather than into 'head': head closes the pipe after its ten lines,
+        # sort takes a SIGPIPE for it, and pipefail turns that into a failure.
+        run: |
+          file dist/pyavrocd/pyavrocd
+          readelf -d dist/pyavrocd/pyavrocd | grep NEEDED || echo "(nothing)"
+          echo "--- the ten highest, with the file that asks for it ---"
+          find dist/pyavrocd -type f -print0 | while IFS= read -r -d '' f; do
+            v=$(readelf -V "$f" 2>/dev/null | grep -o 'GLIBC_2\.[0-9]*' | sort -uV | tail -1 || true)
+            if [ -n "$v" ]; then echo "$v $f"; fi
+          done | sort -rV > "$RUNNER_TEMP/floors.txt"
+          head -10 "$RUNNER_TEMP/floors.txt"
+          want="2.36"
+          have=$(sed -n 1p "$RUNNER_TEMP/floors.txt" | cut -d' ' -f1 | sed 's/GLIBC_//')
+          if [ "$(printf '%s\n%s\n' "$have" "$want" | sort -V | tail -1)" != "$want" ]; then
+            echo "::error::requires GLIBC $have, allowed at most $want -- the first line above names the file"
+            exit 1
+          fi
+          echo "OK: nothing demands more than GLIBC $want"
+          # The measured value travels with the build: packer.sh reads this file and puts it into the package.json as systemBaseline, so the number exists exactly once -- here, where it was measured.
+          echo "glibc $want" > dist/pyavrocd/SYSTEM_BASELINE
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: i686-linux-gnu
+          path: dist/pyavrocd/*
+          overwrite: true
+          include-hidden-files: true
+          if-no-files-found: error

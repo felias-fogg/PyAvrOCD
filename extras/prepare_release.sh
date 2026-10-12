@@ -1,20 +1,32 @@
 #!/bin/bash
-DEFAULT_SERVER=bookworm
-if [[ "$(pwd)" != "/Users/nebel/GitHub/DEBUG/PyAvrOCD" ]]; then
+# Checks that everything is in place for a release.
+#
+# Until the i686 Linux client moved into the release workflow -- it is built
+# there in a 32-bit Debian container on an ordinary x86_64 runner -- this script
+# also built it: boot the Debian VM, build over ssh, copy the result back,
+# commit it. None of that is needed any more. What remains are the checks that
+# used to precede it.
+# Not a hardwired path any more: that one said /Users/nebel/GitHub/PyAvrOCD and
+# refused to run once the repository had moved. Asking git also covers the case
+# of being outside a repository at all, where the left side comes back empty.
+if [[ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd)" ]]; then
     echo "Invoke the script only in the root folder of the repo!"
     exit 1
 fi
-if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ -n "$3" ]]; then
-    echo "Usage: ./extra/prepare_release <release id> [ <server> ]"
+if [[ -z "$1" ]] || [[ "$1" == "-h" ]] || [[ -n "$2" ]]; then
+    echo "Usage: ./extras/prepare_release <release id>"
     exit 1
 fi
-echo "Preparing everything for a release ..."
-if [[ -n "$2" ]]; then
-    SERVER=$2
-else
-    SERVER=$DEFAULT_SERVER
+echo "Checking everything for a release ..."
+# First, because the check after it compares against origin/main and would be
+# meaningless anywhere else: a release is cut from main, and a tag on another
+# branch would ship whatever that branch happens to contain.
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [[ "$BRANCH" != "main" ]]; then
+    echo "A release is built from main, but this is ${BRANCH}"
+    echo "Merge into main first, then run the script there"
+    exit 1
 fi
-
 if [[ -n $(git status -s -uno 2>/dev/null) ]]; then
     echo "Please commit changes first"
     exit 1
@@ -23,7 +35,7 @@ if [[ -n $(git log origin/main..HEAD 2>/dev/null) ]]; then
     echo "There are unpushed commits"
     exit 1
 fi
-poetry install -q
+poetry install -q --all-extras
 VER=$(poetry run pyavrocd -V)
 VERSTR=v${VER#*version }
 if [[ "$VERSTR" != "$1" ]]; then
@@ -31,71 +43,5 @@ if [[ "$VERSTR" != "$1" ]]; then
     echo "System version: ${VERSTR}"
     exit 1
 fi
-echo "Trying to reach server ${SERVER} ..."
-if ping -c 3 ${SERVER} &>/dev/null; then
-    echo "... ${SERVER} is reachable"
-else
-    echo "${SERVER} is not reachable"
-    echo "Start Ubuntu on Intel machine and login"
-    echo "Start QEMU/KVM (Virtuelle Maschinenverwaltung)"
-    echo "Boot debian12-fresh"
-    exit 1
-fi
-
-echo "Updating repo on server ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; git pull"
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Setting up virtual environment ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; python3 -m venv env; env/bin/python3 -m pip install --upgrade pip"
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Installing everything ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; env/bin/pip install ."
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Cleaning build directories ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; rm -rf dist build"
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Running pyinstaller ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; env/bin/pyinstaller -y pyavrocd.spec"
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Test run ..."
-ssh ${SERVER} "cd GitHub/PyAvrOCD; ./dist/pyavrocd/pyavrocd -V"
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Remove old version ..."
-rm -rf extras/binaries/i686-linux-gnu/pyavrocd*
-
-echo "Download new version from server ..."
-scp -r ${SERVER}:./GitHub/PyAvrOCD/dist/pyavrocd/* extras/binaries/i686-linux-gnu/
-if [[ $? != 0 ]]; then
-    exit 1
-fi
-
-echo "Delete duplicate gensvd.py ..."
-rm -f extras/binaries/i686-linux-gnu/pyavrocd-util/svd/gensvd.py
-
-echo "Add VERSION file ..."
-echo -n "${VERSTR}" > extras/binaries/i686-linux-gnu/VERSION
-
-echo "Commit and upload to GitHub remote repo ..."
-git add extras/binaries/i686-linux-gnu/
-git commit -m "New i686-linux-gnu binaries ${VERSTR}"
-git push
-
+echo "Version ${VERSTR} matches, nothing uncommitted, nothing unpushed."
 echo "Now you can create a new release ..."
