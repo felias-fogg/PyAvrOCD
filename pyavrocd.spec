@@ -24,14 +24,22 @@ if platform.uname().system == "Darwin":
                    ('/opt/homebrew/Cellar/libusb/1.0.*/lib/libusb-1.0.dylib', '.')]
 
 
+# Only the device descriptions: xavrdebugger loads them by name at runtime
+# (getdeviceinfo("pyavrocd.deviceinfo.devices." + devicename)), so import
+# analysis cannot see them. Collecting all of pyavrocd.deviceinfo would also
+# drag in the three generator scripts harvest.py, collect.py and addsvd.py,
+# and through addsvd its import of svd2py -- none of which the server imports.
 hiddenimports = []
-hiddenimports += collect_submodules('pyavrocd.deviceinfo')
 hiddenimports += collect_submodules('pyavrocd.deviceinfo.devices')
 
-if platform.uname().system != 'Linux':
-    datalist = [('./svd','svd')]
-else:
-    datalist = []
+# The SVD files are not read by the server -- monitor.py takes its register
+# descriptions from device_info['svd'], baked into the device modules -- but
+# the IDE's peripheral register view reads them from inside the package:
+# debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd in
+# the cores' platform.txt. So they ship on every platform. Linux used to be
+# excluded, presumably because staticx had to pack everything into a single
+# file, which left Linux users without that view.
+datalist = [('./svd','svd')]
 
 a = Analysis(
     ['pyavrocd/main.py'],

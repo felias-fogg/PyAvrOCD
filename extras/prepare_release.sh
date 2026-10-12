@@ -32,7 +32,7 @@ if [[ -n $(git log origin/main..HEAD 2>/dev/null) ]]; then
     echo "There are unpushed commits"
     exit 1
 fi
-poetry install -q
+poetry install -q --all-extras
 VER=$(poetry run pyavrocd -V)
 VERSTR=v${VER#*version }
 if [[ "$VERSTR" != "$1" ]]; then

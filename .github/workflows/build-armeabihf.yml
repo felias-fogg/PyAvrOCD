@@ -36,7 +36,7 @@ jobs:
             sudo apt install -y python3.11-venv   # bookworm's Python
             python3 -m venv env
             . ./env/bin/activate
-            pip install --no-input .
+            pip install --no-input '.[build]'
             pyinstaller -y pyavrocd.spec
             # Can the two shipped clients debug together on armhf? Only answerable
             # in here: emulation is the only armhf userland available. avr-gdb comes

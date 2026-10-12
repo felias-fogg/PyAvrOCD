@@ -114,10 +114,14 @@ for dir in binaries/*; do
 		rm -rf tools
                 cp -r $dir/pyavrocd* tool/
                 echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", ${BASEFRAG}\"system\": \"${SYSTEM}\"} > tool/package.json
+                # The stand-alone server does not need the SVD files: those are for
+                # the IDE's register view, which gets them from the tools package
+                # above. Everything else in pyavrocd-util stays -- it holds
+                # libpython and the extension modules. Linux used to have the whole
+                # folder removed here, which was right while staticx made a single
+                # file out of the build, but since 1.6.0 (staticx gone, onedir on
+                # every platform) it left an executable that cannot start.
                 rm -rf tool/pyavrocd-util/svd
-                if [[ $type == *"linux"* ]];then
-                    rm -rf tool/pyavrocd-util
-                fi
                 command -v xattr >/dev/null && xattr -r -d com.apple.quarantine tool 2>/dev/null || true
                 tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/pyavrocd-${type}.tar.gz tool/
 	    fi

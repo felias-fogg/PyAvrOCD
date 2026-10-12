@@ -57,7 +57,7 @@ jobs:
           ldd --version | sed -n 1p
           python3 -m venv /tmp/env
           /tmp/env/bin/pip install --upgrade pip
-          /tmp/env/bin/pip install .
+          /tmp/env/bin/pip install '.[build]'
           rm -rf dist build
           /tmp/env/bin/pyinstaller -y pyavrocd.spec
           # Does the packed client actually start? -V answers from the frozen
