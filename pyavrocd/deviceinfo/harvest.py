@@ -542,6 +542,9 @@ def harvest_from_file(filename : str) -> tuple[ str, list[str]]:
     toie0_mask = None
     cs0_base = None
     buf_per_page = None
+    signature = None
+    devicename = None
+    architecture = None
 
     memories : dict[str, Any] = {}
     masked = []
