@@ -6,7 +6,10 @@
 # also built it: boot the Debian VM, build over ssh, copy the result back,
 # commit it. None of that is needed any more. What remains are the checks that
 # used to precede it.
-if [[ "$(pwd)" != "/Users/nebel/GitHub/PyAvrOCD" ]]; then
+# Not a hardwired path any more: that one said /Users/nebel/GitHub/PyAvrOCD and
+# refused to run once the repository had moved. Asking git also covers the case
+# of being outside a repository at all, where the left side comes back empty.
+if [[ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd)" ]]; then
     echo "Invoke the script only in the root folder of the repo!"
     exit 1
 fi

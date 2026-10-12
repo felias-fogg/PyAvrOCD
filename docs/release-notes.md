@@ -1,5 +1,14 @@
 # Release Notes
 
+## Release v1.7.0
+
+- The binaries run on older systems again: Linux x86_64 and ARM64 need GLIBC 2.35 instead of 2.38, so Debian 12, Ubuntu 22.04 and Raspberry Pi OS bookworm are supported once more. On macOS, the ARM64 binaries need 11.0 (Big Sur) and the Intel binaries 10.15 (Catalina), where both needed 14 (Sonoma) before.
+- Every tool package now states what it requires in its `package.json`, under `systemBaseline`, measured from the binaries themselves.
+- The SVD files are now part of the Linux packages as well, so the peripheral register view works there too.
+- The stand-alone `pyavrocd` archives for Linux were incomplete and would not start. This is fixed.
+- The Linux binaries are about 15 MB smaller.
+- simavr is now available for 32-bit Windows, for those who still run the old Java-based Arduino IDE.
+
 ## Release v1.6.0
 
 - Hopefully, the Linux binaries will be forward-compatible more often now that we are not using *staticx* anymore.
