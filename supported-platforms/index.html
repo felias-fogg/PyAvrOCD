@@ -147,66 +147,62 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="supported-platforms">Supported platforms</h1>
-<p>As the name suggests, PyAvrOCD is a Python script, which means it is basically platform-agnostic. A critical dependence is the <a href="https://github.com/libusb/hidapi/">HIDAPI library</a> and the <a href="https://pypi.org/project/hidapi/">Python interface</a> to it. The HIDAPI library works apparently for Linux, FreeBSD, macOS, and Windows. It may be possible to build it also for other platforms.</p>
-<p>One can distinguish the support of PyAvrOCD based on whether one can install the package via PyPI using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing">pip</a>, or even better <a href="https://pipx.pypa.io/stable/">pipx</a>, or whether there is additionally Arduino support, meaning that you install an Arduino core and you get all tools (avr-gdb, simavr) and configurations (svd files) with it. In the table below, you can see which platform is supported in which way. Anything in boldface means that I have tested it.</p>
+<p>As the name suggests, PyAvrOCD is a Python package. As such, you can install it from PyPI using <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/#use-pip-for-installing">pip</a>, or even better <a href="https://pipx.pypa.io/stable/">pipx</a>. The main requirement is that your Python installation should have a version number between 3.10 and 3.14, inclusively. Since it is Python,  the package is basically platform-agnostic. A critical dependence is the <a href="https://github.com/libusb/hidapi/">HIDAPI library</a> and the <a href="https://pypi.org/project/hidapi/">Python interface</a> to it, which is needed to communicate with the EDBG-based debuggers over USB. The HIDAPI library apparently works for Linux, FreeBSD, macOS, and Windows, and there are Python wheels (binaries) that can be used for all of these platforms.</p>
+<p>The minimal requirements for binary packages as downloaded, e.g., by the Arduino IDE, are displayed in the following table.</p>
 <table>
 <thead>
 <tr>
-<th>Platform</th>
-<th>PyPI</th>
-<th>Arduino<br> support</th>
+<th>Computing platform</th>
+<th>Minimal OS/GLIBC version</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>macOS 14, Intel 64-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>macOS, Intel 64-bit</td>
+<td>macOS 10.15</td>
 </tr>
 <tr>
-<td>macOS 14, Apple Silicon 64-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>macOS, Apple Silicon 64-bit</td>
+<td>macOS 11.0</td>
 </tr>
 <tr>
-<td>Linux Ubuntu 24.02, Intel 64-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Linux Ubuntu, Intel 64-bit</td>
+<td>GLIBC 2.35 (Ubuntu 22.04, Debian 12)</td>
 </tr>
 <tr>
-<td>Linux Ubuntu 24.02, ARM 64-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Linux Ubuntu, ARM 64-bit</td>
+<td>GLIBC 2.35 (Ubuntu 22.04, Debian 12)</td>
 </tr>
 <tr>
-<td>Linux Debian 12 (Bookworm), Intel 32-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Linux Debian, Intel 32-bit</td>
+<td>GLIBC 2.36 (Debian 12)</td>
 </tr>
 <tr>
-<td>Linux Raspi Pi OS 6 (Trixie), ARM 32-bit (armv6l)</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Linux Debian, ARM 32-bit (armv6l)</td>
+<td>GLIBC 2.36 (Debian 12, Pi OS 5)</td>
 </tr>
 <tr>
-<td>Windows 10 (2022), Intel 64-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Windows, Intel 64-bit</td>
+<td>Windows 10</td>
 </tr>
 <tr>
-<td>Windows 11 (2022), ARM 64-bit<br> (emulated)</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Windows, ARM 64-bit (emulated)<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
+<td>Windows 11</td>
 </tr>
 <tr>
-<td>Windows 10 (2022), Intel 32-bit</td>
-<td><strong>yes</strong></td>
-<td><strong>yes</strong></td>
+<td>Windows, Intel 32-bit</td>
+<td>Windows 10</td>
 </tr>
 </tbody>
 </table>
-<p>As mentioned above, FreeBSD should work as well, but I couldn't convince myself so far to install another OS on my machines in order to test it.</p>
-<p>While some efforts have been made to make the software as broadly compatible as possible, it can happen that some tools may fail if you use a platform different from the above or an older version than the one stated above (see <a href="../troubleshooting/">Troubleshooting</a> section).</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:*">
+<p>The <em>libusb</em> library does not work for programs executed on ARM CPUs when in emulation mode. For this reason, debugging probes using USB bulk transfer are not supported on ARM CPUs. It is planned to build native ARM binaries in the future as well, which will solve this problem.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
               
             </div>
           </div><footer>

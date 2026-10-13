@@ -160,7 +160,7 @@
 <p>Under Linux, users may need to add a few <code>udev</code> rules before they can use PyAvrOCD. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
 </div>
 <h2 id="arduino-ide-2-arduino-maker-workshop-and-platformio">Arduino IDE 2, Arduino Maker Workshop, and PlatformIO</h2>
-<p>If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to <a href="../supporting-packages/">install a debug-enabled Arduino package</a> in the IDE or set <a href="../debugging-software/#platformio-and-visual-studio-code">the right platform</a> in your <code>platform.ini</code> configuration file. </p>
+<p>If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to <a href="../supporting-packages/">install a debug-enabled Arduino package</a> in the IDE or set <a href="../debugging-software/#platformio-and-visual-studio-code">the right platform</a> in your <code>platform.ini</code> configuration file.</p>
 <h2 id="downloading-binaries">Downloading binaries</h2>
 <p>In order to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly. This can be done, e.g., by downloading the binaries.</p>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">PyAvrOCD GitHub repo</a>, and download  the archive containing the binary for your architecture from the set of assets of the latest <code>Releases</code>.  This archive includes the folder <code>tools</code>.</p>
@@ -232,7 +232,7 @@ Now you should be able to start the GDB server. The binary is stored under <code
 </details>
 <p></p>
 
-<p>Note that the folder with <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">SVD</a> files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the <a href="https://github.com/felias-fogg/PyAvrOCD/releases/tag/v0.22.0">release page</a> of the GitHub repo. The release asset is called <code>svd.tar.gz</code>.</p>
+<p>Note that the folder with <a href="https://arduino-craft-corner.de/index.php/2025/08/01/system-view-descriptions-of-avr-mcus/">SVD</a> files is not part of the PyPI installation. If you want to use SVD files, they have to be downloaded separately from the <a href="https://github.com/felias-fogg/PyAvrOCD/releases/latest">release page</a> of the GitHub repo. The release asset is called <code>svd.tar.gz</code>.</p>
 <h2 id="github">GitHub</h2>
 <p>Alternatively, you can download or clone the <a href="https://github.com/felias-fogg/PyAvrOCD">GitHub repository</a>. Additionally, you need to install a Python package manager, for instance, <a href="https://python-poetry.org">Poetry</a>, which can be used to install and run the package.</p>
 <details>

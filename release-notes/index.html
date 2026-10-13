@@ -106,6 +106,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v170">Release v1.7.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v160">Release v1.6.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v158">Release v1.5.8</a>
@@ -215,6 +217,15 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v170">Release v1.7.0</h2>
+<ul>
+<li>The binaries run on older systems again: Linux x86_64 and ARM64 need GLIBC 2.35 instead of 2.38, so Debian 12, Ubuntu 22.04 and Raspberry Pi OS bookworm are supported once more. On macOS, the ARM64 binaries need 11.0 (Big Sur) and the Intel binaries 10.15 (Catalina), where both needed 14 (Sonoma) before.</li>
+<li>Every tool package now states what it requires in its <code>package.json</code>, under <code>systemBaseline</code>, measured from the binaries themselves.</li>
+<li>The SVD files are now part of the Linux packages as well, so the peripheral register view works there too.</li>
+<li>The stand-alone <code>pyavrocd</code> archives for Linux were incomplete and would not start. This is fixed.</li>
+<li>The Linux binaries are about 15 MB smaller.</li>
+<li>simavr is now available for 32-bit Windows, for those who still run the old Java-based Arduino IDE.</li>
+</ul>
 <h2 id="release-v160">Release v1.6.0</h2>
 <ul>
 <li>Hopefully, the Linux binaries will be forward-compatible more often now that we are not using <em>staticx</em> anymore.</li>

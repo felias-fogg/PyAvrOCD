@@ -146,23 +146,44 @@
                 <h1 id="how-to-produce-a-new-release">How to produce a new release</h1>
 <ul>
 <li>
-<p>Commit and push any changes.</p>
+<p>Commit and push everything that belongs in the release. Three places say what
+  it is: the version in <code>pyproject.toml</code>, the text for the release page in
+  <code>docs/release-notes.md</code>, and the details in <code>CHANGELOG.md</code>.</p>
 </li>
 <li>
 <p>Go into the root folder and call</p>
-<p><code>./extras/prepare_release.sh &lt;release-id&gt;</code></p>
+<p><code>./extras/release.sh &lt;version&gt;</code></p>
+</li>
+</ul>
+<p>for instance <code>./extras/release.sh 1.7.1</code>. With <code>-n</code> it says what it would do
+  and does nothing.</p>
+<ul>
+<li>
+<p>The script checks everything that can be checked here: that it runs in the
+  root folder, that this is <code>main</code>, that nothing is uncommitted and nothing
+  unpushed, that <code>pyproject.toml</code> states this version, that <code>CHANGELOG.md</code> and
+  <code>docs/release-notes.md</code> have an entry for it, and that the tag does not exist
+  yet. Then it asks once and pushes the tag.</p>
 </li>
 <li>
-<p>This will check whether we are really ready to make a new release by checking the release-id and checking whether there are uncommitted/unpushed changes.</p>
+<p>The tag starts the release workflow, and that does the rest: the checks again
+  on the tagged commit, type check, lint and unit tests, the clients for all
+  eight platforms, the debug test on each of them, the tool packages, then the
+  release itself -- with the section from <code>docs/release-notes.md</code> as its text
+  and the tool archives as its assets -- and finally PyPI.</p>
 </li>
 <li>
-<p>Then it will connect to bookworm.fogg (a virtual i686 machine) and produce the i686-linux-gnu version of PyAvrOCD, which will be copied to the corresponding binary folder.</p>
+<p>So nothing has to be created in the web interface any more. The release
+  appears only once everything before it has passed, which also means a failed
+  build leaves nothing half-published behind: delete the tag and push it again.</p>
 </li>
 <li>
-<p>After it, these changes are uploaded to GitHub.</p>
-</li>
-<li>
-<p>Then you need to create a release on the Web UI.</p>
+<p>A release candidate (<code>./extras/release.sh 1.7.1rc1</code>) goes through the same
+  machinery and is built and tested exactly like a release, but it stays on
+  GitHub, marked as a pre-release. PyPI only ever sees a plain version, so a
+  candidate is something you hand to the people you want to try it, and nobody
+  else runs into it. Only the tag decides this: anything that is not
+  <code>v&lt;number&gt;.&lt;number&gt;.&lt;number&gt;</code> is a pre-release.</p>
 </li>
 </ul>
               
