@@ -1,12 +1,21 @@
-# Triggered by a new release, it will do a basic check on version number and unit tests.
-# Then it will build the binaries and creates the binary release assets and the downloadable
-# tools for Arduino
-# Finally, it will upload the new version to PyPI
+# Started by a tag, this checks the version number and runs the tests, builds
+# the binaries for all eight platforms, packs the downloadable tools for Arduino,
+# creates the release with those assets, and uploads the new version to PyPI.
+#
+# A release is started with
+#
+#     ./extras/release.sh 1.7.1
+#
+# which checks what can be checked locally and then pushes the tag. The release
+# itself is created here, at the end, once everything has passed -- so a failed
+# build leaves no half-published release behind. A run started by hand builds
+# everything and publishes nothing; that is the dry run.
 name: Release workflow
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch: # to run it manually
     inputs:
       build_armhf:
@@ -20,55 +29,88 @@ jobs:
       run:
         shell: bash
     runs-on: "ubuntu-24.04"
+    outputs:
+      # Whether this is a release for everyone, read further down by the two
+      # steps that treat a candidate differently.
+      final: ${{ steps.kind.outputs.final }}
     steps:
-      # Before anything is checked out or built: a release is cut from main. The
-      # local prepare_release.sh says the same, but that is a pre-flight check
-      # one runs by hand, while a tag can be created in the web interface on any
-      # branch -- and then the whole release would ship whatever that branch
-      # happens to contain. target_commitish is what the tag was created on, a
-      # branch name or, if it was made on a commit, that commit's SHA, which is
-      # not main either and fails here just as well.
-      - name: A release comes from main
-        if: ${{ github.event.release.tag_name != '' }}
-        run: |
-          echo "Release was created on: ${{ github.event.release.target_commitish }}"
-          test "${{ github.event.release.target_commitish }}" = main
-
       - name: Check out repository
-        if: ${{ github.event.release.tag_name != '' }}
+        if: ${{ github.event_name == 'push' }}
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0     # the step below compares the tag against main
+
+      # A release is cut from main. A tag can be pushed from any branch, and the
+      # whole release would then ship whatever that branch happens to contain.
+      # The local release.sh refuses to tag anywhere but main, but that is a
+      # pre-flight check one can skip by tagging by hand, so it is checked here
+      # as well: the tagged commit has to be one that main already has.
+      - name: A release comes from main
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git fetch -q origin "+refs/heads/main:refs/remotes/origin/main"
+          if ! git merge-base --is-ancestor HEAD refs/remotes/origin/main; then
+            echo "::error::$(git rev-parse --short HEAD), which ${GITHUB_REF_NAME} points at, is not on main"
+            exit 1
+          fi
+          echo "${GITHUB_REF_NAME} points at $(git rev-parse --short HEAD), which is on main"
 
       - name: Set up python
-        if: ${{ github.event.release.tag_name != '' }}
+        if: ${{ github.event_name == 'push' }}
         id: setup-python
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
 
       - name: Install dependencies
-        if: ${{ github.event.release.tag_name != '' }}
+        if: ${{ github.event_name == 'push' }}
         run: |
           python -m pip install --upgrade pip
           pip install '.[dev]'    # checks and tests need these
 
-      - name: Test release against system version
-        if: ${{ github.event.release.name != '' }}
+      - name: Does the tag match the version in the code?
+        if: ${{ github.event_name == 'push' }}
         run: |
+          # A candidate is checked against the version it is a candidate for,
+          # on both sides: v1.7.1rc1 and 1.7.1 are the same release here.
           VER=$(python pyavrocd/main.py -V)
-          VERSTRING=v${VER#*version }
-          VERSTRING=${VERSTRING%rc*}
-          REL_NAME=${{ github.event.release.name }}
-          echo "System version string: $VERSTRING"
-          echo "Github release name: $REL_NAME"
-          if [[ -z "$REL_NAME" ]]; then
-             REL_NAME=$VERSTRING
-             echo "Adapted GitHub release name to system version string"
-          fi
-          if [[ "$VERSTRING" != "$REL_NAME" ]]; then
-             echo "Release version does not match system version"
+          CODE=v${VER#*version }
+          echo "the code says ${CODE}, the tag says ${GITHUB_REF_NAME}"
+          strip() { echo "$1" | sed -E 's/-?(rc|a|b)[0-9]*$//'; }
+          if [[ "$(strip "$CODE")" != "$(strip "$GITHUB_REF_NAME")" ]]; then
+             echo "::error::the tag and the version in the code are not the same release"
              exit 1
           fi
-          echo "Release and system version are identical, now we continue"
+
+      - name: Final release or candidate?
+        id: kind
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          # Only a plain version is a release for everyone. A candidate, an
+          # alpha or a beta stays on GitHub as a pre-release: it exists for the
+          # few people who were pointed at it, and PyPI is not how they should
+          # find it -- not even as a pre-release, which 'pip install --pre'
+          # would hand them.
+          if [[ "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "final=true" >> "$GITHUB_OUTPUT"
+            echo "${GITHUB_REF_NAME} is a final release: GitHub and PyPI"
+          else
+            echo "final=false" >> "$GITHUB_OUTPUT"
+            echo "${GITHUB_REF_NAME} is not a plain version: a pre-release on GitHub, and nothing on PyPI"
+          fi
+
+      - name: Are there release notes for this version?
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          # The release page is built from them further down, and finding this
+          # out after twenty minutes of builds would be a waste of everyone's
+          # time -- hence here, in the job that runs first.
+          BASE=$(echo "${GITHUB_REF_NAME}" | sed -E 's/-?(rc|a|b)[0-9]*$//')
+          grep -q "^## Release ${BASE}$" docs/release-notes.md || {
+            echo "::error::docs/release-notes.md has no section '## Release ${BASE}'"
+            exit 1
+          }
+          echo "docs/release-notes.md has the section for ${BASE}"
 
       # Also three steps, for a different reason than in unit-tests.yml: here
       # all three are meant to stop the release, but a single run block would
@@ -76,13 +118,13 @@ jobs:
       # job still fails, so one release attempt tells you everything that is
       # wrong rather than one thing at a time.
       - name: Type check
-        if: ${{ github.event.release.tag_name != '' }}
+        if: ${{ github.event_name == 'push' }}
         run: mypy .
       - name: Lint
-        if: ${{ !cancelled() && github.event.release.tag_name != '' }}
+        if: ${{ !cancelled() && github.event_name == 'push' }}
         run: pylint pyavrocd
       - name: Unit tests
-        if: ${{ !cancelled() && github.event.release.tag_name != '' }}
+        if: ${{ !cancelled() && github.event_name == 'push' }}
         run: pytest tests
 
   build-binaries:
@@ -542,7 +584,7 @@ jobs:
           SCRIPT
 
   build-assets:
-    needs: [build-binaries, build-armhf-binary, build-i686-linux-binary, clients-debug-test]
+    needs: [check, build-binaries, build-armhf-binary, build-i686-linux-binary, clients-debug-test]
     # A skipped dependency skips the dependent job as well, so the armhf job
     # being optional has to be spelled out here: the other two must have
     # succeeded, and armhf may have succeeded or been skipped.
@@ -625,22 +667,44 @@ jobs:
         # platform -- the floors -- is measured where they are built.
         run: bash extras/gdb-simavr-test.sh extras/binaries/x86_64-linux-gnu
 
-      - name: Asset upload
+      - name: The release notes, out of docs/release-notes.md
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          # The section of this version, up to the next heading. A candidate
+          # belongs to the section of the version it is a candidate for, which
+          # is where the notes are written. That the section exists was checked
+          # before the first build.
+          BASE=$(echo "${GITHUB_REF_NAME}" | sed -E 's/-?(rc|a|b)[0-9]*$//')
+          awk -v want="## Release ${BASE}" '
+            $0 == want { inside = 1; next }
+            inside && /^## / { exit }
+            inside { print }
+          ' docs/release-notes.md > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md"
+
+      - name: Create the release and upload the assets
         # Only on a real release. Started by hand, everything above still runs
-        # and nothing is published -- that is the dry run. Without this guard
-        # action-gh-release has no release event to read and falls back to
-        # github.ref, which on a branch is not a tag at all.
-        if: ${{ github.event.release.tag_name != '' }}
+        # and nothing is published -- that is the dry run. The release does not
+        # exist before this step: the tag starts the workflow, and the release
+        # appears once every build and every test has come through.
+        if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v3
         with:
           files: extras/assets/*.tar.gz
+          fail_on_unmatched_files: true
+          body_path: ${{ runner.temp }}/notes.md
+          # Anything that is not a plain version is marked preliminary, so that
+          # nobody is offered it as the current version by accident.
+          prerelease: ${{ needs.check.outputs.final != 'true' }}
 
   build-pypi-distribution:
     name: Build distribution
     needs: build-assets
     # No tag, no distribution: a run started by hand skips this job
-    # instead of failing in it, so that a dry run comes out green.
-    if: ${{ github.event.release.tag_name != '' }}
+    # instead of failing in it, so that a dry run comes out green. A candidate
+    # does build its wheel and sdist -- that the packaging still works is worth
+    # knowing before the final release -- it just does not publish them.
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-24.04
 
     steps:
@@ -670,8 +734,11 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python distribution to PyPI
-    if: ${{ !contains(github.event.release.name,'a') && !contains(github.event.release.name,'b') && github.event.release.name != '' }}
+    # PyPI only ever sees final releases. Candidates, alphas and betas live on
+    # GitHub alone, where whoever is meant to try them is pointed at them.
+    if: ${{ needs.check.outputs.final == 'true' }}
     needs:
+    - check
     - build-pypi-distribution
     runs-on: ubuntu-24.04
     environment:

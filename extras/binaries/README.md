@@ -53,6 +53,7 @@ under -- and GitHub has no 32-bit Linux runner, but an x86_64 runner executes
 i386 code natively, so a 32-bit Debian container does the job without QEMU.
 Debian rather than Ubuntu, because Ubuntu has no `python3` for i386 any more.
 
-`prepare_release.sh` in extras is therefore down to the checks it used to run
-before that build: nothing uncommitted, nothing unpushed, and the release id
-equal to the version the program reports.
+The script that used to start that build is gone with it. What is left of it is
+`extras/release.sh`, which checks what can be checked at home -- on `main`,
+nothing uncommitted, nothing unpushed, the version stated where it belongs --
+and then pushes the tag that starts the release.
