@@ -1,6 +1,7 @@
 *~
 .#*
 Thumbs.db
+.DS_Store
 *.elf
 *.hex
 *.eep
