@@ -46,6 +46,42 @@ class TestRspServer(TestCase):
         self.rs._signal_server(None, None) # must not raise
         self.rs.logger.info.assert_called_with("System requested termination using SIGTERM signal")
 
+    def test_signal_server_during_cleanup_after_detach(self):
+        # the session ended by detach, not by SIGTERM: _terminate is not set
+        self.set_up()
+        self.rs._cleaning_up = True
+        self.rs._signal_server(None, None) # must not raise
+        self.assertFalse(self.rs._terminate)
+
+    def test_interrupt_server_during_cleanup(self):
+        self.set_up()
+        self.rs._cleaning_up = True
+        self.rs._interrupt_server(None, None) # must not raise
+        self.rs.logger.info.assert_called_with("Ctrl-C ignored: cleaning up")
+
+    @patch('pyavrocd.server.time.sleep',Mock())
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
+    def test_serve_SIGTERM_during_cleanup_after_detach(self, mock_handler, mock_select, mock_socket):
+        # what an IDE does: detach, then SIGTERM while the server is still cleaning up
+        self.set_up()
+        mock_socket.return_value.accept.return_value = (Mock(close=Mock()), '111.222.333.444')
+        mock_socket.return_value.accept.return_value[0].recv.side_effect = EndOfSession("")
+        mock_handler.return_value = Mock(mon=None, spec=GdbHandler)
+        mock_select.side_effect = [(1,0,0)]
+        cleanup_done = []
+        def stop_debugging(**_kwargs):
+            self.rs._signal_server(None, None) # SIGTERM arrives in the middle of the cleanup
+            self.rs._interrupt_server(None, None) # and a Ctrl-C, for good measure
+            cleanup_done.append(True)
+        self.rs.avrdebugger.stop_debugging.side_effect = stop_debugging
+        self.assertEqual(self.rs.serve(), 0)
+        self.assertEqual(cleanup_done, [True])
+        self.rs.gdb_socket.close.assert_called_once() #pylint: disable=no-member
+        self.rs.connection.close.assert_called_once() #pylint: disable=no-member
+
     @patch('pyavrocd.server.signal.signal',Mock())
     @patch('pyavrocd.server.time.sleep',Mock())
     @patch('pyavrocd.server.socket.socket')
