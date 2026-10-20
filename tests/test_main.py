@@ -6,6 +6,7 @@ import logging
 from unittest.mock import MagicMock, Mock, call, patch, ANY
 from unittest import TestCase
 from types import SimpleNamespace
+import os
 import sys
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
@@ -280,7 +281,7 @@ class TestMain(TestCase):
         args.prg = 'prog'
         mocked_which.return_value = '/bin/prog'
         startup_helper_prog(args, MagicMock())
-        mocked_popen.assert_called_with('/bin/prog')
+        mocked_popen.assert_called_with(os.path.abspath('/bin/prog'))
         mocked_exit.assert_not_called()
 
     @patch('pyavrocd.main.sys.exit')
@@ -463,6 +464,8 @@ class TestMain(TestCase):
         t3 = SimpleNamespace()
         t3.idVendor = 0x3EB
         t3.idProduct = 0x2141
+        t3.vendor_id = 0x3EB
+        t3.product_id = 0x2141
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(),get_available_hid_tools=MagicMock(return_value=[t3]),transport=Mock())
         self.assertNotEqual(startup(['-d', 'atmega328p', '-v=all'], mock_logger), 1)
@@ -481,6 +484,8 @@ class TestMain(TestCase):
         t3 = SimpleNamespace()
         t3.idVendor = 0x3EB
         t3.idProduct = 0x2141
+        t3.vendor_id = 0x3EB
+        t3.product_id = 0x2141
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=OSError("open failed")),
                                                   get_available_hid_tools=MagicMock(return_value=[t3]),
@@ -501,6 +506,8 @@ class TestMain(TestCase):
         t3 = SimpleNamespace()
         t3.idVendor = 0x3EB
         t3.idProduct = 0x2141
+        t3.vendor_id = 0x3EB
+        t3.product_id = 0x2141
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=OSError("other")),
                                                   get_available_hid_tools=MagicMock(return_value=[t3]),
@@ -520,6 +527,8 @@ class TestMain(TestCase):
         t3 = SimpleNamespace()
         t3.idVendor = 0x3EB
         t3.idProduct = 0x2141
+        t3.vendor_id = 0x3EB
+        t3.product_id = 0x2141
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(),get_available_hid_tools=MagicMock(return_value=[t3]),transport=Mock())
         self.assertNotEqual(startup(['-d', 'atmega328p', '-v=all', '--reboot'], mock_logger), 1)
@@ -539,6 +548,9 @@ class TestMain(TestCase):
         mocked_popen.assert_called_once()
         mocked_exit.assert_not_called()
 
+    # Pinned to Linux: on Windows number_of_connected_edbg_tools creates a
+    # Backend of its own, and the call count below would be 2.
+    @patch('pyavrocd.main.platform.system', MagicMock(return_value='Linux'))
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')
     @patch('pyavrocd.main.usb.core.find')
@@ -548,11 +560,15 @@ class TestMain(TestCase):
         t1 = SimpleNamespace()
         t1.idVendor = 0x3EB
         t1.idProduct = 0x2140
+        t1.vendor_id = 0x3EB
+        t1.product_id = 0x2140
         t1.product_string = "PROD1"
         t1.serial_number ="S/N01"
         t2 = SimpleNamespace()
         t2.idVendor = 0x3EB
         t2.idProduct = 0x2141
+        t2.vendor_id = 0x3EB
+        t2.product_id = 0x2141
         t2.product_string = "PROD2"
         t2.serial_number ="S/N02"
         t3 = SimpleNamespace()
