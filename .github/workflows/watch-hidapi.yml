@@ -1,0 +1,58 @@
+name: Watch for hidapi wheels for Python 3.15
+
+on:
+  workflow_dispatch:   # to run it manually
+  # Python 3.15 waits for hidapi (via pyedbglib): without a Windows wheel, pip
+  # builds it from the sdist, which needs MSVC. This looks once a month and
+  # opens an issue as soon as wheels for both Windows targets are on PyPI. Like
+  # every schedule, it only runs from the default branch, and only while the
+  # repository has seen activity in the last 60 days. Delete this file once
+  # requires-python has been raised.
+  schedule:
+    - cron: '23 6 1 * *'   # the 1st of every month, 06:23 UTC
+
+permissions:
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Look for cp315 wheels for win_amd64 and win32
+        id: look
+        # Only the latest release counts: that is what pip would pick. The
+        # free-threaded cp315t wheels are not what the binaries or most users
+        # run, so they do not count.
+        run: |
+          curl -fsS https://pypi.org/pypi/hidapi/json | python3 -c '
+          import json, sys
+          d = json.load(sys.stdin)
+          version = d["info"]["version"]
+          names = [f["filename"] for f in d["urls"]]
+          found = [t for t in ("win_amd64", "win32")
+                   if any(n.endswith("-cp315-cp315-" + t + ".whl") for n in names)]
+          print("hidapi", version, "- cp315 wheels for:", found or "none")
+          with open(sys.argv[1], "a") as out:
+              print("version=" + version, file=out)
+              print("ready=" + str(len(found) == 2).lower(), file=out)
+          ' "$GITHUB_OUTPUT"
+      - name: Open an issue
+        if: steps.look.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.look.outputs.version }}
+        # --state all: once the issue has been closed, it must not come back
+        # every month until this file is deleted.
+        run: |
+          title="hidapi $VERSION has Windows wheels for Python 3.15"
+          if [ -n "$(gh issue list -R "$GITHUB_REPOSITORY" --state all --search "in:title \"$title\"" --json number --jq '.[].number')" ]; then
+            echo "Issue already exists."
+            exit 0
+          fi
+          gh issue create -R "$GITHUB_REPOSITORY" --title "$title" --body "hidapi $VERSION on PyPI now has cp315 wheels for win_amd64 and win32.
+
+          To do:
+          - pyproject.toml: requires-python to \`<3.16\`, add the 3.15 classifier
+          - unit-tests-matrix.yml: add 3.15
+          - delete .github/workflows/watch-hidapi.yml
+          - CLAUDE.md: remove the open thread on Python 3.15"
