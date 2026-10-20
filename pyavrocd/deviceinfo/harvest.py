@@ -701,7 +701,6 @@ def harvest_from_file(filename : str) -> tuple[ str, list[str]]:
         extra_fields += "    'ronly_registers' : [{}],\n".format(', '.join(hex(x) for x in sorted(ronly)))
 
 
-    #pylint: disable=used-before-assignment
     extra_fields += capture_field(DeviceInfoKeysAvr.DEVICE_ID,
                             "0x{:02X}{:02X}{:02X}".format(signature[0], signature[1], signature[2]))
 
