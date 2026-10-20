@@ -23,7 +23,7 @@ nothing else.
 `<host>` is the name in the runner's configuration, not the machine's hostname,
 so two checkouts on one machine can act as two hosts.
 
-The work happens on `v2`, so that is what the instructions below clone. Use the
+The work happens on `main`, so that is what the instructions below clone. Use the
 `checkout` action to move a runner to a different revision afterwards.
 
 ## Actions
@@ -131,7 +131,7 @@ test, so an old client is not quietly measured against the newest server.
     mkdir -p ~/testbed
     sudo mount -t cifs //macbook.local/testbed ~/testbed \
          -o username=nebel,uid=$(id -u),gid=$(id -g),vers=3.0,soft
-    git clone -b v2 https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
+    git clone https://github.com/felias-fogg/PyAvrOCD.git ~/GitHub/PyAvrOCD
     cd ~/GitHub/PyAvrOCD && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
     cp extras/testbed/runner.example.json ~/runner.json
     $EDITOR ~/runner.json
@@ -188,7 +188,7 @@ The runner itself is better off without the drive letter, because a mapped drive
 belongs to the session that mapped it and is not there for a service or a
 scheduled task. Give it the UNC path instead, as `runner.windows.json` does.
 
-Clone the branch under test (`git clone -b v2 ...`), create a virtual
+Clone the branch under test (`git clone ...`, `main` by default), create a virtual
 environment, then start the runner. It can be started straight from the share,
 which saves copying it and keeps it up to date with what the other hosts run:
 
