@@ -26,10 +26,11 @@ markdown_extensions:
   - attr_list
 
 nav:
-  - Supported:
+  - Coverage:
     - MCUs: 'supported-mcus.md'
     - Boards: 'supported-boards.md'
-    - Debug probes & simulators: 'supported-debuggers.md'
+    - Debug probes: 'supported-debuggers.md'
+    - Simulator: 'supported-simulator.md'
     - Platforms: 'supported-platforms.md'
     - IDEs: 'supported-ides.md'
     - Arduino packages: 'supporting-packages.md'

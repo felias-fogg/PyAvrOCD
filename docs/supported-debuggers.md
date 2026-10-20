@@ -1,10 +1,10 @@
-# Supported debug probes & simulators
+# Supported debug probes
 
-PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. However, it also provides a pass-through service for the DIY debug probe [dw-link](https://felias-fogg.github.io/dw-link). And, as a service to Arduino users, it provides access to the software simulation tool [simavr](https://github.com/buserror/simavr) (see [below](#software-simulator)).
+PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. In addition, it also provides a pass-through service for the DIY debug probe [dw-link](https://felias-fogg.github.io/dw-link). 
 
 ## Hardware debug probes
 
-Except for dw-link and microUPDI, the list below is copied from the README file of [pyedbglib](https://github.com/microchip-pic-avr-tools/pyedbglib). Boldface means that I have tested the debuggers and they work with PyAvrOCD:
+The following debug probes are supported by PyAvrOCD:
 
 
 * **[MPLAB PICkit 4 In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164140)** ([when in 'AVR mode'](#switching-to-avr-mode))
@@ -18,9 +18,7 @@ Except for dw-link and microUPDI, the list below is copied from the README file 
 * [**microUPDI**](https://github.com/MCUdude/microUPDI) - a debugger for UPDI targets based on the mEDBG firmware. It will not work on the Dx-/Ex-/Sx-series chips. And in order to debug on 0-series ATmegas, you need the most recent firmware 1.19.57, which you get from the [microUPDIcore](https://github.com/MCUdude/microUPDIcore) repo. Note that you can use the firmware on any ATmega32U4 development board without additional hardware if you do not need any level-shifting.
 * **[dw-link](https://felias-fogg.github.io/dw-link)** - DIY debugger running on an Arduino UNO R3 (only debugWIRE)
 
-If you do not own one of the above debug probes, but you own a [PICkit5](https://www.microchip.com/en-us/development-tool/PG164150) or [PICkit Basic](https://www.microchip.com/en-us/development-tool/PG164110), you can consider [downgrading](https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/) it to a PICkit4 or SNAP, respectively.
-
-### Switching to AVR mode
+## Switching to AVR mode
 
 Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (>= Version 7.3):
 
@@ -36,33 +34,6 @@ avrdude -c pickit4_isp -Pusb -xmode=avr
 
 In both cases, you can check whether you were successful by typing the same command again. If you get the message that the debugger is still in 'PIC' mode, the firmware of the debug probe is ancient, and you need to [flash new firmware first using MPLAB X](https://arduino-craft-corner.de/index.php/2025/04/16/snap-debugging-for-the-masses/#appendix-installing-a-recent-firmware-version).
 
-## Software simulator
+## Downgrading more recent debug probes
 
-In addition to the above-mentioned debug probes, PyAvrOCD also supports the simulation tool [`simavr`](https://github.com/buserror/simavr) by providing a pass-through service. If you use the **Arduino IDE 2**, then the way to start the simulator is as follows:
-
-1. Verify/compile your sketch.
-2. Choose `Simulator (simavr)` as the `Programmer` in the `Tools` menu.
-3. Click on the Debugger icon at the top of the window.
-
-If you use the VSCode extension **Arduino Maker Workshop**, it works the same. In **PlatformIO**, you can select `simavr` as a debugging tool in the `platformio.ini` configuration file.
-
-An alternative way to start `simavr` is to provide a path argument to the `--start` option that has as its last part `simavr`. If you use another IDE other than the ones mentioned above, you can trigger that by putting the file `pyavrocd.options` into the project folder containing the two lines
-
-```text
---start
-/path/to/simavr-executable
-```
-
-Note that the [list of chips supported by `simavr`](supported-mcus.md) is much smaller than the one supported by PyAvrOCD. Further, the means of interaction are severely limited. However, the simulator solution may sometimes be the more preferable option.
-
-If you are adventurous, try out a few other things with `simavr`. It is possible to pass arguments to `simavr` using the option `--xarg` or `-x`. Note that each string must be passed separately as an argument, as in the example below. Use the `<option>=<value>` notation to pass options such as `--add-trace` in order to avoid the interpretation of these options as PyAvrOCD options.
-
-For instance, you can trace the changes of a particular memory location, e.g., PORTB on an ATmega328P, where the built-in LED is usually controlled.  Add the following lines in the file `pyavrocd.options`:
-
-```text
---xarg=--add-trace
---xarg='LED=trace@0x0025/0xff'
-```
-
-After terminating the debug session (and waiting some time), a [VCD](https://en.wikipedia.org/wiki/Value_change_dump) trace will show up in the project folder. This can be visualized, for instance, with [gtkwave](https://gtkwave.sourceforge.net) or [pulseview](https://sigrok.org/wiki/Downloads). It is also possible to provide VCD files as input. This is all sketched in a [simavr usage note](https://htmlpreview.github.io/?https://raw.githubusercontent.com/buserror/simavr/refs/heads/master/doc/Intro.html#using).
-
+If you do not own one of the above debug probes, but you own a [PICkit5](https://www.microchip.com/en-us/development-tool/PG164150) or [PICkit Basic](https://www.microchip.com/en-us/development-tool/PG164110), you can consider [downgrading](https://arduino-craft-corner.de/index.php/2026/05/25/downgrading-your-pickit5/) it to a PICkit4 or SNAP, respectively.
