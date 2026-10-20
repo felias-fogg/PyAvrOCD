@@ -49,6 +49,7 @@ schema = { 'includes': [ '<STR>' ],
                                        'nolto': '<BOOL>',
                                        'dirty': '<BOOL>' },
                          'import': '<STR>',
+                         'after': '<STR>',
                          'sketch': '<STR>',
                          'serverargs': '<STR>',
                          'compilerargs': '<STR>',
@@ -439,6 +440,42 @@ def select_tests(spec : dict[ str, Any], dev : str, candidates : list[ str ]) ->
                 logger.debug("Test '%s' is not feasible for %s", t, dev)
     return alltests, testlist
 
+def order_tests(spec : dict[ str, Any], dev : str, selected : list[ str ]) -> list [ str ]:
+    """
+    Make every test that has to run directly after another one ('after') follow it,
+    inserting the predecessor (and its own predecessors) where they do not already
+    come right before. A predecessor shared by two tests therefore runs twice. A test
+    that has already run as a predecessor is not run again, and a test whose
+    predecessor is not feasible for the DUT is dropped.
+    """
+    provides = spec['devices'][dev]['provides']
+    ordered : list [ str ] = [ ]
+    inserted : list [ str ] = [ ] # run as predecessors, not (yet) as selected tests
+    for t in selected:
+        chain = [ t ]
+        while pred := spec['tests'][chain[0]].get('after', None):
+            if pred not in spec['tests'] or spec['tests'][pred].get('virtual', False):
+                logger.critical("Test '%s' has to run after '%s', which is not a known test", chain[0], pred)
+                sys.exit(1)
+            if pred in chain:
+                logger.critical("Cycle in 'after': %s", " -> ".join([ pred ] + chain))
+                sys.exit(1)
+            chain.insert(0, pred)
+        needed = chain[:-1]
+        infeasible = [ p for p in needed if not requirements_met(spec['tests'][p].get('requires', { }), provides) ]
+        if infeasible:
+            logger.warning("Test '%s' is not feasible for %s: it has to run after '%s'", t, dev, infeasible[-1])
+            continue
+        if t in inserted:
+            inserted.remove(t)
+            continue
+        if needed and ordered[-len(needed):] != needed:
+            logger.info("Test '%s' has to run directly after %s", t, needed)
+            ordered += needed
+            inserted += needed
+        ordered.append(t)
+    return ordered
+
 def requirements_met(req : dict[ str, Any ], prov : dict[ str, Any ]) -> bool:
     """
     Check that all requirements 'req' are provided by 'prov'
@@ -765,8 +802,16 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
     compiled = []
     failed_comp = []
     failed_run = []
+    previous_ok = True
     for s in scripts:
         logger.info("Run test '%s'", s)
+        # order_tests has put the predecessor right before this test
+        if spec['tests'][s].get('after', None) and not previous_ok:
+            logger.error("Test '%s' not run: '%s' before it failed", s, spec['tests'][s]['after'])
+            print("FAILED")
+            failed_run.append(s)
+            continue
+        previous_ok = False
         sketch = spec['tests'][s].get('sketch', None)
         comp_ok = True
         run_ok = True
@@ -799,6 +844,7 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
             failed_run.append(s)
         else:
             print("OK")
+            previous_ok = True
     return failed_comp, failed_run
 
 
@@ -871,6 +917,7 @@ def main() -> int:
 
     # create list of feasible tests
     all_scripts, script_list = select_tests(spec, args.dev, args.script)
+    script_list = order_tests(spec, args.dev, script_list)
 
     if not check_avrdude(spec, script_list):
         return 1

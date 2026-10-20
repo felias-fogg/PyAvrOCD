@@ -141,6 +141,7 @@ tests:
 
 # Attaches to the previously run program
   attach:
+    after: cblink
     serverargs: --attach
     steps:
       - stimulus: file sketches/cblink/cblink.elf

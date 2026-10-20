@@ -55,6 +55,12 @@ Afterwards, you need to kill the `serv.sh` script with CTRL-C
 
 
 
+### Stress tests
+
+Tests against real debug probes, without a target, meant to be run many times in a row. They live in `stress`, which has its own [README](stress/README.md). At the moment there is one: signals arriving during probe transactions.
+
+
+
 ## Developing new tests
 
 ### Unit tests

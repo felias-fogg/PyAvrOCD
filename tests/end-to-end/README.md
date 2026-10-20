@@ -14,6 +14,7 @@ tests:
       <capability>    # capability the MCU should provide
       <capability>
     import: <testname> # import all entries from this test
+    after: <testname> # has to run directly after this test, see below
     sketch: <sketch path>
     serverargs: <line with serverargs>
     compileargs: <compilerargs>
@@ -34,6 +35,8 @@ tests:
 ```
 
 Instead or in addition to steps, one can specify `upload`, which will call avrdude with the right -c and -p and -P options.
+
+`after` is for a test that builds on the state another one leaves behind, such as `attach`, which attaches to the program `cblink` has loaded and started, or a test that reconnects in extended-remote mode. The other test is then run directly before it, and added to the run if it was not selected. If two tests are to follow the same test, that test runs before each of them. A test that has already run as a predecessor is not run again. If the predecessor fails, the test is not run and counts as failed; if the predecessor is not feasible for the MCU, the test is skipped.
 
 A \<capability> could be
 
