@@ -208,12 +208,13 @@ tests:
       ram_atmost: 0.125
     steps:
       - import: basicpeekpoke
+      - stimulus: symbol-file sketches/cblink/cblink.elf # symbols, or gdb scans the whole stack after each SP change
       - stimulus: set $SP=0x123             # Set stack pointer
         timeout: 20
       - stimulus: monitor onlywhenloaded disable
       - stimulus: si                        # make a jump
-      - stimulus: x/hx 0x80005D             # MSB should be zero!
-        response: "0x80005d:	0x0023"
+      - stimulus: print/x {int}0x80005D  # MSB should be zero!
+        response: "= 0x23"
       - stimulus: info reg SP               # identical value when querying SP
         response: "SP             0x23"
       - stimulus: set {int}0x80005D=0x00FF # set LSB to 0xff
@@ -222,8 +223,8 @@ tests:
         response: "SP             0xff"
       - stimulus: set {char}0x800060=0x34   # set RAM locations
       - stimulus: set {char}0x800061=0x12
-      - stimulus: x/hx 0x800060             # and test
-        response:  "0x800060:\t0x1234"
+      - stimulus: print/x {int}0x800060  # and test
+        response:  "= 0x1234"
       - import: epilog
 
 # set/read memory cells (medium MCUs, some ram at 0x100)
@@ -234,12 +235,13 @@ tests:
       ram_atmost: 0.5
     steps:
       - import: basicpeekpoke
+      - stimulus: symbol-file sketches/cblink/cblink.elf # symbols, or gdb scans the whole stack after each SP change
       - stimulus: set $SP=0x123
         timeout: 20
       - stimulus: monitor onlywhenloaded disable
       - stimulus: si
-      - stimulus: x/hx 0x80005D
-        response: "0x80005d:	0x0123"
+      - stimulus: print/x {int}0x80005D
+        response: "= 0x123"
       - stimulus: info reg SP
         response: SP             0x123
       - stimulus: set {int}0x80005D=0x00FF
@@ -255,11 +257,12 @@ tests:
       ram_atleast: 1
     steps:
       - import: basicpeekpoke
+      - stimulus: symbol-file sketches/cblink/cblink.elf # symbols, or gdb scans the whole stack after each SP change
       - stimulus: set $SP=0x223
       - stimulus: monitor onlywhenloaded disable
       - stimulus: si
-      - stimulus: x/hx 0x80005D
-        response: "0x80005d:	0x0223"
+      - stimulus: print/x {int}0x80005D
+        response: "= 0x223"
       - stimulus: info reg SP
         response: SP             0x223
       - stimulus: set {int}0x80005D=0x03FF
