@@ -5,11 +5,8 @@ The test suit for the GdbHandler class
 from unittest.mock import Mock, MagicMock, patch, call, create_autospec
 from unittest import TestCase
 import socket
-from pyedbglib.protocols.avr8protocol import Avr8Protocol
-from pyedbglib.protocols.edbgprotocol import EdbgProtocol
-from pyedbglib.protocols.avrispprotocol import AvrIspProtocolError
-from pymcuprog.pymcuprog_errors import PymcuprogError
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import BackendError, IspConnectionError
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.handler import GdbHandler
 from pyavrocd.errors import EndOfSession, FatalError
 from pyavrocd.memory import Memory
@@ -31,13 +28,9 @@ class TestGdbHandler(TestCase):
     @patch('pyavrocd.handler.logging.getLogger', MagicMock())
     def set_up(self):
         mock_socket = create_autospec(socket.socket, spec_set=True, instance=True)
-        mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
+        mock_dbg = create_autospec(EdbgBackend, spec_set=False, instance=True)
         mock_dbg.memory_info = MagicMock()
         mock_dbg.device_info = MagicMock()
-        mock_dbg.transport = MagicMock()
-        mock_dbg.edbg_protocol = MagicMock()
-        mock_dbg.device = Mock()
-        mock_dbg.device.avr = Mock()
         mock_dbg.get_iface.return_value = 'debugwire'
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
         # setting up the GbdHandler instance we want to test
@@ -420,9 +413,8 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.mon.dispatch.return_value = ('0', 'B')
         self.assertEqual(self.gh.dispatch('qRcmd', b',5461726765742030'), None)
-        self.gh.dbg.device.avr.protocol.set_byte.assert_called_with(
-            Avr8Protocol.AVR8_CTXT_OPTIONS,
-            Avr8Protocol.AVR8_OPT_RUN_TIMERS, 0)
+        self.gh.dbg.set_run_timers.assert_called_with(False)
+        self.gh.dbg.reactivate.assert_called_once()
         self.gh.comsocket.sendall.assert_called_with(rsp("420A"))
 
     def test_monitorCommand_reset(self):
@@ -436,18 +428,14 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.mon.dispatch.return_value = ('power on', 'Blub')
         self.gh.dispatch('qRcmd', b',546172676574206F6E') # Target on
-        self.gh.dbg.edbg_protocol.set_byte.assert_called_with(
-            EdbgProtocol.EDBG_CTXT_CONTROL,
-            EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
-            True)
+        self.gh.dbg.set_target_power.assert_called_with(True)
         self.gh.comsocket.sendall.assert_called_with(rsp("426C75620A"))
 
     def test_monitorCommand_Target_query(self):
         self.set_up()
         self.gh.mon.dispatch.return_value = ('power query', 'Bla')
         self.gh.dispatch('qRcmd', b',546172676574207175657279') # Target query
-        self.gh.dbg.edbg_protocol.query.assert_called_with(
-            EdbgProtocol.EDBG_QUERY_COMMANDS)
+        self.gh.dbg.tool_commands.assert_called_once()
         self.gh.comsocket.sendall.assert_called_with(rsp("426C610A"))
 
     def test_monitorCommand_info_ok(self):
@@ -473,7 +461,7 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.critical = None
         self.gh.mon.dispatch.return_value = ('dwon', 'Bla')
-        self.gh.dbg.prepare_debugging = Mock(side_effect=AvrIspProtocolError("XXX"))
+        self.gh.dbg.prepare_debugging = Mock(side_effect=IspConnectionError("XXX"))
         self.assertEqual(self.gh.dispatch('qRcmd', b',642065'), None)
         self.gh.dbg.prepare_debugging.assert_called_once()
         self.gh.comsocket.sendall.assert_called_with(
@@ -483,7 +471,7 @@ class TestGdbHandler(TestCase):
         self.set_up()
         self.gh.critical = None
         self.gh.mon.dispatch.return_value = ('dwon', 'Bla')
-        self.gh.dbg.prepare_debugging = Mock(side_effect=PymcuprogError("XXX"))
+        self.gh.dbg.prepare_debugging = Mock(side_effect=BackendError("XXX"))
         self.assertEqual(self.gh.dispatch('qRcmd', b',642065'), None)
         self.gh.dbg.prepare_debugging.assert_called_once()
         self.gh.comsocket.sendall.assert_called_with(
@@ -500,22 +488,17 @@ class TestGdbHandler(TestCase):
     @patch('pyavrocd.handler.time.sleep')
     def test__send_power_cycle_automatic(self, mock_sleep):
         self.set_up()
-        self.gh.dbg.transport.device.product_string.lower.return_value = "medbg blabla"
+        self.gh.dbg.can_power_cycle.return_value = True # mEDBG
         self.assertTrue(self.gh._send_power_cycle())
-        self.gh.dbg.edbg_protocol.set_byte.assert_has_calls([
-            call(EdbgProtocol.EDBG_CTXT_CONTROL,
-                 EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
-                 0),
-            call(EdbgProtocol.EDBG_CTXT_CONTROL,
-                 EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
-                 1)])
-        self.assertEqual(mock_sleep.call_count, 2)
+        self.gh.dbg.power_cycle.assert_called_once() # the pauses are the backend's business now
+        self.assertEqual(mock_sleep.call_count, 0)
 
     @patch('pyavrocd.handler.time.sleep')
     def test__send_power_cycle_manual(self, mock_sleep):
         self.set_up()
-        self.gh.dbg.transport.device.product_string.lower.return_value = "uno"
+        self.gh.dbg.can_power_cycle.return_value = False
         self.assertFalse(self.gh._send_power_cycle())
+        self.gh.dbg.power_cycle.assert_not_called()
         self.assertEqual(mock_sleep.call_count, 0)
         self.gh.comsocket.sendall.assert_called_with(
             rsp("O2A2A2A20506C6561736520706F7765722D6379636C6" + \
@@ -772,7 +755,7 @@ class TestGdbHandler(TestCase):
         self.gh.dispatch('X', b'100,1:}]')
         self.gh.bp.cleanup_breakpoints.assert_called_once()
         self.gh.dbg.switch_to_progmode.assert_called_once()
-        self.gh.dbg.device.erase_chip.assert_called_once()
+        self.gh.dbg.erase_chip.assert_called_once()
         self.assertTrue(self.gh.mem.lazy_loading)
         self.gh.comsocket.sendall.assert_called_with(rsp('OK'))
 
@@ -946,11 +929,12 @@ class TestGdbHandler(TestCase):
     # --- characterization tests for the remaining monitor command branches ---
 
     def test_monitorCommand_no_edbg_protocol(self):
-        # current behavior: without an EDBG protocol instance, every monitor command fails
+        # without an EDBG protocol instance, only the commands that need it fail
+        # (before the backend split, every monitor command failed)
         self.set_up()
-        self.gh.dbg.edbg_protocol = None
-        self.gh.dispatch('qRcmd', b',696E666F') # info
-        self.gh.mon.dispatch.assert_not_called()
+        self.gh.mon.dispatch.return_value = ('power on', 'Blub')
+        self.gh.dbg.set_target_power.side_effect = FatalError("EDBG protocol not initialized")
+        self.gh.dispatch('qRcmd', b',546172676574206F6E') # Target on
         self.assertEqual(self.gh.critical, "EDBG protocol not initialized")
         self.gh.comsocket.sendall.assert_called_with(
             rsp("466174616C206572726F723A20454442472070726F746F636F6C206E6F7420696E697469616C697A65640A"))

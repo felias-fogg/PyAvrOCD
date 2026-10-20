@@ -11,7 +11,7 @@ import logging
 from logging import getLogger
 import binascii
 
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import DebugBackend
 from pyavrocd.memory import Memory
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.breakexec import BreakAndExec
@@ -26,7 +26,7 @@ class LiveTests():
     def __init__(self, handler : Any):
         self.logger : logging.Logger = getLogger('pyavrocd.livetests')
         self.handler : Any = handler
-        self.dbg : XAvrDebugger = handler.dbg
+        self.dbg : DebugBackend = handler.dbg
         self.mem : Memory = handler.mem
         self.mon : MonitorCommand = handler.mon
         self.bp : BreakAndExec = handler.bp
@@ -585,7 +585,7 @@ class LiveTests():
         self.mon._cache = True
         self.mon._old_exec = False
         self.mon._onlyswbps = False
-        self.dbg.device.avr.protocol.software_breakpoint_clear_all()
+        self.dbg.software_breakpoint_clear_all()
 
     def _live_test_vcont_step_hwbp_unprotected(self) -> None:
         """

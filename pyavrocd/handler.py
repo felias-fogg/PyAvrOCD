@@ -13,14 +13,8 @@ import binascii
 import time
 import socket
 
-# communication
-from pyedbglib.protocols.avrispprotocol import AvrIspProtocolError
-from pyedbglib.protocols.avr8protocol import Avr8Protocol
-from pyedbglib.protocols.edbgprotocol import EdbgProtocol
-from pymcuprog.pymcuprog_errors import PymcuprogNotSupportedError, PymcuprogError
-
 from pyavrocd.memory import Memory
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import DebugBackend, BackendError, InvalidAddressError, IspConnectionError
 from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGSEGV, SIGSYS
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.livetests import LiveTests
@@ -35,14 +29,14 @@ class GdbHandler():
     """
     def __init__ (self,
                   comsocket : socket.socket,
-                  avrdebugger : XAvrDebugger,
+                  avrdebugger : DebugBackend,
                   devicename : str,
                   args : argparse.Namespace,
                   toolname : str) -> None:
         self.packet_size : int = RECEIVE_BUFFER - 20
         self.logger : logging.Logger = logging.getLogger('pyavrocd.handler')
         self.rsp_logger = logging.getLogger('pyavrocd.rsp')
-        self.dbg : XAvrDebugger = avrdebugger
+        self.dbg : DebugBackend = avrdebugger
         self.mon : MonitorCommand = MonitorCommand(self.dbg.get_iface(), args, toolname,
                                                        avrdebugger)
         self.mem : Memory = Memory(avrdebugger, self.mon)
@@ -420,8 +414,6 @@ class GdbHandler():
                               ,binascii.unhexlify(payload).decode('ascii'))
         tokens : list[str] = binascii.unhexlify(payload).decode('ascii').split()
         try:
-            if self.dbg.edbg_protocol is None:
-                raise FatalError("EDBG protocol not initialized")
             response : tuple[str, str] = self.mon.dispatch(tokens)
             if response[0] == 'dwon':
                 if self.critical is not None:
@@ -439,17 +431,12 @@ class GdbHandler():
                 if self.mon.is_debugger_active():
                     self.dbg.reset()
             elif response[0] in ['0', '1']:
-                self.dbg.device.avr.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
-                                                    Avr8Protocol.AVR8_OPT_RUN_TIMERS,
-                                                    int(response[0]))
+                self.dbg.set_run_timers(response[0] == '1')
                 self.dbg.reactivate()
             elif 'power o' in response[0]:
-                self.dbg.edbg_protocol.set_byte(EdbgProtocol.EDBG_CTXT_CONTROL,
-                                                    EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
-                                                    'on' in response[0])
+                self.dbg.set_target_power('on' in response[0])
             elif 'power q' in response[0]:
-                resp = self.dbg.edbg_protocol.query(EdbgProtocol.EDBG_QUERY_COMMANDS)
-                self.logger.info("Commands: %s", resp)
+                self.logger.info("Commands: %s", self.dbg.tool_commands())
             elif 'info' in response[0]:
                 error_line = ""
                 if self.critical is not None:
@@ -470,12 +457,14 @@ class GdbHandler():
                 self.send_reply_packet(response[1])
                 time.sleep(1)
                 raise EndOfSession()
-        except AvrIspProtocolError:
+        except IspConnectionError:
             self.logger.critical("ISP programming failed. Wrong connection or wrong MCU?")
             if self.critical is None:
                 self.critical = "ISP programming failed. Wrong connection or wrong MCU?"
             self.send_reply_packet("ISP programming failed. Wrong connection or wrong MCU?")
-        except (FatalError, PymcuprogNotSupportedError, PymcuprogError) as e:
+        except InvalidAddressError: # was a Jtagice3ResponseError, which was never caught here
+            raise
+        except (FatalError, BackendError) as e:
             self.logger.critical(str(e))
             if self.critical is None:
                 self.critical = str(e)
@@ -490,22 +479,9 @@ class GdbHandler():
         automagically. If successful, it will return True.
         Otherwise, it will ask user to power-cycle and return False.
         """
-        if self.dbg.transport.device.product_string.lower().startswith('medbg'):
-            # mEDBG are the only ones it will work with, I believe.
-            # I tried to use a try/except construction,
-            # but this confuses the debugger and it is stuck
-            # in an illegal state (the housekeeper does not respond)
+        if self.dbg.can_power_cycle(): # the backend knows which tools manage it
             self.logger.info("Try automatic power-cycling")
-            if self.dbg.edbg_protocol is None:
-                raise FatalError("EDBG protocol not initialized")
-            self.dbg.edbg_protocol.set_byte(EdbgProtocol.EDBG_CTXT_CONTROL,
-                                                EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
-                                                0)
-            time.sleep(0.5)
-            self.dbg.edbg_protocol.set_byte(EdbgProtocol.EDBG_CTXT_CONTROL,
-                                                EdbgProtocol.EDBG_CONTROL_TARGET_POWER,
-                                                1)
-            time.sleep(0.2)
+            self.dbg.power_cycle()
             self.logger.info("Automatic power-cycling finished")
             return True
         self.send_debug_message("*** Please power-cycle the target system ***")
@@ -705,7 +681,7 @@ class GdbHandler():
             self.bp.cleanup_breakpoints()
             if self.mon.is_erase_before_load():
                 # if erase is not possible or desired, then it is done before flashing each page (perhaps implicitly)
-                self.dbg.device.erase_chip(self.mem.programming_mode)
+                self.dbg.erase_chip(self.mem.programming_mode)
             if self._vflashdone:
                 self._vflashdone = False
                 self.mem.init_flash() # clear cache
@@ -820,7 +796,7 @@ class GdbHandler():
                 if self.mon.is_erase_before_load():
                     # If erase before load is requested, we do that here
                     # otherwise it will be done implicitly before each page is programmed
-                    self.dbg.device.erase_chip(self.mem.programming_mode)
+                    self.dbg.erase_chip(self.mem.programming_mode)
         try:
             reply : str = self.mem.writemem(addr, bytearray(data))
         except:

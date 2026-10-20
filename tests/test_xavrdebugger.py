@@ -1,5 +1,5 @@
 """
-The test suit for the XAvrDebugger class
+The test suit for the EdbgBackend class
 """
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
 from unittest.mock import MagicMock, patch,  Mock, call, ANY
@@ -8,9 +8,13 @@ from types import SimpleNamespace
 
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyedbglib.protocols.edbgprotocol import EdbgProtocol
+from pyedbglib.protocols.avrispprotocol import AvrIspProtocolError
+from pymcuprog.pymcuprog_errors import PymcuprogError, PymcuprogNotSupportedError
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.xavr8target import XTinyAvrTarget
 from pyavrocd.errors import FatalError
+from pyavrocd.backend import SwbpSupport, BackendError, BackendNotSupportedError, InvalidAddressError, IspConnectionError
 
 class TestXAvrDebugger(TestCase):
 
@@ -32,7 +36,7 @@ class TestXAvrDebugger(TestCase):
         args.attach = False
         args.skipsig = False
         # a debugWIRE target
-        self.xa = XAvrDebugger(mock_transport, "attiny85", "debugwire", args)
+        self.xa = EdbgBackend(mock_transport, "attiny85", "debugwire", args)
         self.xa.logger = MagicMock()
         self.xa.transport = mock_transport
         self.xa.memory_info = MagicMock()
@@ -45,7 +49,7 @@ class TestXAvrDebugger(TestCase):
         self.xa._wait_for_break.return_value = False # after reset: we are stopped
         self.xa.flush_events = Mock()
         # special case: ATtiny2313
-        self.xa23 = XAvrDebugger(mock_transport, "attiny2313", "debugwire", args)
+        self.xa23 = EdbgBackend(mock_transport, "attiny2313", "debugwire", args)
         self.xa23.logger = MagicMock()
         self.xa23.transport = mock_transport
         self.xa23.memory_info = MagicMock()
@@ -58,7 +62,7 @@ class TestXAvrDebugger(TestCase):
         self.xa23._wait_for_break.return_value = False # after reset: we are stopped
         self.xa23.flush_events = Mock()
         # a JTAG target
-        self.xaj = XAvrDebugger(mock_transport, "atmega644", "jtag", args)
+        self.xaj = EdbgBackend(mock_transport, "atmega644", "jtag", args)
         self.xaj.logger = MagicMock()
         self.xaj.transport = mock_transport
         self.xaj.memory_info = MagicMock()
@@ -71,7 +75,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.flush_events = Mock()
         # a UPDI target
         args.manage = []
-        self.xau = XAvrDebugger(mock_transport, "atmega4809", "updi", args)
+        self.xau = EdbgBackend(mock_transport, "atmega4809", "updi", args)
         self.xau.logger = MagicMock()
         self.xau.transport = mock_transport
         self.xau.memory_info = MagicMock()
@@ -898,3 +902,111 @@ class TestXAvrDebugger(TestCase):
         self.xa._check_atmega48_and_88(0x1E9205)
         self.xa.spidevice.isp.read_fuse_byte.assert_not_called()
         self.xa.spidevice.isp.write_fuse_byte.assert_not_called()
+
+
+class TestEdbgBackendInterface(TestCase):
+    """The parts of EdbgBackend that implement or route the DebugBackend interface"""
+
+    def make(self, product="Atmel-ICE CMSIS-DAP"):
+        args = SimpleNamespace(manage=['bootrst', 'lockbits', 'dwen', 'ocden'], clkprg=500, clkdeb=4000,
+                               kbps=100, timers='r', load='n', attach=False, skipsig=False)
+        transport = MagicMock()
+        transport.device.product_string = product
+        xa = EdbgBackend(transport, "attiny85", "debugwire", args)
+        xa.logger = Mock()
+        xa.device = MagicMock()
+        xa.device.avr.protocol = MagicMock(spec=Avr8Protocol)
+        xa.edbg_protocol = MagicMock()
+        xa.flush_events = Mock()
+        return xa
+
+    def test_probe_breakpoints_and_set_up(self):
+        xa = self.make()
+        self.assertEqual(xa.SWBP_SUPPORT, SwbpSupport.PROBE)
+        self.assertTrue(xa.is_set_up())
+        self.assertFalse(xa.step_is_interrupt_safe())
+        xa.software_breakpoint_clear_all()
+        xa.device.avr.protocol.software_breakpoint_clear_all.assert_called_once() # the probe's, not the base class'
+        xa.software_breakpoint_clear(0x100)
+        xa.device.avr.protocol.software_breakpoint_clear.assert_called_once()
+
+    def test_run_step_reach_pymcuprog_once(self):
+        xa = self.make()
+        with patch('pyavrocd.xavrdebugger.AvrDebugger.run') as run, \
+             patch('pyavrocd.xavrdebugger.AvrDebugger.run_to') as run_to, \
+             patch('pyavrocd.xavrdebugger.AvrDebugger.step') as step, \
+             patch('pyavrocd.xavrdebugger.AvrDebugger.program_counter_read', return_value=0x10):
+            xa.run()
+            xa.run_to(0x200)
+            xa.step(0x0000)
+            xa.step()
+        run.assert_called_once()
+        run_to.assert_called_once_with(xa, 0x200)
+        self.assertEqual(step.call_count, 2)
+
+    def test_flash_read_unchanged(self):
+        xa = self.make()
+        xa.device.read.return_value = bytearray([1, 2, 3, 4])
+        self.assertEqual(xa.flash_read(0, 4), bytearray([1, 2, 3, 4]))
+
+    def test_run_timers(self):
+        xa = self.make()
+        self.assertTrue(xa.can_set_run_timers())
+        xa.set_run_timers(False)
+        xa.device.avr.protocol.set_byte.assert_called_with(Avr8Protocol.AVR8_CTXT_OPTIONS,
+                                                           Avr8Protocol.AVR8_OPT_RUN_TIMERS, 0)
+
+    def test_target_power_and_commands(self):
+        xa = self.make()
+        self.assertTrue(xa.can_switch_target_power())
+        xa.set_target_power(True)
+        xa.edbg_protocol.set_byte.assert_called_with(EdbgProtocol.EDBG_CTXT_CONTROL,
+                                                     EdbgProtocol.EDBG_CONTROL_TARGET_POWER, 1)
+        xa.edbg_protocol.query.return_value = [1, 2]
+        self.assertEqual(xa.tool_commands(), "[1, 2]")
+        xa.edbg_protocol = None
+        self.assertFalse(xa.can_switch_target_power())
+        with self.assertRaises(FatalError):
+            xa.set_target_power(True)
+
+    @patch('pyavrocd.backend.time.sleep')
+    def test_power_cycle_only_medbg(self, mock_sleep):
+        xa = self.make("Atmel-ICE CMSIS-DAP")
+        self.assertFalse(xa.can_power_cycle())
+        self.assertFalse(xa.power_cycle())
+        xa.edbg_protocol.set_byte.assert_not_called()
+        xa = self.make("mEDBG CMSIS-DAP")
+        self.assertTrue(xa.can_power_cycle())
+        self.assertTrue(xa.power_cycle())
+        xa.edbg_protocol.set_byte.assert_has_calls([
+            call(EdbgProtocol.EDBG_CTXT_CONTROL, EdbgProtocol.EDBG_CONTROL_TARGET_POWER, 0),
+            call(EdbgProtocol.EDBG_CTXT_CONTROL, EdbgProtocol.EDBG_CONTROL_TARGET_POWER, 1)])
+        mock_sleep.assert_has_calls([call(0.5), call(0.2)])
+
+    def test_flash_programming(self):
+        xa = self.make()
+        xa.memory_info = MagicMock()
+        xa.memory_info.memory_info_by_name.return_value = {'page_size': 64}
+        xa.erase_chip(True)
+        xa.device.erase_chip.assert_called_once_with(True)
+        xa.device.erase_page.return_value = True
+        self.assertTrue(xa.erase_flash_page(0x40, False))
+        xa.device.erase_page.assert_called_once_with(0x40, {'page_size': 64}, False)
+        xa.write_flash_pages(0x40, bytes(64), False)
+        xa.device.avr.write_memory_section.assert_called_once_with(xa.flashmemtype, 0x40, bytes(64), 64,
+                                                                   allow_blank_skip=False)
+
+    def test_error_translation(self):
+        xa = self.make()
+        cases = [(AvrIspProtocolError("isp"), IspConnectionError),
+                 (Jtagice3ResponseError("bad", Avr8Protocol.AVR8_FAILURE_INVALID_ADDRESS), InvalidAddressError),
+                 (PymcuprogNotSupportedError("ns"), BackendNotSupportedError),
+                 (PymcuprogError("pe"), BackendError)]
+        for raised, expected in cases:
+            xa.device.avr.statreg_read.side_effect = raised
+            with self.assertRaises(expected):
+                xa.status_register_read()
+        for untouched in (Jtagice3ResponseError("other", 0x77), FatalError("f"), ValueError("v")):
+            xa.device.avr.statreg_read.side_effect = untouched
+            with self.assertRaises(type(untouched)):
+                xa.status_register_read()

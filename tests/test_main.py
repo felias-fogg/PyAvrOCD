@@ -452,7 +452,7 @@ class TestMain(TestCase):
         mock_logger.error.assert_called_with("Not all discovered tools are available")
         mock_logger.critical.assert_called_with("No compatible tool discovered")
 
-    @patch('pyavrocd.main.XAvrDebugger', MagicMock())
+    @patch('pyavrocd.main.EdbgBackend', MagicMock())
     @patch('pyavrocd.main.RspServer', MagicMock())
     @patch('pyavrocd.main.dwlink.main')
     @patch('pyavrocd.main.importlib.metadata.version')
@@ -495,7 +495,7 @@ class TestMain(TestCase):
         mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
         mock_logger.critical.assert_has_calls([call('Debug probe busy, cannot connect')])
 
-    @patch('pyavrocd.main.XAvrDebugger', MagicMock())
+    @patch('pyavrocd.main.EdbgBackend', MagicMock())
     @patch('pyavrocd.main.RspServer', MagicMock())
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
@@ -517,7 +517,7 @@ class TestMain(TestCase):
         mock_logger.critical.assert_has_calls([call('Could not connect to debug probe: %s', 'other')])
 
     @patch('pyavrocd.main.RspServer', MagicMock())
-    @patch('pyavrocd.main.XAvrDebugger', MagicMock())
+    @patch('pyavrocd.main.EdbgBackend', MagicMock())
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')

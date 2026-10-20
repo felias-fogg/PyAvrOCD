@@ -7,9 +7,6 @@ from typing import Any
 import logging
 from collections.abc import Callable
 
-# AVR8 errors
-from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
-from pyedbglib.protocols.avr8protocol import Avr8Protocol
 
 # Errors
 from pyavrocd.errors import FatalError
@@ -22,7 +19,7 @@ from pyavrocd.instructions import BREAKCODE, SLEEPCODE, CLICODE, SEICODE
 
 # Classes and types
 from pyavrocd.monitor import MonitorCommand
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import DebugBackend, InvalidAddressError
 
 
 # signal codes
@@ -45,10 +42,10 @@ class BreakAndExec():
     makes interrupt-safe single stepping possible.
     """
 
-    def __init__(self, mon : MonitorCommand, dbg : XAvrDebugger,
+    def __init__(self, mon : MonitorCommand, dbg : DebugBackend,
                      read_flash_word : Callable[[int], int]):
         self.mon : MonitorCommand = mon
-        self.dbg : XAvrDebugger = dbg
+        self.dbg : DebugBackend = dbg
         self.logger : logging.Logger = logging.getLogger('pyavrocd.breakexec')
         self.hwbp : HardwareBP = HardwareBP(dbg)
         self._read_flash_word : Callable[[int], int] = read_flash_word
@@ -354,10 +351,11 @@ class BreakAndExec():
                 self.logger.debug("New PC(byte addr)=0x%X, return SIGTRAP", addr)
                 self.dbg.program_counter_write(addr>>1)
                 return SIGTRAP
-        # if stepping is unsafe, just use the AVR stepper
-        if not self.mon.is_safe():
-            self.logger.debug("Unsafe Single-stepping: use AVR stepper, return SIGTRAP")
-            self.dbg.step()
+        # if stepping is unsafe, just use the AVR stepper; the same if the backend's
+        # stepper lets no interrupt in anyway (stepping by injection)
+        if not self.mon.is_safe() or self.dbg.step_is_interrupt_safe():
+            self.logger.debug("Unsafe or interrupt-safe stepper: use AVR stepper, return SIGTRAP")
+            self.dbg.step(opcode)
             return SIGTRAP
         # now we have to check for unsafe instructions, which we simulate;
         # the other instructions will be single-stepped with the I-Bit cleared.
@@ -374,7 +372,7 @@ class BreakAndExec():
             self.logger.debug("New sreg=0x%X",sreg)
             self.dbg.status_register_write(bytearray([sreg]))
         self.logger.debug("Now make a step...")
-        self.dbg.step()
+        self.dbg.step(opcode)
         if ibit:
             sreg = self.dbg.status_register_read()[0]
             self.logger.debug("New sreg=0x%X", sreg)
@@ -710,12 +708,9 @@ class BreakAndExec():
                     val = self.dbg.register_read(secondword, 1)
                 else:
                     val = self.dbg.sram_read(secondword, 1)
-            except Jtagice3ResponseError as error:
-                if error.code == Avr8Protocol.AVR8_FAILURE_INVALID_ADDRESS:
-                    self.logger.error("Read access to invalid address: 0x%X", secondword)
-                    val = bytearray([0])
-                else:
-                    raise error
+            except InvalidAddressError:
+                self.logger.error("Read access to invalid address: 0x%X", secondword)
+                val = bytearray([0])
             self.dbg.register_write(register, val)
             self.logger.debug("Simulating lds")
             addr += 4

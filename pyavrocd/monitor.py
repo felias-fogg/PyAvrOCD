@@ -14,7 +14,7 @@ import argparse
 
 # error exceptions
 from pyavrocd.errors import FatalError
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import DebugBackend
 
 
 # This is a list of monitor commands, of which many also be used as command line options
@@ -54,7 +54,7 @@ class MonitorCommand():
     a pair consisting of an action identifier and the string to be displayed.
     """
     def __init__(self, iface : str, args : argparse.Namespace, toolname : str,
-                     dbg : XAvrDebugger) -> None:
+                     dbg : DebugBackend) -> None:
         self._iface : str = iface
         self._debugger_active : bool = False
         self._toolname : str = toolname

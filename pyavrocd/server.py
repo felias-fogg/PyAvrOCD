@@ -21,8 +21,8 @@ import select
 
 from pyavrocd.handler import GdbHandler, RECEIVE_BUFFER
 from pyavrocd.errors import  EndOfSession, TerminationRequest
-from pyavrocd.termination import interrupt, guard_probe_transactions
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.termination import interrupt
+from pyavrocd.backend import DebugBackend
 
 class RspServer():
     """
@@ -31,11 +31,11 @@ class RspServer():
     method of the handler.
     """
 
-    def __init__(self, avrdebugger : XAvrDebugger,
+    def __init__(self, avrdebugger : DebugBackend,
                      devicename : str,
                      args : argparse.Namespace,
                      toolname : str) -> None:
-        self.avrdebugger : XAvrDebugger = avrdebugger
+        self.avrdebugger : DebugBackend = avrdebugger
         self.devicename : str = devicename
         self.port : int = args.port
         self.toolname : str = toolname
@@ -91,7 +91,7 @@ class RspServer():
         """
         Serve away ...
         """
-        guard_probe_transactions()
+        self.avrdebugger.guard_transactions()
         signal.signal(signal.SIGTERM, self._signal_server)
         signal.signal(signal.SIGINT, self._interrupt_server)
         try:
@@ -133,7 +133,7 @@ class RspServer():
             return 1
         finally:
             self.logger.info("Leaving GDB server")
-            if self.avrdebugger and self.avrdebugger.device:
+            if self.avrdebugger and self.avrdebugger.is_set_up():
                 leave : bool = self.avrdebugger.get_iface() != 'debugwire'
                 if self.handler is not None and \
                     self.handler.mon is not None:

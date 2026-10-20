@@ -7,6 +7,8 @@ on:
       - '**.py'
     branches:
       - 'main'
+      # the integration of further debuggers, until it is merged (see the badge steps)
+      - 'backends'
   pull_request:
 
 
@@ -79,8 +81,9 @@ jobs:
           echo "PYTESTCNT="`python -c "import xml.etree.ElementTree as ET; el = ET.parse('pytest.xml').find('./testsuite'); tests=int(el.attrib['tests'])-int(el.attrib['skipped']); print(tests)"`  >> $GITHUB_ENV
           echo "PYCOV="`python -c "import json; js=open('cov.json'); print('%.1f' % json.load(js)['totals']['percent_covered'])"` >> $GITHUB_ENV
         continue-on-error: true
+      # The badges show main only: a push to another branch must not overwrite them.
       - name: Generate mypy label
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -93,7 +96,7 @@ jobs:
           color: ${{ steps.typecheck.outcome == 'success' && 'brightgreen' || 'critical' }}
         continue-on-error: true
       - name: Generate Pylint label
-        if: ${{ github.event_name != 'pull_request' && env.PYLINT != '' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && env.PYLINT != '' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -108,7 +111,7 @@ jobs:
           minColorRange: 0
         continue-on-error: true
       - name: Generate Pytest label
-        if: ${{ github.event_name != 'pull_request' && env.PYTESTPERCENT != '' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && env.PYTESTPERCENT != '' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
@@ -123,7 +126,7 @@ jobs:
           minColorRange: 30.0
         continue-on-error: true
       - name: Generate coverage label
-        if: ${{ github.event_name != 'pull_request' && env.PYCOV != '' }}
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && env.PYCOV != '' }}
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}

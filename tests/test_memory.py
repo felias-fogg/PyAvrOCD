@@ -2,9 +2,9 @@
 The test suit for the Memory class
 """
 #pylint: disable=protected-access,missing-function-docstring,consider-using-f-string,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
-from unittest.mock import Mock, MagicMock, call, create_autospec, patch
+from unittest.mock import MagicMock, call, create_autospec, patch
 from unittest import TestCase
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.errors import FatalError
 from pyavrocd.memory import Memory
 from pyavrocd.monitor import MonitorCommand
@@ -15,18 +15,15 @@ class TestMemory(TestCase):
         self.mem = None
 
     def set_up(self):
-        mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
+        mock_dbg = create_autospec(EdbgBackend, spec_set=False, instance=True)
         mock_mon = create_autospec(MonitorCommand, specSet=True, instance=True)
         mock_mon.is_noinitialload.return_value = False
         mock_dbg.memory_info = MagicMock()
         mock_dbg.device_info = MagicMock()
         mock_dbg.transport = MagicMock()
-        mock_dbg.device = Mock()
-        mock_dbg.device.avr = Mock()
         mock_dbg.get_iooffset.return_value = 0x20
         mock_dbg.get_iface.return_value = "debugwire"
         mock_dbg.memory_info.memory_info_by_name('flash')['size'].__gt__ = lambda self, compare: False
-        mock_dbg.flashmemtype = 123
         # setting up the instance we want to test
         self.mem = Memory(mock_dbg, mock_mon)
         self.mem._flash_start = 0
@@ -149,11 +146,13 @@ class TestMemory(TestCase):
 
     def test_writemem_flash_ok(self):
         self.set_up()
+        self.mem.mon.is_verify.return_value = False # used to be skipped by a mocked is_blank
         self.mem.programming_mode = True
         self.assertEqual(self.mem.writemem("100", bytearray(1)), "OK")
 
     def test_writemem_flash_new_start(self):
         self.set_up()
+        self.mem.mon.is_verify.return_value = False # used to be skipped by a mocked is_blank
         self.mem.programming_mode = True
         self.mem.writemem("300", bytearray(20))
         self.assertEqual(len(self.mem._flash), 0x300+20)
@@ -174,7 +173,6 @@ class TestMemory(TestCase):
 
     def test_flash_pages_no_write(self):
         self.set_up()
-        self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem.mon.is_read_before_write.return_value = True
         self.mem.mon.is_erase_before_load.return_value = False
         self.mem._flash = bytearray(range(4))
@@ -182,10 +180,10 @@ class TestMemory(TestCase):
                                                    bytearray([0,1]), bytearray([2,3]), bytearray([0xFF,0xFF])]
         self.mem.flash_pages()
         self.assertEqual(self.mem.dbg.flash_read.call_count, 3)
+        self.mem.dbg.write_flash_pages.assert_not_called()
 
     def test_flash_pages_write(self):
         self.set_up()
-        self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem._flash = bytearray(range(4))
         self.mem.mon.is_read_before_write.return_value = True
         self.mem.mon.is_erase_before_load.return_value = False
@@ -193,14 +191,12 @@ class TestMemory(TestCase):
                                                    bytearray([0,1]), bytearray([2,3]), bytearray([0xFF,0xFF])]
         self.mem.flash_pages()
         self.assertEqual(self.mem.dbg.flash_read.call_count, 6)
-        fmt = self.mem.dbg.flashmemtype
-        self.mem.dbg.device.avr.write_memory_section.assert_called_with(fmt, 0, bytearray([0,1,2,3,0xFF,0xFF]),
-                                                                            2, allow_blank_skip=False)
+        self.mem.dbg.write_flash_pages.assert_called_with(0, bytearray([0,1,2,3,0xFF,0xFF]),
+                                                              self.mem.programming_mode)
 
     def test_no_flash_pages_write_only_cached(self):
         self.set_up()
         self.mem.mon.is_noinitialload.return_value = True
-        self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem._flash = bytearray(range(4))
         self.mem.mon.is_read_before_write.return_value = True
         self.mem.mon.is_erase_before_load.return_value = False
@@ -208,14 +204,13 @@ class TestMemory(TestCase):
                                                    bytearray([0,1]), bytearray([2,3]), bytearray([0xFF,0xFF])]
         self.mem.flash_pages()
         self.assertEqual(self.mem.dbg.flash_read.call_count, 0)
-        self.mem.dbg.device.avr.write_memory_section.assert_not_called()
+        self.mem.dbg.write_flash_pages.assert_not_called()
 
     def test_flash_pages_error(self):
         self.set_up()
         self.mem.mon.is_verify.return_value = True
         self.mem.mon.is_read_before_write.return_value = False
         self.mem.mon.is_erase_before_load.return_value = False
-        self.mem.dbg.device.avr.write_memory_section = Mock()
         self.mem._flash = bytearray(range(4))
         self.mem.dbg.flash_read.return_value = bytearray(2)
         with self.assertRaises(FatalError):

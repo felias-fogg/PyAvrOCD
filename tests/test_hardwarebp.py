@@ -5,7 +5,7 @@ Test suite for the HardwareBP class
 
 from unittest.mock import call, create_autospec,  Mock
 from unittest import TestCase
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.hardwarebp import HardwareBP
 from pyavrocd.errors import FatalError
 
@@ -15,7 +15,7 @@ class TestHardwareBP(TestCase):
         self.hbp = None
 
     def set_up(self):
-        mock_dbg = create_autospec(XAvrDebugger)
+        mock_dbg = create_autospec(EdbgBackend)
         mock_dbg.get_hwbpnum.return_value = 3
         self.hbp = HardwareBP(mock_dbg)
 

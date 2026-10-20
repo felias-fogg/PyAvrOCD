@@ -1,10 +1,12 @@
 """
-Python AVR MCU debugger
+The debugger backend for the EDBG-based probes (Atmel-ICE, PICkit4, SNAP, (m/n)EDBG, ...),
+built on pymcuprog's AvrDebugger
 """
 # module will be split up when moving to the backend architecture (v2)
 #pylint: disable=too-many-lines
 from typing import Any #pylint disable=unused-import
 from collections.abc import Callable
+import functools
 
 # utilities
 import time
@@ -14,7 +16,7 @@ import argparse
 #edbg library
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
 from pyedbglib.protocols.avr8protocol import Avr8Protocol
-from pyedbglib.protocols.avrispprotocol import AvrIspProtocol #pylint: disable=unused-import
+from pyedbglib.protocols.avrispprotocol import AvrIspProtocol, AvrIspProtocolError #pylint: disable=unused-import
 from pyedbglib.protocols.edbgprotocol import EdbgProtocol
 from pyedbglib.protocols import housekeepingprotocol
 from pyedbglib.hidtransport.hidtransportbase import HidTransportBase
@@ -24,10 +26,13 @@ from pymcuprog.avrdebugger import AvrDebugger
 from pymcuprog.deviceinfo import deviceinfo
 from pymcuprog.nvmspi import NvmAccessProviderCmsisDapSpi, NvmAccessProviderCmsisDapAvr
 from pymcuprog.pymcuprog_errors import PymcuprogToolConfigurationError,\
-     PymcuprogNotSupportedError
+     PymcuprogNotSupportedError, PymcuprogError
 from pymcuprog.utils import read_target_voltage, read_tool_info
 
 
+from pyavrocd.backend import DebugBackend, SwbpSupport, BackendError, BackendNotSupportedError,\
+     InvalidAddressError, IspConnectionError
+from pyavrocd.termination import guard_probe_transactions
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
 from pyavrocd.xnvmmegaavrjtag import XNvmAccessProviderCmsisDapMegaAvrJtag
 from pyavrocd.xnvmupdi import XNvmAccessProviderCmsisDapUpdi
@@ -35,19 +40,28 @@ from pyavrocd.errors import FatalError, EndOfSession
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
 #pylint: disable=too-many-public-methods,too-many-instance-attributes
-class XAvrDebugger(AvrDebugger):
+class EdbgBackend(DebugBackend, AvrDebugger):
     """
-    AVR debugger wrapper extension
+    Backend for the EDBG-based probes.
+
+    DebugBackend comes first in the method resolution order, so its template methods
+    (run, run_to, step, flash_read) and the SERVER implementation of the software
+    breakpoints would hide AvrDebugger's methods of the same name. That is why this
+    class calls AvrDebugger's methods explicitly (AvrDebugger.x(self, ...)), never
+    through super(), and overrides the software breakpoint methods with the probe's.
     """
+    SWBP_SUPPORT = SwbpSupport.PROBE
+
     #pylint: disable=super-init-not-called,too-many-positional-arguments
     def __init__(self, transport : HidTransportBase,
                      devicename : str,
                      iface : str,
                      args : argparse.Namespace) -> None:
         """
-        We do not want to make use of the base class' init method,
+        We do not want to make use of AvrDebugger's init method,
         because all startup code is collected in the start_debugging method!
         """
+        DebugBackend.__init__(self, devicename, iface)
         self.logger : logging.Logger = logging.getLogger(__name__)
         self.transport : HidTransportBase = transport
         self._devicename : str = devicename
@@ -363,7 +377,7 @@ class XAvrDebugger(AvrDebugger):
         provided the memory map has been communicated to GDB.
         """
         self.logger.info("Check for stuck bits in PC")
-        pc : int = (super().program_counter_read()) << 1
+        pc : int = (AvrDebugger.program_counter_read(self)) << 1
         self.logger.debug("PC(byte)=0x%X",pc)
         if self.memory_info is None:
             raise FatalError("No memory info available")
@@ -890,7 +904,7 @@ class XAvrDebugger(AvrDebugger):
         catches exceptions.
         """
         try:
-            super().software_breakpoint_set(address)
+            AvrDebugger.software_breakpoint_set(self, address)
         except Exception as e:
             self.logger.error("Could not set software breakpoint: %s", str(e))
             return False
@@ -1004,7 +1018,7 @@ class XAvrDebugger(AvrDebugger):
         """
         Apply the bad PC bit mask (which is for addressing bytes, so shift one to the right)
         """
-        return super().program_counter_read() & ~(self.bad_pc_bit_mask >> 1)
+        return AvrDebugger.program_counter_read(self) & ~(self.bad_pc_bit_mask >> 1)
 
     def _update_regfile_in_target(self) -> None:
         """
@@ -1015,31 +1029,31 @@ class XAvrDebugger(AvrDebugger):
         self._regfile = None
         self._regsupd = False
 
-    def run(self) -> None:
+    def _run(self) -> None:
         """
         Update register file, then execute
         """
         self._update_regfile_in_target()
         self.flush_events() # remove any pending poll events from queue
-        super().run()
+        AvrDebugger.run(self)
 
-    def run_to(self, address : int) -> None:
+    def _run_to(self, address : int) -> None:
         """
         Update register file, if changes in register.
         Apply bad bit (if present) to cursor address when starting execution.
         """
         self._update_regfile_in_target()
         self.flush_events() # remove any pending poll events from queue
-        super().run_to(address | self.bad_pc_bit_mask)
+        AvrDebugger.run_to(self, address | self.bad_pc_bit_mask)
 
-    def step(self) -> None:
+    def _step(self) -> None:
         """
         Update register file, then make a single step
         """
         self._update_regfile_in_target()
         self.flush_events() # remove any pending poll events from queue
         self.logger.debug("PC before step: 0x%X", self.program_counter_read() << 1)
-        super().step()
+        AvrDebugger.step(self)
         self.logger.debug("PC after step: 0x%X", self.program_counter_read() << 1)
 
 
@@ -1097,7 +1111,7 @@ class XAvrDebugger(AvrDebugger):
             resp += [0xFF]*(addr+size)
         return bytearray(resp[addr:addr+size])
 
-    def flash_read(self, address : int, numbytes : int, prog_mode : bool = False) -> bytearray:
+    def _flash_read(self, address : int, numbytes : int, prog_mode : bool = False) -> bytearray:
         """
         Read flash content from the AVR
         """
@@ -1157,66 +1171,158 @@ class XAvrDebugger(AvrDebugger):
         return self.device.write(self.memory_info.memory_info_by_name('eeprom'), address,
                                          data, prog_mode)
 
-    def sram_masked_read(self, addr : int, size : int) -> bytes:
-        """
-        Read a chunk from SRAM but leaving  out any masked registers. In theory,
-        one could use the "Memory Read Masked" method of the AVR8 Generic protocol.
-        However, there is no Python method implemented that does that for you.
-        For this reason, we do it here step by step.
+######## Methods required by DebugBackend
 
-        In addition to that, the function fetches the values from the general
-        registers if the address is below the iooffset, i.e., < 20 for JTAG and
-        dw targets.
+    def is_set_up(self) -> bool:
         """
-        addr &= 0xFFFF # mask out GDB bits
-        end : int = addr + size
-        data : bytearray = bytearray()
-        mr : int
-        if addr < self.get_iooffset():
-            data = self.register_read(addr, min(self.get_iooffset(), end) - addr)
-            addr = self.get_iooffset()
-        for mr in sorted(self.masked_registers):
-            if mr >= end or addr >= end:
-                break
-            if mr < addr:
-                continue
-            if addr < mr:
-                data.extend(self.sram_read(addr, mr - addr))
-            data.append(0x00)
-            self.logger.warning("Not reading from SRAM 0x%X because it is read-protected", mr)
-            addr = mr + 1
-        if addr < end:
-            data.extend(self.sram_read(addr, end - addr))
-        return data
+        True if an NVM provider (and therefore a target) has been set up
+        """
+        return getattr(self, 'device', None) is not None
 
-    def sram_masked_write(self, addr : int, data : bytes) -> None:
+    def get_toolname(self) -> str:
         """
-        Write a chunk to SRAM but leaving  out any read-only registers. If there is an
-        attempt to write to a read-only register, spew out a warning message.
+        Product string of the probe
+        """
+        return str(self.transport.device.product_string)
 
-        If we write to SRAM below iooffset, then we will write to the registerfile
+    def guard_transactions(self) -> None:
         """
-        addr &= 0xFFFF # mask out GDB bits
-        start : int = addr
-        end : int = addr + len(data)
-        rr : int
-        if addr < self.get_iooffset():
-            self.register_write(addr, bytes(data[:min(self.get_iooffset()-addr,len(data))]))
-            addr = self.get_iooffset()
-            data = data[self.get_iooffset()-addr:]
-            if not data:
-                return
-        for rr in sorted(self.ronly_registers):
-            if rr >= end or addr >= end:
-                break
-            if rr < addr:
-                continue
-            if addr < rr:
-                # write to SRAM from addr up to rr-1
-                self.sram_write(addr, data[addr-start:rr-start])
-            self.logger.warning("Not writing to SRAM 0x%X because it is write-protected", rr)
-            addr = rr + 1
-        if addr < end:
-            # write remaining data
-            self.logger.debug("Write remaining from 0x%X to 0x%X (not incl)", addr, end)
-            self.sram_write(addr, data[addr-start:end-start])
+        All traffic with an EDBG probe passes through the two pyedbglib methods
+        that termination.guard_probe_transactions wraps
+        """
+        guard_probe_transactions()
+
+    # AvrDebugger's implementations, which DebugBackend's abstract or SERVER methods
+    # would hide otherwise (see the class docstring)
+
+    def stop(self) -> None:
+        """Halt execution"""
+        AvrDebugger.stop(self)
+
+    def poll_event(self) -> int | None:
+        """PC (byte address) if the target has stopped since the last call, else None"""
+        return AvrDebugger.poll_event(self)
+
+    def program_counter_write(self, program_counter : int) -> None:
+        """Set PC (word address)"""
+        AvrDebugger.program_counter_write(self, program_counter)
+
+    def stack_pointer_read(self) -> bytearray:
+        """SP, little endian, 2 bytes"""
+        return AvrDebugger.stack_pointer_read(self)
+
+    def sram_read(self, address : int, numbytes : int) -> bytearray:
+        """Read data space"""
+        return AvrDebugger.sram_read(self, address, numbytes)
+
+    def sram_write(self, address : int, data : bytes) -> None:
+        """Write data space"""
+        AvrDebugger.sram_write(self, address, data)
+
+    def software_breakpoint_clear(self, address : int) -> None:
+        """The probe removes the BREAK"""
+        AvrDebugger.software_breakpoint_clear(self, address)
+
+    def software_breakpoint_clear_all(self) -> None:
+        """The probe removes all BREAKs"""
+        AvrDebugger.software_breakpoint_clear_all(self)
+
+    # flash programming, used by memory.py
+
+    def erase_chip(self, prog_mode : bool) -> None:
+        """
+        Erase the whole chip
+        """
+        self.device.erase_chip(prog_mode)
+
+    def erase_flash_page(self, address : int, prog_mode : bool) -> bool:
+        """
+        Erase the flash page at address if necessary; True if erased
+        """
+        if self.memory_info is None:
+            raise FatalError("No memory info available")
+        return self.device.erase_page(address, self.memory_info.memory_info_by_name('flash'), prog_mode)
+
+    def write_flash_pages(self, address : int, data : bytes, prog_mode : bool) -> None:
+        """
+        Program a multi page starting at address
+        """
+        if self.memory_info is None:
+            raise FatalError("No memory info available")
+        self.device.avr.write_memory_section(self.flashmemtype, address, data,
+                                                 self.memory_info.memory_info_by_name('flash')['page_size'],
+                                                 allow_blank_skip=False)
+
+    # optional capabilities
+
+    def can_set_run_timers(self) -> bool:
+        """
+        All EDBG probes can let the timers run or freeze them while stopped
+        """
+        return True
+
+    def set_run_timers(self, run : bool) -> None:
+        """
+        Let the timers run (True) or freeze them (False) while stopped; takes effect
+        after reactivate()
+        """
+        self.device.avr.protocol.set_byte(Avr8Protocol.AVR8_CTXT_OPTIONS,
+                                              Avr8Protocol.AVR8_OPT_RUN_TIMERS, int(run))
+
+    def can_switch_target_power(self) -> bool:
+        """
+        Target power is switched through the EDBG protocol
+        """
+        return self.edbg_protocol is not None
+
+    def set_target_power(self, on : bool) -> None:
+        """
+        Switch the target supply
+        """
+        if self.edbg_protocol is None:
+            raise FatalError("EDBG protocol not initialized")
+        self.edbg_protocol.set_byte(EdbgProtocol.EDBG_CTXT_CONTROL,
+                                        EdbgProtocol.EDBG_CONTROL_TARGET_POWER, int(on))
+
+    def can_power_cycle(self) -> bool:
+        """
+        mEDBG are the only ones it will work with, I believe. I tried to use a try/except
+        construction, but this confuses the debugger and it is stuck in an illegal state
+        (the housekeeper does not respond)
+        """
+        return str(self.transport.device.product_string).lower().startswith('medbg')
+
+    def tool_commands(self) -> str:
+        """
+        Commands the EDBG protocol reports
+        """
+        if self.edbg_protocol is None:
+            raise FatalError("EDBG protocol not initialized")
+        return str(self.edbg_protocol.query(EdbgProtocol.EDBG_QUERY_COMMANDS))
+
+
+def _translate_errors(method : Callable[..., Any]) -> Callable[..., Any]:
+    """
+    Turn the pymcuprog/pyedbglib exceptions that the upper layers tell apart into
+    backend exceptions (design rule 2 of backend.py). Everything else passes unchanged,
+    so that the upper layers treat it as before.
+    """
+    @functools.wraps(method)
+    def wrapper(*args : Any, **kwargs : Any) -> Any:
+        try:
+            return method(*args, **kwargs)
+        except AvrIspProtocolError as e:
+            raise IspConnectionError(str(e)) from e
+        except Jtagice3ResponseError as e:
+            if e.code == Avr8Protocol.AVR8_FAILURE_INVALID_ADDRESS:
+                raise InvalidAddressError(str(e)) from e
+            raise
+        except PymcuprogNotSupportedError as e:
+            raise BackendNotSupportedError(str(e)) from e
+        except PymcuprogError as e:
+            raise BackendError(str(e)) from e
+    return wrapper
+
+# wrap every method of the interface, nothing else
+for _name in [ n for n, v in vars(DebugBackend).items() if callable(v) and not n.startswith('_') ]:
+    setattr(EdbgBackend, _name, _translate_errors(getattr(EdbgBackend, _name)))

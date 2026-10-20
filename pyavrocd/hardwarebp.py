@@ -4,7 +4,7 @@ This module deals with the management of hardware breakpoints
 # args, logging
 import logging
 
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import DebugBackend
 from pyavrocd.errors import FatalError
 
 
@@ -14,8 +14,8 @@ class HardwareBP():
     execution with the temporary breakpoint). All addresses are byte addresses into flash space.
     """
 
-    def __init__(self, dbg : XAvrDebugger) -> None:
-        self.dbg : XAvrDebugger = dbg
+    def __init__(self, dbg : DebugBackend) -> None:
+        self.dbg : DebugBackend = dbg
         self._numhwbp : int = dbg.get_hwbpnum()
         self._hwbplist : list[int | None] = [None]*self._numhwbp
         self._tempalloc : list[int] | None = None

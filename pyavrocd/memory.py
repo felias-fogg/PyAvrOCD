@@ -9,8 +9,14 @@ import logging
 # debugger modules
 from pyavrocd.errors import  FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.backend import DebugBackend
 from pyavrocd.monitor import MonitorCommand
+
+def is_blank(data : bytes) -> bool:
+    """
+    True if 'data' represents blank (erased) flash
+    """
+    return all(b == 0xFF for b in data)
 
 class Memory():
     """
@@ -26,9 +32,9 @@ class Memory():
     unprogrammed. One can finalize loading when calling flash_pages with the lazy attribute set to False.
     """
 
-    def __init__(self, dbg : XAvrDebugger, mon : MonitorCommand) -> None:
+    def __init__(self, dbg : DebugBackend, mon : MonitorCommand) -> None:
         self.logger : logging.Logger = logging.getLogger('pyavrocd.memory')
-        self.dbg : XAvrDebugger = dbg
+        self.dbg : DebugBackend = dbg
         self.mon : MonitorCommand = mon
         self._flash : bytearray = bytearray() # bytearray starting at 0x0000
         # some device info that is needed throughout
@@ -258,26 +264,20 @@ class Memory():
                 self.logger.debug("Skip flashing page because already flashed at 0x%X", pgaddr)
             else:
                 if not self.mon.is_erase_before_load() and (not currentpage or \
-                  not self.dbg.device.avr.is_blank(currentpage)):
+                  not is_blank(currentpage)):
                     # will erase if necessary and return True if it did
                     self.logger.debug("Will now erase ...")
-                    if self.dbg.device.erase_page(pgaddr, self.dbg.memory_info.memory_info_by_name('flash'),
-                                                      self.programming_mode):
+                    if self.dbg.erase_flash_page(pgaddr, self.programming_mode):
                         self.logger.debug("Page at 0x%x erased", pgaddr)
                 self.logger.debug("Flashing now from 0x%X to 0x%X", pgaddr, pgaddr+len(pagetoflash))
                 pagetoflash.extend(bytearray([0xFF]*(self._multi_page_size-len(pagetoflash))))
-                self.logger.debug("Use memtype 0x%X for flashing", self.dbg.flashmemtype)
                 # program flash page only when it is not that the case that
                 # 'pagetoflash' is blank and memory has been erased beforehand
-                if not (self.dbg.device.avr.is_blank(pagetoflash) and self.mon.is_erase_before_load()):
-                    self.dbg.device.avr.write_memory_section(self.dbg.flashmemtype,
-                                                                pgaddr,
-                                                                pagetoflash,
-                                                                self._flash_page_size,
-                                                                allow_blank_skip=False)
+                if not (is_blank(pagetoflash) and self.mon.is_erase_before_load()):
+                    self.dbg.write_flash_pages(pgaddr, pagetoflash, self.programming_mode)
                 # verify flash programming when verification is requested AND
                 # (the pagetoflash is not blank or memory has not been erased before loading)
-                if self.mon.is_verify() and (not self.dbg.device.avr.is_blank(pagetoflash) or \
+                if self.mon.is_verify() and (not is_blank(pagetoflash) or \
                                                  not self.mon.is_erase_before_load()):
                     readbackpage = bytearray([])
                     for p in range(self._multi_buffer):

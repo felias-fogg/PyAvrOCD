@@ -6,7 +6,7 @@ The test suite for filtering out unsafe instructions and simulate them offline
 from unittest import TestCase
 from unittest.mock import Mock, create_autospec, call
 from pyavrocd.breakexec import BreakAndExec
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.errors import FatalError
 
 class TestBreakAndExecFilter(TestCase):
@@ -15,7 +15,7 @@ class TestBreakAndExecFilter(TestCase):
         self.bp = None
 
     def set_up(self):
-        mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
+        mock_dbg = create_autospec(EdbgBackend, spec_set=False, instance=True)
         mock_dbg.memory_info = Mock()
         mock_dbg.memory_info.memory_info_by_name.return_value = {'size' : 100,'address' : 0x60 }
         mock_dbg.get_hwbpnum.return_value = 1

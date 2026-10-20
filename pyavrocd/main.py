@@ -32,7 +32,7 @@ from pymcuprog.pymcuprog_errors import PymcuprogToolConnectionError
 import pyedbglib
 
 from pyavrocd import dwlink
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 from pyavrocd.monitor import monopts
 from pyavrocd.server import RspServer
@@ -588,7 +588,7 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     # tool is connected, now we can start
     logger.info("Starting GDB server")
     try:
-        avrdebugger = XAvrDebugger(backend.transport, device, intf, args)
+        avrdebugger = EdbgBackend(backend.transport, device, intf, args)
         if args.debugwire:
             if intf != 'debugwire':
                 if args.debugwire[0] == 'd':

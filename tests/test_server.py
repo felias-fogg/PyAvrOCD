@@ -7,7 +7,7 @@ from unittest.mock import  Mock, call, patch, create_autospec
 from unittest import TestCase
 from types import SimpleNamespace
 
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.server import RspServer
 from pyavrocd.handler import GdbHandler
 from pyavrocd.errors import  EndOfSession, TerminationRequest
@@ -18,7 +18,7 @@ class TestRspServer(TestCase):
         self.rs = None
 
     def set_up(self):
-        mock_dbg = create_autospec(XAvrDebugger)
+        mock_dbg = create_autospec(EdbgBackend)
         mock_dbg.device = 'atmega328p'
         args = SimpleNamespace()
         args.port = 2000

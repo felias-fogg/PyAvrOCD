@@ -5,8 +5,8 @@ The test suit for the BreakAndExec class
 from unittest.mock import Mock, call, create_autospec, patch, MagicMock
 from unittest import TestCase
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
-from pyedbglib.protocols.avr8protocol import Avr8Protocol
-from pyavrocd.xavrdebugger import XAvrDebugger
+from pyavrocd.xavrdebugger import EdbgBackend
+from pyavrocd.backend import InvalidAddressError
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.hardwarebp import HardwareBP
 from pyavrocd.breakexec import BreakAndExec, SIGTRAP, SIGILL, SIGBUS, SIGSYS, BREAKCODE, \
@@ -19,12 +19,13 @@ class TestBreakAndExec(TestCase):
 
     def set_up(self):
         mock_mon = create_autospec(MonitorCommand, specSet=True, instance=True)
-        mock_dbg = create_autospec(XAvrDebugger, spec_set=False, instance=True)
+        mock_dbg = create_autospec(EdbgBackend, spec_set=False, instance=True)
         mock_dbg.memory_info = Mock()
         mock_dbg.memory_info.memory_info_by_name.return_value = {'size' : 100,'address' : 0x60 }
         mock_dbg.get_hwbpnum.return_value = 1
         mock_dbg.get_architecture.return_value = "avr8"
         mock_dbg.get_iooffset.return_value = 0x20
+        mock_dbg.step_is_interrupt_safe.return_value = False # as EdbgBackend
         self.bp = BreakAndExec(mock_mon, mock_dbg, Mock())
         self.bp.mon.is_old_exec.return_value = False
         self.bp.mon.is_safe.return_value = True
@@ -580,7 +581,7 @@ class TestBreakAndExec(TestCase):
         self.assertEqual(self.bp.range_step(9,50,False), SIGTRAP)
         self.bp.dbg.program_counter_read.assert_called_once()
         self.bp._read_flash_word.assert_called_with(20)
-        self.bp.dbg.step.assert_called_with()
+        self.bp.dbg.step.assert_called_with(0x0000)
 
     @patch('pyavrocd.breakexec.BreakAndExec.single_step', Mock(return_value=SIGTRAP))
     @patch('pyavrocd.breakexec.logging.getLogger', MagicMock())
@@ -755,8 +756,7 @@ class TestBreakAndExec(TestCase):
 
     def test_sim_two_word_instr_lds_invalid_address(self):
         self.set_up()
-        self.bp.dbg.sram_read.side_effect = Jtagice3ResponseError("invalid",
-                                                Avr8Protocol.AVR8_FAILURE_INVALID_ADDRESS)
+        self.bp.dbg.sram_read.side_effect = InvalidAddressError("invalid")
         self.assertEqual(self.bp._sim_two_word_instr(0x90F0, 0x1000, 0x2002), 0x2006)
         self.bp.dbg.register_write.assert_called_with(15, bytearray([0]))
 
