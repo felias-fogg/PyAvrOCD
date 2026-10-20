@@ -40,6 +40,7 @@ class RspServer():
         self.port : int = args.port
         self.toolname : str = toolname
         self._terminate : bool = False
+        self._cleaning_up : bool = False # set when serve() has reached its finally clause
         self.logger : logging.Logger = getLogger("pyavrocd.rspserver")
         self.args : argparse.Namespace = args
         self.connection : socket.socket | None = None
@@ -49,12 +50,17 @@ class RspServer():
 
     def _signal_server(self, _signo : int ,_frame : Any) -> None:
         self.logger.info("System requested termination using SIGTERM signal")
-        if self._terminate: # already terminating: do not interrupt the cleanup
+        # already terminating, for whatever reason (SIGTERM, detach, dropped connection):
+        # do not interrupt the cleanup -- an IDE sends SIGTERM right after the detach
+        if self._terminate or self._cleaning_up:
             return
         self._terminate = True
         interrupt(TerminationRequest()) # deferred while a probe transaction is under way
 
     def _interrupt_server(self, _signo : int ,_frame : Any) -> None:
+        if self._cleaning_up:
+            self.logger.info("Ctrl-C ignored: cleaning up")
+            return
         interrupt(KeyboardInterrupt()) # like the default handler, but deferred as above
 
     def _establish_connection(self) -> socket.socket:
@@ -132,6 +138,7 @@ class RspServer():
             self.logger.info("Forced exit: %s", e)
             return 1
         finally:
+            self._cleaning_up = True
             self.logger.info("Leaving GDB server")
             if self.avrdebugger and self.avrdebugger.is_set_up():
                 leave : bool = self.avrdebugger.get_iface() != 'debugwire'
