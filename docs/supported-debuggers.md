@@ -1,6 +1,6 @@
 # Supported debug probes
 
-PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. In addition, it also provides a pass-through service for the DIY debug probe [dw-link](https://felias-fogg.github.io/dw-link). 
+PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. In addition, it also provides a pass-through service for the DIY debug probe [dw-link](https://felias-fogg.github.io/dw-link).
 
 ## Hardware debug probes
 
