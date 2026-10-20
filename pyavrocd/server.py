@@ -20,7 +20,8 @@ import select
 # debugger modules
 
 from pyavrocd.handler import GdbHandler, RECEIVE_BUFFER
-from pyavrocd.errors import  EndOfSession
+from pyavrocd.errors import  EndOfSession, TerminationRequest
+from pyavrocd.termination import interrupt, guard_probe_transactions
 from pyavrocd.xavrdebugger import XAvrDebugger
 
 class RspServer():
@@ -48,7 +49,13 @@ class RspServer():
 
     def _signal_server(self, _signo : int ,_frame : Any) -> None:
         self.logger.info("System requested termination using SIGTERM signal")
+        if self._terminate: # already terminating: do not interrupt the cleanup
+            return
         self._terminate = True
+        interrupt(TerminationRequest()) # deferred while a probe transaction is under way
+
+    def _interrupt_server(self, _signo : int ,_frame : Any) -> None:
+        interrupt(KeyboardInterrupt()) # like the default handler, but deferred as above
 
     def _establish_connection(self) -> socket.socket:
         """
@@ -84,7 +91,9 @@ class RspServer():
         """
         Serve away ...
         """
+        guard_probe_transactions()
         signal.signal(signal.SIGTERM, self._signal_server)
+        signal.signal(signal.SIGINT, self._interrupt_server)
         try:
             self.gdb_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.gdb_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -110,9 +119,11 @@ class RspServer():
                 except ConnectionError:
                     self.logger.warning("Connection reset by GDB")
                     self._handle_communication_drop()
-            return 0 # termination because of dropped connection or SIGTERM signal
+            return 0 # termination because of dropped connection
         except EndOfSession: # raised by 'detach' command
             self.logger.info("End of session")
+            return 0
+        except TerminationRequest: # raised by SIGTERM handler
             return 0
         except KeyboardInterrupt: # caused by user interrupt
             self.logger.info("Terminated by Ctrl-C")

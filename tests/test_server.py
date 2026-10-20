@@ -10,7 +10,7 @@ from types import SimpleNamespace
 from pyavrocd.xavrdebugger import XAvrDebugger
 from pyavrocd.server import RspServer
 from pyavrocd.handler import GdbHandler
-from pyavrocd.errors import  EndOfSession
+from pyavrocd.errors import  EndOfSession, TerminationRequest
 
 class TestRspServer(TestCase):
 
@@ -30,9 +30,37 @@ class TestRspServer(TestCase):
 
     def test_signal_server(self):
         self.set_up()
-        self.rs._signal_server(None, None)
+        with self.assertRaises(TerminationRequest):
+            self.rs._signal_server(None, None)
         self.assertTrue(self.rs._terminate)
         self.rs.logger.info.assert_called_with("System requested termination using SIGTERM signal")
+
+    def test_interrupt_server(self):
+        self.set_up()
+        with self.assertRaises(KeyboardInterrupt):
+            self.rs._interrupt_server(None, None)
+
+    def test_signal_server_during_cleanup(self):
+        self.set_up()
+        self.rs._terminate = True
+        self.rs._signal_server(None, None) # must not raise
+        self.rs.logger.info.assert_called_with("System requested termination using SIGTERM signal")
+
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.time.sleep',Mock())
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
+    def test_serve_SIGTERM(self, mock_handler, mock_select, mock_socket):
+        self.set_up()
+        mock_socket.return_value.accept.return_value = (Mock(close=Mock()), '111.222.333.444')
+        mock_socket.return_value.accept.return_value[0].recv.side_effect = TerminationRequest()
+        mock_handler.return_value = Mock(mon=None, spec=GdbHandler)
+        mock_select.side_effect = [(1,0,0)]
+        self.assertEqual(self.rs.serve(), 0)
+        self.rs.avrdebugger.stop_debugging.assert_called_once()
+        self.rs.gdb_socket.close.assert_called_once() #pylint: disable=no-member
+        self.rs.connection.close.assert_called_once() #pylint: disable=no-member
 
     @patch('pyavrocd.server.time.sleep',Mock())
     @patch('pyavrocd.server.signal.signal',Mock())
