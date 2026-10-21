@@ -53,6 +53,18 @@ poetry run python3 rune2e.py -d <mcu> -c <clock in MHz>
 
 Afterwards, you need to kill the `serv.sh` script with CTRL-C
 
+With more than one debugger attached, select one with `-u <end of its serial number>`; `-P <port>` moves the GDB server off port 2000. Both are passed on to the server through `pyavrocd.options`, so `serv.sh` needs no options of its own.
+
+To test several boards at once, each with its own debugger, use `runparallel.py` in the same folder. It gives every board a copy of the folder (so that options file, logs and build output do not collide), its own `serv.sh` and its own port:
+
+```shell
+poetry run -- python runparallel.py attiny3227:000202 atmega324p:18184:16 -- -t live -t cblink
+```
+
+Each board is `<device>:<end of the serial number>[:<clock>]`; everything after the second `--` goes to every `rune2e.py`. Boards that need a manual power-cycle (debugWIRE behind anything but an mEDBG) are better run on their own, since they would all ask at once.
+
+The make sketches use the avr-gcc that a core names in `cores.yml` (`toolchain: <package>:<tool>`, for instance `megaTinyCore:avr-gcc`; the newest installed version is taken from arduino-cli's data folder), else the first one on the PATH. Arduino's own avr-gcc lacks the device specs of the modern AVRs. `--toolchain <folder>` overrides both for one run. The `.ino` sketches are not affected: arduino-cli builds them with the core's toolchain anyway.
+
 
 
 ### Stress tests
