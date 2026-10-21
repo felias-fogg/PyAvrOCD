@@ -1575,13 +1575,13 @@ tests:
         response: Flash memory will be erased before loading executable
       - stimulus: set {char}0x810000=0xa5   # EEPROM marker
       - stimulus: set {char}0x810001=0x5a
-      - stimulus: x/hx 0x810000
-        response: "0x810000:\t0x5aa5"
+      - stimulus: print/x {int}0x810000 # x/hx would get gdb's symtab warning mid-line
+        response: "= 0x5aa5"
       - stimulus: load
         timeout: 20
         response: Start address 0x
-      - stimulus: x/hx 0x810000
-        response: "0x810000:\t0x5aa5"      # marker must still be there
+      - stimulus: print/x {int}0x810000
+        response: "= 0x5aa5"      # marker must still be there
       - stimulus: monitor erasebeforeload disable
         response: Flash memory will not be erased before loading executable
       - import: epilog

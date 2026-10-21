@@ -512,6 +512,17 @@ devices:
     variant: modelPB
     setup: ATmega324pb Xplained Pro
 
+  atmega324p:
+    mcu: atmega324p
+    import: classic_mega
+    core: MightyCore
+    provides:
+      ram: 2
+      flash: 32
+    board: '324'
+    variant: modelP
+    setup: ATmega324P with Atmel-ICE (JTAG)
+
 
 ####################### Classic Megas (MegaCore) ##################################
 
