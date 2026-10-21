@@ -18,14 +18,16 @@ import textwrap
 import sys
 import copy
 import re
+import shutil
 import subprocess
-from time import sleep
+from time import sleep, monotonic
 import os
 import pexpect
 from pexpect import spawn, run, EOF, TIMEOUT
 import yaml
 import usb
 import usb.core
+import usb.util
 import serial
 from serial import SerialException
 import serial.tools.list_ports
@@ -105,6 +107,7 @@ schema = { 'includes': [ '<STR>' ],
                             'pinout': '<BOOL>',
                             'variant': '<BOOL>' },
                         'default': '<NUMBER>',
+                        'toolchain': '<STR>',
                         'clock': {
                             '<NUMBER>': {
                                 'code': '<STR>',
@@ -131,8 +134,16 @@ def setup_options(parser : argparse.ArgumentParser) -> None:
                             help='Device to debug')
     parser.add_argument('-p', '--pretty-print', dest='pp', action='store_true',
                             help="Pretty print specification and exit")
+    parser.add_argument('-P', '--port', type=int, dest='port', default=2000,
+                            help="Port of the GDB server (default 2000); needed for parallel runs")
     parser.add_argument('-s', '--spec-file', dest='spec', default='e2e.yml',
                             help='Specfication file (default e2e.yml)')
+    parser.add_argument('--toolchain', dest='toolchain', default=None,
+                            help="Folder with the avr-gcc for the make sketches (default: the core's "
+                            "'toolchain' in cores.yml, else the first avr-gcc on the PATH)")
+    parser.add_argument('-u', '--usbsn', dest='usbsn', default=None,
+                            help="Serial number (or its end) of the debugger to use, "
+                            "when more than one is attached")
     parser.add_argument('-t', '--test', dest='script', action='append',
                             help="Test to execute (give multiple times) (default all compatible tests)")
     parser.add_argument('-v', '--verbose',
@@ -525,10 +536,21 @@ def check_ports(baud : int) -> str | None:
                 logger.critical("Error: '%s'", str(e))
     return None
 
-def identify_programmer(intf : str, baud : int) -> tuple [ str, str ]:
+def usb_serial(dev : Any) -> str:
+    """
+    Serial number of a USB device, or '' if it cannot be read
+    """
+    try:
+        return str(usb.util.get_string(dev, dev.iSerialNumber) or '')
+    except (usb.core.USBError, ValueError, NotImplementedError):
+        return ''
+
+def identify_programmer(intf : str, baud : int, usbsn : str | None = None) -> tuple [ str, str ]:
     """
     Return pair of debugger id and port name for avrdude
     'intf' must be one of 'isp', 'jtag', or 'updi'
+    'usbsn' selects one of several attached debuggers by (the end of) its serial number;
+    avrdude then gets 'usb:<serial number>' as its port
     """
     debuggers = { 0x2140: 'jtag3',
                   0x2141: 'atmelice_',
@@ -542,11 +564,16 @@ def identify_programmer(intf : str, baud : int) -> tuple [ str, str ]:
 
     tools = [d for d in usb.core.find(find_all=True) if
                        d.idVendor == 0x3EB and d.idProduct in debuggers]
+    if usbsn:
+        tools = [d for d in tools if usb_serial(d).endswith(usbsn)]
     if len(tools) > 1:
-        logger.critical("More than one debug tool connected!")
+        logger.critical("More than one debug tool connected! Select one with -u.")
         sys.exit(1)
     if len(tools) == 1:
-        return debuggers[tools[0].idProduct] + intf, "usb"
+        return debuggers[tools[0].idProduct] + intf, ("usb:" + usb_serial(tools[0])) if usbsn else "usb"
+    if usbsn:
+        logger.critical("No debugger with serial number '%s' found", usbsn)
+        sys.exit(1)
     if len(tools) == 0 and intf == 'isp': # check dw-link
         portname = check_ports(baud)
         if portname:
@@ -583,12 +610,52 @@ def build_fqbn(dev : str, clock_value : float , spec : dict [ str, Any ]) -> str
         sep = ','
     return fqbn
 
-def run_compile_command(cmd : str) -> bool:
+def version_key(name : str) -> list [ Any ]:
+    """
+    Sort key for version strings like 7.3.0-atmel3.6.1-azduino7b1: numbers as numbers
+    """
+    return [ (0, int(t)) if t.isdigit() else (1, t) for t in re.split(r'(\d+)', name) if t ]
+
+def resolve_toolchain(spec : dict [ str, Any ], dev : str, override : str | None) -> str | None:
+    """
+    Folder of the avr-gcc for the make sketches of 'dev', or None for the PATH as it is.
+    --toolchain wins; otherwise the core's 'toolchain' in cores.yml names an arduino-cli
+    tool as '<package>:<tool>', of which the newest installed version is taken. The
+    location of arduino-cli's data folder differs between hosts, which is why the spec
+    names the tool and not the path.
+    """
+    if override:
+        folder = override
+    else:
+        wanted = spec['cores'][spec['devices'][dev]['core']].get('toolchain', None)
+        if not wanted:
+            return None
+        package, tool = wanted.split(':')
+        data = subprocess.run(['arduino-cli', 'config', 'get', 'directories.data'],
+                              capture_output=True, text=True, check=False).stdout.strip()
+        base = os.path.join(data, 'packages', package, 'tools', tool)
+        versions = sorted((v for v in os.listdir(base)) if os.path.isdir(base) else [], key=version_key)
+        if not versions:
+            logger.critical("Toolchain '%s' of core '%s' is not installed (no %s)",
+                            wanted, spec['devices'][dev]['core'], base)
+            sys.exit(1)
+        folder = os.path.join(base, versions[-1], 'bin')
+    if not shutil.which('avr-gcc', path=folder):
+        logger.critical("No avr-gcc in %s", folder)
+        sys.exit(1)
+    logger.info("Toolchain for make: %s", folder)
+    return folder
+
+def run_compile_command(cmd : str, toolchain : str | None = None) -> bool:
     """
     Compile sketch by running 'cmd' and return success value.
+    'toolchain' is put first on the PATH for this command.
     """
     logger.debug("Command: %s", cmd)
-    cmd_out, exit_status =  run(cmd, withexitstatus=1)
+    env = None
+    if toolchain:
+        env = dict(os.environ, PATH=toolchain + os.pathsep + os.environ.get('PATH', ''))
+    cmd_out, exit_status =  run(cmd, withexitstatus=1, env=env)
     logger.debug("Result: %s", cmd_out.decode("utf-8"))
     return exit_status == 0
 
@@ -607,7 +674,8 @@ def compile_arduino(sketch : str, spec : dict [ str, Any ],
     return run_compile_command(cmd)
 
 def compile_make(sketch : str, spec : dict [ str, Any ],
-                     dev : str, clock : float, prog : str, port : str) -> bool:
+                     dev : str, clock : float, prog : str, port : str,
+                     toolchain : str | None = None) -> bool:
     """
     Call make.
     """
@@ -631,7 +699,7 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     caps += " LOCK=" + ("no" if provides.get('nolock') or medbg else "yes")
     cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog}"
     cmd += f" {caps} fresh"
-    return run_compile_command(cmd)
+    return run_compile_command(cmd, toolchain)
 
 #pylint: disable=unused-argument
 def do_upload(sketch : str, upload_options : str,
@@ -744,9 +812,11 @@ def exec_step(child : pexpect.spawn, step : dict [ str, Any ]) -> tuple [ bool, 
     return True, 0
 
 
-def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, spec : dict [ str , Any]) -> bool:
+def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, spec : dict [ str , Any],
+                       serveropts : list [ str ] | None = None) -> bool:
     """
     Run the script in AVR-GDB
+    'serveropts' go into pyavrocd.options in addition to the test's own (port, probe)
     """
     print("Running", script, end='')
     sys.stdout.flush()
@@ -761,7 +831,7 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
                 logger.critical("Binary not found")
                 sys.exit(1)
     with open("pyavrocd.options", "w", encoding="utf-8") as f:
-        f.write("\n".join(['-d', spec['devices'][dev]['mcu'], '-m', 'all' ]))
+        f.write("\n".join(['-d', spec['devices'][dev]['mcu'], '-m', 'all' ] + (serveropts or [])))
         f.write("\n")
         if spec['tests'][script].get('serverargs', None):
             f.write("\n".join(spec['tests'][script]['serverargs'].split(" ")))
@@ -791,8 +861,23 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
     child.close()
     return True
 
+def wait_for_server_exit(timeout : float = 30) -> None:
+    """
+    Wait until the server of the previous test has ended. serv.sh keeps
+    pyavrocd.running while it runs; before it is gone, the server may still be
+    cleaning up and hold the probe, and avrdude cannot open it.
+    """
+    end = monotonic() + timeout
+    while os.path.exists('pyavrocd.running'):
+        if monotonic() > end:
+            logger.warning("The server of the previous test has not ended after %d s", timeout)
+            return
+        sleep(0.1)
+
 def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
-                    dev : str, clock : float, progger : str, port : str) -> tuple [ list [ str ], list [ str ] ]:
+                    dev : str, clock : float, progger : str, port : str, *,
+                    serveropts : list [ str ] | None = None,
+                    toolchain : str | None = None) -> tuple [ list [ str ], list [ str ] ]:
     """
     Run all selected test 'scripts' (given as list of identifiers)
     """
@@ -812,6 +897,7 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
             failed_run.append(s)
             continue
         previous_ok = False
+        wait_for_server_exit() # before avrdude or the next server needs the probe
         sketch = spec['tests'][s].get('sketch', None)
         comp_ok = True
         run_ok = True
@@ -822,7 +908,7 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
             elif os.path.exists(f"sketches/{sketch}/{sketch}.ino"):
                 comp_ok = compile_arduino(sketch, spec, dev, clock)
             elif os.path.exists(f"sketches/{sketch}/Makefile"):
-                comp_ok = compile_make(sketch, spec, dev, clock, progger, port)
+                comp_ok = compile_make(sketch, spec, dev, clock, progger, port, toolchain)
             else:
                 logger.critical("Program '%s' was not found", sketch)
                 comp_ok = False
@@ -838,7 +924,7 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
         # execute all steps after starting GDB
         steps = spec['tests'][s].get('steps', None)
         if steps and run_ok:
-            run_ok = exec_all_steps(s, steps, dev, spec)
+            run_ok = exec_all_steps(s, steps, dev, spec, serveropts)
         if not run_ok:
             print("FAILED")
             failed_run.append(s)
@@ -874,6 +960,10 @@ def main() -> int:
     if os.path.exists('pyavrocd.options'):
         logger.info("Deleting spurious 'pyavrocd.options' file")
         os.remove('pyavrocd.options')
+    # a marker left by a serv.sh that was killed would make every test wait
+    if os.path.exists('pyavrocd.running'):
+        logger.info("Deleting spurious 'pyavrocd.running' file")
+        os.remove('pyavrocd.running')
 
     # read specifications and process
     spec = parse_specification(args.spec)
@@ -913,7 +1003,21 @@ def main() -> int:
         return 1
 
     #determine programmer and port
-    programmer, port = identify_programmer(interface, args.baud)
+    programmer, port = identify_programmer(interface, args.baud, args.usbsn)
+
+    # the server gets the same probe and port; the stimuli connect to that port
+    serveropts : list [ str ] = []
+    if args.usbsn:
+        serveropts += [ '-u', args.usbsn ]
+    if args.port != 2000:
+        serveropts += [ '-p', str(args.port) ]
+        replaced = 0
+        for test in spec['tests'].values():
+            for step in test.get('steps', None) or []:
+                if ':2000' in step.get('stimulus', ''):
+                    step['stimulus'] = step['stimulus'].replace(':2000', f':{args.port}')
+                    replaced += 1
+        logger.debug("GDB server port %d in %d stimuli", args.port, replaced)
 
     # create list of feasible tests
     all_scripts, script_list = select_tests(spec, args.dev, args.script)
@@ -924,7 +1028,9 @@ def main() -> int:
 
     # run scripts
     try:
-        failed_comp, failed_scripts = run_scripts(script_list, spec, args.dev, args.clock, programmer, port)
+        failed_comp, failed_scripts = run_scripts(script_list, spec, args.dev, args.clock, programmer, port,
+                                                      serveropts=serveropts,
+                                                      toolchain=resolve_toolchain(spec, args.dev, args.toolchain))
     except KeyError as e:
         logger.critical("Missing value for key %s", str(e))
         return 1

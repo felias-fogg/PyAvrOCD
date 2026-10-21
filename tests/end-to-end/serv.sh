@@ -20,13 +20,18 @@ else
     server=(pyavrocd)
 fi
 
-rm -f pyavrocd.options
+rm -f pyavrocd.options pyavrocd.running
 while :
 do
     while [ ! -f pyavrocd.options ]; do sleep 0.3; done
     sleep 0.2
+    # pyavrocd.running exists while the server runs: rune2e waits for it to go before
+    # the next test calls avrdude, which cannot open a probe the server still holds
+    touch pyavrocd.running
     "${server[@]}" -m all -v "$verb"
-    if [ $? -eq 1 ]
+    rc=$?
+    rm -f pyavrocd.running
+    if [ $rc -eq 1 ]
     then
 	echo "Goodbye"
 	exit 0
