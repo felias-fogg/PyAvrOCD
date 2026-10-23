@@ -471,10 +471,6 @@ class DebugBackend(ABC):
         """
         return False
 
-    def tool_commands(self) -> str:
-        """Commands the tool reports it supports, for 'monitor power query' (debug aid)"""
-        raise BackendNotSupportedError("no command query")
-
     def power_cycle(self) -> bool:
         """
         Try to power-cycle the target automatically.

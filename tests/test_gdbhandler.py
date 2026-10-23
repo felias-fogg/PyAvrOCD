@@ -425,20 +425,6 @@ class TestGdbHandler(TestCase):
         self.assertTrue(self.gh.dbg.reset.called)
         self.gh.comsocket.sendall.assert_called_with(rsp("426C610A"))
 
-    def test_monitorCommand_Target_on(self):
-        self.set_up()
-        self.gh.mon.dispatch.return_value = ('power on', 'Blub')
-        self.gh.dispatch('qRcmd', b',546172676574206F6E') # Target on
-        self.gh.dbg.set_target_power.assert_called_with(True)
-        self.gh.comsocket.sendall.assert_called_with(rsp("426C75620A"))
-
-    def test_monitorCommand_Target_query(self):
-        self.set_up()
-        self.gh.mon.dispatch.return_value = ('power query', 'Bla')
-        self.gh.dispatch('qRcmd', b',546172676574207175657279') # Target query
-        self.gh.dbg.tool_commands.assert_called_once()
-        self.gh.comsocket.sendall.assert_called_with(rsp("426C610A"))
-
     def test_monitorCommand_info_ok(self):
         self.set_up()
         self.gh.critical = None
@@ -954,16 +940,6 @@ class TestGdbHandler(TestCase):
 
     # --- characterization tests for the remaining monitor command branches ---
 
-    def test_monitorCommand_no_edbg_protocol(self):
-        # without an EDBG protocol instance, only the commands that need it fail
-        # (before the backend split, every monitor command failed)
-        self.set_up()
-        self.gh.mon.dispatch.return_value = ('power on', 'Blub')
-        self.gh.dbg.set_target_power.side_effect = FatalError("EDBG protocol not initialized")
-        self.gh.dispatch('qRcmd', b',546172676574206F6E') # Target on
-        self.assertEqual(self.gh.critical, "EDBG protocol not initialized")
-        self.gh.comsocket.sendall.assert_called_with(
-            rsp("466174616C206572726F723A20454442472070726F746F636F6C206E6F7420696E697469616C697A65640A"))
             # Fatal error: EDBG protocol not initialized
 
     def test_monitorCommand_test(self):

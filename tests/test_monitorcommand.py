@@ -165,13 +165,6 @@ class TestMonitorCommand(TestCase):
         self.mo._old_exec = True
         self.assertEqual(self.mo.is_old_exec(), self.mo._old_exec)
 
-    def test_is_power(self):
-        self.set_up()
-        self.mo._power = False
-        self.assertEqual(self.mo.is_power(), self.mo._power)
-        self.mo._power = True
-        self.assertEqual(self.mo.is_power(), self.mo._power)
-
     def test_is_erase_before_load(self):
         self.set_up()
         self.mo._erase_before_load = False
@@ -402,15 +395,6 @@ class TestMonitorCommand(TestCase):
     def test_dispatch_oldExec_no_abbrev(self):
         self.set_up()
         self.assertEqual(self.mo.dispatch(['OldExec']), ("", "Unknown 'monitor' command"))
-
-    def test_dispatch_target(self):
-        self.set_up()
-        self.assertEqual(self.mo.dispatch(['Target']), ("", "Target power is on"))
-        self.assertEqual(self.mo.dispatch(['Target', 'on']), ("power on", "Target power on"))
-        self.assertEqual(self.mo.dispatch(['Target', 'off']), ("power off", "Target power off"))
-        self.assertEqual(self.mo.dispatch(['Target']), ("", "Target power is off"))
-        self.assertEqual(self.mo.dispatch(['Target', 'query']), ("power query", "Target query"))
-        self.assertEqual(self.mo.dispatch(['Target', 'bla']), ("", "Unknown argument in 'monitor' command"))
 
     def test_dispatch_live_tests(self):
         self.set_up()

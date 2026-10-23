@@ -1032,14 +1032,12 @@ class TestEdbgBackendInterface(TestCase):
         xa.device.avr.protocol.set_byte.assert_called_with(Avr8Protocol.AVR8_CTXT_OPTIONS,
                                                            Avr8Protocol.AVR8_OPT_RUN_TIMERS, 0)
 
-    def test_target_power_and_commands(self):
+    def test_target_power(self):
         xa = self.make()
         self.assertTrue(xa.can_switch_target_power())
         xa.set_target_power(True)
         xa.edbg_protocol.set_byte.assert_called_with(EdbgProtocol.EDBG_CTXT_CONTROL,
                                                      EdbgProtocol.EDBG_CONTROL_TARGET_POWER, 1)
-        xa.edbg_protocol.query.return_value = [1, 2]
-        self.assertEqual(xa.tool_commands(), "[1, 2]")
         xa.edbg_protocol = None
         self.assertFalse(xa.can_switch_target_power())
         with self.assertRaises(FatalError):

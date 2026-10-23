@@ -42,7 +42,6 @@ monopts: dict[str, tuple[ str | None, str | None, list [ str ] ] ] \
             'verify'          : ('cli', 'enable', ['enable', 'disable']),
             'version'         : (None, None, []),
             'OldExecution'    : ('full', None, []),
-            'Target'          : ('full', None, ['on', 'off', 'query']),
             'LiveTests'       : ('full', None, []),
             'Test'            : ('full', None, []) }
 
@@ -76,7 +75,6 @@ class MonitorCommand():
         self._safe : bool = False # safe single-stepping
         self._timersfreeze : bool = False # freeze timers when execution is stopped
         self._verify : bool = False # verify flash after load
-        self._power : bool = False # power state
         self._old_exec : bool = False # use old-style execution (only for tests needed)
         self._args : argparse.Namespace = args # needed to set initial monitor option values
 
@@ -101,7 +99,6 @@ class MonitorCommand():
             'verify'          : self._mon_flash_verify,
             'version'         : self._mon_version,
             'OldExecution'    : self._mon_old_execution,
-            'Target'          : self._mon_target,
             'LiveTests'       : self._mon_live_tests,
             'Test'            : self._mon_test
             }
@@ -148,7 +145,6 @@ class MonitorCommand():
                              (self._arch == 'avr8x')         # default: timers run, except for (U)PDI targets
 
         self._verify = self._args.verify[0] != 'd'           # default: verify enable
-        self._power = True
         self._old_exec = False
         # The ATmega128 special case:
         if self._args.dev.lower() in [ 'atmega128', 'atmega128a' ]:
@@ -248,12 +244,6 @@ class MonitorCommand():
         Returns True iff the traditional Exec style is used.
         """
         return self._old_exec
-
-    def is_power(self) -> bool:
-        """
-        Return True iff target is powered.
-        """
-        return self._power
 
     def is_erase_before_load(self) -> bool:
         """
@@ -540,25 +530,6 @@ Timers:                   """ + ("frozen when stopped"
     def _mon_old_execution(self, _ : int | list[str]) -> tuple[ str, str ]:
         self._old_exec = True
         return("", "Old execution mode")
-
-    def _mon_target(self, optix : int | list[str] )  -> tuple[ str, str ]:
-        res : tuple[ str, str ]
-        if optix == 1:
-            self._power = True
-            res = ("power on", "Target power on")
-        elif optix == 2:
-            self._power = False
-            res = ("power off", "Target power off")
-        elif optix == 3:
-            res = ("power query", "Target query")
-        elif optix == 0:
-            if self._power is True:
-                res = ("", "Target power is on")
-            else:
-                res = ("", "Target power is off")
-        else:
-            return self._mon_unknown_arg(0)
-        return res
 
     def _mon_live_tests(self, _ : int | list[str]) -> tuple[ str, str ]:
         if self._debugger_active:

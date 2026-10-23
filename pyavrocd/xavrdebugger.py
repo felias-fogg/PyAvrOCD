@@ -691,15 +691,6 @@ class EdbgBackend(AvrSession, AvrDebugger):
         """
         return str(self.transport.device.product_string).lower().startswith('medbg')
 
-    def tool_commands(self) -> str:
-        """
-        Commands the EDBG protocol reports
-        """
-        if self.edbg_protocol is None:
-            raise FatalError("EDBG protocol not initialized")
-        return str(self.edbg_protocol.query(EdbgProtocol.EDBG_QUERY_COMMANDS))
-
-
 def _translate_errors(method : Callable[..., Any]) -> Callable[..., Any]:
     """
     Turn the pymcuprog/pyedbglib exceptions that the upper layers tell apart into

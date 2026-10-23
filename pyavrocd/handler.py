@@ -435,10 +435,6 @@ class GdbHandler():
             elif response[0] in ['0', '1']:
                 self.dbg.set_run_timers(response[0] == '1')
                 self.dbg.reactivate()
-            elif 'power o' in response[0]:
-                self.dbg.set_target_power('on' in response[0])
-            elif 'power q' in response[0]:
-                self.logger.info("Commands: %s", self.dbg.tool_commands())
             elif 'info' in response[0]:
                 error_line = ""
                 if self.critical is not None:
