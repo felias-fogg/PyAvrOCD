@@ -12,6 +12,7 @@ import logging
 import binascii
 import time
 import socket
+import subprocess
 
 from pyavrocd.memory import Memory
 from pyavrocd.backend import DebugBackend, BackendError, InvalidAddressError, IspConnectionError
@@ -47,6 +48,7 @@ class GdbHandler():
         self._dw_start : bool = bool(args.debugwire and args.debugwire[0])
         self._nomm : bool = args.nomm
         self._once : bool = args.once
+        self._power_cycle_command : str | None = args.powercycle
         self.comsocket : socket.socket = comsocket
         self._devicename : str = devicename
         self.last_sigval : int | None = 0
@@ -484,8 +486,29 @@ class GdbHandler():
             self.dbg.power_cycle()
             self.logger.info("Automatic power-cycling finished")
             return True
+        if self._power_cycle_command and self._run_power_cycle_command(self._power_cycle_command):
+            return True
         self.send_debug_message("*** Please power-cycle the target system ***")
         return False
+
+    def _run_power_cycle_command(self, command : str) -> bool:
+        """
+        Power-cycle the target with the command given by --power-cycle-command, e.g., one that
+        switches a laboratory supply off and on. True if it finished with exit status 0;
+        otherwise the user is asked, as without the option.
+        """
+        self.logger.info("Power-cycling with: %s", command)
+        try:
+            result = subprocess.run(command, shell=True, timeout=60, check=False)
+        except subprocess.TimeoutExpired:
+            self.logger.error("Power-cycle command did not finish within 60 seconds")
+            return False
+        if result.returncode != 0:
+            self.logger.error("Power-cycle command failed with exit status %d", result.returncode)
+            return False
+        time.sleep(1) # as after a manual power-cycle: the debugWIRE system needs a moment
+        self.logger.info("Power-cycling with the command finished")
+        return True
 
     def _send_ready_message(self) -> None:
         self.send_debug_message("*** Power-down recognized. Apply power again! ***")

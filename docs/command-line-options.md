@@ -39,6 +39,7 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--dw-link-baud`                                             | Communication speed for the serial line to dw-link, default is 115200. Needs only be specified if dw-link is compiled with a different value. |
 | `--memory-map-disable`                                       | This option, which does not take a value, will disable the usage of the XML memory map. This option is only there for testing purposes. **(+)** |
 | `--skip-signature-verification`                              | Do not perform chip signature verification. This is another option for testing purposes. **(+)** |
+| `--power-cycle-command`                                      | Command that power-cycles the target, for instance by switching a laboratory supply off and on again. It is run through the shell whenever debugWIRE needs a power cycle and the debug probe cannot do it itself (only the mEDBG can). If it does not finish with exit status 0 within 60 seconds, you are asked to power-cycle as usual. An example for a Siglent SPD3303X on the network is `extras/powercycle/spd3303x.py` in the repository: `--power-cycle-command "python3 extras/powercycle/spd3303x.py supply 1"`. **(+)** |
 
 The options marked with **(+)** are ignored by dw-link.
 

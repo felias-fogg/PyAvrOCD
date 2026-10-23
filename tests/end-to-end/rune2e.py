@@ -136,6 +136,10 @@ def setup_options(parser : argparse.ArgumentParser) -> None:
                             help="Pretty print specification and exit")
     parser.add_argument('-P', '--port', type=int, dest='port', default=2000,
                             help="Port of the GDB server (default 2000); needed for parallel runs")
+    parser.add_argument('--power-cycle-command', dest='powercycle', default=None,
+                            help="Passed on to the server: a command that power-cycles the target, so "
+                            "that debugWIRE tests run unattended (give an absolute path: the server "
+                            "runs in the copy of this folder when started by runparallel.py)")
     parser.add_argument('-s', '--spec-file', dest='spec', default='e2e.yml',
                             help='Specfication file (default e2e.yml)')
     parser.add_argument('--toolchain', dest='toolchain', default=None,
@@ -310,6 +314,20 @@ def process_imports(spec : dict[ str, Any ]) -> None:
                     spec[d][k] = new
         if not importing:
             break
+
+def apply_core_lto(spec : dict [ str, Any ]) -> None:
+    """
+    'nolto' (LTO can be switched off, which C++ type information needs) is declared with the MCU
+    families, on the assumption of a core with an LTO menu. It only holds if the device's core has
+    such an option ('LTO: true' among its options); the Arduino core, for one, always compiles
+    with -flto.
+    """
+    for name, device in spec['devices'].items():
+        provides = device.get('provides') or {}
+        core = spec['cores'].get(device.get('core'), {})
+        if provides.get('nolto') and not (core.get('options') or {}).get('LTO'):
+            provides['nolto'] = False
+            logger.debug("Device '%s': its core '%s' cannot switch off LTO", name, device.get('core'))
 
 def import_steps(spec : dict [ str, Any ]) -> None:
     """
@@ -812,6 +830,27 @@ def exec_step(child : pexpect.spawn, step : dict [ str, Any ]) -> tuple [ bool, 
     return True, 0
 
 
+def server_options(args : argparse.Namespace, spec : dict [ str, Any ]) -> list [ str ]:
+    """
+    Options for pyavrocd.options beyond the test's own: the server gets the same probe and
+    port as the tests, and the stimuli connect to that port
+    """
+    serveropts : list [ str ] = []
+    if args.usbsn:
+        serveropts += [ '-u', args.usbsn ]
+    if args.powercycle:
+        serveropts += [ '--power-cycle-command', args.powercycle ]   # one line: spaces are fine
+    if args.port != 2000:
+        serveropts += [ '-p', str(args.port) ]
+        replaced = 0
+        for test in spec['tests'].values():
+            for step in test.get('steps', None) or []:
+                if ':2000' in step.get('stimulus', ''):
+                    step['stimulus'] = step['stimulus'].replace(':2000', f':{args.port}')
+                    replaced += 1
+        logger.debug("GDB server port %d in %d stimuli", args.port, replaced)
+    return serveropts
+
 def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, spec : dict [ str , Any],
                        serveropts : list [ str ] | None = None) -> bool:
     """
@@ -968,6 +1007,7 @@ def main() -> int:
     # read specifications and process
     spec = parse_specification(args.spec)
     process_imports(spec)
+    apply_core_lto(spec)
     import_steps(spec)
     check_clocks(spec)
 
@@ -1005,19 +1045,7 @@ def main() -> int:
     #determine programmer and port
     programmer, port = identify_programmer(interface, args.baud, args.usbsn)
 
-    # the server gets the same probe and port; the stimuli connect to that port
-    serveropts : list [ str ] = []
-    if args.usbsn:
-        serveropts += [ '-u', args.usbsn ]
-    if args.port != 2000:
-        serveropts += [ '-p', str(args.port) ]
-        replaced = 0
-        for test in spec['tests'].values():
-            for step in test.get('steps', None) or []:
-                if ':2000' in step.get('stimulus', ''):
-                    step['stimulus'] = step['stimulus'].replace(':2000', f':{args.port}')
-                    replaced += 1
-        logger.debug("GDB server port %d in %d stimuli", args.port, replaced)
+    serveropts : list [ str ] = server_options(args, spec)
 
     # create list of feasible tests
     all_scripts, script_list = select_tests(spec, args.dev, args.script)

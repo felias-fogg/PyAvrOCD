@@ -44,7 +44,7 @@ I recently stumbled over a [case](https://gist.github.com/felias-fogg/8f4e1fdb3b
 
 Sometimes, the IDE might hide things from you.
 
-The Arduino IDE 2 has the feature of displaying all the global variables, together with the current values. If link-time optimization (LTO) is activated, unfortunately, all global variables disappear from sight. Since LTO is activated for most board packages and since it cannot be deactivated safely, global variables are not shown for most hardware packages.
+The Arduino IDE 2 has the feature of displaying all the global variables, together with the current values. If link-time optimization (LTO) is activated, unfortunately, all global variables disappear from sight. Since LTO is activated for most board packages and cannot be deactivated in all of them (see [Link-time optimization](#link-time-optimization)), global variables are not shown for many hardware packages.
 
 In PlatformIO, the contents of [some of the peripheral registers is not displayed](https://github.com/platformio/platformio-vscode-ide/issues/4405).
 
@@ -72,7 +72,11 @@ Link-time optimization is a technique introduced into the Arduino IDE only in 20
 
 The disadvantage is that [link-time optimization prunes away essential information about C++ objects](https://arduino-craft-corner.de/index.php/2021/12/15/link-time-optimization-and-debugging-of-object-oriented-programs-on-avr-mcus/) so that class instances all of a sudden seem to be variables of a structure type. Furthermore, they prune away the info that variables are global, which means that in the `VARIABLES` debugging pane of the Arduino IDE 2, no variables are displayed. Finally, because of aggressive inlining, this technique can provoke stack overflows.  Hopefully, these problems will go away when more recent version of the GCC compiler are going to be used.
 
-All these problems disappear when link-time optimization is disabled. In some debug-enabled Arduino packages, link-time optimization can be disabled in the `Tools` menu. In others, it is only disabled when the `Optimize for Debugging` option is activated. For all packages supporting modern AVR chips, link-time optimization is always active.
+All these problems disappear when link-time optimization is disabled. Whether that is possible depends on the board package:
+
+- In **MiniCore**, **MightyCore**, **MegaCore**, **MajorCore**, and **XMiniCore**, link-time optimization can be disabled in the `Tools` menu.
+- In the debug-enabled **Arduino AVR Boards** package, it is disabled when the `Optimize for Debugging` option is activated (from 1.11.0-pre4 on).
+- In **TinyCore**, **MegaCoreX**, **megaTinyCore**, and **DxCore**, it cannot be disabled at the moment.
 
 ## Link-time jump relaxation
 

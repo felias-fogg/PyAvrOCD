@@ -184,6 +184,12 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             action='store_true',
                             help=argparse.SUPPRESS)
 
+    parser.add_argument("--power-cycle-command",
+                            dest='powercycle',
+                            type=str,
+                            default=None,
+                            help=argparse.SUPPRESS)
+
     option_name : str
     option_type : tuple[ str | None, str | None, list [ str ] ]
     for option_name, option_type in monopts.items():

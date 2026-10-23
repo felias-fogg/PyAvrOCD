@@ -5,6 +5,7 @@ The test suit for the GdbHandler class
 from unittest.mock import Mock, MagicMock, patch, call, create_autospec
 from unittest import TestCase
 import socket
+import subprocess
 from pyavrocd.backend import BackendError, IspConnectionError
 from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.handler import GdbHandler
@@ -492,6 +493,31 @@ class TestGdbHandler(TestCase):
         self.assertTrue(self.gh._send_power_cycle())
         self.gh.dbg.power_cycle.assert_called_once() # the pauses are the backend's business now
         self.assertEqual(mock_sleep.call_count, 0)
+
+    @patch('pyavrocd.handler.time.sleep')
+    @patch('pyavrocd.handler.subprocess.run')
+    def test__send_power_cycle_command(self, mock_run, mock_sleep):
+        self.set_up()
+        self.gh.dbg.can_power_cycle.return_value = False
+        self.gh._power_cycle_command = "cycle supply 1"
+        mock_run.return_value = Mock(returncode=0)
+        self.assertTrue(self.gh._send_power_cycle())
+        mock_run.assert_called_once_with("cycle supply 1", shell=True, timeout=60, check=False)
+        mock_sleep.assert_called_once_with(1)
+        self.gh.comsocket.sendall.assert_not_called() # nobody is asked
+
+    @patch('pyavrocd.handler.time.sleep')
+    @patch('pyavrocd.handler.subprocess.run')
+    def test__send_power_cycle_command_fails(self, mock_run, mock_sleep):
+        self.set_up()
+        self.gh.dbg.can_power_cycle.return_value = False
+        self.gh._power_cycle_command = "cycle supply 1"
+        mock_run.return_value = Mock(returncode=1)
+        self.assertFalse(self.gh._send_power_cycle()) # then the user is asked
+        mock_sleep.assert_not_called()
+        mock_run.side_effect = subprocess.TimeoutExpired("cycle supply 1", 60)
+        self.assertFalse(self.gh._send_power_cycle())
+        self.assertEqual(self.gh.comsocket.sendall.call_count, 2)
 
     @patch('pyavrocd.handler.time.sleep')
     def test__send_power_cycle_manual(self, mock_sleep):
