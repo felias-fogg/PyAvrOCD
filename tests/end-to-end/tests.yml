@@ -517,6 +517,43 @@ tests:
         response: LedOff
       - import: epilog
 
+# UPDI only: write the PC onto a software breakpoint and single-step. The OCD would
+# execute the BREAK instead of the instruction and leave the PC off by one, so that the
+# next step lands in the middle of the two-word instruction (see docs/UPDI-notes.md).
+# The backend steps without the breakpoint in this case. In avr-gdb, a code address cast
+# to an integer is a word address, as is the value assigned to $pc.
+  setpc:
+    sketch: setpc
+    requires:
+      updi: true
+    steps:
+      - stimulus: set logging file log/setpc.log
+      - import: prolog
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: monitor breakpoints software
+        response: Only software breakpoints
+      - stimulus: break *pcbp_target
+        response: Breakpoint 1
+      - stimulus: cont
+        response: Breakpoint 1,
+      - stimulus: stepi                       # after a hit: the probe steps over its BREAK
+      - stimulus: print (unsigned long)$pc == (unsigned long)&pcbp_next
+        response: "= 1"
+      - stimulus: set $pc = (unsigned long)&pcbp_target
+      - stimulus: stepi                       # PC written onto the BREAK: the case in question
+      - stimulus: print (unsigned long)$pc == (unsigned long)&pcbp_next
+        response: "= 1"
+      - stimulus: stepi                       # and not into the middle of the two-word sts
+      - stimulus: print (unsigned long)$pc == (unsigned long)&pcbp_after
+        response: "= 1"
+      - stimulus: cont                        # the breakpoint is still there
+        response: Breakpoint 1,
+      - stimulus: monitor breakpoints all
+        response: All breakpoints are allowed
+      - import: epilog
+
 # Checks range stepping for JTAG targets
 # Similar to above, but reserve 3 HWBPs
   range_jtag:
