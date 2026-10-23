@@ -684,6 +684,82 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.assertRaises(FatalError, self.xaj.cold_dw_disable)
 
+    def _avr_debugger_mocks(self, pc_word):
+        """AvrDebugger's methods that the step-off logic uses, all recorded in one Mock"""
+        m = Mock()
+        m.program_counter_read.return_value = pc_word
+        patches = [patch('pyavrocd.xavrdebugger.AvrDebugger.' + name, getattr(m, name))
+                   for name in ('step', 'program_counter_read', 'program_counter_write', 'run',
+                                'software_breakpoint_set', 'software_breakpoint_clear')]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+        return m
+
+    def test_step_updi_pc_written_onto_swbp(self):
+        # measured with nEDBG, mEDBG and SNAP: the OCD would execute the BREAK instead
+        self.set_up()
+        m = self._avr_debugger_mocks(0x66)
+        self.xau.software_breakpoint_set(0xCC)
+        self.xau.program_counter_write(0x66)
+        m.reset_mock()
+        self.xau.step()
+        self.assertEqual([c[0] for c in m.mock_calls if c[0] != 'program_counter_read'],
+                         ['software_breakpoint_clear', 'step', 'software_breakpoint_set'])
+        # the address is the last argument (AvrDebugger.x(self, ...) passes self as well)
+        self.assertEqual(m.software_breakpoint_clear.call_args.args[-1], 0xCC)
+        self.assertEqual(m.software_breakpoint_set.call_args.args[-1], 0xCC)
+        self.assertIn(0xCC, self.xau._swbps)       # still a breakpoint for the next run
+        self.assertFalse(self.xau._pc_written)
+        m.reset_mock()
+        self.xau.step()                            # a second step is an ordinary one again
+        self.assertEqual(m.step.call_count, 1)
+        m.software_breakpoint_clear.assert_not_called()
+
+    def test_step_updi_at_swbp_after_hit(self):
+        # after a real hit the probe steps over its BREAK itself
+        self.set_up()
+        m = self._avr_debugger_mocks(0x66)
+        self.xau.software_breakpoint_set(0xCC)
+        m.reset_mock()
+        self.xau.step()
+        m.software_breakpoint_clear.assert_not_called()
+        self.assertEqual(m.step.call_count, 1)
+
+    def test_step_updi_pc_written_elsewhere(self):
+        self.set_up()
+        m = self._avr_debugger_mocks(0x70)
+        self.xau.software_breakpoint_set(0xCC)
+        self.xau.program_counter_write(0x70)
+        m.reset_mock()
+        self.xau.step()
+        m.software_breakpoint_clear.assert_not_called()
+        self.assertEqual(m.step.call_count, 1)
+
+    def test_step_debugwire_pc_written_onto_swbp(self):
+        # debugWIRE and JTAG step correctly after a PC write onto a BREAK
+        self.set_up()
+        m = self._avr_debugger_mocks(0x66)
+        self.xa.software_breakpoint_set(0xCC)
+        self.xa.program_counter_write(0x66)
+        m.reset_mock()
+        self.xa.step()
+        m.software_breakpoint_clear.assert_not_called()
+        self.assertEqual(m.step.call_count, 1)
+
+    def test_run_forgets_pc_write(self):
+        self.set_up()
+        self._avr_debugger_mocks(0x66)
+        self.xau.software_breakpoint_set(0xCC)
+        self.xau.program_counter_write(0x66)
+        self.xau.run()
+        self.assertFalse(self.xau._pc_written)
+        self.xau.software_breakpoint_clear(0xCC)
+        self.assertNotIn(0xCC, self.xau._swbps)
+        self.xau.software_breakpoint_set(0xCE)
+        self.xau.software_breakpoint_clear_all()
+        self.assertEqual(self.xau._swbps, set())
+
     def test_software_breakpoint_set_ok(self):
         self.set_up()
         self.assertTrue(self.xa.software_breakpoint_set(10))

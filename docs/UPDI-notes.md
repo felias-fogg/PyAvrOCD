@@ -130,3 +130,39 @@ order low, high, low, which is correct in every case above: the final write eith
 repeats a byte that is already in place or restores the low byte that the high byte
 write has just destroyed. The e2e test `ioreg-modern` uses `ADC0.WINHT` and therefore
 covers this case.
+
+## Setting the PC onto a software breakpoint - worked around
+
+If the PC is written onto the address of a software breakpoint and the target is then
+single-stepped, the step does not execute the original instruction. The PC stays where
+it is, GDB reports the breakpoint as hit, and the next step lands in the middle of an
+instruction. After the breakpoint has been *hit*, on the other hand, the probe steps
+over its BREAK correctly, for one-word and two-word instructions alike.
+
+In GDB, this shows with `jump`, `set $pc` or an IDE's "set next statement" onto a line
+that has a software breakpoint, followed by `stepi` or `next`:
+
+```
+Breakpoint 1, 0x000000cc in main () at loop.c:6
+(gdb) stepi                    -> 0xce   correct, after the hit
+(gdb) set $pc = 0x66           -> 0xcc   (avr-gdb takes a word address here)
+(gdb) stepi                    -> 0xcc   "Breakpoint 1": the BREAK was executed
+(gdb) stepi                    -> 0xd0   the middle of the two-word sts at 0xce
+```
+
+Measured on an ATtiny3227 (nEDBG), an ATmega4809 (mEDBG) and an ATmega4808 (SNAP),
+once with the probe's software breakpoint commands alone and once through the GDB
+server. Three probes on three devices behave identically, so it is the OCD rather than
+the firmware of one probe. On debugWIRE and JTAG targets, the same sequence steps
+correctly (JTAGICE mkII and Atmel-ICE). The reverse-engineering notes of avr-absurd
+(`guesswork.md`, section on the OCD) describe the mechanism: after the PC has been set,
+the next step normally spends an "empty cycle" that only advances the PC, and if the new
+PC points to a BREAK, this cycle does not happen, which leaves the PC off by one.
+
+The workaround in `_step_off_written_pc_bp` in `xavrdebugger.py`: the backend keeps
+track of its software breakpoints and of whether the PC has been written since the
+target last stopped. If both are the case on a UPDI target when it is asked to step, it
+removes that breakpoint, steps, and sets it again, so that the probe plants it again at
+the next run. This costs two flash page writes, but only in this rare case; on UPDI they
+are fast (planting a breakpoint took 18-57 ms in the measurements). Breakpoints that have
+been hit normally keep being stepped over by the probe, without any reprogramming.

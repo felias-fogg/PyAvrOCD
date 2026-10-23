@@ -75,6 +75,10 @@ class XAvrDebugger(AvrDebugger):
         # Caching general registers, will be updated when execution is resumed
         self._regfile : bytearray | None = None
         self._regsupd : bool = False
+        # software breakpoints requested from the probe (byte addresses), and whether the PC
+        # has been written since the target last stopped (see _step_off_written_pc_bp)
+        self._swbps : set[int] = set()
+        self._pc_written : bool = False
 
         # Gather device info
         # moved here so that we have mem + device info before the debug process starts
@@ -894,7 +898,29 @@ class XAvrDebugger(AvrDebugger):
         except Exception as e:
             self.logger.error("Could not set software breakpoint: %s", str(e))
             return False
+        self._swbps.add(address)
         return True
+
+    def software_breakpoint_clear(self, address : int) -> None:
+        """
+        Remove a software breakpoint and forget it
+        """
+        super().software_breakpoint_clear(address)
+        self._swbps.discard(address)
+
+    def software_breakpoint_clear_all(self) -> None:
+        """
+        Remove all software breakpoints and forget them
+        """
+        super().software_breakpoint_clear_all()
+        self._swbps.clear()
+
+    def program_counter_write(self, program_counter : int) -> None:
+        """
+        Set PC (word address) and remember that it was written
+        """
+        super().program_counter_write(program_counter)
+        self._pc_written = True
 
     #pylint: disable=arguments-differ
     #we actually need two arguments when more than one HWBP is there
@@ -998,6 +1024,7 @@ class XAvrDebugger(AvrDebugger):
         self.logger.info("MCU reset")
         self.device.avr.protocol.reset()
         self._wait_for_break()
+        self._pc_written = False
 
 
     def program_counter_read(self) -> int:
@@ -1021,6 +1048,7 @@ class XAvrDebugger(AvrDebugger):
         """
         self._update_regfile_in_target()
         self.flush_events() # remove any pending poll events from queue
+        self._pc_written = False
         super().run()
 
     def run_to(self, address : int) -> None:
@@ -1030,6 +1058,7 @@ class XAvrDebugger(AvrDebugger):
         """
         self._update_regfile_in_target()
         self.flush_events() # remove any pending poll events from queue
+        self._pc_written = False
         super().run_to(address | self.bad_pc_bit_mask)
 
     def step(self) -> None:
@@ -1039,8 +1068,30 @@ class XAvrDebugger(AvrDebugger):
         self._update_regfile_in_target()
         self.flush_events() # remove any pending poll events from queue
         self.logger.debug("PC before step: 0x%X", self.program_counter_read() << 1)
-        super().step()
+        if not self._step_off_written_pc_bp():
+            super().step()
+        self._pc_written = False
         self.logger.debug("PC after step: 0x%X", self.program_counter_read() << 1)
+
+    def _step_off_written_pc_bp(self) -> bool:
+        """
+        On UPDI, a step does not get off a software breakpoint if the PC was written onto it:
+        the OCD executes the BREAK instead of the original instruction, and the step after that
+        lands in the middle of an instruction (measured with nEDBG, mEDBG and SNAP on ATtiny3227,
+        ATmega4809 and ATmega4808). After a real hit, the probe steps over its BREAK correctly. So,
+        in exactly this case, remove the breakpoint, step, and set it again; the probe plants it
+        at the next run. Returns True if the step has been made here.
+        """
+        if self._iface != 'updi' or not self._pc_written:
+            return False
+        address : int = super().program_counter_read() << 1
+        if address not in self._swbps:
+            return False
+        self.logger.debug("PC was written onto the software breakpoint at 0x%X: step without it", address)
+        super().software_breakpoint_clear(address)
+        super().step()
+        super().software_breakpoint_set(address)
+        return True
 
 
     def reactivate(self) -> None:
