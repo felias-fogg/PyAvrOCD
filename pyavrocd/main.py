@@ -2,6 +2,7 @@
 AVR GDB server main program
 """
 # args, logging
+from collections.abc import Callable
 import webbrowser
 import platform
 import importlib.metadata
@@ -19,6 +20,7 @@ from logging import getLogger
 # communication
 import usb
 import usb.core
+import usb.util
 
 # elftools
 from elftools.elf.elffile import ELFFile
@@ -34,6 +36,8 @@ import pyedbglib
 from pyavrocd import dwlink
 from pyavrocd import jtag2
 from pyavrocd.xavrdebugger import EdbgBackend
+from pyavrocd.jtag2backend import Jtag2Backend
+from pyavrocd.backend import DebugBackend, ProbeCandidate
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 from pyavrocd.monitor import monopts
 from pyavrocd.server import RspServer
@@ -450,41 +454,63 @@ def run_server(server: RspServer, logger : logging.Logger) -> int:
         raise
     return 0
 
-def check_jtag2_tools(args : argparse.Namespace, num_edbg : int, logger : logging.Logger) -> bool:
+EDBG_PRODUCT_IDS : tuple[int, ...] = (0x2140, 0x2141, 0x2144, 0x2111, 0x2169, 0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180)
+
+def find_jtag2_tool(args : argparse.Namespace, num_edbg : int,
+                        logger : logging.Logger) -> tuple[bool, ProbeCandidate | None]:
     """
-    Look for probes speaking the JTAGICE mkII protocol (JTAGICE mkII, AVR Dragon). Returns True
-    if the session cannot go on: one of them was selected or is the only probe, but debugging
-    with them is not supported yet, or the choice is ambiguous.
+    Look for probes speaking the JTAGICE mkII protocol (JTAGICE mkII, AVR Dragon). Returns
+    (abort, probe): abort is True if the choice is ambiguous or the tool asked for is not there;
+    probe is the one to debug with, or None if the EDBG tools or dw-link are to be tried.
     """
     names = set(jtag2.PRODUCTS.values())
     if args.tool is not None and args.tool not in names: # an EDBG tool or dw-link was asked for
-        return False
-    try:
-        candidates = jtag2.discover(args.tool)
-    except usb.core.NoBackendError: # no libusb: on Windows, the EDBG tools do not need it
-        logger.debug("No libusb, cannot look for JTAGICE mkII / AVR Dragon")
-        candidates = []
-    found = [c for c in candidates
-             if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
+        return False, None
+    # After a sign-off (avrdude's too) the probes leave the bus for about 3 s and enumerate
+    # again; a server started right after an upload would not find them. So wait for them,
+    # unless the selection clearly means an EDBG tool.
+    wait : bool = args.tool in names or num_edbg == 0 or \
+      (bool(args.serialnumber) and not edbg_tool_with_serial(args.serialnumber))
+    deadline : float = time.monotonic() + (5 if wait else 0)
+    while True:
+        try:
+            candidates = jtag2.discover(args.tool)
+        except usb.core.NoBackendError: # no libusb: on Windows, the EDBG tools do not need it
+            logger.debug("No libusb, cannot look for JTAGICE mkII / AVR Dragon")
+            candidates = []
+        found = [c for c in candidates
+                 if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
+        if found or time.monotonic() >= deadline:
+            break
+        time.sleep(0.3)
     if not found:
         if args.tool in names:
             logger.critical("No compatible tool discovered")
-            return True
-        return False
+            return True, None
+        return False, None
     if len(found) > 1 or (args.tool is None and not args.serialnumber and num_edbg > 0):
         logger.critical("More than one compatible tool! Use -t or -u to select.")
         for c in found:
             logger.critical(" Tool: %s, SN: %s", c.product, c.address)
-        return True
-    logger.critical("Found %s, SN: %s: debugging with this probe is not supported yet",
-                        found[0].product, found[0].address)
-    return True
+        return True, None
+    return False, found[0]
+
+def edbg_tool_with_serial(serial_suffix : str) -> bool:
+    """
+    Is an EDBG tool attached whose serial number ends in serial_suffix? False without libusb
+    """
+    try:
+        return any(usb.util.get_string(d, d.iSerialNumber).lower().endswith(serial_suffix.lower())
+                       for d in usb.core.find(find_all=True)
+                       if d.idVendor == 0x3EB and d.idProduct in EDBG_PRODUCT_IDS)
+    except (usb.core.NoBackendError, usb.core.USBError, ValueError):
+        return False
 
 def number_of_connected_edbg_tools(logger : logging.Logger) -> int:
     """
     Find out how many debugging tools are connected
     """
-    prodids = (0x2140, 0x2141, 0x2144, 0x2111, 0x2169, 0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180)
+    prodids = EDBG_PRODUCT_IDS
     try:
         #logger.debug("Microchip debuggers: %s", [d for d in usb.core.find(find_all=True) if
         #                d.idVendor in [0x3EB, 0x4d8]])
@@ -568,10 +594,18 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     if args.tool != "dwlink":
         num_tools = number_of_connected_edbg_tools(logger)
 
-    # num_tools < 0 means that USB is not there; probes speaking the JTAGICE mkII protocol
-    # are recognized, but not supported for debugging yet
-    if num_tools < 0 or check_jtag2_tools(args, num_tools, logger):
+    # num_tools < 0 means that USB is not there
+    if num_tools < 0:
         return 1
+    abort, jtag2_tool = find_jtag2_tool(args, num_tools, logger)
+    if abort:
+        return 1
+    if jtag2_tool is not None:
+        logger.info("Connected to %s, SN: %s", jtag2_tool.product, jtag2_tool.address)
+        if args.reboot:
+            logger.warning("Rebooting is not supported by the %s", jtag2_tool.product)
+        return serve(lambda: Jtag2Backend(jtag2_tool, device, intf, args), device, intf, args,
+                         jtag2_tool.product, logger)
 
     if args.tool == "dwlink" or num_tools == 0:
         dwlink.main(args, intf) # if we return, then there is no HW debugger
@@ -625,9 +659,18 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
             return 0
 
     # tool is connected, now we can start
+    return serve(lambda: EdbgBackend(backend.transport, device, intf, args), device, intf, args,
+                     toolname, logger)
+
+#pylint: disable=too-many-positional-arguments,too-many-arguments
+def serve(make_backend : Callable[[], DebugBackend], device : str, intf : str,
+              args : argparse.Namespace, toolname : str, logger : logging.Logger) -> int:
+    """
+    Create the backend for the connected tool and run the GDB server with it
+    """
     logger.info("Starting GDB server")
     try:
-        avrdebugger = EdbgBackend(backend.transport, device, intf, args)
+        avrdebugger = make_backend()
         if args.debugwire:
             if intf != 'debugwire':
                 if args.debugwire[0] == 'd':

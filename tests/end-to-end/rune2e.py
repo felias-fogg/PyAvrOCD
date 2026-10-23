@@ -559,7 +559,8 @@ def usb_serial(dev : Any) -> str:
     Serial number of a USB device, or '' if it cannot be read
     """
     try:
-        return str(usb.util.get_string(dev, dev.iSerialNumber) or '')
+        # the JTAGICE mkII ends its serial number with a NUL
+        return str(usb.util.get_string(dev, dev.iSerialNumber) or '').rstrip('\0')
     except (usb.core.USBError, ValueError, NotImplementedError):
         return ''
 
@@ -578,7 +579,9 @@ def identify_programmer(intf : str, baud : int, usbsn : str | None = None) -> tu
                   0x2145: 'xplainedmini_',
                   0x2175: 'pkobn_',
                   0x2177: 'pickit4_',
-                  0x2180: 'snap_' }
+                  0x2180: 'snap_',
+                  0x2103: 'jtag2',        # JTAGICE mkII: 'jtag2' for JTAG, 'jtag2isp' (see below)
+                  0x2107: 'dragon_' }
 
     tools = [d for d in usb.core.find(find_all=True) if
                        d.idVendor == 0x3EB and d.idProduct in debuggers]
@@ -588,7 +591,10 @@ def identify_programmer(intf : str, baud : int, usbsn : str | None = None) -> tu
         logger.critical("More than one debug tool connected! Select one with -u.")
         sys.exit(1)
     if len(tools) == 1:
-        return debuggers[tools[0].idProduct] + intf, ("usb:" + usb_serial(tools[0])) if usbsn else "usb"
+        name = debuggers[tools[0].idProduct] + intf
+        if tools[0].idProduct == 0x2103:  # avrdude calls the mkII's JTAG programmer just 'jtag2'
+            name = 'jtag2' if intf == 'jtag' else 'jtag2' + intf
+        return name, ("usb:" + usb_serial(tools[0])) if usbsn else "usb"
     if usbsn:
         logger.critical("No debugger with serial number '%s' found", usbsn)
         sys.exit(1)
@@ -717,7 +723,24 @@ def compile_make(sketch : str, spec : dict [ str, Any ],
     caps += " LOCK=" + ("no" if provides.get('nolock') or medbg else "yes")
     cmd = f"make -C sketches/{sketch} PORT={port} MCU={mcu} F_CPU={cclock} PROG={prog}"
     cmd += f" {caps} fresh"
+    wait_for_probe(port)
     return run_compile_command(cmd, toolchain)
+
+def wait_for_probe(port : str, timeout : float = 5.0) -> None:
+    """
+    The JTAGICE mkII and the AVR Dragon leave the bus for about 3 s after a sign-off, the one of
+    the server of the previous test as well. avrdude started in that time does not find them.
+    So, for a port 'usb:<serial number>', wait until that probe is back.
+    """
+    if not port.startswith("usb:"):
+        return
+    wanted = port[4:]
+    deadline = monotonic() + timeout
+    while monotonic() < deadline:
+        if any(usb_serial(d) == wanted for d in usb.core.find(find_all=True, idVendor=0x3EB)):
+            return
+        sleep(0.3)
+    logger.warning("Probe with serial number %s did not come back within %.0f s", wanted, timeout)
 
 #pylint: disable=unused-argument
 def do_upload(sketch : str, upload_options : str,

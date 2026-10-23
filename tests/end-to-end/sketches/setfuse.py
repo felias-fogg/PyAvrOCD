@@ -21,8 +21,13 @@ Standard library only, so it runs wherever the tests do.
 import re
 import subprocess
 import sys
+import time
 
 MIN_VERSION = (8, 0)          # 'config <fuse>=<value>' in terminal mode
+# The JTAGICE mkII and the AVR Dragon leave the bus for about 3 s after every sign-off,
+# avrdude's own included, so a second call right after the first does not find them.
+PROBE_ABSENT = "unable to open port"
+PROBE_WAIT = 10              # seconds
 
 
 def version() -> tuple [ int, int ] | None:
@@ -68,9 +73,15 @@ def main() -> int:
         return 1
 
     print("setfuse: avrdude " + " ".join(arguments), flush=True)
-    done = subprocess.run(["avrdude"] + arguments, capture_output=True,
-                          text=True, check=False)
-    output = done.stdout + done.stderr
+    deadline = time.monotonic() + PROBE_WAIT
+    while True:
+        done = subprocess.run(["avrdude"] + arguments, capture_output=True,
+                              text=True, check=False)
+        output = done.stdout + done.stderr
+        if done.returncode == 0 or PROBE_ABSENT not in output or time.monotonic() > deadline:
+            break
+        print("setfuse: probe not there (yet), trying again", flush=True)
+        time.sleep(1)
     sys.stdout.write(output)
     if done.returncode == 0:
         return 0

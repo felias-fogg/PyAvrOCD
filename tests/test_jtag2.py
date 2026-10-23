@@ -208,6 +208,21 @@ class TestProtocol(TestCase):
         self.assertEqual(proto.read_pc(), 0x6B)    # the event came first and was set aside
         self.assertEqual(proto.poll_break(), (0x6B, 0))
 
+    def test_breakpoint_and_progmode_frames(self):
+        # the formats measured on the mkII clone (324P): word addresses, numbers 1-3 and 0 for SW BPs
+        proto = Jtag2Protocol(FakeTransport([('same', b"\x80")] * 8))
+        proto.set_break(jtag2.SOFTWARE_BREAKPOINT, 0x52)
+        proto.set_break(2, 0x52)
+        proto.clr_break(jtag2.SOFTWARE_BREAKPOINT, 0x52)
+        proto.clr_break(2)
+        proto.run_to(0x52)
+        proto.enter_progmode()
+        proto.erase_page_spm(0x80)
+        proto.debugwire_disable()
+        self.assertEqual([body.hex() for _, body in proto.transport.sent],
+                         ["1101005200000003", "1101025200000003", "1a0052000000", "1a0200000000",
+                          "1c52000000", "14", "0d80000000", "0b04"])
+
 
 class TestTransport(TestCase):
 

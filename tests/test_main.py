@@ -2,6 +2,7 @@
 The test suit for main module
 """
 #pylint: disable=protected-access,missing-function-docstring,invalid-name,line-too-long,missing-class-docstring,too-many-public-methods
+import itertools
 import logging
 from unittest.mock import MagicMock, Mock, call, patch, ANY
 from unittest import TestCase
@@ -12,7 +13,7 @@ from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup, handle_simavr, tool_reboot, \
-     check_jtag2_tools
+     find_jtag2_tool
 from pyavrocd.backend import ProbeCandidate
 
 class TestMain(TestCase):
@@ -589,57 +590,75 @@ class TestMain(TestCase):
                                                    call(' Tool: %s, SN: %s', 'PROD2', 'S/N02')])
 
 
-class TestCheckJtag2Tools(TestCase):
-    """main recognizes JTAGICE mkII / AVR Dragon, but cannot debug with them yet"""
+class TestFindJtag2Tool(TestCase):
+    """main picks a JTAGICE mkII / AVR Dragon to debug with, or leaves the choice to the EDBG tools"""
 
     CLONE = ProbeCandidate('jtagice2', 'JTAGICE mkII', '090000004262')
     DRAGON = ProbeCandidate('dragon', 'AVRDRAGON', '00A200050860')
 
-    def check(self, found, tool=None, sn=None, num_edbg=0):
+    def find(self, found, tool=None, sn=None, num_edbg=0, edbg_serial=False):
         logger = MagicMock()
         args = SimpleNamespace(tool=tool, serialnumber=sn)
-        with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: [c for c in found if t in (None, c.tool)]):
-            return check_jtag2_tools(args, num_edbg, logger), logger
+        # one second per call to the clock: the wait for a re-enumerating probe takes no real time
+        with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: [c for c in found if t in (None, c.tool)]), \
+             patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
+             patch('pyavrocd.main.time.sleep'), \
+             patch('pyavrocd.main.edbg_tool_with_serial', return_value=edbg_serial):
+            return find_jtag2_tool(args, num_edbg, logger), logger
 
     def test_none_attached(self):
-        stop, _ = self.check([])
-        self.assertFalse(stop) # on to the EDBG tools or dw-link, as before
+        (abort, probe), _ = self.find([])
+        self.assertEqual((abort, probe), (False, None)) # on to the EDBG tools or dw-link, as before
 
     def test_none_attached_but_asked_for(self):
-        stop, logger = self.check([], tool='dragon')
-        self.assertTrue(stop)
+        (abort, probe), logger = self.find([], tool='dragon')
+        self.assertEqual((abort, probe), (True, None))
         logger.critical.assert_called_with("No compatible tool discovered")
 
     def test_one_alone(self):
-        stop, logger = self.check([self.DRAGON])
-        self.assertTrue(stop)
-        logger.critical.assert_called_with("Found %s, SN: %s: debugging with this probe is not supported yet",
-                                           'AVRDRAGON', '00A200050860')
+        (abort, probe), logger = self.find([self.DRAGON])
+        self.assertEqual((abort, probe), (False, self.DRAGON))
+        logger.critical.assert_not_called()
 
     def test_two_without_selection(self):
-        stop, logger = self.check([self.CLONE, self.DRAGON])
-        self.assertTrue(stop)
+        (abort, probe), logger = self.find([self.CLONE, self.DRAGON])
+        self.assertEqual((abort, probe), (True, None))
         logger.critical.assert_any_call("More than one compatible tool! Use -t or -u to select.")
 
     def test_selected_by_tool_and_by_serial(self):
-        _, logger = self.check([self.CLONE, self.DRAGON], tool='jtagice2')
-        self.assertIn('JTAGICE mkII', logger.critical.call_args.args)
-        _, logger = self.check([self.CLONE, self.DRAGON], sn='0860')
-        self.assertIn('AVRDRAGON', logger.critical.call_args.args)
-        _, logger = self.check([self.CLONE, self.DRAGON], sn='a200050860') # case does not matter
-        self.assertIn('AVRDRAGON', logger.critical.call_args.args)
+        self.assertEqual(self.find([self.CLONE, self.DRAGON], tool='jtagice2')[0], (False, self.CLONE))
+        self.assertEqual(self.find([self.CLONE, self.DRAGON], sn='0860')[0], (False, self.DRAGON))
+        self.assertEqual(self.find([self.CLONE, self.DRAGON], sn='a200050860')[0], # case does not matter
+                         (False, self.DRAGON))
 
     def test_with_an_edbg_tool(self):
-        stop, logger = self.check([self.DRAGON], num_edbg=1)
-        self.assertTrue(stop) # ambiguous without -t / -u
+        (abort, probe), logger = self.find([self.DRAGON], num_edbg=1)
+        self.assertEqual((abort, probe), (True, None)) # ambiguous without -t / -u
         logger.critical.assert_any_call("More than one compatible tool! Use -t or -u to select.")
-        stop, _ = self.check([self.DRAGON], num_edbg=1, sn='18184') # -u names the EDBG tool
-        self.assertFalse(stop)
-        stop, _ = self.check([self.DRAGON], num_edbg=1, tool='atmelice') # an EDBG tool asked for
-        self.assertFalse(stop)
+        self.assertEqual(self.find([self.DRAGON], num_edbg=1, sn='18184')[0], (False, None)) # -u names the EDBG tool
+        self.assertEqual(self.find([self.DRAGON], num_edbg=1, tool='atmelice')[0], (False, None)) # an EDBG tool
+
+    def test_waits_for_reenumeration(self):
+        # after avrdude has signed off, the probe is back on the bus only after a few seconds
+        logger = MagicMock()
+        attempts = iter([[], [], [self.CLONE]])
+        with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: next(attempts)), \
+             patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
+             patch('pyavrocd.main.time.sleep') as sleep:
+            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='4262'), 0, logger),
+                             (False, self.CLONE))
+        self.assertEqual(sleep.call_count, 2)
+
+    def test_no_wait_when_an_edbg_tool_is_meant(self):
+        with patch('pyavrocd.main.jtag2.discover', return_value=[]) as discover, \
+             patch('pyavrocd.main.edbg_tool_with_serial', return_value=True):
+            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='18184'), 1, MagicMock()),
+                             (False, None))
+        self.assertEqual(discover.call_count, 1)
 
     def test_no_libusb(self):
         logger = MagicMock()
         with patch('pyavrocd.main.jtag2.discover', side_effect=NoBackendError("none")):
-            self.assertFalse(check_jtag2_tools(SimpleNamespace(tool=None, serialnumber=None), 1, logger))
+            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber=None), 1, logger),
+                             (False, None))
 

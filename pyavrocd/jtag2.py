@@ -39,6 +39,17 @@ CMND_SINGLE_STEP : int = 0x09
 CMND_FORCED_STOP : int = 0x0A
 CMND_RESET : int = 0x0B
 CMND_SET_DEVICE_DESCRIPTOR : int = 0x0C
+CMND_ERASEPAGE_SPM : int = 0x0D
+CMND_SET_BREAK : int = 0x11
+CMND_CHIP_ERASE : int = 0x13
+CMND_ENTER_PROGMODE : int = 0x14
+CMND_LEAVE_PROGMODE : int = 0x15
+CMND_CLR_BREAK : int = 0x1A
+CMND_RUN_TO_ADDR : int = 0x1C
+RESET_DEBUGWIRE_DISABLE : int = 0x04  # flag of CMND_RESET
+BREAK_PROGRAM : int = 0x01           # type of CMND_SET_BREAK
+BREAK_MODE_PROGRAM : int = 0x03      # mode of CMND_SET_BREAK
+SOFTWARE_BREAKPOINT : int = 0x00     # breakpoint number of a software breakpoint
 RSP_OK : int = 0x80
 RSP_PARAMETER : int = 0x81
 RSP_MEMORY : int = 0x82
@@ -340,6 +351,7 @@ class Jtag2UsbTransport():
         usb.util.dispose_resources(self.device)
 
 
+#pylint: disable=too-many-public-methods # one method per AVR067 command
 class Jtag2Protocol():
     """
     Commands and responses with sequence numbers. Unlike pyedbglib, the sequence
@@ -426,6 +438,47 @@ class Jtag2Protocol():
     def reset(self) -> None:
         """CMND_RESET: the target stops at 0; EVT_BREAK follows"""
         self.ok(bytes([CMND_RESET, LOW_LEVEL]), "Reset")
+
+    def debugwire_disable(self) -> None:
+        """CMND_RESET with the debugWIRE disable flag: ISP works again until the next power cycle"""
+        self.ok(bytes([CMND_RESET, RESET_DEBUGWIRE_DISABLE]), "debugWIRE disable")
+
+    def run_to(self, pc : int) -> None:
+        """CMND_RUN_TO_ADDR: run until the word address pc"""
+        self.ok(struct.pack("<BI", CMND_RUN_TO_ADDR, pc), "Run to address")
+
+    def set_break(self, number : int, pc : int) -> None:
+        """
+        CMND_SET_BREAK for a program breakpoint at word address pc: number 1-3 are the hardware
+        comparators (4 is reserved for stepping), SOFTWARE_BREAKPOINT a BREAK the probe plants
+        """
+        self.ok(struct.pack("<BBBIB", CMND_SET_BREAK, BREAK_PROGRAM, number, pc, BREAK_MODE_PROGRAM),
+                "Set breakpoint {} at 0x{:X}".format(number, pc))
+
+    def clr_break(self, number : int, pc : int = 0) -> None:
+        """CMND_CLR_BREAK; a software breakpoint is identified by its word address"""
+        self.ok(struct.pack("<BBI", CMND_CLR_BREAK, number, pc), "Clear breakpoint {}".format(number))
+
+    def enter_progmode(self) -> None:
+        """CMND_ENTER_PROGMODE"""
+        self.ok(bytes([CMND_ENTER_PROGMODE]), "Enter programming mode")
+
+    def leave_progmode(self) -> None:
+        """CMND_LEAVE_PROGMODE; leaves two EVT_BREAKs behind (measured), drained by the caller"""
+        self.ok(bytes([CMND_LEAVE_PROGMODE]), "Leave programming mode")
+
+    def chip_erase(self) -> None:
+        """CMD_CHIP_ERASE, in programming mode (JTAG only)"""
+        self.ok(bytes([CMND_CHIP_ERASE]), "Chip erase")
+
+    def erase_page_spm(self, address : int) -> None:
+        """CMND_ERASEPAGE_SPM: erase the flash page at a byte address, in debug mode"""
+        self.ok(struct.pack("<BI", CMND_ERASEPAGE_SPM, address), "Erase page 0x{:X}".format(address))
+
+    def drain_breaks(self) -> None:
+        """Discard pending break events, e.g. the ones LEAVE_PROGMODE leaves behind"""
+        while self.poll_break(20) is not None:
+            pass
 
     def poll_break(self, timeout : int = 0) -> tuple[int, int] | None:
         """
