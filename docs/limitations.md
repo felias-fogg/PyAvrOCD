@@ -88,6 +88,10 @@ Resets, e.g., due to a watch dog timer reset or a software reset, are handled gr
 
 JTAG and debugWIRE targets simply start executing after a reset. UPDI targets need to be stopped and started again to continue executing after a reset while executing under debugging supervision.
 
+## Loading may start the old program once on JTAG targets
+
+On **JTAG** targets, loading a new program can let the old one start from the reset vector for a moment before the flash is reprogrammed, while the debug probe switches from debugging to programming mode. This has been observed with the Atmel-ICE (on an ATmega324P), but not with the EDBG of an ATmega324PB Xplained Pro board; why the two differ is not known. For the hardware attached to the MCU, this is the same as pressing the reset button just before programming, which it has to cope with anyway. It only shows if the old program does something lasting right after a reset, for instance writing to EEPROM, as a start counter would: it then does so once more. On **debugWIRE** targets, the CPU stays stopped during the entire load. On **UPDI** targets, no such effect could be observed.
+
 ## Breakpoints in interrupt routines
 
 Breakpoints in interrupt routines can throw off the timing of time-critical code.

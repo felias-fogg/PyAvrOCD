@@ -119,6 +119,9 @@ cores:
     default: 16
 
   megaTinyCore:
+    # make sketches need an avr-gcc with the device specs of the modern AVRs, which
+    # Arduino's own lacks; the newest installed version of this tool is taken
+    toolchain: megaTinyCore:avr-gcc
     options:
       chip: true
       clock: true
