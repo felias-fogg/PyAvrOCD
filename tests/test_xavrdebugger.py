@@ -206,7 +206,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.device.avr.memory_write.assert_has_calls([call(Avr8Protocol.AVR8_MEMTYPE_FUSES, 2,
                                                               bytearray([0]))])
 
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test__manage_fuses_lockbits_not_managed(self):
         self.set_up()
         self.xaj.device.avr.memory_read.return_value = bytes([0x0F])
@@ -220,7 +220,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.logger.warning.assert_has_calls([
             call("Alternatively, let PyAvrOCD manage it: '-m lockbits'")])
 
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test__manage_fuses_ocden_not_managed(self):
         self.set_up()
         self.xaj.device.avr.memory_read.side_effect = [ bytearray([0xFF]),
@@ -236,7 +236,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.logger.warning.assert_has_calls([
             call("Or let payavrocd manage this fuse: '-m ocden'.")])
 
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test__manage_fuses_sig_ok(self):
         self.set_up()
         self.xaj.device.avr.memory_read.side_effect = [ bytearray([0xFF]),
@@ -268,7 +268,7 @@ class TestXAvrDebugger(TestCase):
         self.assertRaises(FatalError, self.xaj._manage_fuses)
 
 
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test__manage_fuses_nothing_to_do(self):
         self.set_up()
         self.xaj.device.avr.memory_read.side_effect = [
@@ -405,7 +405,7 @@ class TestXAvrDebugger(TestCase):
     @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(return_value=5.0))
     @patch('pyavrocd.xavrdebugger.NvmAccessProviderCmsisDapSpi.read_device_id',
                MagicMock(return_value = bytearray([0x0B, 0x93, 0x1E])))
-    @patch('pyavrocd.xavrdebugger.NvmAccessProviderCmsisDapSpi.erase', MagicMock())
+    @patch('pyavrocd.xavrdebugger.AvrIspProtocol.erase', MagicMock())
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.enter_progmode', MagicMock())
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.leave_progmode', MagicMock())
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.read_lockbits',
@@ -432,7 +432,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.spidevice.isp.enter_progmode.assert_called()
         self.xa.spidevice.isp.leave_progmode.assert_called()
 
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test_prepare_debugging_jtag(self):
         self.set_up()
         self.xaj.prepare_debugging()
@@ -463,7 +463,7 @@ class TestXAvrDebugger(TestCase):
     @patch('pyavrocd.xavrdebugger.AvrIspProtocol.read_fuse_byte',
                MagicMock(side_effect = [bytearray([0x00]), bytearray([0x08]),
                                         bytearray([0x14])]))
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test_prepare_debugging_dwen_not_managed(self):
         self.set_up()
         self.xa.manage = ['bootrst', 'lockbits' ]
@@ -481,7 +481,7 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
-        self.xa.spidevice.read.side_effect=[bytes([0x00])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0x00])]
         self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E9205)
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
@@ -489,7 +489,7 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
-        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9205)
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
@@ -497,7 +497,7 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
-        self.xa.spidevice.read.side_effect=[bytes([0x00])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0x00])]
         self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E930A)
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
@@ -505,13 +505,13 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7]) # EESAVE programmed
-        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E930A)
 
     @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     @patch('pyavrocd.xavrdebugger.read_target_voltage', MagicMock(side_effect=[
         5.0, 5.0, 0.0, 0.0, 0.0, 5.0, 5.0, 5.0]))
-    @patch('pyavrocd.xavrdebugger.logging.getLogger', MagicMock())
+    @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test__power_cycle(self):
         self.set_up()
         self.xa._power_cycle()
@@ -688,6 +688,82 @@ class TestXAvrDebugger(TestCase):
         self.set_up()
         self.assertRaises(FatalError, self.xaj.cold_dw_disable)
 
+    def _avr_debugger_mocks(self, pc_word):
+        """AvrDebugger's methods that the step-off logic uses, all recorded in one Mock"""
+        m = Mock()
+        m.program_counter_read.return_value = pc_word
+        patches = [patch('pyavrocd.xavrdebugger.AvrDebugger.' + name, getattr(m, name))
+                   for name in ('step', 'program_counter_read', 'program_counter_write', 'run',
+                                'software_breakpoint_set', 'software_breakpoint_clear')]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+        return m
+
+    def test_step_updi_pc_written_onto_swbp(self):
+        # measured with nEDBG, mEDBG and SNAP: the OCD would execute the BREAK instead
+        self.set_up()
+        m = self._avr_debugger_mocks(0x66)
+        self.xau.software_breakpoint_set(0xCC)
+        self.xau.program_counter_write(0x66)
+        m.reset_mock()
+        self.xau.step()
+        self.assertEqual([c[0] for c in m.mock_calls if c[0] != 'program_counter_read'],
+                         ['software_breakpoint_clear', 'step', 'software_breakpoint_set'])
+        # the address is the last argument (AvrDebugger.x(self, ...) passes self as well)
+        self.assertEqual(m.software_breakpoint_clear.call_args.args[-1], 0xCC)
+        self.assertEqual(m.software_breakpoint_set.call_args.args[-1], 0xCC)
+        self.assertIn(0xCC, self.xau._swbps)       # still a breakpoint for the next run
+        self.assertFalse(self.xau._pc_written)
+        m.reset_mock()
+        self.xau.step()                            # a second step is an ordinary one again
+        self.assertEqual(m.step.call_count, 1)
+        m.software_breakpoint_clear.assert_not_called()
+
+    def test_step_updi_at_swbp_after_hit(self):
+        # after a real hit the probe steps over its BREAK itself
+        self.set_up()
+        m = self._avr_debugger_mocks(0x66)
+        self.xau.software_breakpoint_set(0xCC)
+        m.reset_mock()
+        self.xau.step()
+        m.software_breakpoint_clear.assert_not_called()
+        self.assertEqual(m.step.call_count, 1)
+
+    def test_step_updi_pc_written_elsewhere(self):
+        self.set_up()
+        m = self._avr_debugger_mocks(0x70)
+        self.xau.software_breakpoint_set(0xCC)
+        self.xau.program_counter_write(0x70)
+        m.reset_mock()
+        self.xau.step()
+        m.software_breakpoint_clear.assert_not_called()
+        self.assertEqual(m.step.call_count, 1)
+
+    def test_step_debugwire_pc_written_onto_swbp(self):
+        # debugWIRE and JTAG step correctly after a PC write onto a BREAK
+        self.set_up()
+        m = self._avr_debugger_mocks(0x66)
+        self.xa.software_breakpoint_set(0xCC)
+        self.xa.program_counter_write(0x66)
+        m.reset_mock()
+        self.xa.step()
+        m.software_breakpoint_clear.assert_not_called()
+        self.assertEqual(m.step.call_count, 1)
+
+    def test_run_forgets_pc_write(self):
+        self.set_up()
+        self._avr_debugger_mocks(0x66)
+        self.xau.software_breakpoint_set(0xCC)
+        self.xau.program_counter_write(0x66)
+        self.xau.run()
+        self.assertFalse(self.xau._pc_written)
+        self.xau.software_breakpoint_clear(0xCC)
+        self.assertNotIn(0xCC, self.xau._swbps)
+        self.xau.software_breakpoint_set(0xCE)
+        self.xau.software_breakpoint_clear_all()
+        self.assertEqual(self.xau._swbps, set())
+
     def test_software_breakpoint_set_ok(self):
         self.set_up()
         self.assertTrue(self.xa.software_breakpoint_set(10))
@@ -852,7 +928,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.manage.append('eesave')
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xD7])
-        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9205)
         self.xa.spidevice.isp.write_fuse_byte.assert_not_called()
 
@@ -862,7 +938,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.manage.append('eesave')
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xDF])
-        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9205)
         isp_calls = [c for c in self.xa.spidevice.isp.mock_calls
                          if c[0] in ('write_fuse_byte', 'erase')]
@@ -877,7 +953,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.manage.append('eesave')
         self.xa.spidevice = Mock()
         self.xa.spidevice.isp.read_fuse_byte.return_value = bytes([0xDF])
-        self.xa.spidevice.read.side_effect=[bytes([0x00])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0x00])]
         self.assertRaises(FatalError, self.xa._check_atmega48_and_88, 0x1E9205)
         self.assertEqual(self.xa.spidevice.isp.write_fuse_byte.call_args_list[-1],
                          call(1, bytearray([0xDF])))
@@ -889,7 +965,7 @@ class TestXAvrDebugger(TestCase):
         self.xa.spidevice = Mock()
         self.xa.device_info = {k: v for k, v in self.xa.device_info.items()
                                    if k not in ('eesave_base', 'eesave_mask')}
-        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9205)
         self.xa.spidevice.isp.read_fuse_byte.assert_not_called()
         self.xa.spidevice.isp.write_fuse_byte.assert_not_called()
@@ -898,7 +974,7 @@ class TestXAvrDebugger(TestCase):
     def test__check_atmega48_and_88_eesave_not_managed(self):
         self.set_up()
         self.xa.spidevice = Mock()
-        self.xa.spidevice.read.side_effect=[bytes([0xFF])]
+        self.xa.spidevice.isp.read_lockbits.side_effect=[bytes([0xFF])]
         self.xa._check_atmega48_and_88(0x1E9205)
         self.xa.spidevice.isp.read_fuse_byte.assert_not_called()
         self.xa.spidevice.isp.write_fuse_byte.assert_not_called()

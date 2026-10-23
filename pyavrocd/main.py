@@ -32,6 +32,7 @@ from pymcuprog.pymcuprog_errors import PymcuprogToolConnectionError
 import pyedbglib
 
 from pyavrocd import dwlink
+from pyavrocd import jtag2
 from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 from pyavrocd.monitor import monopts
@@ -127,7 +128,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
     parser.add_argument('-s', '--start',  dest='prg',
                             help='Start specified program (e.g., simavr or gede)')
 
-    tool_choices : list [str] = ['atmelice', 'dwlink', 'edbg', 'jtagice3', 'medbg', 'nedbg',
+    tool_choices : list [str] = ['atmelice', 'dragon', 'dwlink', 'edbg', 'jtagice2', 'jtagice3', 'medbg', 'nedbg',
                         'pickit4', 'powerdebugger', 'snap']
     parser.add_argument("-t", "--tool",
                             metavar="TOOL",
@@ -443,6 +444,36 @@ def run_server(server: RspServer, logger : logging.Logger) -> int:
         raise
     return 0
 
+def check_jtag2_tools(args : argparse.Namespace, num_edbg : int, logger : logging.Logger) -> bool:
+    """
+    Look for probes speaking the JTAGICE mkII protocol (JTAGICE mkII, AVR Dragon). Returns True
+    if the session cannot go on: one of them was selected or is the only probe, but debugging
+    with them is not supported yet, or the choice is ambiguous.
+    """
+    names = set(jtag2.PRODUCTS.values())
+    if args.tool is not None and args.tool not in names: # an EDBG tool or dw-link was asked for
+        return False
+    try:
+        candidates = jtag2.discover(args.tool)
+    except usb.core.NoBackendError: # no libusb: on Windows, the EDBG tools do not need it
+        logger.debug("No libusb, cannot look for JTAGICE mkII / AVR Dragon")
+        candidates = []
+    found = [c for c in candidates
+             if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
+    if not found:
+        if args.tool in names:
+            logger.critical("No compatible tool discovered")
+            return True
+        return False
+    if len(found) > 1 or (args.tool is None and not args.serialnumber and num_edbg > 0):
+        logger.critical("More than one compatible tool! Use -t or -u to select.")
+        for c in found:
+            logger.critical(" Tool: %s, SN: %s", c.product, c.address)
+        return True
+    logger.critical("Found %s, SN: %s: debugging with this probe is not supported yet",
+                        found[0].product, found[0].address)
+    return True
+
 def number_of_connected_edbg_tools(logger : logging.Logger) -> int:
     """
     Find out how many debugging tools are connected
@@ -531,7 +562,9 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     if args.tool != "dwlink":
         num_tools = number_of_connected_edbg_tools(logger)
 
-    if num_tools < 0: # meaning that USB is not there
+    # num_tools < 0 means that USB is not there; probes speaking the JTAGICE mkII protocol
+    # are recognized, but not supported for debugging yet
+    if num_tools < 0 or check_jtag2_tools(args, num_tools, logger):
         return 1
 
     if args.tool == "dwlink" or num_tools == 0:

@@ -11,7 +11,9 @@ import sys
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
-     process_arguments, startup_helper_prog, run_server, startup, handle_simavr, tool_reboot
+     process_arguments, startup_helper_prog, run_server, startup, handle_simavr, tool_reboot, \
+     check_jtag2_tools
+from pyavrocd.backend import ProbeCandidate
 
 class TestMain(TestCase):
 
@@ -587,6 +589,57 @@ class TestMain(TestCase):
                                                    call(' Tool: %s, SN: %s', 'PROD2', 'S/N02')])
 
 
+class TestCheckJtag2Tools(TestCase):
+    """main recognizes JTAGICE mkII / AVR Dragon, but cannot debug with them yet"""
 
+    CLONE = ProbeCandidate('jtagice2', 'JTAGICE mkII', '090000004262')
+    DRAGON = ProbeCandidate('dragon', 'AVRDRAGON', '00A200050860')
 
+    def check(self, found, tool=None, sn=None, num_edbg=0):
+        logger = MagicMock()
+        args = SimpleNamespace(tool=tool, serialnumber=sn)
+        with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: [c for c in found if t in (None, c.tool)]):
+            return check_jtag2_tools(args, num_edbg, logger), logger
+
+    def test_none_attached(self):
+        stop, _ = self.check([])
+        self.assertFalse(stop) # on to the EDBG tools or dw-link, as before
+
+    def test_none_attached_but_asked_for(self):
+        stop, logger = self.check([], tool='dragon')
+        self.assertTrue(stop)
+        logger.critical.assert_called_with("No compatible tool discovered")
+
+    def test_one_alone(self):
+        stop, logger = self.check([self.DRAGON])
+        self.assertTrue(stop)
+        logger.critical.assert_called_with("Found %s, SN: %s: debugging with this probe is not supported yet",
+                                           'AVRDRAGON', '00A200050860')
+
+    def test_two_without_selection(self):
+        stop, logger = self.check([self.CLONE, self.DRAGON])
+        self.assertTrue(stop)
+        logger.critical.assert_any_call("More than one compatible tool! Use -t or -u to select.")
+
+    def test_selected_by_tool_and_by_serial(self):
+        _, logger = self.check([self.CLONE, self.DRAGON], tool='jtagice2')
+        self.assertIn('JTAGICE mkII', logger.critical.call_args.args)
+        _, logger = self.check([self.CLONE, self.DRAGON], sn='0860')
+        self.assertIn('AVRDRAGON', logger.critical.call_args.args)
+        _, logger = self.check([self.CLONE, self.DRAGON], sn='a200050860') # case does not matter
+        self.assertIn('AVRDRAGON', logger.critical.call_args.args)
+
+    def test_with_an_edbg_tool(self):
+        stop, logger = self.check([self.DRAGON], num_edbg=1)
+        self.assertTrue(stop) # ambiguous without -t / -u
+        logger.critical.assert_any_call("More than one compatible tool! Use -t or -u to select.")
+        stop, _ = self.check([self.DRAGON], num_edbg=1, sn='18184') # -u names the EDBG tool
+        self.assertFalse(stop)
+        stop, _ = self.check([self.DRAGON], num_edbg=1, tool='atmelice') # an EDBG tool asked for
+        self.assertFalse(stop)
+
+    def test_no_libusb(self):
+        logger = MagicMock()
+        with patch('pyavrocd.main.jtag2.discover', side_effect=NoBackendError("none")):
+            self.assertFalse(check_jtag2_tools(SimpleNamespace(tool=None, serialnumber=None), 1, logger))
 
