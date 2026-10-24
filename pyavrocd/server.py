@@ -135,7 +135,7 @@ class RspServer():
             self.logger.info("Terminated by Ctrl-C")
             return 1
         except Exception as e:
-            self.logger.info("Forced exit: %s", e)
+            self.logger.critical("Forced exit: %s", e)
             return 1
         finally:
             self._cleaning_up = True

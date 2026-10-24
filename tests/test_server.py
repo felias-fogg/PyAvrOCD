@@ -156,6 +156,23 @@ class TestRspServer(TestCase):
                                               call('Leaving GDB server')])
         self.assertEqual(self.rs.logger.info.call_count,7)
 
+    @patch('pyavrocd.server.time.sleep',Mock())
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
+    def test_serve_probe_gone(self, mock_handler, mock_select, mock_socket):
+        # an error outside the packet handlers, e.g. the probe unplugged while events are polled
+        self.set_up()
+        mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
+        mock_handler.return_value = Mock(mon=None, spec=GdbHandler)
+        mock_handler.return_value.poll_events.side_effect = OSError(19, "No such device")
+        mock_select.side_effect = [(0,0,0), (0,0,0)]
+        self.assertEqual(self.rs.serve(), 1)
+        self.rs.logger.critical.assert_called_once()
+        self.assertEqual(self.rs.logger.critical.call_args[0][0], "Forced exit: %s")
+        self.assertIn("No such device", str(self.rs.logger.critical.call_args[0][1]))
+
 
     @patch('pyavrocd.server.signal.signal',Mock())
     @patch('pyavrocd.server.time.sleep',Mock())
