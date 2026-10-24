@@ -21,8 +21,10 @@ Behaviour of the probes that the code relies on (measured with a JTAGICE mkII cl
   does not count); until then a cleared one still reads as BREAK, and a page written over it gets
   the old word back at the next go -- on debugWIRE and on JTAG, even after a chip erase.
   CMND_RESTORE_TARGET removes them at once, so it is sent before the first flash write of a load
-- after a power cycle of the target, the AVR Dragon does not answer the first command on the open
-  connection, however long one waits; after reopening it does, so the sign-on reopens once
+- after a power cycle of the target, the AVR Dragon and the JTAGICE mkII do not answer the first
+  command on a connection left idle during the cycle, however long one waits (polled across the
+  cycle, nothing is lost); after reopening they do, so the sign-on reopens once
+- USB errors reach the session as Jtag2UsbError (a BackendError), timeouts as Jtag2UsbTimeout
 """
 import argparse
 import time
@@ -132,9 +134,10 @@ class Jtag2Backend(AvrSession):
             self._open()
         try:
             info = self._proto().sign_on()
-        except usb.core.USBTimeoutError:
-            # After a power cycle of the target, the AVR Dragon never answers the first command
-            # on the open connection, however long one waits; after reopening it does (measured)
+        except jtag2.Jtag2UsbTimeout:
+            # After a power cycle of the target, the AVR Dragon and the JTAGICE mkII never answer the
+            # first command on a connection left idle during the cycle, however long one waits; after
+            # reopening they do (measured)
             self.logger.debug("No answer to sign-on, reopening the probe")
             self._close()
             self._open()

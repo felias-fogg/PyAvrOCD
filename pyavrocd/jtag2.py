@@ -106,6 +106,12 @@ MODE_TIMEOUT : int = 5000     # ms for switching the emulator mode, which talks 
 class Jtag2Error(BackendError):
     """A frame or a response that does not follow the protocol"""
 
+class Jtag2UsbError(Jtag2Error):
+    """The USB transfer of a command or its response failed"""
+
+class Jtag2UsbTimeout(Jtag2UsbError):
+    """No response within the timeout"""
+
 
 def _crc_table() -> list[int]:
     """CRC-16 table of AVR067 section 12: reflected CCITT polynomial 0x8408"""
@@ -463,16 +469,22 @@ class Jtag2Protocol():
         sequence = self.sequence
         self.sequence = (self.sequence + 1) % EVENT_SEQUENCE # wraps to zero after 0xFFFE
         with transaction(): # SIGTERM/SIGINT must not cut a command from its response
-            self.transport.write_frame(make_frame(sequence, body))
-            while True:
-                answer, response = parse_frame(self.transport.read_frame(timeout))
-                if answer == EVENT_SEQUENCE:
-                    self.logger.debug("Event set aside: %s", response.hex())
-                    self.events.append(response)
-                    continue
-                if answer != sequence:
-                    raise Jtag2Error("Response to message {} while waiting for {}".format(answer, sequence))
-                return response
+            try:
+                self.transport.write_frame(make_frame(sequence, body))
+                while True:
+                    answer, response = parse_frame(self.transport.read_frame(timeout))
+                    if answer == EVENT_SEQUENCE:
+                        self.logger.debug("Event set aside: %s", response.hex())
+                        self.events.append(response)
+                        continue
+                    if answer != sequence:
+                        raise Jtag2Error("Response to message {} while waiting for {}".format(answer, sequence))
+                    return response
+            except usb.core.USBTimeoutError as e:
+                # as a BackendError, the handler reports it to GDB instead of ending the packet with SIGABRT
+                raise Jtag2UsbTimeout("No response to command 0x{:02X} from the probe: {}".format(body[0], e)) from e
+            except usb.core.USBError as e:
+                raise Jtag2UsbError("USB error in command 0x{:02X}: {}".format(body[0], e)) from e
 
     def expect(self, response : bytes, wanted : int, what : str) -> bytes:
         """The response, if its MESSAGE_ID is the wanted one; otherwise an error naming the failure"""

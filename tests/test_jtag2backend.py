@@ -3,7 +3,7 @@ The test suit for the Jtag2Backend class (JTAGICE mkII and AVR Dragon)
 """
 #pylint: disable=protected-access,missing-function-docstring,missing-class-docstring
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, create_autospec
 
 import usb.core
 
@@ -11,6 +11,10 @@ from pyavrocd import jtag2
 from pyavrocd.backend import ProbeCandidate
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.main import options
+from pyavrocd.handler import GdbHandler
+from pyavrocd.monitor import MonitorCommand
+from pyavrocd.breakexec import BreakAndExec
+from tests.test_jtag2 import FakeTransport
 
 class TestJtag2Backend(TestCase):
 
@@ -24,7 +28,7 @@ class TestJtag2Backend(TestCase):
     def test_sign_on_reopens_after_timeout(self, mock_open, mock_protocol):
         # after a power cycle of the target, the Dragon does not answer the first command
         first, second = MagicMock(), MagicMock()
-        first.sign_on.side_effect = usb.core.USBTimeoutError("Operation timed out")
+        first.sign_on.side_effect = jtag2.Jtag2UsbTimeout("No response")
         second.sign_on.return_value = MagicMock(master_firmware=(0x27, 7))
         mock_protocol.side_effect = [first, second]
         self.backend._sign_on()
@@ -120,3 +124,25 @@ class TestPendingRemovals(TestCase):
         backend.protocol.reset_mock()
         backend.write_flash_pages(0, bytes(len(backend.flash)), True)   # in progmode: nothing more
         backend.protocol.restore_target.assert_not_called()
+
+
+class TestUsbErrorsReachGdb(TestCase):
+    """A USB error inside a monitor command is reported to GDB, not turned into a stop packet"""
+
+    @patch('pyavrocd.handler.logging.getLogger', MagicMock())
+    def test_monitor_reset_with_lost_response(self):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='dragon', product='AVRDRAGON', address='0860'),
+                                   'atmega328p', 'debugwire', options(['-d', 'atmega328p']))
+        backend.protocol = jtag2.Jtag2Protocol(FakeTransport([]))     # every response is lost
+        sock = MagicMock()
+        handler = GdbHandler(sock, backend, "atmega328p", options(['-d', 'atmega328p']), "Tool")
+        handler.mon = create_autospec(MonitorCommand, specSet=True, instance=True)
+        handler.mon.dispatch.return_value = ('reset', 'Bla')
+        handler.mon.is_debugger_active.return_value = True
+        handler.bp = create_autospec(BreakAndExec, specSet=True, instance=True)
+        handler.dispatch('qRcmd', b',7265736574')                   # monitor reset
+        reply = sock.sendall.call_args[0][0].decode()
+        text = bytes.fromhex(reply[1:reply.index('#')]).decode()
+        self.assertTrue(text.startswith("Fatal error: No response to command 0x"), text)
+        self.assertEqual(handler.critical, text[len("Fatal error: "):].strip())

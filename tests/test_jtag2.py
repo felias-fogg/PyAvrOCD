@@ -8,6 +8,7 @@ from unittest.mock import Mock, patch
 import usb.core
 
 from pyavrocd import jtag2
+from pyavrocd.backend import BackendError
 from pyavrocd.deviceinfo.devices import atmega324p, atmega2560, atmega328p, attiny85, attiny13
 from pyavrocd.jtag2 import crc16, make_frame, parse_frame, parse_sign_on, Jtag2Error, \
      Jtag2Protocol, Jtag2UsbTransport, EVENT_SEQUENCE
@@ -224,6 +225,24 @@ class TestProtocol(TestCase):
                          ["1101005200000003", "1101025200000003", "1a0052000000", "1a0200000000",
                           "1c52000000", "14", "0d80000000", "0b04", "23"])
 
+
+class TestUsbErrors(TestCase):
+    """pyusb errors leave command() as Jtag2 errors, which are BackendErrors"""
+
+    def test_lost_response_is_a_timeout(self):
+        proto = Jtag2Protocol(FakeTransport([]))         # raises USBTimeoutError when read
+        with self.assertRaises(jtag2.Jtag2UsbTimeout) as caught:
+            proto.command(bytes([jtag2.CMND_RESET, 1]))
+        self.assertIsInstance(caught.exception, BackendError)
+        self.assertIn("command 0x0B", str(caught.exception))
+
+    def test_other_usb_error(self):
+        transport = FakeTransport([])
+        transport.write_frame = Mock(side_effect=usb.core.USBError("Pipe error"))
+        with self.assertRaises(jtag2.Jtag2UsbError) as caught:
+            Jtag2Protocol(transport).command(bytes([jtag2.CMND_GO]))
+        self.assertNotIsInstance(caught.exception, jtag2.Jtag2UsbTimeout)
+        self.assertIn("Pipe error", str(caught.exception))
 
 class TestIsp(TestCase):
 
