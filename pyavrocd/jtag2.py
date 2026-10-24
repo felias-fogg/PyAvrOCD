@@ -46,6 +46,9 @@ CMND_ENTER_PROGMODE : int = 0x14
 CMND_LEAVE_PROGMODE : int = 0x15
 CMND_CLR_BREAK : int = 0x1A
 CMND_RUN_TO_ADDR : int = 0x1C
+CMND_RESTORE_TARGET : int = 0x23
+CMND_ISP_PACKET : int = 0x2F
+RSP_SPI_DATA : int = 0x88
 RESET_DEBUGWIRE_DISABLE : int = 0x04  # flag of CMND_RESET
 BREAK_PROGRAM : int = 0x01           # type of CMND_SET_BREAK
 BREAK_MODE_PROGRAM : int = 0x03      # mode of CMND_SET_BREAK
@@ -82,6 +85,7 @@ PAR_TIMERS_RUNNING : int = 0x09
 PAR_JTAGID : int = 0x0E
 PAR_EXTERNAL_RESET : int = 0x13
 PAR_MCU_STATE : int = 0x1A
+PAR_TARGET_SIGNATURE : int = 0x1D   # in debugWIRE mode, LSB first
 MCU_STATES : dict[int, str] = { 0x00 : "STOPPED", 0x01 : "RUNNING", 0x02 : "PROGRAMMING" }
 
 # memory types (AVR067 section 10); addresses are byte addresses for all of them
@@ -95,6 +99,8 @@ MEMTYPE_LOCK : int = 0xB3
 MEMTYPE_SIGNATURE : int = 0xB4
 
 USB_TIMEOUT : int = 2000      # ms for one USB packet
+MODE_TIMEOUT : int = 5000     # ms for switching the emulator mode, which talks to the target: refusing
+                              # the SPI mode while debugWIRE is active took 1 s once, more than 2 s another time
 
 
 class Jtag2Error(BackendError):
@@ -262,6 +268,94 @@ def make_device_descriptor(device_info : dict) -> bytes:
     return io_masks(device_info) + tail
 
 
+class Jtag2Isp():
+    """
+    ISP programming through a probe speaking the mkII protocol: the AVRISP mkII commands, with the
+    parameters and the SPI instructions pyedbglib's avrispprotocol uses for the classic AVRs
+    """
+    ENTER_PROGMODE : int = 0x10
+    LEAVE_PROGMODE : int = 0x11
+    CHIP_ERASE : int = 0x12
+    PROGRAM_FLASH : int = 0x13
+    LOAD_ADDRESS : int = 0x06
+    PROGRAM_FUSE : int = 0x17
+    READ_FUSE : int = 0x18
+    PROGRAM_LOCK : int = 0x19
+    READ_LOCK : int = 0x1A
+    READ_SIGNATURE : int = 0x1B
+    READ_FUSE_INSTRUCTIONS : tuple[bytes, ...] = (b"\x50\x00\x00\x00", b"\x58\x08\x00\x00", b"\x50\x08\x00\x00")
+    WRITE_FUSE_INSTRUCTIONS : tuple[bytes, ...] = (b"\xac\xa0\x00", b"\xac\xa8\x00", b"\xac\xa4\x00")
+
+    def __init__(self, protocol : 'Jtag2Protocol') -> None:
+        self.protocol = protocol
+        self.spi_mode : bool = False      # SPI emulator mode set
+        self.programming : bool = False   # ISP programming mode entered
+
+    def enter(self) -> None:
+        """
+        SPI emulator mode, then ISP programming mode: timeout 200 (as avrdude), stabilisation delay
+        100, command delay 25, 32 sync loops, poll value 0x53 at index 3, 'Programming Enable'.
+        Each step only if not done yet: the SPI mode set again while in programming mode is
+        answered with RSP_FAILED (measured on the AVR Dragon).
+        """
+        if not self.spi_mode:
+            self.protocol.set_parameter(PAR_EMULATOR_MODE, bytes([EMULATOR_MODE_SPI]), MODE_TIMEOUT)
+            self.spi_mode = True
+        if not self.programming:
+            self.protocol.isp(bytes([self.ENTER_PROGMODE, 200, 100, 25, 32, 0, 0x53, 3, 0xAC, 0x53, 0, 0]), 2)
+            self.programming = True
+
+    def leave(self) -> None:
+        """Leave ISP programming mode (1 ms before and after releasing RESET); the SPI mode stays"""
+        if self.programming:
+            self.protocol.isp(bytes([self.LEAVE_PROGMODE, 1, 1]), 2)
+            self.programming = False
+
+    def close(self) -> None:
+        """Leave programming mode and the SPI emulator mode"""
+        self.leave()
+        if self.spi_mode:
+            self.protocol.set_parameter(PAR_EMULATOR_MODE, bytes([EMULATOR_MODE_UNKNOWN]), MODE_TIMEOUT)
+            self.spi_mode = False
+
+    def _read(self, command : int, instruction : bytes) -> int:
+        return self.protocol.isp(bytes([command, 4]) + instruction, 4)[0]
+
+    def signature(self) -> int:
+        """The three signature bytes as one number, e.g. 0x1E950F"""
+        return int.from_bytes(bytes(self._read(self.READ_SIGNATURE, bytes([0x30, 0, i, 0])) for i in range(3)), 'big')
+
+    def read_fuse(self, index : int) -> int:
+        """Low (0), high (1) or extended (2) fuse"""
+        return self._read(self.READ_FUSE, self.READ_FUSE_INSTRUCTIONS[index])
+
+    def write_fuse(self, index : int, value : int) -> None:
+        """Program low (0), high (1) or extended (2) fuse; the answer has a second status byte"""
+        self.protocol.isp(bytes([self.PROGRAM_FUSE]) + self.WRITE_FUSE_INSTRUCTIONS[index] + bytes([value]), 3)
+
+    def read_lock(self) -> int:
+        """Lock byte"""
+        return self._read(self.READ_LOCK, b"\x58\x00\x00\x00")
+
+    def write_lock(self, value : int) -> None:
+        """Program the lock byte; the answer has a second status byte, as for the fuses"""
+        self.protocol.isp(bytes([self.PROGRAM_LOCK, 0xAC, 0xE0, 0x00, value]), 3)
+
+    def chip_erase(self) -> None:
+        """Chip erase: 45 ms, polling by RDY/BSY, 'Chip Erase'"""
+        self.protocol.isp(bytes([self.CHIP_ERASE, 45, 1, 0xAC, 0x80, 0, 0]), 2)
+
+    def write_flash_page(self, address : int, data : bytes) -> None:
+        """
+        Load the word address, then program one page: page mode with the page write, 'Load Program
+        Memory Page' and 'Write Program Memory Page' (needed only by the dirty-PC test of the
+        ATmega48/88; not measured on hardware yet)
+        """
+        self.protocol.isp(bytes([self.LOAD_ADDRESS]) + (address >> 1).to_bytes(4, 'big'), 2)
+        self.protocol.isp(bytes([self.PROGRAM_FLASH]) + len(data).to_bytes(2, 'big') +
+                          bytes([0x81, 0, 0x40, 0x4C, 0, 0, 0]) + bytes(data), 2)
+
+
 def usb_serial(device : usb.core.Device) -> str:
     """Serial number from the USB descriptor; both probes end it with a NUL"""
     try:
@@ -283,6 +377,7 @@ def discover(tool : str | None = None) -> list[ProbeCandidate]:
             product = name
         found.append(ProbeCandidate(tool=name, product=product, address=usb_serial(device)))
     return found
+
 
 
 class Jtag2UsbTransport():
@@ -391,9 +486,9 @@ class Jtag2Protocol():
         return self.expect(self.command(bytes([CMND_GET_PARAMETER, parameter])), RSP_PARAMETER,
                            "Get parameter 0x{:02X}".format(parameter))[1:]
 
-    def set_parameter(self, parameter : int, value : bytes) -> None:
+    def set_parameter(self, parameter : int, value : bytes, timeout : int = USB_TIMEOUT) -> None:
         """CMND_SET_PARAMETER"""
-        self.expect(self.command(bytes([CMND_SET_PARAMETER, parameter]) + bytes(value)), RSP_OK,
+        self.expect(self.command(bytes([CMND_SET_PARAMETER, parameter]) + bytes(value), timeout), RSP_OK,
                     "Set parameter 0x{:02X}".format(parameter))
 
     def set_device_descriptor(self, descriptor : bytes) -> None:
@@ -443,6 +538,14 @@ class Jtag2Protocol():
         """CMND_RESET with the debugWIRE disable flag: ISP works again until the next power cycle"""
         self.ok(bytes([CMND_RESET, RESET_DEBUGWIRE_DISABLE]), "debugWIRE disable")
 
+    def restore_target(self) -> None:
+        """
+        CMND_RESTORE_TARGET: stop, replace the software breakpoints with the original instructions,
+        reset, run. Measured: immediate (not deferred to the next go like CMND_CLR_BREAK), and the
+        probe forgets all software breakpoints; EVT_BREAKs may follow
+        """
+        self.ok(bytes([CMND_RESTORE_TARGET]), "Restore target")
+
     def run_to(self, pc : int) -> None:
         """CMND_RUN_TO_ADDR: run until the word address pc"""
         self.ok(struct.pack("<BI", CMND_RUN_TO_ADDR, pc), "Run to address")
@@ -474,6 +577,20 @@ class Jtag2Protocol():
     def erase_page_spm(self, address : int) -> None:
         """CMND_ERASEPAGE_SPM: erase the flash page at a byte address, in debug mode"""
         self.ok(struct.pack("<BI", CMND_ERASEPAGE_SPM, address), "Erase page 0x{:X}".format(address))
+
+    def isp(self, packet : bytes, answer : int) -> bytes:
+        """
+        CMND_ISP_PACKET: an AVRISP mkII command (AVR069), in the SPI emulator mode. Between the
+        MESSAGE_ID and the packet go two bytes, LSB first, with the length of the expected answer
+        (taken from avrdude's frames; without them the probe never answers). The answer comes as
+        RSP_SPI_DATA with the command, a status (0 = OK) and the data; returned without the first two.
+        """
+        response = self.expect(self.command(bytes([CMND_ISP_PACKET]) + answer.to_bytes(2, 'little') +
+                                            bytes(packet)), RSP_SPI_DATA,
+                               "ISP command 0x{:02X}".format(packet[0]))
+        if len(response) < 3 or response[1] != packet[0] or response[2] != 0:
+            raise Jtag2Error("ISP command 0x{:02X} failed: {}".format(packet[0], response.hex()))
+        return response[3:]
 
     def drain_breaks(self) -> None:
         """Discard pending break events, e.g. the ones LEAVE_PROGMODE leaves behind"""

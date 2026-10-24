@@ -554,6 +554,46 @@ tests:
         response: All breakpoints are allowed
       - import: epilog
 
+# A software breakpoint is hit and deleted, and a second program is loaded before the target runs
+# again. The JTAGICE mkII and the AVR Dragon remove a cleared breakpoint only at the next go or
+# step, and then write the word they saved back -- into the new program (measured on debugWIRE
+# and JTAG, even after a chip erase). Both programs have reload_target at the same address:
+# 'inc r24' in the first, 'ldi r24, 0xA5' (0xEA85) in the second.
+  reloadbp:
+    sketch: reloadbp
+    steps:
+      - stimulus: set logging file log/reloadbp.log
+      - import: prolog
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: monitor breakpoints software
+        response: Only software breakpoints
+      - stimulus: break *reload_target
+        response: Breakpoint 1
+      - stimulus: cont
+        response: Breakpoint 1,
+      - stimulus: set confirm off
+      - stimulus: delete
+      - stimulus: file sketches/reloadbp/reloadbp2.elf
+        response: Reading symbols from
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: x/1xh reload_target
+        response: "0xea85"
+      - stimulus: break *reload_after
+        response: Breakpoint 2
+      - stimulus: cont
+        response: Breakpoint 2,
+      - stimulus: print reload_var
+        response: "= 165"
+      - stimulus: x/1xh reload_target
+        response: "0xea85"
+      - stimulus: monitor breakpoints all
+        response: All breakpoints are allowed
+      - import: epilog
+
 # Checks range stepping for JTAG targets
 # Similar to above, but reserve 3 HWBPs
   range_jtag:

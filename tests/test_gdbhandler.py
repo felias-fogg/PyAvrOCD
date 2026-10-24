@@ -6,6 +6,7 @@ from unittest.mock import Mock, MagicMock, patch, call, create_autospec
 from unittest import TestCase
 import socket
 import subprocess
+import time
 from pyavrocd.backend import BackendError, IspConnectionError
 from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.handler import GdbHandler
@@ -409,6 +410,21 @@ class TestGdbHandler(TestCase):
         self.assertEqual(self.gh.dispatch('qRcmd', b',642064'), None)
         self.gh.dbg.stop_debugging.assert_called_once()
         self.gh.comsocket.sendall.assert_called_with(rsp("426C61426C61426C610A"))
+
+    def test_monitorCommand_dwon_keep_alive(self):
+        self.set_up()
+        self.gh.mon.dispatch.return_value = ('dwon', 'Bla')
+        self.gh.dbg.prepare_debugging.side_effect = lambda **_: time.sleep(2.5)
+        self.gh.dispatch('qRcmd', b',642065')
+        sent = [c.args[0] for c in self.gh.comsocket.sendall.call_args_list]
+        self.assertEqual(sent.count(rsp("O")), 2)
+        self.assertEqual(sent[-1], rsp("426C610A")) # the reply comes last
+
+    def test_keep_alive_quiet_when_fast(self):
+        self.set_up()
+        with self.gh._keep_alive():
+            pass
+        self.gh.comsocket.sendall.assert_not_called()
 
     def test_monitorCommand_Target_0(self):
         self.set_up()

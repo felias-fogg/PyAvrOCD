@@ -1,7 +1,8 @@
 """
 This is the RSP command handler module.
 """
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 
 import argparse
 
@@ -13,6 +14,7 @@ import binascii
 import time
 import socket
 import subprocess
+import threading
 
 from pyavrocd.memory import Memory
 from pyavrocd.backend import DebugBackend, BackendError, InvalidAddressError, IspConnectionError
@@ -53,6 +55,7 @@ class GdbHandler():
         self._devicename : str = devicename
         self.last_sigval : int | None = 0
         self._lastmessage : str | None = ""
+        self._send_lock : threading.Lock = threading.Lock() # keep-alive thread vs. the handler
         self.extended_remote_mode : bool = False
         self._vflashdone : bool = False # set to True after vFlashDone received
         self.critical : str | None = None # first critical error
@@ -420,13 +423,15 @@ class GdbHandler():
             if response[0] == 'dwon':
                 if self.critical is not None:
                     raise FatalError(self.critical)
-                self.dbg.prepare_debugging(callback=self._send_power_cycle,
-                                               recognition=self._send_ready_message)
-                self.dbg.start_debugging()
+                with self._keep_alive():
+                    self.dbg.prepare_debugging(callback=self._send_power_cycle,
+                                                   recognition=self._send_ready_message)
+                    self.dbg.start_debugging()
                 # will only be called if there was no error in connecting to OCD:
                 self.mon.set_debug_mode_active(True)
             elif response[0] == 'dwoff':
-                self.dbg.stop_debugging(leave=True, graceful=False)
+                with self._keep_alive():
+                    self.dbg.stop_debugging(leave=True, graceful=False)
                 self.mon.set_debug_mode_active(False)
             elif response[0] == 'reset':
                 self.bp.reset_hardware_breakpoints()
@@ -446,11 +451,13 @@ class GdbHandler():
             elif 'test' == response[0]:
                 self.dbg.reactivate()
             elif 'disconnect' == response[0]:
-                self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
+                with self._keep_alive():
+                    self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
                 self.mon.set_debug_mode_active(False)
             elif 'exit' == response[0]:
                 if self.mon.is_debugger_active():
-                    self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
+                    with self._keep_alive():
+                        self.dbg.stop_debugging(leave=self.mon.is_leaveonexit(), graceful=True)
                     self.mon.set_debug_mode_active(False)
                 self.send_reply_packet(response[1])
                 time.sleep(1)
@@ -470,6 +477,29 @@ class GdbHandler():
         else:
             self.send_reply_packet(response[1])
 
+
+    @contextmanager
+    def _keep_alive(self, interval : float = 1.0) -> Iterator[None]:
+        """
+        While a monitor command takes longer than GDB's remotetimeout (2 s by default), e.g.
+        because of a power-cycle or because the probe re-enumerates on USB, send an empty
+        'O' packet every interval seconds. GDB prints nothing for it, but waits anew.
+        Only valid while GDB waits for the reply to a monitor command.
+        """
+        done = threading.Event()
+        def beat() -> None:
+            while not done.wait(interval):
+                try:
+                    self.send_packet('O')
+                except OSError:
+                    return
+        thread = threading.Thread(target=beat, name="keep-alive", daemon=True)
+        thread.start()
+        try:
+            yield
+        finally:
+            done.set()
+            thread.join()
 
     def _send_power_cycle(self) -> bool:
         """
@@ -928,8 +958,9 @@ class GdbHandler():
         checksum : int = sum(packet_data.encode("ascii")) % 256
         message : str = "$" + packet_data + "#" + format(checksum, '02x')
         self.rsp_logger.debug("<- %s", message)
-        self._lastmessage = packet_data
-        self.comsocket.sendall(message.encode("ascii"))
+        with self._send_lock:
+            self._lastmessage = packet_data
+            self.comsocket.sendall(message.encode("ascii"))
 
     def send_reply_packet(self, mes : str) -> None:
         """

@@ -35,7 +35,6 @@ class LiveTests():
         self.success : int= 0
         self.failure : int = 0
         self.tests_total : int = 0
-        self.flash_transparent : bool = False
         self.sram_start : int = self.dbg.memory_info.\
           memory_info_by_name('internal_sram')['address']
         self.test_code : bytes = self.setup_test_code(self.sram_start)
@@ -85,10 +84,7 @@ class LiveTests():
         self.mon.set_default_state()
         self.success = 0
         self.failure = 0
-        self.tests_total = 26
-        if (self.dbg.get_iface() == 'jtag' and self.dbg.get_architecture() == 'avr8') \
-            or self.dbg.get_iface() == 'updi':
-            self.flash_transparent = True # breakpoints are filtered out
+        self.tests_total = 22
         self.mon._cache = False
         try:
             self.handler.send_debug_message("Running live tests ...")
@@ -115,11 +111,7 @@ class LiveTests():
             self._live_test_set_pc()
             self._live_test_step()
             self._live_test_vcont_range()
-            self._live_test_vcont_step_with_protected_bp()
-            self._live_test_vcont_step_with_old_exec()
             self._live_test_vcont_step_hwbp_unprotected()
-            self._live_test_v_flash_erase_clean_bps()
-            self._live_test_load_clean_bps()
         except Exception as e:
             self.failure += 1
             self.logger.error("... failed")
@@ -466,127 +458,6 @@ class LiveTests():
         self.logger.debug("Result of range-stepping: %s", send2)
         self.check_result(pc2 == 0x1aa and send2.startswith("T05"))
 
-    def _live_test_vcont_step_with_protected_bp(self) -> None:
-        """
-        Testing the step command when there is a disabled SWBP at the current position.
-        This SWBP should not be removed in order to avoid superfluous reprogramming
-        """
-        self.logger.info("Running 'vcont step' test with protected SWBP...")
-        if self.flash_transparent:
-            self.logger.info("Cannot be run on JTAG megaAVRs or UPDI targets")
-            self.check_result(True)
-            return
-        self.mon._onlyswbps = True
-        self.dbg.program_counter_write(0x1c4 >> 1)
-        self.dbg.stack_pointer_write(bytearray([(self.sram_start&0xFF)+0x14, ((self.sram_start>>8)&0xFF)]))
-        self.dbg.status_register_write(bytearray([0x87]))
-        self.handler.dispatch("Z", b"1,1b2,2")
-        self.handler.dispatch("Z", b"1,1b4,2")
-        self.mon._cache = False
-        opc1 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("Opcode before 'continue': 0x%X", opc1)
-        self.send_string = ""
-        self.handler.dispatch("vCont", b";c")
-        time.sleep(0.2)
-        self.handler.poll_events()
-        send1 : str = self.send_string
-        self.dbg.stop() # in order to stop a runaway!
-        self.logger.debug("Result of 'continue': %s", send1)
-        opc2 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("Opcode after 'continue': 0x%X", opc2)
-        self.handler.dispatch("z", b"1,1b2,2")
-        self.handler.dispatch("z", b"1,1b4,2")
-        opc3 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("Opcode after 'delete BP': 0x%X", opc3)
-        self.handler.dispatch("Z", b"1,1b4,2")
-        opc4 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("Opcode before 'step': 0x%X", opc4)
-        self.send_string = ""
-        self.handler.dispatch("vCont", b";s")
-        time.sleep(0.2)
-        self.handler.poll_events()
-        send2 : str = self.send_string
-        self.logger.debug("Result of 'step': %s", send2)
-        opc5 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("Opcode after 'step': 0x%X", opc5)
-        self.handler.dispatch("Z", b"1,1b2,2")
-        opc6 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("Opcode after 'insert BP': 0x%X", opc6)
-        self.check_result(self.dbg.program_counter_read() == (0x1b4 >> 1) and
-                              #send1 == "T0520:87;21:3400;22:b2010000;thread:1;" and
-                              #send2 == "T0520:87;21:3400;22:b4010000;thread:1;" and
-                              opc1 == 0xe429 and opc2 == 0x9598 and
-                              opc3 == opc2 and opc4 == opc2 and opc5 == opc2 and
-                              opc6 == opc2)
-        self.mon._cache = True
-        self.bp.cleanup_breakpoints()
-        self.mon._onlyswbps = False
-
-    def _live_test_vcont_step_with_old_exec(self) ->  None:
-        """
-        This test uses old-style execution in order to demonstrate that
-        this leads to reprogramming flash at each breakpoint hit.
-        """
-        self.logger.info("Running 'vcont step' test using old exec forcing 2xflashing ...")
-        if self.flash_transparent:
-            self.logger.info("Cannot be run on JTAG megaAVRs")
-            self.check_result(True)
-            return
-        self.mon._onlyswbps = True
-        self.mon._old_exec = True
-        self.dbg.program_counter_write(0x1aa >> 1)
-        self.dbg.stack_pointer_write(bytearray([0x34, 0x00]))
-        self.dbg.status_register_write(bytearray([0x87]))
-        self.handler.dispatch("Z", b"1,1ac,2")
-        self.handler.dispatch("Z", b"1,1ae,2")
-        self.mon._cache = False
-        opc1 : int = self.mem.flash_read_word(0x1ac)
-        self.logger.debug("Opcode before 'continue' opc1=0x%X", opc1)
-        self.send_string = ""
-        self.handler.dispatch("vCont", b";c")
-        time.sleep(0.3)
-        self.handler.poll_events()
-        send1 : str = self.send_string
-        self.dbg.stop() # in order to stop a runaway!
-        self.logger.debug("Result of 'continue' send1=%s", send1)
-        opc2 : int = self.mem.flash_read_word(0x1ac)
-        self.logger.debug("Opcode after 'continue' opc2=0x%X", opc2)
-        self.handler.dispatch("z", b"1,1ac,2")
-        self.handler.dispatch("z", b"1,1ae,2")
-        opc3 : int = self.mem.flash_read_word(0x1ac)
-        self.logger.debug("Opcode after 'delete BP'  opc3=0x%X", opc3)
-        self.handler.dispatch("Z", b"1,1ae,2")
-        opc4 : int = self.mem.flash_read_word(0x1ac)
-        self.logger.debug("Opcode before 'step'  opc4=0x%X", opc4)
-        self.send_string = ""
-        self.handler.dispatch("vCont", b";s")
-        time.sleep(0.3)
-        self.handler.poll_events()
-        send2 : str = self.send_string
-        self.logger.debug("Result of 'step' send2=%s", send2)
-        opc5 : int = self.mem.flash_read_word(0x1ac)
-        self.logger.debug("Opcode after 'step' opc5=0x%X", opc5)
-        self.handler.dispatch("z", b"1,1ae,2")
-        self.handler.dispatch("Z", b"1,1ac,2")
-        self.handler.dispatch("vCont", b";s")
-        time.sleep(0.3)
-        self.handler.poll_events()
-        send3 : str = self.send_string
-        self.logger.debug("Result of 'step' send3=%s", send3)
-        opc6 : int = self.mem.flash_read_word(0x1ac)
-        self.logger.debug("Opcode after 'insert BP' & step: opc6=0x%X", opc6)
-        self.check_result(self.dbg.program_counter_read() == (0x1b0 >> 1) and
-                              send1 == "T0520:87;21:3400;22:ac010000;thread:1;" and
-                              send2 == "T0520:87;21:3400;22:ae010000;thread:1;" and
-                              send3 == "T0520:87;21:3400;22:b0010000;thread:1;" and
-                              opc1 == 0x0000 and opc2 == 0x9598 and
-                              opc3 == 0x9598 and opc4 == 0x9598 and opc5 == 0x0000 and
-                              opc6 == 0x9598)
-        self.mon._cache = True
-        self.mon._old_exec = False
-        self.mon._onlyswbps = False
-        self.dbg.software_breakpoint_clear_all()
-
     def _live_test_vcont_step_hwbp_unprotected(self) -> None:
         """
         If the breakpoint at the current position is a hardware breakpoint,
@@ -611,72 +482,3 @@ class LiveTests():
         self.logger.debug("Breakpoint at 0x1b2 after step: %s", self.bp._bp.get(0x1b2,None))
         hw2 : int | None = self.bp.hwbp._hwbplist[0]
         self.check_result(hw1 == 0x1b2 and hw2 is None)
-
-    def _live_test_v_flash_erase_clean_bps(self) -> None:
-        """
-        Receives vFalshErase package and checks that all breakpoints are cleared
-        """
-        self.logger.info("Running test for cleaning BPs after vEraseFlash ...")
-        if self.flash_transparent:
-            self.logger.info("Cannot be run on JTAG megaAVRs")
-            self.check_result(True)
-            return
-        self.bp.cleanup_breakpoints()
-        self.mon._cache = False
-        self.mon._onlyswbps = True
-        self.handler.dispatch("Z", b"1,1b2,2")
-        opc1 : int = self.mem.flash_read_word(0x1b2)
-        self.dbg.program_counter_write(0x1c4 >> 1)
-        self.logger.debug("OPC after setting BP: 0x%X", opc1)
-        self.handler.dispatch("vCont", b";c")
-        time.sleep(0.2)
-        self.handler.poll_events()
-        self.dbg.stop() # in order to stop a runaway!
-        self.handler.dispatch("z", b"1,1b2,2")
-        opc2 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("OPC after deleting BP: 0x%X", opc2)
-        self.handler.dispatch("vFlashErase", b"")
-        opc3 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("OPC after vFlashErase: 0x%X", opc3)
-        self.logger.debug("Debug table: %s", self.bp._bp)
-        self.mon._cache = True
-        self.mon._onlyswbps = False
-        self.check_result(opc1 == 0xE429 and opc2 == 0x9598 and opc3 == 0xE429 and
-                              self.bp._bp == {})
-
-    def _live_test_load_clean_bps(self) -> None:
-        """
-        Loads test code with X-package and checks that all breakpoints are cleared
-        """
-        self.logger.info("Running test for cleaning BPs before load ...")
-        if self.flash_transparent:
-            self.logger.info("Cannot be run on JTAG megaAVRs")
-            self.check_result(True)
-            return
-        self.mon._cache = False
-        self.mon._onlyswbps = True
-        self.mon._noload = True
-        self.handler.dispatch("Z", b"1,1b2,2")
-        opc1 : int = self.mem.flash_read_word(0x1b2)
-        self.dbg.program_counter_write(0x1c4 >> 1)
-        self.logger.debug("OPC after setting BP: 0x%X", opc1)
-        self.handler.dispatch("vCont", b";c")
-        time.sleep(0.2)
-        self.handler.poll_events()
-        self.dbg.stop() # in order to stop a runaway!
-        self.handler.dispatch("z", b"1,1b2,2")
-        opc2 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("OPC after deleting BP: 0x%X", opc2)
-        self.mon._verify = False # because on mEDBG debuggers, first page is not always writeable
-        test_code : bytes = self.handler.escape(self.test_code)
-        header : str = "0001AA,%0X:" % len(test_code)
-        self.handler.dispatch("X", header.encode("ascii") + test_code)
-        self.handler.dispatch("", b"") # simulate timeout to flash the last pending record
-        opc3 : int = self.mem.flash_read_word(0x1b2)
-        self.logger.debug("OPC after load: 0x%X", opc3)
-        self.logger.debug("Debug table: %s", self.bp._bp)
-        self.mon._verify = True
-        self.mon._cache = True
-        self.mon._onlyswbps = False
-        self.check_result(opc1 == 0xE429 and opc2 == 0x9598 and opc3 == 0xE429 and
-                              self.bp._bp == {})

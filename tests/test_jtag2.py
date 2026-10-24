@@ -210,7 +210,7 @@ class TestProtocol(TestCase):
 
     def test_breakpoint_and_progmode_frames(self):
         # the formats measured on the mkII clone (324P): word addresses, numbers 1-3 and 0 for SW BPs
-        proto = Jtag2Protocol(FakeTransport([('same', b"\x80")] * 8))
+        proto = Jtag2Protocol(FakeTransport([('same', b"\x80")] * 9))
         proto.set_break(jtag2.SOFTWARE_BREAKPOINT, 0x52)
         proto.set_break(2, 0x52)
         proto.clr_break(jtag2.SOFTWARE_BREAKPOINT, 0x52)
@@ -219,10 +219,28 @@ class TestProtocol(TestCase):
         proto.enter_progmode()
         proto.erase_page_spm(0x80)
         proto.debugwire_disable()
+        proto.restore_target()
         self.assertEqual([body.hex() for _, body in proto.transport.sent],
                          ["1101005200000003", "1101025200000003", "1a0052000000", "1a0200000000",
-                          "1c52000000", "14", "0d80000000", "0b04"])
+                          "1c52000000", "14", "0d80000000", "0b04", "23"])
 
+
+class TestIsp(TestCase):
+
+    def test_enter_and_leave_only_once(self):
+        # open + enter, as the session does before unprogramming DWEN: one SPI mode, one ISP entry
+        isp = jtag2.Jtag2Isp(Jtag2Protocol(FakeTransport([('same', body) for body in
+                                                        (b"\x80", b"\x88\x10\x00", b"\x88\x11\x00",
+                                                         b"\x88\x10\x00", b"\x88\x11\x00", b"\x80")])))
+        isp.enter()
+        isp.enter()
+        isp.leave()
+        isp.leave()
+        isp.enter()   # programming mode again, without the SPI mode
+        isp.close()
+        self.assertEqual([body.hex() for _, body in isp.protocol.transport.sent],
+                         ["020303", "2f020010c8641920005303ac530000", "2f0200110101",
+                          "2f020010c8641920005303ac530000", "2f0200110101", "020302"])
 
 class TestTransport(TestCase):
 
