@@ -123,7 +123,7 @@ function-rgx="[a-z_][a-z0-9_]{2,50}$"
 [tool.pylint.DESIGN]
 max-args=15
 max-locals=30
-max-returns=15
+max-returns=20
 max-branches=25
 max-statements=100
 max-attributes=30

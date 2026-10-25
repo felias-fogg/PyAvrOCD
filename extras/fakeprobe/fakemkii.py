@@ -37,8 +37,9 @@ RSP_OK, RSP_PARAMETER, RSP_MEMORY, RSP_PC, RSP_SIGN_ON, RSP_SPI_DATA = 0x80, 0x8
 EVT_BREAK : int = 0xE0
 MEMTYPE_SRAM, MEMTYPE_EEPROM, MEMTYPE_SPM = 0x20, 0x22, 0xA0
 MEMTYPE_FLASH_PAGE, MEMTYPE_EEPROM_PAGE, MEMTYPE_SIGNATURE = 0xB0, 0xB1, 0xB4
-BREAK_CAUSE_STOP : int = 0x01     # ASSUMPTION: the cause byte of EVT_BREAK after a stop
-RSP_FAILED, RSP_ILLEGAL_PARAMETER = 0xA0, 0xA1
+BREAK_CAUSE_STOP : int = 0x00     # cause byte of EVT_BREAK after FORCED_STOP, step, reset and
+                                  # RUN_TO_ADDR (measured on dW, 2026-10-25); a SW BP hit gives 0x01
+RSP_FAILED, RSP_ILLEGAL_PARAMETER, RSP_ILLEGAL_COMMAND = 0xA0, 0xA1, 0xAA
 STATUS_CMD_OK, STATUS_CMD_FAILED = 0x00, 0xC0
 
 # the answer to GET_SIGN_ON of the Waveshare clone (captured 2026-10-23), firmware 7.27
@@ -204,6 +205,8 @@ class FakeMkII():
                 return bytes([RSP_FAILED]), []
             memory[address:address + count] = body[10:10 + count]
             return bytes([RSP_OK]), []
+        if cmd == 0x11 and len(body) >= 3 and body[2] != 0:  # SET_BREAK on a comparator: dW has none
+            return bytes([RSP_ILLEGAL_COMMAND]), []          # free (measured)
         if cmd in (0x11, 0x1A, 0x14, 0x15):                # SET/CLR_BREAK, ENTER/LEAVE_PROGMODE
             return bytes([RSP_OK]), []
         if cmd == 0x1C and len(body) >= 5:                 # RUN_TO_ADDR
@@ -230,7 +233,9 @@ class FakeMkII():
                 self.say("    baud rate code 0x{:02X} = {} bps".format(body[2], self.baud or "unknown"))
             return bytes([RSP_OK]), []
         if cmd == 0x03 and len(body) >= 2:                 # GET_PARAMETER
-            values = {0x03: bytes([self.emulator_mode]), 0x06: struct.pack("<H", 5000),
+            values = {0x01: bytes([0x00, 0x01]),          # HW version master, slave (measured)
+                      0x02: bytes.fromhex("27072707"),    # FW version master, slave (measured)
+                      0x03: bytes([self.emulator_mode]), 0x06: struct.pack("<H", 5000),
                       0x1D: bytes([self.dw.signature[2], self.dw.signature[1]]),   # LSB first (measured)
                       0x05: bytes([next((k for k, v in BAUD_CODES.items() if v == self.baud), 4)])}
             if body[1] in values:
