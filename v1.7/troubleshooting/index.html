@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v1.7/troubleshooting/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Troubleshooting - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Troubleshooting";
+        var mkdocs_page_input_path = "troubleshooting.md";
+        var mkdocs_page_url = "/v1.7/troubleshooting/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Troubleshooting</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#debugging-does-not-start">Debugging does not start</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#apple-could-not-verify-is-free-of-malware-that-may-harm-your-mac-or-compromise-your-privacy">Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#request-2-cancelled-on-connection-close">Request 2 cancelled on connection close</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#openocd-gdb-server-quit-unexpectedly-see-gdb-server-output-for-more-details">OpenOCD: GDB Server Quit Unexpectedly. See gdb-server output for more details.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#no-compatible-tool-discovered">No compatible tool discovered</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#errno-48-address-already-in-use">[Errno 48] Address already in use</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#isp-programming-failed-wrong-connection-or-wrong-mcu">ISP programming failed. Wrong connection or wrong MCU?</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-session-not-started-debugwire-not-activated-by-power-cycling-parasitic-power-supply">Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#problems-while-debugging">Problems while debugging</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#code-executes-slower-or-faster-than-expected">Code executes slower or faster than expected</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint">The debugger does not stop at a line with a set breakpoint</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-does-not-stop-at-all-although-only-a-single-step-was-requested-or-it-definitely-should-have-stopped-at-the-next-breakpoint">The debugger does not stop at all although only a single-step was requested or it definitely should have stopped at the next breakpoint.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debugger-seems-to-be-confused-about-the-line-where-it-stopped">The debugger seems to be confused about the line where it stopped</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-takes-forever">Single-stepping takes forever</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#global-variables-are-not-listed-in-the-global-variables-section">Global variables are not listed in the Global variables section</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#backtraces-are-distorted">Backtraces are distorted</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#problems-after-debugging">Problems after Debugging</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-the-mcu-does-not-seem-to-execute-the-stored-program-but-acts-funny">After debugging, the MCU does not seem to execute the stored program, but acts funny</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#signals-and-error-messages">Signals and error messages</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#internal-and-fatal-dw-link-errors">Internal and fatal dw-link errors</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reporting-bugs">Reporting bugs</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/troubleshooting.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="troubleshooting">Troubleshooting</h1>
+<p>If things do not go according to plan, a first good step is to have a look at the logging output of PyAvrOCD. In the Arduino IDE, you have to select the <code>gdb-server</code> console in order to see it. If you spot a log entry marked <code>[CRITICAL]</code>, it may tell you already what went wrong.</p>
+<p>In general, one can distinguish between problems that prohibit the start of the GDB server and problems appearing while debugging.</p>
+<h2 id="debugging-does-not-start">Debugging does not start</h2>
+<p>For most of the error messages, it should be obvious what to do. However, there are a few messages that look cryptic, and/or a solution is not apparent.</p>
+<h3 id="apple-could-not-verify-is-free-of-malware-that-may-harm-your-mac-or-compromise-your-privacy"><code>Apple could not verify “...” is free of malware that may harm your Mac or compromise your privacy.</code></h3>
+<p>This is an error message you may get under macOS. It happens when you download executables with a browser or from e-mail, which sets a particular extended attribute. You can remove this extended attribute from the file <code>FILE</code> as follows. Afterward, macOS will start these executables without any problems.</p>
+<pre><code class="language-bash">$ xattr -d com.apple.quarantine FILE
+</code></pre>
+<h3 id="request-2-cancelled-on-connection-close"><code>Request 2 cancelled on connection close</code></h3>
+<p>This error message in the Arduino IDE 2 is an indication that the installed AVR-GDB tool or PyAvrOCD is not compatible with your platform.</p>
+<p>Perhaps you can find a compatible AVR-GDB version using your package manager under Linux or using Homebrew when working on  Mac. Another source for Linux and Windows AVR-GDB binaries is <a href="https://github.com/ZakKemble/avr-gcc-build">Zak's repository</a>. It should be possible to copy the new executable to the <a href="https://support.arduino.cc/hc/en-us/articles/4415103213714-Find-sketches-libraries-board-cores-and-other-files-on-your-computer">place where the Arduino IDE 2 expects it</a>.</p>
+<p>If the <code>gdb-server</code> console shows you a long command with pyavrocd in it, then AVR-GDB is probably working, but PyAvrOCD could not be started. You may want to fall back on <a href="../install/#pypi">installing the package with pip or pipx</a>. It is then possible to copy the binary installed under ~/.local/bin/ to any place where you need it, as shown in the <code>gdb-server</code> console.</p>
+<h3 id="openocd-gdb-server-quit-unexpectedly-see-gdb-server-output-for-more-details"><code>OpenOCD: GDB Server Quit Unexpectedly. See gdb-server output for more details.</code></h3>
+<p>This could be the same problem as above. If you tried to start the simulator, then it might be an indication that simavr is not compatible with your platform. You could try to build simavr from source.</p>
+<h3 id="no-compatible-tool-discovered"><code>No compatible tool discovered</code></h3>
+<p>This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>
+<h3 id="errno-48-address-already-in-use"><code>[Errno 48] Address already in use</code></h3>
+<p>This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>
+<h3 id="isp-programming-failed-wrong-connection-or-wrong-mcu"><code>ISP programming failed. Wrong connection or wrong MCU?</code></h3>
+<p>This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. It could also mean that the MCU is not accessible anymore by ISP programming, which can have <a href="../limitations/#debugwire-can-brick-mcus">many possible causes</a>.</p>
+<h3 id="debug-session-not-started-debugwire-not-activated-by-power-cycling-parasitic-power-supply"><code>Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</code></h3>
+<p>DebugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a <a href="https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/">parasitic power supply</a> problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the <code>IOREF</code> pin instead of using the <code>5V</code>  or <code>3.3V</code> pin. If this is not possible, consult the <a href="https://github.com/felias-fogg/XMiniCore#powering-external-circuitry">README file</a> of XMiniCore.</p>
+<h2 id="problems-while-debugging">Problems while debugging</h2>
+<h3 id="code-executes-slower-or-faster-than-expected">Code executes slower or faster than expected</h3>
+<p>Note that PyAvrOCD by itself does not set any timing-related fuses (<code>CKDIV8</code> on classic chips or <code>FREQSEL</code> on modern chips). This means before debugging, you need to run <code>Burn Bootloader</code> in the Arduino IDE 2 after selecting the right clock settings, or you have to set the timing-related fuses to their desired values by other means.</p>
+<h3 id="loading-code-andor-debugging-feels-sluggish">Loading code and/or debugging feels sluggish</h3>
+<p>When using <em>debugWIRE</em>, the communication speed is severely limited from the beginning. With Atmel-ICE, the upload speed is roughly one kByte/sec; with the Xplained-Mini boards, it is 0.3 kBytes/sec.  Using the <code>readbeforewrite</code> option (which is the default), subsequent uploads may be faster. If the MCU clock frequency is lower than 16 MHz, the upload speed is even slower, and below a clock frequency of 1 MHz, it is no fun at all. Similarly, debugging operations are also somewhat slow.</p>
+<p>With <em>JTAG</em> and <em>UPDI</em> targets, this problem should not happen. For JTAG, the default speed is 1 MHz for programming (<code>--prog-clock</code>) and 200 kHz for debugging (<code>--debug-clock</code>). However, you can request higher values when starting PyAvrOCD. Programming speed is only limited by the MCU's maximal frequency (and the wiring). Debugging speed should be no more than a quarter of the actual clock frequency of the target MCU. UPDI communication speed is set to 750 kb/s by default (<code>--comm-speed</code>). On Dx and Ex series chips, speeds up to 1800 kb/s are possible.  <a href="#no-stop">Refrain from setting speed to 400 kb/s or less</a>.</p>
+<h3 id="the-debugger-does-not-stop-at-a-line-with-a-set-breakpoint">The debugger does not stop at a line with a set breakpoint</h3>
+<p>This happens when the line marked to be stopped at does not contain any machine code. The problem gets worse when the switch <code>Optimize for Debugging</code> in the Arduino IDE 2 is not activated or, if you are working in a CLI environment, you did not use the <code>-Og</code> compiler option.</p>
+<p><a id=no-stop></a></p>
+<h3 id="the-debugger-does-not-stop-at-all-although-only-a-single-step-was-requested-or-it-definitely-should-have-stopped-at-the-next-breakpoint">The debugger does not stop at all although only a single-step was requested or it definitely should have stopped at the next breakpoint.</h3>
+<p>Such behavior could be caused the UPDI communication speed being too slow. I experienced breakpoint and single-step skidding when the UPDI communication speed was too low, e.g., 400 kbps or less when the MCU ran at 16 MHz. And this may lead to missing a breakpoint or stepping too far. Another possible cause is the <a href="../compilation-options/#critical-optimization-options"><code>-mrelax</code> optimization</a> option (see below).</p>
+<h3 id="the-debugger-seems-to-be-confused-about-the-line-where-it-stopped">The debugger seems to be confused about the line where it stopped</h3>
+<p>If the debugger stopped at a line, but from other evidence it is clear that the program flow is somewhere else, it could be that the <a href="../compilation-options/#critical-optimization-options"><code>-mrelax</code> optimization</a> option had been used, which distorts the line numbering information. Compile and link without this option!</p>
+<h3 id="when-single-stepping-execution-jumps-around">When single-stepping, execution jumps around</h3>
+<p>Probably the one of the reasons mentioned above (no <code>-Og</code> option set, <code>-mrelax</code> set, or UPDI communication speed too low).</p>
+<h3 id="single-stepping-takes-forever">Single-stepping takes forever</h3>
+<p>You requested a single step, and the debugger seems to take forever to complete this single step. There are a few possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. Second, <a href="../limitations/#single-stepping-lines-containing-loops">single-steping a source code line that contains an (implicit) loop</a> can lead to a severe slowdown.  Third, this could also be caused by the phenomenon mentioned above (low UPDI communication speed leading to single-step skidding). Fourth, it could be caused by the <code>-mrelax</code> option (see above).</p>
+<p>In all cases, simply stop with Ctrl-C (or the equivalent on the IDE level), set a breakpoint where you want to stop next, and continue execution.</p>
+<h3 id="variables-cannot-be-accessed-in-the-debugger">Variables cannot be accessed in the debugger</h3>
+<p>Again, this might be because you forgot to activate the optimization option for debugging. Or, it can be that the compiler has optimized away your variable. If you really are in need to inspect and maybe change the variable. you can declare it as <code>volatile</code>. Then it will always be visible when in scope. However, handling of it is rather inefficient.</p>
+<h3 id="global-variables-are-not-listed-in-the-global-variables-section">Global variables are not listed in the <code>Global variables</code> section</h3>
+<p>The LTO linker optimization does that to you. However, you still can inspect variables by hovering over them or requesting to display them in the <code>Watch</code> pane. You can set the value of variables by using the <code>set var &lt;variable&gt;=&lt;value&gt;</code> GDB command, which you can type in the last line of the <code>Debug Console</code> window.</p>
+<h3 id="the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">The values of a local variable cannot be changed, or a wrong value is displayed in the debugger</h3>
+<p>This <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">happened to me recently</a>. The culprit is avr-gcc (version 7.3.0 as distributed with the Arduino IDE). The only way around it is mentioned above. Declare the variable as <code>volatile</code>.</p>
+<h3 id="backtraces-are-distorted">Backtraces are distorted</h3>
+<p>This sometimes happens when AVR-GDB is not able to figure out the stack frame. I am working on it.</p>
+<h2 id="problems-after-debugging">Problems after Debugging</h2>
+<h3 id="after-debugging-the-mcu-does-not-seem-to-execute-the-stored-program-but-acts-funny">After debugging, the MCU does not seem to execute the stored program, but acts funny</h3>
+<p>Usually, after having finished debugging, the MCU is released, and the uploaded program will continue to execute. However, if the <a href="../limitations/#unsafe-exits-from-debugging">debugging session has ended abruptly</a>, e.g., by disconnecting power, the debugger did not get a chance to replace the software breakpoints with the original instructions. In this case, the MCU may act strangely. The cure is to simply reflash the MCU.</p>
+<h3 id="after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</h3>
+<p>When you deal with a debugWIRE target, note that the debugWIRE mode is only left when the command <code>monitor debugwire disable</code> has been typed into the GDB command line before ending the debug session. When you are still in debugWIRE mode, you cannot use SPI programming! You first need to <a href="../limitations/#exit-debugwire-mode">exit debugwire mode</a>. Note also that debugging a debugWIRE target can have <a href="../limitations/#debugwire-can-brick-mcus">adverse effects</a>.</p>
+<p>It is also possible that you locked yourself out by setting the wrong fuses (this applies to JTAG and UPDI targets as well).</p>
+<h3 id="after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</h3>
+<p>Usually, the bootloader is erased before debugging starts. As stated in <a href="../restore-original-state/">the section on restoring your target board after debugging</a>, you may have to reflash the bootloader and set some fuses after debugging.</p>
+<h2 id="signals-and-error-messages">Signals and error messages</h2>
+<p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.</p>
+<table>
+<thead>
+<tr>
+<th>Signal or error code</th>
+<th>Error message</th>
+<th>Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SIGHUP</code></td>
+<td><em>Enable debugWIRE first: 'monitor debugwire enable</em><br>or<br><em>JTAG pins are not enabled</em><br>or something similar</td>
+<td>If the debugger receives this signal, it means that there is no connection to the target's OCD. You need to enable debugging by setting a fuse or something similar, perhaps by issuing <code>monitor debugwire enable</code>.</td>
+</tr>
+<tr>
+<td><code>SIGINT</code></td>
+<td></td>
+<td>This is not an error signal. It rather signals that execution has been stopped by a keyboard interrupt (or something equivalent).</td>
+</tr>
+<tr>
+<td><code>SIGILL</code></td>
+<td><em>Cannot execute because of  BREAK instruction</em></td>
+<td>The debugger receives this signal when one tries to single-step or continue executing at a location where the user has placed a BREAK instruction. Alternatively, the BREAK instruction might be a leftover from a previously interrupted debugging session.</td>
+</tr>
+<tr>
+<td><code>SIGTRAP</code></td>
+<td></td>
+<td>This is not an error signal. Instead, it is issued when execution stops at a place where a BREAK instruction has been placed, and it is not a breakpoint. From this point it is not possible to continue execution.</td>
+</tr>
+<tr>
+<td><code>SIGABRT</code></td>
+<td>See debug server log</td>
+<td>This signal is raised after a serious internal error or when execution shall be continued after such an error. Use the <code>monitor info</code> to get more information about the error.</td>
+</tr>
+<tr>
+<td><code>SIGBUS</code></td>
+<td><em>Cannot execute because stack pointer is too low</em></td>
+<td>This signal is raised if the stack threatens to overwrite I/O registers when execution is about to start.</td>
+</tr>
+<tr>
+<td><code>SIGSEGV</code></td>
+<td><em>No program loaded; cannot start execution</em></td>
+<td>This signal is raised when execution is about to start, but there was no prior <code>load</code> command.  If this is done intentionally (because it is known that the flash memory has been programmed), one can  disable the check by using the command <code>monitor onlywhenloaded disable</code>.</td>
+</tr>
+<tr>
+<td><code>SISGSYS</code></td>
+<td><em>Too many breakpoints set</em></td>
+<td>Execution cannot continue because too many breakpoints have been set. You need to delete some in order to continue execution.</td>
+</tr>
+<tr>
+<td><code>E01</code></td>
+<td></td>
+<td>Error code returned when attempting to read or write memory contents while there is no connection to the OCD.</td>
+</tr>
+<tr>
+<td><code>E04</code></td>
+<td></td>
+<td>Error signaling that GDB requested a packet longer than the communicated maximal size.</td>
+</tr>
+<tr>
+<td><code>E11</code></td>
+<td></td>
+<td>Error code returned when writing to flash memory was unsuccessful.</td>
+</tr>
+<tr>
+<td><code>E13</code></td>
+<td></td>
+<td>Error code when writing to memory failed.</td>
+</tr>
+<tr>
+<td><code>E14</code></td>
+<td></td>
+<td>Error code for a read memory failure.</td>
+</tr>
+<tr>
+<td><code>E15</code></td>
+<td></td>
+<td>Error code when GDB sent a data package with the wrong size.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="internal-and-fatal-dw-link-errors">Internal and fatal dw-link errors</h2>
+<p>When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware.</p>
+<p>If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error. This might not be immediately reported by GDB, but one can get information about the specific error by using the <code>monitor info</code> command. The errors are only reported by number. If the error number is less than 100, then it is a connection error. Try again, perhaps after disconnecting and reconnecting everything. Check wiring. If the error persists, try perhaps with a different MCU.</p>
+<p>Errors above 100 are serious internal debugger errors. If you have encountered such an internal debugger error, then please try to reproduce the problem and tell me how it happened. </p>
+<p>After a reset or a power cycle of the hardware debugger, everything usually works again. If not, you need to unplug everything and put it together again.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Error #</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>Could not communicate by ISP; check wiring</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>Could not activate debugWIRE</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>MCU type is not supported</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>Lockbits could not be cleared</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>Lockbits are set but not managed by dw-link</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>BOOTRST fuse could not be cleared</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>MCU has a program counter with stuck-at-one bits</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td>RESET line has a capacitive load</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td>Target not powered or RESET shortened to GND</td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td>MCU type does not match</td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td>DWEN fuse could not be programmed</td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td>DWEN fuse is unprogrammed but not managed by dw-link</td>
+</tr>
+<tr>
+<td style="text-align: right;">13</td>
+<td>EESAVE fuse could not be changed</td>
+</tr>
+<tr>
+<td style="text-align: right;">14</td>
+<td>Unknown connection error</td>
+</tr>
+<tr>
+<td style="text-align: right;">101</td>
+<td>No free slot in breakpoint table</td>
+</tr>
+<tr>
+<td style="text-align: right;">102</td>
+<td>Packet length too large</td>
+</tr>
+<tr>
+<td style="text-align: right;">103</td>
+<td>Wrong memory type</td>
+</tr>
+<tr>
+<td style="text-align: right;">104</td>
+<td>Packet length is negative</td>
+</tr>
+<tr>
+<td style="text-align: right;">105</td>
+<td>Reset operation failed</td>
+</tr>
+<tr>
+<td style="text-align: right;">106</td>
+<td>Memory address in flash read operation does not point to page start</td>
+</tr>
+<tr>
+<td style="text-align: right;">107</td>
+<td>Could not complete flash read operation</td>
+</tr>
+<tr>
+<td style="text-align: right;">108</td>
+<td>Could not complete RAM read operation</td>
+</tr>
+<tr>
+<td style="text-align: right;">109</td>
+<td>Memory address in flash write operation does not point to page start</td>
+</tr>
+<tr>
+<td style="text-align: right;">110</td>
+<td>Could not complete flash page erase operation</td>
+</tr>
+<tr>
+<td style="text-align: right;">111</td>
+<td>Could not load data into the flash buffer for writing</td>
+</tr>
+<tr>
+<td style="text-align: right;">112</td>
+<td>Error when programming flash page from buffer</td>
+</tr>
+<tr>
+<td style="text-align: right;">113</td>
+<td>Error verifying flashed page while loading program</td>
+</tr>
+<tr>
+<td style="text-align: right;">114</td>
+<td>Assignment of hardware breakpoint is inconsistent</td>
+</tr>
+<tr>
+<td style="text-align: right;">115</td>
+<td>BREAK inserted by debugger at a point where a step or execute operation is required</td>
+</tr>
+<tr>
+<td style="text-align: right;">116</td>
+<td>Trying to read flash word at an uneven address</td>
+</tr>
+<tr>
+<td style="text-align: right;">117</td>
+<td>Error when single-stepping</td>
+</tr>
+<tr>
+<td style="text-align: right;">118</td>
+<td>A relevant breakpoint has disappeared</td>
+</tr>
+<tr>
+<td style="text-align: right;">119</td>
+<td>Input buffer overflow</td>
+</tr>
+<tr>
+<td style="text-align: right;">120</td>
+<td>Wrong fuse</td>
+</tr>
+<tr>
+<td style="text-align: right;">121</td>
+<td>Breakpoint update while flash programming is active</td>
+</tr>
+<tr>
+<td style="text-align: right;">122</td>
+<td>Timeout while reading from debugWIRE line</td>
+</tr>
+<tr>
+<td style="text-align: right;">123</td>
+<td>Timeout while reading general register</td>
+</tr>
+<tr>
+<td style="text-align: right;">124</td>
+<td>Timeout while reading IO register</td>
+</tr>
+<tr>
+<td style="text-align: right;">125</td>
+<td>Could not reenable RWW</td>
+</tr>
+<tr>
+<td style="text-align: right;">126</td>
+<td>Failure while reading from EEPROM</td>
+</tr>
+<tr>
+<td style="text-align: right;">127</td>
+<td>Bad interrupt</td>
+</tr>
+<tr>
+<td style="text-align: right;">128</td>
+<td>Inconsistent classification of opcodes in range-stepping</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reporting-bugs">Reporting bugs</h2>
+<p>If the problematic behavior you have encountered looks like a bug, please send an issue report as described in the <a href="../contributing/#reporting-an-issue">section on contributing</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../restore-original-state/" class="btn btn-neutral float-left" title="Restoring the target"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../disclaimer/" class="btn btn-neutral float-right" title="Disclaimer">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../restore-original-state/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../disclaimer/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v1.7/release-notes/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Release notes - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Release notes";
+        var mkdocs_page_input_path = "release-notes.md";
+        var mkdocs_page_url = "/v1.7/release-notes/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v170">Release v1.7.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v160">Release v1.6.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v158">Release v1.5.8</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v157">Release v1.5.7</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v156">Release v1.5.6</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v155">Release v1.5.5</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v154">Release v1.5.4</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v152">Release v1.5.2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v151">Release v1.5.1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v140">Release v1.4.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v132">Release v1.3.2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v131">Release v1.3.1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v130">Release v1.3.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v123">Release v1.2.3</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v122">Release v1.2.2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v121">Release v1.2.1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v120">Release v1.2.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v112">Release v1.1.2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v111">Release v1.1.1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v110">Release v1.1.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v100">Release v1.0.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0220">Release v0.22.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0210">Release v0.21.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0200">Release v0.20.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0190">Release v0.19.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0181">Release v0.18.1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0180">Release v0.18.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0171">Release v0.17.1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0170">Release v0.17.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0165">Release v0.16.5</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0164">Release v0.16.4</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0163">Release v0.16.3</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0162">Release v0.16.2</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0160">Release v0.16.0</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#release-v0150">Release v0.15.0</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">About</li>
+      <li class="breadcrumb-item active">Release notes</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/release-notes.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v170">Release v1.7.0</h2>
+<ul>
+<li>The binaries run on older systems again: Linux x86_64 and ARM64 need GLIBC 2.35 instead of 2.38, so Debian 12, Ubuntu 22.04 and Raspberry Pi OS bookworm are supported once more. On macOS, the ARM64 binaries need 11.0 (Big Sur) and the Intel binaries 10.15 (Catalina), where both needed 14 (Sonoma) before.</li>
+<li>Every tool package now states what it requires in its <code>package.json</code>, under <code>systemBaseline</code>, measured from the binaries themselves.</li>
+<li>The SVD files are now part of the Linux packages as well, so the peripheral register view works there too.</li>
+<li>The stand-alone <code>pyavrocd</code> archives for Linux were incomplete and would not start. This is fixed.</li>
+<li>The Linux binaries are about 15 MB smaller.</li>
+<li>simavr is now available for 32-bit Windows, for those who still run the old Java-based Arduino IDE.</li>
+</ul>
+<h2 id="release-v160">Release v1.6.0</h2>
+<ul>
+<li>Hopefully, the Linux binaries will be forward-compatible more often now that we are not using <em>staticx</em> anymore.</li>
+<li>The <em>extended remote mode</em> has now been implemented according to the GDB specifications. For example, after a disconnect, the GDB server will wait for a reconnect.</li>
+<li>A new option <code>--once</code> has been added (inspired by the gdbserver option of the same name). it forces termination of the GDB server when the GDB client quits, even when in <em>extended remote mode</em>. This is important for situations when PyAvrOCD is used in IDEs.</li>
+<li>Internally, the end-to-end tests have been refactored. Now tests, devices, and cores are specified using YAML files.</li>
+</ul>
+<h2 id="release-v158">Release v1.5.8</h2>
+<ul>
+<li>New avr-gdb (17.2.2) client, which does not crash on Ubuntu 24.04 anymore.</li>
+</ul>
+<h2 id="release-v157">Release v1.5.7</h2>
+<ul>
+<li>Option <code>--xargs</code> changed to <code>--xarg</code>, which can be used multiple times.</li>
+<li>Option <code>--reboot-tool</code> can now be used without specifying an MCU.</li>
+<li>Simavr is now called without using a shell.</li>
+<li>From now on, there will also be executables for i686-linux.</li>
+</ul>
+<h2 id="release-v156">Release v1.5.6</h2>
+<ul>
+<li>Added <code>monitor exit</code> command so that the GDB server can be shut down from GDB</li>
+<li>Added microUPDI as a programmer (for modern ATtinys and ATmegas)</li>
+<li>Fixed recognition of unconnected target for microUPDI and added graceful shutdown</li>
+<li>An armv7l (Linux 32-bit ARM) binary is now offered as well compatible with Raspberry Pi 3</li>
+<li>Additionally, PyAvrOCD is now packaged with AVR-GDB 17.2.1, which solves the incompatibility problem with dw-link.</li>
+</ul>
+<h2 id="release-v155">Release v1.5.5</h2>
+<ul>
+<li>The included simavr version has been upgraded from 1.7 to 1.8.</li>
+</ul>
+<h2 id="release-v154">Release v1.5.4</h2>
+<ul>
+<li>Now, PyAvrOCD is also tightly integrated with PlatformIO. It has a PlatformIO manifest, and thanks to the new command <code>monitor disconnect</code> , it gracefully terminates when debugging is stopped. The key to making PyAvrOCD available inside PlatformIO is the forked platform:</li>
+</ul>
+<pre><code>https://github.com/felias-fogg/platform-atmelavr.git
+</code></pre>
+<h2 id="release-v152">Release v1.5.2</h2>
+<ul>
+<li>The <code>monitor ioregister</code> command has been extended. Now it will display possible values of a uniquily specified bitfield if the values are specified in the SVD file.</li>
+<li>In addition, a few changes to the documentation have been made, in particular to the debugging section. There is now a hint how display the assembly code of a function and a description of the <code>monitor ioregister</code> command.</li>
+</ul>
+<h2 id="release-v151">Release v1.5.1</h2>
+<ul>
+<li>The main addition is the new monitor command: <code>monitor ioregister &lt;ioreg-expression&gt;</code> [<code>&lt;integer&gt;</code>]. It can be used to inspect and set I/O registers and bitfields in I/O registers.</li>
+<li>SRAM reads and writes initiated by the debugger are now again filtered by write-only and read-only restrictions from the ATDF files.</li>
+</ul>
+<h2 id="release-v140">Release v1.4.0</h2>
+<ul>
+<li>Support for the Dx and Ex series was added (and tested).</li>
+</ul>
+<h2 id="release-v132">Release v1.3.2</h2>
+<ul>
+<li>You can now debug on a UPDI target even when the bootloader option has been set (but the bootloader will be deleted so that it cannot interfere with the debugger).</li>
+</ul>
+<h2 id="release-v131">Release v1.3.1</h2>
+<ul>
+<li>New command-line option <code>--elf-file</code>. The specified ELF file is checked for having been compiled with <code>-mrelax</code>. If so, debugging is refused.</li>
+</ul>
+<h2 id="release-v130">Release v1.3.0</h2>
+<ul>
+<li>Support for modern ATtinys has been added. Now, you can use SpenceKonde's megaTinyCore (presently using my fork of this package).</li>
+</ul>
+<h2 id="release-v123">Release v1.2.3</h2>
+<ul>
+<li>The default value for<code>--comm-speed</code> (UPDI communication speed) is now 750 kbps (as it is for Microchip Studio). Use lower values with care!</li>
+<li>The default MCU clock frequency (F_CPU) is again 1,000,000 Hz</li>
+</ul>
+<h2 id="release-v122">Release v1.2.2</h2>
+<ul>
+<li>Wrong correction of default value for the UPDI communication speed.</li>
+</ul>
+<h2 id="release-v121">Release v1.2.1</h2>
+<ul>
+<li>Added: Range stepping has been accelerated by lifting the step-over functionality to range-stepping when one step-over is recognised. This speeds up range-stepping significantly.</li>
+<li>Fixed: MCUs do now run when debugging has finished</li>
+<li>Fixed: All hardware breakpoints are now deallocated after a breakpoint hit so that no false assumptions are made, which may be caused by a previous RESET, which erased all hardware breakpoints.</li>
+<li>Fixed: Internal temporary breakpoint assignment for range stepping got confused when 0 hardware breakpoints were reserved.</li>
+<li>The wait interval after writing to the USER ROW has been extended to 70 ms (because of an ATmega808, which apparently needed that).</li>
+<li>Changed: The default MCU clock frequency (F_CPU) is now 8,000,000 Hz. This means that the default UPDI baudrate is 450k. This is necessary because for 20 MHz MCUs, 400 kbps is too slow! With 400 kbps, single-step and breakpoint skidding was observed.</li>
+<li>Achievement: All tests are passed on all modern 0-series ATmegas.</li>
+</ul>
+<h2 id="release-v120">Release v1.2.0</h2>
+<ul>
+<li>Added: UPDI targets can now be debugged</li>
+<li>Added: Option <code>--comm-speed</code> meant for UPDI and PDI communication speed.</li>
+<li>Changed: <code>timers run</code> cannot be set for UPDI targets</li>
+<li>Fixed PC masking when flash memory size is not a power of two in PyAvrOCD as well as in AVR-GDB.</li>
+<li>Fixed: Setting a single register in the RSP handler works now.</li>
+<li>Fixed: Reattaching an MCU did not work for JTAG targets, but is now possible.</li>
+</ul>
+<h2 id="release-v112">Release v1.1.2</h2>
+<ul>
+<li>Fixed: Recognition of  ATtiny48/88 did not work as advertised, but now it does again.</li>
+</ul>
+<h2 id="release-v111">Release v1.1.1</h2>
+<ul>
+<li>Fixed: Removed dependence of non-system dynamic libraries from macOS avr-gdb executables.</li>
+</ul>
+<h2 id="release-v110">Release v1.1.0</h2>
+<ul>
+<li>Fixed a bug in avr-gdb 17.1.1 which made display of SRAM contents in the UI impossible</li>
+<li>Fixed a problem in the webbrowser call so that webhelp (<code>-H</code>) also works with Python &lt; 3.14</li>
+<li><code>--debugwire enable</code> and <code>--debugwire disable</code> work now with dw-link as well</li>
+<li>Added the option <code>--attach,</code> which makes it possible to re-attach to an MCU that is in debugging mode</li>
+<li>In connection with that, the <code>atexit</code> monitor command has been generalized from debugWIRE targets to all targets. One can now specify <code>monitor atexit stay</code> meaning that when PyAvrOCD is terminated, debugging mode will not be stopped, so that later on one can re-attach.</li>
+<li>An explicit test to distinguish between ATtiny2313 and ATtiny2313, which have the same chip signature but have their OCD register at a different location. This leads to strange errors when one ignores that.</li>
+<li>Added all possible alternative chip signatures MCUs may present when in debugging mode. For instance, an ATmega1284 pretends to be an ATmega1284P when in debugging mode. This became necessary because when re-attaching to an MCU, one cannot switch to programming mode in order to read out the true chip signature, but one must rely on the device ID returned by <code>activate_physical</code>.</li>
+</ul>
+<h2 id="release-v100">Release v1.0.0</h2>
+<ul>
+<li>First stable release (covering all classic parts)</li>
+</ul>
+<h2 id="release-v0220">Release v0.22.0</h2>
+<ul>
+<li>All e2e tests are passed on all MCUs on my desk using all the different debuggers.</li>
+<li>New way to handle non-zero unused PC bits. If an MCU returns non-zero unused PC bits, these are masked out in PyAvrOCD.</li>
+<li>Non-zero unused bits in return addresses (which disturb line-stepping and backtracing) are now handled with a patch in AVR-GDB. I make the patched version available in the repo <a href="https://github.com/felias-fogg/avr-gdb">avr-gdb</a>, and it is distributed in the debug-enabled packages.</li>
+<li>The option <code>onlycaching</code> of the command <code>monitor load</code> has been renamed to <code>noinitialload</code></li>
+</ul>
+<h2 id="release-v0210">Release v0.21.0</h2>
+<ul>
+<li>New CLI option: <code>--reboot-debugger</code> will reboot before starting the debug session (can be slow)</li>
+<li><code>--debugwire enable</code> and <code>--debugwire disable</code> are now also possible</li>
+<li>End-to-end tests for ATTinyCore/MiniCore and MightCore finished</li>
+<li><code>udev rule</code> handling changed. <code>--install-udev-rules</code> has been removed, and the user is now asked to download and manually copy the rule file instead of relying on a command that has to be prefixed by sudo</li>
+<li>Some small fixes</li>
+</ul>
+<h2 id="release-v0200">Release v0.20.0</h2>
+<ul>
+<li>Upgraded to Python 3.14 because HIDAPI is now available as a wheel under Windows for this Python version</li>
+<li>Ctrl-C synchronization with the ordinary GDB packet flow so that interruptions are possible even under heavy single-stepping</li>
+<li>Timer mode issues for JTAG targets has been fixed</li>
+</ul>
+<h2 id="release-v0190">Release v0.19.0</h2>
+<ul>
+<li>
+<p>From this version on, dw-link (if used) is required to send its version number and it will be required to honor the monitor option value commands and the fuse bit manage requests.</p>
+</li>
+<li>
+<p>It is now possible to specify a <code>--dw-link-baud</code> option (for, e.g., the Xplained boards)</p>
+</li>
+<li>
+<p>The <code>ArduinoCore-avr (1.8.6)</code> fork has been removed to avoid confusion.</p>
+</li>
+</ul>
+<h2 id="release-v0181">Release v0.18.1</h2>
+<ul>
+<li>Fixed a few <code>simavr</code> integration problems.</li>
+</ul>
+<h2 id="release-v0180">Release v0.18.0</h2>
+<ul>
+<li><code>simavr</code> has been added to the binary tools. With that, one can now start the simulator by using the "virtual programmer" simavr when starting the debugging process.</li>
+</ul>
+<h2 id="release-v0171">Release v0.17.1</h2>
+<ul>
+<li>From now on, releases will also contain a working 32-bit package for Windows.</li>
+</ul>
+<h2 id="release-v0170">Release v0.17.0</h2>
+<ul>
+<li>The use of the simulator <code>simavr</code> is now supported. If this program is specified with the <code>-s</code> option, then the simulator is started with the right options, and no hardware probe will be used. Note that the current version of simavr (1.7) will not work. You can build simavr from source from the main branch of the current repo, however.</li>
+<li>New option <code>-F</code> for specifying the CPU clock frequency (in the same way as when specifying it in the compilation process). It will be used to derive a default value for the JTAG debugging frequency and to pass it on to <code>simavr</code> if used.</li>
+</ul>
+<h2 id="release-v0165">Release v0.16.5</h2>
+<ul>
+<li>The SVD files have been re-generated in order to remove FUSEs and LOCKBITs and add SREG and SP (that was a regression).</li>
+<li>New option value for <code>monitor load</code>: <code>onlycache</code>. This is helpful when dealing with the Xplained Mini boards. It will load the GDB server cache only instead of flashing the MCU memory. Of course, this only makes sense if you are sure that the program has already been loaded into flash memory. It is not a default setting. You have to activate it by supplying a <code>pyavrocd.option</code> file.</li>
+<li>Added three debug-enabled packages: ArduinoCore-avr (1.8.6), ATTinyCore (2.0.0), and Atmel Xplained Mini.</li>
+</ul>
+<h2 id="release-v0164">Release v0.16.4</h2>
+<ul>
+<li>On an ATmega328P XPlained Mini, I sometimes got errors when activating the physical interface: "AVR8_FAILURE_CLOCK_ERROR: Failure when increasing communication clock rate". If this error occurs, we now simply retry. This appears to work smoothly.</li>
+<li>
+<p>Captured "Cannot open HID" exception when trying to connect to a busy debug probe.</p>
+</li>
+<li>
+<p>Instead of ignoring SLEEP instructions when single-stepping, we now do "sleep walking", i.e., use the hardware breakpoint to wait for a wake-up after the SLEEP instruction.</p>
+</li>
+<li>
+<p>Integration tests now also work for non-Arduino MCUs.</p>
+</li>
+</ul>
+<h2 id="release-v0163">Release v0.16.3</h2>
+<ul>
+<li>Refreshed svd and device files.</li>
+<li>Svd files are now distributed as part of <code>pyavrocd-util</code> folder.</li>
+</ul>
+<h2 id="release-v0162">Release v0.16.2</h2>
+<ul>
+<li>The assets files names now also contain the PyAvrOCD version number.</li>
+<li>For the ATmega128, the breakpoint mode is now hardware-only and cannot be changed.</li>
+</ul>
+<h2 id="release-v0160">Release v0.16.0</h2>
+<ul>
+<li>The tool files are now only distributed as assets in the GitHub release. This means for the Arduino board packages that the tools files needs to be sourced from a new place.</li>
+</ul>
+<h2 id="release-v0150">Release v0.15.0</h2>
+<p>This is considered a pre-release in order to give people a chance to play around with PyAvrOCD. The following things have changed since the last release of dw-gdbserver:</p>
+<ul>
+<li>Support for JTAG debugging has been added.</li>
+<li>A number of command-line options have been added, and one option has been removed:<ul>
+<li><code>--debug-clock</code> for setting the JTAG clock frequency for debugging</li>
+<li><code>--prog-clock</code> for setting the JTAG clock frequency for programming</li>
+<li><code>--manage</code> in order to specify which fuses and lock bits should be managed by the GDB server</li>
+<li>and all <code>monitor</code> settings can now be used at the command-line, e.g., <code>--timers freeze</code>.</li>
+<li>Using the notation <code>@file.ext</code>, any arguments in the file <code>file.ext</code> will be spliced into  the command line. If the file <code>file.ext</code> does not exist, no error is raised.</li>
+<li>In addition, you can set options in the file <code>pyavrocd.options</code> that will override the options on the command line. The trick is that <code>@pyavrocd.options</code> is always implicitly added at the end.</li>
+<li>The option <code>-g</code>/<code>--gede</code> has been removed since the effect of this option can be achieved with the <code>-s</code> option.</li>
+</ul>
+</li>
+<li>A few monitor commands have been added or modified:<ul>
+<li><code>atexit</code>: With this option, one can control whether the debugWIRE mode will be left when the debugging session is terminated.</li>
+<li><code>erasebeforeload</code>: With this option, one can control whether flash memory is completely erased before a file is loaded.</li>
+<li>Some defaults have been adapted, e.g., <code>readbeforewrite</code> is only enabled for debugWIRE targets, because for other targets it is counter-productive.</li>
+</ul>
+</li>
+<li>The breakpoint management has been redesigned and can now deal with multiple hardware breakpoints (as offered by the JTAG targets).</li>
+<li>Single-stepping has been reworked so that no hardware breakpoint is needed any longer.</li>
+<li>The problematic ATmega48 and 88 are now recognized before an attempt is made to switch them into debugWIRE mode. This helps to avoid "bricking" chips.</li>
+<li>The CI/CD has been enhanced so that we can now see a number of indicators in real-time.</li>
+<li>Executables are now generated on the GitHub hosts, which makes my life much easier.</li>
+<li>The documentation now uses mkdocs and the readthedocs theme, which looks much better and is more readable, I believe.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../license-link/" class="btn btn-neutral float-left" title="License"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../contributing/" class="btn btn-neutral float-right" title="Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../license-link/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../contributing/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

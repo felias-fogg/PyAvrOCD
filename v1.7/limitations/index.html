@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v1.7/limitations/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Limitations - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Limitations";
+        var mkdocs_page_input_path = "limitations.md";
+        var mkdocs_page_url = "/v1.7/limitations/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Limitations</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#debug-probes">Debug probes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#bootloader">Bootloader</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#low-cpu-clock-frequency">Low CPU clock frequency</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#low-power-properties">Low-power properties</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compiler-bugs">Compiler bugs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#idegui-bugs">IDE/GUI bugs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compiler-optimizations">Compiler optimizations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#disappearing-bugs">Disappearing bugs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#bugs-appearing-out-of-thin-air">Bugs appearing out of thin air</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#link-time-optimization">Link-time optimization</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#link-time-jump-relaxation">Link-time jump relaxation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#resets">Resets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conditional-breakpoints">Conditional breakpoints</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#watchdog-timer">Watchdog timer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#single-stepping">Single-stepping</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-throws-off-timing">Single-stepping throws off timing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-break-instructions">Single-stepping BREAK instructions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#single-stepping-lines-containing-loops">Single-stepping lines containing loops</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#serial-communication">Serial communication</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usb-communication">USB communication</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#io-register-access">I/O register access</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#svd-mediated-access-to-bitfields-in-io-registers">SVD mediated access to bitfields in I/O registers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#unsafe-exits-from-debugging">Unsafe exits from debugging</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#undebuggable-mcus">Undebuggable MCUs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mcus-with-limited-debugging-support">MCUs with limited debugging support</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debugwire-can-brick-mcus">DebugWIRE can brick MCUs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#scenarios">Scenarios</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#exit-debugwire-mode">Exit debugWIRE mode</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#high-voltage-programming">High-voltage programming</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#flash-wear">Flash Wear</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-flash-wear-problem">The flash wear problem</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-only-hardware-breakpoints">Using only hardware breakpoints</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Caveats</li>
+      <li class="breadcrumb-item active">Limitations</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/limitations.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="limitations">Limitations</h1>
+<p>The debugging system, consisting of the debug probe, the GDB server, GDB itself, and any IDE employing GDB, has a number of inherent limitations. Some aspects of the hardware may not be debuggable at all or only with some extra effort. And sometimes the behavior of the MCU in a debugging environment is significantly different from the behavior shown in a non-debugging environment. Finally, debugging your AVR chips can also be a risk to the health of your MCU.</p>
+<h2 id="debug-probes">Debug probes</h2>
+<p>The Microchip/Atmel debug probes/programmers do not electrically disconnect from the target when inactive.</p>
+<p>When you connect a debug probe to a <strong>debugWIRE</strong> target, you should be aware that the SPI/ISP lines will not be electrically disconnected, even when the probe is inactive or only active on the debugWIRE line. In particular, the SNAP probe has a pretty low-impedance high-state MISO line and a low-impedance low-state SCK line. However, the other probes can also interfere with high impedance outputs. It is something to look out for if these lines do not behave as they should.</p>
+<p>For other debugging interfaces, such as <strong>JTAG</strong> or <strong>UPDI</strong>, the problem is not relevant since the debug control and data lines need to be exclusively accessed by the debug probe in any case.</p>
+<h2 id="bootloader">Bootloader</h2>
+<p>Bootloaders will usually be erased when running the debugger.</p>
+<p>The entire chip needs to be erased if some lock bits are set. Further, for <strong>JTAG</strong> and <strong>debugWIRE</strong> targets, the <code>BOOTRST</code> fuse has to be disabled so that execution always starts at location 0x0000. If one wants to have a bootloader present, because it may provide services, such as writing to flash memory, one needs to load it before starting a debugging session without setting any lock bits. If one, in addition, wants to debug the bootloader, one can disallow that PyAvrOCD manages the <code>BOOTRST</code> fuse by using the command line option <code>--manage nobootrst</code>.</p>
+<p>On <strong>UPDI</strong> targets, the bootloader memory area is located before the application code. Since starting execution through the bootloader may probably interfere with starting the application, the bootloader will be wiped out when the application is loaded. If you want to avoid that, upload the code using a programmer before starting the debugger and use <code>--load noinitialload</code> when starting the GDB server.</p>
+<h2 id="low-cpu-clock-frequency">Low CPU clock frequency</h2>
+<p>Low CPU clock frequencies can make the debugging process sluggish or even impossible.</p>
+<p>When using <strong>debugWIRE</strong>, the communication speed with the target is determined by the clock frequency of the target. It is usually clock frequency divided by 8, but not higher than 250k bps. If you use a clock frequency of 128 kHz, then the communication speed will be 16000 bps, which is quite slow. If the <code>CKDIV8</code> fuse is programmed, then this would be only 2000 bps, at which point some of the debug probes may time out.</p>
+<p>With <strong>JTAG</strong>, things are similar. While the JTAG programming clock frequency is independent of the clock frequency of the target, the JTAG debugging frequency should not be higher than one-quarter of the MCU clock frequency.</p>
+<p>In general, one should not choose CPU clock frequencies below 1 MHz while debugging.</p>
+<h2 id="low-power-properties">Low-power properties</h2>
+<p>Almost all power-saving features of the MCU are disabled while debugging.</p>
+<p>The reason for this is that all clocks need to be running so that the communication between the debug probe and the OCD does not break down. So, the functional behavior of the MCU can be debugged, but low-power properties cannot be tested while debugging.</p>
+<h2 id="compiler-bugs">Compiler bugs</h2>
+<p>The debugging information generated by the compiler can be wrong.</p>
+<p>I recently stumbled over a <a href="https://gist.github.com/felias-fogg/8f4e1fdb3be14a598467842b03a3aef9">case</a> where the compiler had generated debugging information that was wrong. The value of a local variable was not displayed correctly, and it looked as if the value of a local variable had been changed back after an interactive assignment. When <a href="../troubleshooting/#the-values-of-a-local-variable-cannot-be-changed-or-a-wrong-value-is-displayed-in-the-debugger">upgrading to a more recent compiler version</a>, things worked out smoothly. A new compiler version might lead to different trouble, though. For instance, the compiler of the 15.1 toolchain apparently generates <a href="https://github.com/felias-fogg/avr-gcc-15/issues/1">buggy debug information for local variables</a>.</p>
+<h2 id="idegui-bugs">IDE/GUI bugs</h2>
+<p>Sometimes, the IDE might hide things from you.</p>
+<p>The Arduino IDE 2 has the feature of displaying all the global variables, together with the current values. If link-time optimization (LTO) is activated, unfortunately, all global variables disappear from sight. Since LTO is activated for most board packages and since it cannot be deactivated safely, global variables are not shown for most hardware packages.</p>
+<p>In PlatformIO, the contents of <a href="https://github.com/platformio/platformio-vscode-ide/issues/4405">some of the peripheral registers is not displayed</a>.</p>
+<h2 id="compiler-optimizations">Compiler optimizations</h2>
+<p>When trying to debug a program compiled with the 'usual' compiler optimization option <code>-Os</code>, one often ends up in unexpected places or receives warnings.</p>
+<p>Usually, the compiler optimizes for space, trying to fit as much program code as possible into the limited amount of flash memory. This, however, might imply that some code is reordered and inlined. This means that single-stepping can be confusing, that one cannot stop at some places, or that a <code>finish</code> command will lead to an error message.</p>
+<p>When using the <code>-Og</code> compiler optimization option, the compiler aims at preserving the structure of the program at the expense of perhaps using more flash memory. Further, one should never use the <a href="../compilation-options/#critical-optimization-options"><code>-mrelax</code> optimization flag</a> and, if possible, not use <a href="../compilation-options/#critical-optimization-options"><code>-flto</code> (link time optimization)</a>. In the Arduino IDE 2, this is all forced by enabling <code>Optimize for Debugging</code> in the <code>Sketch</code> menu.</p>
+<h3 id="disappearing-bugs">Disappearing bugs</h3>
+<p>The <code>-Og</code> compiler optimization option supports debugging as long as one is hunting bugs in the program logic. However, some bugs may silently disappear, or the effects of a bug may change. These bugs, which are called <a href="https://en.wikipedia.org/wiki/Heisenbug"><em>Heisenbugs</em></a>, often appear in connection with uninitialized local variables, (illegal) access to data on the stack, stack overflows, <a href="https://arduino-craft-corner.de/index.php/2025/01/19/volatilitity-race-conditions-and-heisenbugs/">with <code>volatile</code> data, or with race conditions</a>. Thus, if a bug disappears when optimizing for debugging is enabled, one should watch out for such a Heisenbug and debug a binary that has been compiled without the optimization for debugging option.</p>
+<h3 id="bugs-appearing-out-of-thin-air">Bugs appearing out of thin air</h3>
+<p>Another effect of using the <code>-Og</code> compiler optimization could be that all of a sudden, new bugs show up. Since code generation is different, some time-critical parts of the code could change and lead to erroneous behavior. This happened, for instance, <a href="https://github.com/FastLED/FastLED/issues/2000">in the case of the FastLED library</a>. Here, a chain of assembly inline code statements was compiled differently with the <code>-Og</code> option. It is actually a sign that the author of the original library code did not do a good job, since inline assembly code should precisely shield you from different ways to generate code. However, in this case, a large number of assembly inline statements were chained and gave the compiler the freedom to do some 'crazy' things between these statements.</p>
+<h2 id="link-time-optimization">Link-time optimization</h2>
+<p>Link-time optimization (<code>-flto</code>) will 'optimize away' important structural debug information about C++ objects and global variables.</p>
+<p>Link-time optimization is a technique introduced into the Arduino IDE only in 2020.  It optimizes across all compilation units and is able to prune away unused functions and data structures, as well as inlining functions across compilation units. It often reduces the code by 20--30~\% code.</p>
+<p>The disadvantage is that <a href="https://arduino-craft-corner.de/index.php/2021/12/15/link-time-optimization-and-debugging-of-object-oriented-programs-on-avr-mcus/">link-time optimization prunes away essential information about C++ objects</a> so that class instances all of a sudden seem to be variables of a structure type. Furthermore, they prune away the info that variables are global, which means that in the <code>VARIABLES</code> debugging pane of the Arduino IDE 2, no variables are displayed. Finally, because of aggressive inlining, this technique can provoke stack overflows.  Hopefully, these problems will go away when more recent version of the GCC compiler are going to be used.</p>
+<p>All these problems disappear when link-time optimization is disabled. In some debug-enabled Arduino packages, link-time optimization can be disabled in the <code>Tools</code> menu. In others, it is only disabled when the <code>Optimize for Debugging</code> option is activated. For all packages supporting modern AVR chips, link-time optimization is always active.</p>
+<h2 id="link-time-jump-relaxation">Link-time jump relaxation</h2>
+<p>When using the optimization option <code>-mrelax</code>, the line number information gets distorted.</p>
+<p>The optimization option <code>-mrelax</code> is supposed to merely replace absolute jumps and calls with relative ones, saving two bytes and one cycle of computation time. Unfortunately, in its current implementation, it distorts the line number information for debugging significantly, making debugging impossible. For this reason, the Arduino IDE 2 checks whether the sketch has been compiled with this option and will refrain from debugging if this has been the case. Note that this issue has been solved in AVR-GCC 15.1 version of the toolchain.</p>
+<h2 id="resets">Resets</h2>
+<p>Resets that occur while executing will erase the hardware breakpoints.</p>
+<p>Resets, e.g., due to a watch dog timer reset or a software reset, are handled gracefully by PyAvrOCD. However, all hardware breakpoints are deleted. For this reason, you should use the monitor command <code>monitor breakpoints software</code> if you plan to debug a program that resets while it executes.</p>
+<p>JTAG and debugWIRE targets simply start executing after a reset. UPDI targets need to be stopped and started again to continue executing after a reset while executing under debugging supervision.</p>
+<h2 id="breakpoints-in-interrupt-routines">Breakpoints in interrupt routines</h2>
+<p>Breakpoints in interrupt routines can throw off the timing of time-critical code.</p>
+<p>It is a good thing that one can put breakpoints in interrupt service routines. However, usually interrupt routines are meant to react fast to time-critical events from the environment. After having stopped in an interrupt routine, it might not be meaningful to continue executing, because the events that the routine was supposed to handle are long gone.</p>
+<h2 id="conditional-breakpoints">Conditional breakpoints</h2>
+<p>Using conditional breakpoints can slow down execution significantly.</p>
+<p>One can attach conditions to breakpoints using the GDB command <code>condition</code> or by right-clicking on the breakpoint in an IDE/GUI. Every time the breakpoint is hit, the condition is evaluated, and execution stops only when the expression evaluates to true. Similarly, with the GDB command <code>ignore</code>, one can request that a stop be performed only after a given number of breakpoint hits. Again, this is also possible through an IDE/GUI. While this is a handy tool, it is also very costly in terms of execution time. Each stop can take 100 milliseconds or more, meaning that a simple loop with 1000 iterations can easily take 100 seconds (roughly two minutes). In other words, never try to do that with a loop that will iterate 10000 times.</p>
+<h2 id="watchdog-timer">Watchdog timer</h2>
+<p>Stopping execution while the watchdog timer is active will disable the WDT  in order to avoid a RESET.</p>
+<p>The watchdog timer will always be stopped when execution is stopped, be it by a breakpoint or a user interrupt. This is usually the most reasonable thing to do, because it does not make sense to reset the MCU only because the user has stopped execution in order to inspect the internal state. However, when one uses the WDT to time sleeping periods, this leads to the problem that one sleeps forever, because the WDT will not continue after execution is continued. Similarly, if the WDT is intended to recognize dead loops, it will not fire after such a stop.</p>
+<h2 id="single-stepping">Single-stepping</h2>
+<p>Single-stepping is not the same as executing the instruction in its usual context.</p>
+<h3 id="single-stepping-throws-off-timing">Single-stepping throws off timing</h3>
+<p>If you single-step over instructions (either explicitly or implicitly), then it will take much longer than if it were executed directly. This means that under some circumstances, some code is successful when single-stepped, but not when executed:</p>
+<pre><code class="language-assembly">OUT PORTB, 0x66
+IN R2, PINB
+</code></pre>
+<p>When running this code normally, the value 0x66 would not read back to the  R2 register. However, when single-stepping this code, there is enough time for the new value to settle and be readable. In order to make 0x66 readable under normal execution, a <code>NOP</code> is necessary between <code>OUT</code> and <code>IN</code>.</p>
+<p>On the other hand, often instructions need to be executed closely together. Since the I/O clock and peripherals continue to run at full speed in stopped mode, single-stepping through such code will not meet the timing requirements. To successfully read or write registers with such timing requirements, the whole read or write sequence should be performed as an atomic operation running the device at full speed.</p>
+<h3 id="single-stepping-break-instructions">Single-stepping BREAK instructions</h3>
+<p><code>BREAK</code> instructions are used to implement software breakpoints. However, the debugger may be asked to single-step over a <code>BREAK</code> instruction or to start execution at such an instruction that has not been inserted as a software breakpoint. Either the user has placed the instruction explicitly into the code, or this instruction is there from <a href="#unsafe-exits-from-debugging">a previous debugging session that was ended abruptly</a>. In any case, it does not make sense to continue executing the code, which is reported back to the user.</p>
+<h3 id="single-stepping-lines-containing-loops">Single-stepping lines containing loops</h3>
+<p>When GDB is instructed to single-step source code, it will step until a new source line is hit. This can result in slowing down execution significantly when lines contain, perhaps implicitly, loops, e.g., the <code>_delay_ms</code> macro. <a href="https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/#very-long-single-steps">PyAvrOCD can deal with <code>_delay_ms</code></a>, but in other cases, slowdowns can happen. One can recover from slow execution by interrupting using Ctrl-C, setting a breakpoint outside of the loop, and then continuing execution.</p>
+<h2 id="serial-communication">Serial communication</h2>
+<p>Stopping program execution in the middle of interrupt-driven serial output may lead to dropping part of the output.</p>
+<p>Stopping the program in the middle of a communication action is always a problem. When some serial output is happening, some of the output may get dropped when the program is stopped before everything has been printed. This is not a problem for the functionality of the debugged program, but it may look annoying.</p>
+<h2 id="usb-communication">USB communication</h2>
+<p>Stopping the program in the middle of a USB communication episode may lead to losing the USB connection.</p>
+<p>Some of the AVR MCUs support USB communication in hardware, e.g., ATmega32U4. Since this kind of communication depends on timely responses by the connected devices, breaking in the middle of such communication exchanges may lead to losing the connection. My experience is, however, that the connection is quite robust. You should not stop execution between the initial break in <code>main</code> and the end of the <code>Serial</code>.<code>begin</code> call, because in this case, USB enumeration may time out. Otherwise, the USB connection appears to be quite robust. However, output may be garbled when a program stops before all serial I/O has been transferred to the host, similar to what is happening with serial I/O.</p>
+<h2 id="io-register-access">I/O register access</h2>
+<p>Some I/O registers cannot be accessed from the debugging UI.</p>
+<p>Specific I/O registers cannot be read without side effects, such as clearing flags or reading buffered data (e.g., the registers <code>UDR</code> and <code>SPDR</code>). These registers are write-only for the debugger and will always show a 0x00 when reading in the debugging user interface. If you use the Arduino IDE 2, then the <code>PERIPHERALS</code> debugger pane will show you a comment to this effect.</p>
+<p>Other I/O registers cannot be written to without side effects, e.g., registers where a flag is cleared by writing a '1' to a particular bit. These are read-only to the debugger, and any write attempt will fail silently (but PyAvrOCD will issue a warning). If you use the Arduino IDE, the <code>PERIPHERALS</code> pane will inform you about the fact that the register is read-only to the debugger.</p>
+<h2 id="svd-mediated-access-to-bitfields-in-io-registers">SVD mediated access to bitfields in I/O registers</h2>
+<p>Bitfield access to I/O registers mediated through SVD is sometimes buggy.</p>
+<p>The translation from Microchip ATDF files to open-source (ARM) SVD files (when building the base for PyAvrOCD) is not completely lossless. Sometimes, bitfields in AVR MCUs are not continuous, i.e., the bits are sprinkled over the byte of an I/O register. In this case, the generated SVD representation has bitfields that overlap with other bitfields. This is, for example, the case with the WDTCSR in ATmega328P. It may simply be confusing. When you try to assign values to such bitfields, it will get it outright wrong.</p>
+<h2 id="unsafe-exits-from-debugging">Unsafe exits from debugging</h2>
+<p>MCU and debug probe can be in an undefined state after abrupt exits.</p>
+<p>When a debugging session is abruptly ended by removing power, removing the connection to the debugger, or by other means, the MCU might end up in a 'dirty' state:</p>
+<ul>
+<li>Some fuses, such as <code>OCDEN</code>, might still be in the programmed state.</li>
+<li>Software breakpoints (that are implemented as <code>BREAK</code> instructions) may not have been removed.</li>
+</ul>
+<p>It may be enough to start a new debugging session and reflash the program. However, the debug probe might also be in a confused state and reject any communication attempt. In this case, the best way to proceed is to disconnect and reconnect all the devices before starting a new debugging session.</p>
+<h2 id="undebuggable-mcus">Undebuggable MCUs</h2>
+<p>Some AVR MCUs are not debuggable.</p>
+<p>MCUs without a debugging interface (e.g., <strong>ATtiny15</strong>, <strong>ATmega8</strong>) can, of course, not be debugged. In addition, there exist a few variants that cannot be debugged because they have special features that make them undebuggable by open source software. These are <strong>ATmega48</strong> and <strong>ATmega88</strong> (without the A-suffix). These MCUs suffer from the Hotel California Syndrome (You can check out any time you like. But you can never leave!) when one uses open-source software. Since they have the same chip signature as their cousins with an A-suffix, PyAvrOCD goes to some length to recognize those chips and reject them before they get "bricked" by switching them into debugWIRE mode. The Microchip debugging solutions have apparently found a solution around it.</p>
+<h2 id="mcus-with-limited-debugging-support">MCUs with limited debugging support</h2>
+<p>There are a few MCUs that have special features or offer only limited support.</p>
+<p>Some MCUs have <a href="https://arduino-craft-corner.de/index.php/2026/01/19/when-unused-program-counter-bits-go-rogue/">non-zero unused bits in their program counter</a>, e.g., <strong>ATmega16(A)</strong>, <strong>ATmega64(A)</strong>, <strong>ATmega329(P)</strong>, and <strong>ATmega3250(P)</strong>. PyAvrOCD masks these bits, and (the new patched version of) AVR-GDB masks these bits out when they appear in return addresses on the stack. However, if you do not use the AVR-GDB version distributed together with PyAvrOCD, you may encounter the phenomenon that the stack backtrace is empty and that stepping over a function is not possible.</p>
+<p>Finally, we have the <strong>ATmega128(A)</strong>, which offers only hardware breakpoints. This is a bit funny since the data sheet explicitly states that the <code>BREAK</code> instruction can be used to implement software breakpoints. However, all manuals of the more recent Atmel debuggers note that one can use only the hardware breakpoints on an ATmega128(A). For this reason, PyAvrOCD will automatically select the <em>hardware-breakpoint-only</em> mode.</p>
+<h2 id="debugwire-can-brick-mcus">DebugWIRE can brick MCUs</h2>
+<p>DebugWIRE can be dangerous to the health of your MCU.</p>
+<p>Once the MCU has been brought into debugWIRE mode (using, for example, the <code>monitor debugwire enable</code> command), the RESET line can no longer be used to reset the chip, and it is impossible to use SPI programming to change fuses, particularly the debugWIRE enable (DWEN) fuse. If something goes wrong while entering debugWIRE mode, this could mean that you "bricked" your chip, since communication with the MCU is no longer possible. So, what can go wrong, and how can you resurrect the chip?</p>
+<h3 id="scenarios">Scenarios</h3>
+<ol>
+<li>The classical problem is a capacitor on the RESET line, either for noise suppression or as a means to implement auto-reset on an Arduino board such as the Uno. Similarly, a resistor that is too strong or a dedicated reset circuit could pose a problem. In these cases, one can change the DWEN fuse using SPI programming, but communication over the debugWIRE line (the RESET line) is impossible.
+   The cure is apparent: Remove the resistor, capacitor, or reset circuit (or cut the trace to it). Afterward, it should be possible to connect to the MCU using the debugger (via PyAvrOCD).</li>
+<li>Another cause for trouble could be that the MCU is operated in an unstable electrical environment. This could mean that the supply voltage is fluctuating, an unstable external clock is used, blocking capacitors between (A)Vcc and (A)GND are missing, or, another classic, AVcc and/or AGND are not connected to the power rail. In these cases, unpredictable things can happen, and the MCU might not be responsive after having been switched into debugWIRE mode. In this case, repairing the fault, e.g., soldering a blocking capacitor between Vcc and GND, may or may not resolve the issue.</li>
+<li>The MCU could be a non-genuine product. Since such products do not satisfy all the specifications of genuine MCUs, these MCUs might be able to enter debugWIRE, but then one is stuck. Or debugWIRE mode is not supported at all.</li>
+<li>It could be that you can enter debugWIRE mode and debug your chip, but getting back to normal mode is impossible. This may be caused by setting some fuses when switching to debugWIRE mode that prevent the return to normal mode. If you unprogrammed <code>SPIEN</code> (Serial program downloading) and/or programmed <code>RSTDSBL</code>, the fuse to disable the reset line, then it is possible to leave debugWIRE mode, but you cannot use SPI programming afterward. When you let PyAvrOCD handle the fuses, this cannot happen.</li>
+<li>There are apparently unknown reasons that can make a chip unresponsive when switching to debugWIRE mode. I have no idea why this happens.</li>
+</ol>
+<h3 id="exit-debugwire-mode">Exit debugWIRE mode</h3>
+<p>One possible way to exit debugWIRE mode is to employ avrdude (version 8.0 or more recent) and one of the debug probes.</p>
+<ol>
+<li>Disconnect the target from everything and check that the RESET line is not connected to a capacitor or a RESET circuit.</li>
+<li>Connect it to one of the debug probes (and to power).</li>
+<li>Try to burn fuses or upload a program using avrdude (perhaps through the Arduino IDE 2) using ISP programming mode. Avrdude will then try to exit debugWIRE mode if it cannot connect using ISP programming. If it is successful, it will report it.</li>
+<li>Burn the default fuses (in particular, disable the DWEN fuse).</li>
+</ol>
+<p>Another possible way is to use pyavrocd with the option <code>--debugwire disable</code>. First, carry out steps 1 and 2 from above. Then type into a terminal window (&lt;mcu&gt; being the name of the MCU):</p>
+<pre><code>pyavrocd --manage all --debugwire disable --device &lt;mcu&gt;
+</code></pre>
+<p>If you are using PlatformIO, then you can use the project task <code>Disable debugWire</code> under the <code>Platform</code> header.</p>
+<h3 id="high-voltage-programming">High-voltage programming</h3>
+<p>If none of the above-mentioned recovery methods work, the last resort is <em>high-voltage programming</em>. This means that 12 volts are applied to the RESET line, and then signals are sent to the MCU over different lines. If you have an MCU with a DIP footprint, you can use a <a href="https://github.com/felias-fogg/RescueAVR">breadboard high-voltage programmer</a> or a specially designed <a href="https://www.tindie.com/products/fogg/rescueavr-hv-fuse-programmer-for-avrs/">"HV fuse programmer"</a>. For MCUs with an SMD footprint, you would need to buy a breadboard adapter.</p>
+<h2 id="flash-wear">Flash Wear</h2>
+<p>Setting and clearing (software) breakpoints can wear down flash memory.</p>
+<p>When setting a breakpoint in a program, one usually does not think about the underlying mechanism that stops the program at the particular point where the breakpoint has been set. Technically, this can be done by <em>hardware breakpoints</em> or <em>software breakpoints</em>. A hardware breakpoint is implemented as a register that is compared to the actual program counter. If the PC is equal to the register value, execution is stopped. Usually, only a few such hardware breakpoints are available. On a debugWIRE device, there is just one. On AVR JTAG ATmegas, we have four; on UPDI MCUs, there are two. Software breakpoints are implemented by placing a particular trap instruction into the machine code. On AVRs, this is the <code>BREAK</code> instruction.</p>
+<p>There are pros and cons to each type of breakpoint. Hardware breakpoints are faster to set and to clear because they do not involve reprogramming flash memory. Further, they do not lead to <em><a href="https://en.wikipedia.org/wiki/Flash_memory#Memory_wear">flash wear</a></em> as software breakpoints do. However, as mentioned, there are only very few hardware breakpoints.</p>
+<p>PyAvrOCD will make use of hardware breakpoints whenever possible and use software breakpoints only as a fallback. Further, the most recent breakpoint asserted by GDB will always be implemented as a hardware breakpoint because it is very likely that it is a temporary breakpoint.</p>
+<h3 id="the-flash-wear-problem">The flash wear problem</h3>
+<p>So, how severe is the flash wear problem? The data sheets state that for classic AVR MCUs, the guaranteed flash endurance is 10,000 write/erase cycles. For the more recent MCUs with the UPDI interface, it is only 1000 cycles! These are probably quite conservative numbers guaranteeing endurance even when the chips are operated at the limits of their specification (e.g., at +85° C or -40° C). So, one hopes that the endurance in practice is much higher.</p>
+<p>Let’s assume an eager developer who reprograms the MCU every 10 minutes with an updated version of the program and debugs using five software breakpoints that she sets and clears during each episode. This means ten flash-page-reprogramming operations. That will probably result on average in 3 additional reprogramming operations on an individual page, leading together with reprogramming flash memory to 4 such operations in 10 minutes or 192 such operations on one workday. So, she could hit the limit for the modern AVR MCUs after one working week already. The classic AVRs can be used for 10 weeks. This, however, holds only if she does not set and clear breakpoints all the time, but is instead rather careful about doing so.</p>
+<p>A further prerequisite for not wearing out flash memory too fast is that the GDB server minimizes flash wear. For instance, it should not remove and reinsert a software breakpoint every time a breakpoint is hit. However, <a href="https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/#minimizing-flash-wear">all AVR debugging solutions except for PyAvrOCD do that at software breakpoints with two-word instructions</a> (because the debug probes implement it that way). Worse, the Bloom GDB server (v2.0.0) does that for every software breakpoint. If our eager developer uses a conditional breakpoint, and the program stops only after 100 iterations, then 200 reprogramming operations for one flash page are necessary. And this is already 1/5 of the flash endurance of a modern AVR MCU.</p>
+<p>All in all, as Microchip states, you should not ship MCUs that have been used heavily in debugging to customers.</p>
+<h3 id="using-only-hardware-breakpoints">Using only hardware breakpoints</h3>
+<p>Can it be a solution to use only hardware breakpoints? It will definitely reduce flash wear to zero (well, except for reprogramming the target). And all GDB servers support that by trying to use hardware breakpoints as much as possible. Only when too many breakpoints are requested are software breakpoints utilized.</p>
+<p>You can enforce the use of <em>only</em> hardware breakpoints by employing the following <code>monitor</code> command.</p>
+<pre><code class="language-text">monitor breakpoints hardware
+</code></pre>
+<p>After using this command, you always get an error when more than the number of available hardware breakpoints is in use when you request to start or continue execution. One must be aware, though, that there might be slight problems when single-stepping and when continuing from a breakpoint.</p>
+<p>A GDB step-over operation uses a temporary breakpoint, which can lead to the situation where, after starting a step-over operation with a single step on the GDB server level, it is discovered that too many breakpoints are necessary to complete the step-over operation. In this case, the initial single step is done, but then execution is stopped (in the middle of the step-over operation).</p>
+<p>A similar situation can happen when you continue from a breakpoint. In this case, GDB initially does not assert the breakpoint it starts from, then it executes a single step, and, after that, asserts the original breakpoint. If one has requested just one breakpoint more than the maximum number, this will only be recognized after the initial single step, where the continue operation is stopped in this case.</p>
+<p>Unfortunately, there is no way to detect these problems early enough at the level of the GDB server. And there does not seem to be an easy way to solve the issue on the GDB level. So, when using only hardware breakpoints, you should take care not to set too many breakpoints. Do never assign more than the maximum number, and do not use the maximum number of breakpoints, or refrain from the stepping-over operation (called <code>next</code> in GDB). Otherwise, the execution of the program might be stopped at places you have not expected.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../disclaimer/" class="btn btn-neutral float-left" title="Disclaimer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../license-link/" class="btn btn-neutral float-right" title="License">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../disclaimer/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../license-link/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v1.7/quick_pio/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>PlatformIO - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "PlatformIO";
+        var mkdocs_page_input_path = "quick_pio.md";
+        var mkdocs_page_url = "/v1.7/quick_pio/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">PlatformIO</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-atmega328p-xplained-mini">Quickstart: ATmega328P Xplained Mini</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-hardware">Required hardware</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-set-up-a-project-with-the-right-platform">Step 1: Set up a project with the right platform</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-debug-the-program">Step 2: Debug the program</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-start-over-or-terminate-the-debugging-session">Step 3: Start over or terminate the debugging session</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#potential-problems">Potential Problems</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-atmel-ice-atmega1284">Quickstart: Atmel-ICE &amp; ATmega1284</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-hardware_1">Required hardware</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-set-up-a-project-with-the-right-platform_1">Step 1: Set up a project with the right platform</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-prepare-the-board-for-debugging">Step 2: Prepare the board for debugging</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-debug-the-program">Step 3: Debug the program</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-start-over-or-terminate-the-debugging-session">Step 4: Start over or terminate the debugging session</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#potential-problems_1">Potential Problems</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#quickstart-dw-link-attiny85">Quickstart: dw-link &amp; ATtiny85</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-hardware_2">Required hardware</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-set-up-a-project-with-the-right-platform_2">Step 1: Set up a project with the right platform</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-turn-an-uno-into-a-debug-probe">Step 2: Turn an UNO into a debug probe</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3-set-up-the-hardware">Step 3: Set up the hardware</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4-debug-the-program">Step 4: Debug the program</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#potential-problems_2">Potential Problems</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Quickstart Guides</li>
+      <li class="breadcrumb-item active">PlatformIO</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_pio.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="quickstart-guides-platformio">Quickstart Guides: PlatformIO</h1>
+<p>The following three quickstart guides provide an easy entrance into the wonderful land of debugging programs running on an AVR MCU using PlatformIO.</p>
+<hr />
+<h2 id="quickstart-atmega328p-xplained-mini">Quickstart: ATmega328P Xplained Mini</h2>
+<p>The <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">Atmega328P Xplained Mini</a> development board, which has an Arduino Uno footprint, is ideal for making a first experience with embedded debugging because it already contains an onboard debugger. It is simply plug-and-play.</p>
+<h3 id="required-hardware">Required hardware</h3>
+<p>The only thing needed is the XPlained Mini board and a USB cable to connect it to your computer.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/xplained.png" width="35%">
+</p>
+
+<h3 id="step-1-set-up-a-project-with-the-right-platform">Step 1: Set up a project with the right platform</h3>
+<p>Set up a PlatformIO project, e.g., by importing arduino-blink from the example projects. Add the following to your <code>platformio.ini</code> configuration file, making the new <code>xmini</code> environment the default environment:</p>
+<pre><code class="language-python-repl">[platformio]
+default_envs = xmini
+
+[env:xmini]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = xmini328p
+build_type = debug
+debug_tool = pyavrocd
+</code></pre>
+<h3 id="step-2-debug-the-program">Step 2: Debug the program</h3>
+<p>Click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
+</p>
+
+<p>This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the <code>main</code> function. A yellow triangle and the highlighted line signify this. How you can control program execution, and inspect and change the internal state is sketched in the <a href="../debugging/">debugging section</a>.</p>
+<h3 id="step-3-start-over-or-terminate-the-debugging-session">Step 3: Start over or terminate the debugging session</h3>
+<p>If you have found the bug you were hunting, you can now leave the debugger (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
+</p>
+
+<p>Alternatively, you can also use the <code>Disable debugWIRE</code>  project task under the <code>Platform</code> heading to disable debugWIRE mode.</p>
+<h3 id="potential-problems">Potential Problems</h3>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections of the PyAvrOCD manual.</p>
+<div class="admonition danger">
+<p class="admonition-title">Warning:  Use IOREF to source attached circuits</p>
+<p>If you have any attached circuitry, be it on a breadboard or a shield, use the <code>IOREF</code> pin to power it. If this is not possible, check out the <a href="https://github.com/felias-fogg/XMiniCore?tab=readme-ov-file#powering-external-circuitry"><code>README</code> file of XminiCore for a solution</a>.</p>
+</div>
+<hr />
+<h2 id="quickstart-atmel-ice-atmega1284">Quickstart: Atmel-ICE &amp; ATmega1284</h2>
+<p>This quickstart guide shows you how to set up a PlatformIO project for debugging a JTAG target using an EDBG-based debug probe.</p>
+<h3 id="required-hardware_1">Required hardware</h3>
+<p>We will use an ATmega1284 (but any other AVR JTAG Mega will do) and the debug probe Atmel-ICE  (any other <a href="../supported-debuggers/">EDBG-based debug probe</a> is also OK). In addition, we will use the <a href="https://www.tindie.com/products/mcudude/dip-40-arduino-compatible-development-board/">DIP-40 Arduino-compatible development board</a> to demonstrate basic debugging, but again, any board with a JTAG and ISP connector would do.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/Mighty.png" width="30%">
+</p>
+
+<p>In the following, I will assume that PlatformIO, as an extension of VSCode, has been installed already and that you are somewhat familiar with it.</p>
+<h3 id="step-1-set-up-a-project-with-the-right-platform_1">Step 1: Set up a project with the right platform</h3>
+<p>Set up a PlatformIO project and instead of using <code>atmelavr</code> as the platform, specify the following in your <code>platformio.ini</code> configuration file:</p>
+<pre><code>...
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = ATmega1284P
+...
+</code></pre>
+<p>The best way to start is to clone or download the following repository.</p>
+<pre><code>https://github.com/felias-fogg/pio-atmega1284p-example
+</code></pre>
+<p>The <code>plaformio.ini</code> file contains the following sections:</p>
+<pre><code>[env:atmega1284p]
+;;contains all information about the platform &amp; chip and
+;;how to commuincate with Atmel-ICE
+...
+
+[env:debug]
+;; enables debugging
+...
+
+[env:release]
+;; supports uploading in release mode
+...
+</code></pre>
+<h3 id="step-2-prepare-the-board-for-debugging">Step 2: Prepare the board for debugging</h3>
+<p>Before debugging can take place, you need to make sure that the JTAG pins are enabled. On an ATmega1284P, these are the pins  <code>PC2</code>&mdash;<code>PC5</code>. Fresh from the factory, the JTAG pins are enabled. However, on Arduino boards, they are by default disabled. Since the state is probably unknown, we will set it anyway. In order to activate the JTAG pins, we need to connect the Atmel-ICE to the board using the ISP connection, as shown in the following photo. On this board, the key or marker of the ISP plug should be oriented towards the MCU.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmelice_isp.jpg" width="70%">
+</p>
+
+<p>In order to set the correct fuses, we now select the <code>debug</code> environment by first clicking on the environment symbol in the bottom line and then choosing the right environment at the top.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-3.png" width="90%">
+</p>
+
+<p>After that, we request that the fuses be set by clicking on <code>Set Fuses</code>. The result of this action is displayed in the <code>Terminal</code> window and should be as shown in the picture below.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-4.png" width="90%">
+</p>
+<p>Before we can start debugging, we need to change the connection between the debug probe and the target board from ISP to JTAG, as shown in the following picture. As with the ISP plug, the keying or marker should be oriented towards the MCU on this board.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/atmelice_jtag.jpg" width="70%">
+</p>
+
+<h3 id="step-3-debug-the-program">Step 3: Debug the program</h3>
+<p>If you have not activated the <code>debug</code> environment, now is the time to do it (as shown in the previous step). And then we are ready to go into business seriously. First, click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-1.png" width="90%">
+</p>
+
+<p>This will start the compilation process, and after that, the debug server. The code will be uploaded, and execution will begin. A first temporary stop is made in the <code>main</code> function. A yellow triangle and the highlighted line signify this. How you can control the program is sketched in the <a href="../debugging/">debugging section</a>.</p>
+<h3 id="step-4-start-over-or-terminate-the-debugging-session">Step 4: Start over or terminate the debugging session</h3>
+<p>If you have found the bug you were hunting, you can now leave the debugger (red square), edit the program, and start again at step 5. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to disable the JTAG pins, perhaps. Switch to the <code>release</code> environment and click <code>Set Fuses</code> again. Possibly, you even want to restore the bootloader, which was deleted when starting the debugger. In this case, you need to click <code>Burn Bootloader</code>.</p>
+<h3 id="potential-problems_1">Potential Problems</h3>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections of the PyAvrOCD manual.</p>
+<p>One common problem is forgetting to change from ISP to JTAG or back. In this case, the debug probe complains that there is no device.</p>
+<hr />
+<h2 id="quickstart-dw-link-attiny85">Quickstart: dw-link &amp; ATtiny85</h2>
+<p>This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe. Instead, we will build our own debug probe.</p>
+<p>It explains</p>
+<ul>
+<li>
+<p>how to install the PyAvrOCD GDB server,</p>
+</li>
+<li>
+<p>how to turn an Arduino UNO R3 into a <a href="https://en.wikipedia.org/wiki/DebugWIRE">debugWIRE</a> debug probe using the <a href="https://felias-fogg.github.io/dw-link/">dw-link</a> firmware,</p>
+</li>
+<li>how to set up the breadboard with the ATtiny85 on it, and</li>
+<li>how to use PlatformIO for debugging a program on the ATtiny.</li>
+</ul>
+<h3 id="required-hardware_2">Required hardware</h3>
+<ul>
+<li>Arduino Uno (will become the <em>debug probe</em>)</li>
+<li>USB cable</li>
+<li>ATtiny85 as the <em>target</em></li>
+<li>In order to connect the debug probe to the target, you need:<ul>
+<li>a breadboard together with</li>
+<li>11 Jumper wires (male-to-male)</li>
+<li>2 LEDs</li>
+<li>3 Resistors (10 kΩ, 220Ω, 220Ω)</li>
+<li>2 Capacitors (100 nF, 10 µF)</li>
+</ul>
+</li>
+</ul>
+<h3 id="step-1-set-up-a-project-with-the-right-platform_2">Step 1: Set up a project with the right platform</h3>
+<p>Setup a PlatformIO project and instead of using <code>atmelavr</code> as the platform, specify the following in your <code>platformio.ini</code> configuration file:</p>
+<pre><code>[platformio]
+
+[env:attiny85]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = attiny85
+...
+</code></pre>
+<p>The best way to start is to clone or download the following repository.</p>
+<pre><code class="language-bash">https://github.com/felias-fogg/pio-attiny85-example
+</code></pre>
+<p>The <code>plaformio.ini</code> file contains the following sections:</p>
+<pre><code class="language-wasm">[platformio]
+default_envs = debug
+
+[env:attiny85]
+;;contains all information about the platform &amp; chip and
+;;how to commuincate with dw-link
+...
+
+[env:debug]
+;; enables debugging
+build_type = debug
+...
+
+[env:release]
+;; supports uploading in release mode
+build_type = release
+...
+</code></pre>
+<h3 id="step-2-turn-an-uno-into-a-debug-probe">Step 2: Turn an UNO into a debug probe</h3>
+<p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
+<p>The simplest way to install the firmware is to download an uploader from the Release assets of the <a href="https://github.com/felias-fogg/dw-link">GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
+<p>Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using PlatformIO.</p>
+<p>The Uno now acts as a debug probe providing a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html">GDB RSP</a> interface. If you configured the serial line to the Uno as 115200 baud, and click on <code>Monitor</code> in the <code>PROJECT TASK</code> menu, select the <code>Terminal</code> window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".</p>
+<h3 id="step-3-set-up-the-hardware">Step 3: Set up the hardware</h3>
+<p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny85-debug-new.png" width="70%">
+</p>
+<p>In reality, this could be like in the following photo.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny-breadboard.jpg" width="30%">
+</p>
+
+<p>Here is a table of all the connections so that you can check that you have made all the connections.</p>
+<table>
+<thead>
+<tr>
+<th>ATtiny pin#</th>
+<th>Arduino Uno pin</th>
+<th>component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (Reset)</td>
+<td>D8</td>
+<td>10k resistor to Vcc</td>
+</tr>
+<tr>
+<td>2 (D3)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3 (D4)</td>
+<td></td>
+<td>220 Ω resistor to target (red) LED (+)</td>
+</tr>
+<tr>
+<td>4 (GND)</td>
+<td>GND</td>
+<td>red and yellow LED (-), decoupling cap 100 nF, RESET blocking cap of 10µF (-)</td>
+</tr>
+<tr>
+<td>5 (D0, MOSI)</td>
+<td>D11</td>
+<td></td>
+</tr>
+<tr>
+<td>6 (D1, MISO)</td>
+<td>D12</td>
+<td></td>
+</tr>
+<tr>
+<td>7 (D2, SCK)</td>
+<td>D13</td>
+<td></td>
+</tr>
+<tr>
+<td>8 (Vcc)</td>
+<td>5V</td>
+<td>10k resistor, decoupling cap 100 nF</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>RESET</td>
+<td>RESET blocking cap of 10 µF (+)</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>D7</td>
+<td>220 Ω to system (yellow) LED (+)</td>
+</tr>
+</tbody>
+</table>
+<p>The yellow LED is the <em>system LED</em>, and the red one is the <em>ATtiny-LED</em>. The system LED gives you information about the internal state of the debugger:</p>
+<ol>
+<li>debugWIRE mode disabled (LED is off),</li>
+<li>waiting for power-cycling the target (LED flashes every second for 0.1 sec),3.</li>
+<li>debugWIRE mode enabled (LED is on),</li>
+<li>ISP programming (LED is blinking slowly),</li>
+<li>error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).</li>
+</ol>
+<h3 id="step-4-debug-the-program">Step 4: Debug the program</h3>
+<p>If you have not activated the <code>debug</code> environment, now is the time to do it. However, since the debug environment is the default one, it should already be active.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-1.png" width="90%">
+</p>
+
+<p>And then we are ready to go into business seriously. First, click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-2.png" width="90%">
+</p>
+
+<p>This will start the debugging process and open the <code>TERMINAL</code> window below the editor window. Click on the <code>DEBUG CONSOLE</code> label, so that this console will be opened. There, you will probably see that you should power cycle the target.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-3.png" width="90%">
+</p>
+<p>After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and execution is started. The MCU will remain in debugWIRE mode even when debugging is stopped. You have to exit debugWIRE mode explicitly (see below).</p>
+<p>After starting the debugger, program execution will stop in the first line of the internal <code>main</code> function, which is signified by the yellow triangle and the highlighted line. How you debug is sketched in the <a href="../debugging/">section on debugging</a>.</p>
+<h3 id="step-5-start-over-or-terminate-the-debugging-session">Step 5: Start over or terminate the debugging session</h3>
+<p>If you have found the bug you were hunting, you can now leave the debugger(red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
+</p>
+<p>Alternatively, you can also use the <code>Disable debugWIRE</code>  project task under the <code>Platform</code> heading to disable debugWIRE mode.</p>
+<h3 id="potential-problems_2">Potential Problems</h3>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../quick_arduino/" class="btn btn-neutral float-left" title="Arduino IDE 2"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../install/" class="btn btn-neutral float-right" title="PyAvrOCD">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../quick_arduino/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../install/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

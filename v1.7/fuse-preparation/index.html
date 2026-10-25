@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v1.7/fuse-preparation/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Setting the right fuses - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Setting the right fuses";
+        var mkdocs_page_input_path = "fuse-preparation.md";
+        var mkdocs_page_url = "/v1.7/fuse-preparation/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Setting the right fuses</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-considerations">General considerations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-debugwire-target">Preparing a debugWIRE target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually">Fuse settings when fuses are managed manually</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-jtag-target">Preparing a JTAG target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-fuses">Fuse settings when PyAvrOCD manages fuses</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#preparing-a-updi-target">Preparing a UPDI target</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-pyavrocd-manages-the-fuse_1">Fuse settings when PyAvrOCD manages the fuse</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#fuse-settings-when-fuses-are-managed-manually_2">Fuse settings when fuses are managed manually</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Setting the right fuses</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/fuse-preparation.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="setting-the-right-fuses-to-enable-debugging">Setting the right fuses to enable debugging</h1>
+<p>The good news for Arduino IDE 2 users: You do not have to worry about fuses. Almost all the fuse setting details are taken care of by the IDE. You need to set the right fuses once in the beginning before debugging begins (using the <code>Burn Bootloader</code> IDE command). Further, on targets with JTAG interface,  it may be necessary to enable the JTAG pins.</p>
+<details>
+<summary><b>How to enable the JTAG pins</b></summary>
+<p></p>
+<p>
+  You can enable the JTAG pins by choosing <code>JTAG pins: JTAG enabled</code> in the  <code>Tools</code> menu, followed by the <code>Burn Bootloader</code> action using an SPI programmer (because the JTAG pins are not yet active!).
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/JTAG-enabled.png" width="50%">
+</p>
+<p>
+<div class="admonition warning">
+<p class="admonition-title">
+Make sure that all option values are correct before using the Burn Bootloader command
+</p>
+<p>
+When you use the <code>Burn Bootloader</code> command, all fuses corresponding to the specified options in the <code>Tools</code> menu are set. Make sure that the values are all correct before setting the fuses.
+</p>
+</div>
+</p>
+</details>
+<p></p>
+
+<p>And this is all you have to know when you use the Arduino IDE 2. In general, the story is a bit more complex, however.</p>
+<h2 id="general-considerations">General considerations</h2>
+<p>Sometimes it may be necessary to change a few fuses before debugging is possible. Some of the fuses will be taken care of by the GDB server, provided PyAvrOCD is asked to manage these fuses by a command line option, e.g., <code>--manage all</code>, when <a href="../command-line-options/">invoking the GDB server</a>. The <code>--manage all</code> option is the default for the Arduino IDE 2. However, one can instead specify individually which resources to manage:</p>
+<ul>
+<li><code>Lockbits</code>: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash and EEPROM memory, provided PyAvrOCD has been instructed to manage the lockbits by <code>--manage all</code> or <code>--manage lockbits</code>.</li>
+<li><code>BOOTRST</code>: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including <code>bootrst</code> as a fuse to be managed by the server when starting the GDB server from the command line.</li>
+<li><code>DWEN</code>: This fuse needs to be programmed to access the debugWIRE on-chip debugger module. PyAvrOCD will program this fuse when asked to do so by the command <code>monitor debugwire enable</code>. After the fuse has been programmed, you must power-cycle the target board to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command <code>monitor debugwire disable</code>, the debugWIRE interface will be disabled, and the <code>DWEN</code> fuse will be unprogrammed.</li>
+<li><code>OCDEN</code>: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than <code>DWEN</code>,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterward.</li>
+<li><code>EESAVE</code>: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM. However, it does not help you when you need to clear the lock bits. If any lock bits are set, it is not possible to change fuses, which means you cannot change the EESAVE fuse temporarily.</li>
+</ul>
+<p>If you want to leave all the fuse management to PyAvrOCD, then specify <code>--manage all</code>. If you want to play it safe instead, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.</p>
+<h2 id="preparing-a-debugwire-target">Preparing a debugWIRE target</h2>
+<p>In almost all cases, you do not need to change any fuses on a debugWIRE target before you can start debugging. One exception is when the RESET pin has been disabled (by programming the <code>RSTDSBL</code> fuse), allowing it to be used as a GPIO. In this case, you need to unprogram this fuse using <a href="../limitations/#high-voltage-programming">high-voltage programming</a>. The same holds when <code>SPIEN</code> (enabling SPI programming) is unprogrammed.</p>
+<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse">Fuse settings when PyAvrOCD manages the fuse</h3>
+<p>The <code>DWEN</code>, <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD, if this is permitted. <code>EESAVE</code> is only relevant for the ATmega48 and ATmega88 (without A or P suffix). Before debugWIRE is enabled on these MCUs, PyAvrOCD has to erase the chip twice in order to test for a dirty program counter. If <code>EESAVE</code> is managed, it is programmed temporarily for this test so that the EEPROM content survives, and it is restored afterwards. In all other situations under debugWIRE, a chip erase only happens when the lockbits are cleared, and then <code>EESAVE</code> cannot be activated.</p>
+<h3 id="fuse-settings-when-fuses-are-managed-manually">Fuse settings when fuses are managed manually</h3>
+<p>When you want complete control over the fuses, then make sure that the fuses are set as follows before you invoke the debugger:</p>
+<ol>
+<li>
+<p>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This operation will erase any bootloader as well.</p>
+</li>
+<li>
+<p>Unprogram the <code>BOOTRST</code> fuse, if present and programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.</p>
+</li>
+<li>
+<p>Program the <code>DWEN</code> fuse. After that, power-cycle the target board, which will bring the chip into debugWIRE mode.</p>
+</li>
+</ol>
+<p>Now, you should be able to connect to the OCD on the target MCU.</p>
+<p>After you have finished debugging and issued the <code>monitor debugwire disable</code> command, you can connect again with an SPI programmer and unprogram the <code>DWEN</code> fuse.</p>
+<h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
+<p>Access to the JTAG pins could be disabled. This is, for example, the case for the Arduino boards. In this case, you need to program the  <code>JTAGEN</code> fuse before debugging can start. For this purpose, you need the SPI programming interface.</p>
+<p>As in the debugWIRE case, it could be that SPI programming has been disabled. If the JTAG pins are enabled. Otherwise, <a href="../limitations/#high-voltage-programming">high-voltage programming</a> is necessary.</p>
+<h3 id="fuse-settings-when-pyavrocd-manages-fuses">Fuse settings when PyAvrOCD manages fuses</h3>
+<p>The <code>OCDEN</code>, <code>BOOTRST</code>, and <code>EESAVE</code> fuses and the <code>lockbits</code> will be taken care of by PyAvrOCD.</p>
+<h3 id="fuse-settings-when-fuses-are-managed-manually_1">Fuse settings when fuses are managed manually</h3>
+<p>When you want complete control over the fuses, make sure that the fuses are set as follows before you invoke the debugger. Make sure that the JTAG pins are enabled. Afterward, use avrdude and a JTAG programmer as follows:</p>
+<ol>
+<li>If <code>lockbits</code> are set, clear them by erasing the entire chip. This is necessary because otherwise, debugging is impossible. This will erase any bootloader as well.</li>
+<li>
+<p>Unprogram the <code>BOOTRST</code> fuse, if programmed. Otherwise, execution will not start at address 0x0000, but in the bootloader area that has been cleared.</p>
+</li>
+<li>
+<p>Program the <code>OCDEN</code> fuse.</p>
+</li>
+</ol>
+<p>Now, you should be able to connect to the OCD on the target MCU.</p>
+<p>After you have finished debugging, you should unprogram <code>OCDEN</code> because otherwise no lower-power operation is possible.</p>
+<h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
+<p>If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. However, if it is a pin with UPDI/GPIO/RESET shared functionality, and the UPDI functionality has been disabled,  you need high-voltage programming. PyAvrOCD does not support this because the compatible debug probes do not support high-voltage programming. The advice is to buy a dedicated <a href="https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6">high-voltage UPDI programmer</a> or <a href="https://avdweb.nl/arduino/attiny3217/hv-programming">build one on a breadboard</a>, and then restore the UPDI functionality.</p>
+<h3 id="fuse-settings-when-pyavrocd-manages-the-fuse_1">Fuse settings when PyAvrOCD manages the fuse</h3>
+<p>UPDI targets do not have a special debugging fuse, and the bootloader, if there is one, will be overwritten with NOPs. This means you only need to care about <code>lockbits</code>. So, for UPDI targets, PyAvrOCD will only manage the <code>EESAVE</code> fuse and the <code>lockbits</code> for you.</p>
+<h3 id="fuse-settings-when-fuses-are-managed-manually_2">Fuse settings when fuses are managed manually</h3>
+<p>When you want complete control over the fuses, you only have to make sure that the <code>lockbits</code> are cleared. You may also want to set the <code>EESAVE</code> fuse.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../board-preparation/" class="btn btn-neutral float-left" title="Preparing the target board"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../connect-to-target/" class="btn btn-neutral float-right" title="Connecting to the target">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../board-preparation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../connect-to-target/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
