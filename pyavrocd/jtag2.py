@@ -1,20 +1,23 @@
 """
 The JTAGICE mkII protocol (Atmel application note AVR067) over USB bulk transfers,
-spoken by the JTAGICE mkII, its clones, and the AVR Dragon.
+spoken by the JTAGICE mkII, its clones, and the AVR Dragon, and over a serial line,
+spoken by dw-link from version 7 on.
 
 This module covers the layers below the debugging commands: framing and CRC,
-the USB transport, discovery of the probes, and sign-on.
+the USB and the serial transport, discovery of the probes, and sign-on.
 """
 from dataclasses import dataclass
 import logging
 import struct
 import time
 
+import serial
 import usb.core
 import usb.util
 
 from pyavrocd.backend import BackendError, ProbeCandidate
 from pyavrocd.termination import transaction
+from pyavrocd.xavr8target import tiny_device_data
 
 VENDOR_ATMEL : int = 0x03EB
 PRODUCTS : dict[int, str] = { 0x2103 : 'jtagice2', # JTAGICE mkII and clones
@@ -48,6 +51,7 @@ CMND_CLR_BREAK : int = 0x1A
 CMND_RUN_TO_ADDR : int = 0x1C
 CMND_RESTORE_TARGET : int = 0x23
 CMND_ISP_PACKET : int = 0x2F
+CMND_SET_DEVICE_CONTEXT : int = 0x36 # not in AVR067; Microchip Studio 7 sends it (see make_device_context)
 RSP_SPI_DATA : int = 0x88
 RESET_DEBUGWIRE_DISABLE : int = 0x04  # flag of CMND_RESET
 BREAK_PROGRAM : int = 0x01           # type of CMND_SET_BREAK
@@ -74,6 +78,7 @@ RSP_FAILURES : dict[int, str] = { 0xA0 : "RSP_FAILED", 0xA1 : "RSP_ILLEGAL_PARAM
 PAR_HW_VERSION : int = 0x01
 PAR_FW_VERSION : int = 0x02
 PAR_EMULATOR_MODE : int = 0x03
+PAR_BAUD_RATE : int = 0x05
 EMULATOR_MODE_DEBUGWIRE : int = 0x00
 EMULATOR_MODE_JTAG : int = 0x01
 EMULATOR_MODE_UNKNOWN : int = 0x02
@@ -99,6 +104,10 @@ MEMTYPE_LOCK : int = 0xB3
 MEMTYPE_SIGNATURE : int = 0xB4
 
 USB_TIMEOUT : int = 2000      # ms for one USB packet
+SERIAL_START_BAUD : int = 19200 # a serial mkII starts at this speed (AVR067 section 2.1.1)
+BAUD_CODES : dict[int, int] = { 2400 : 1, 4800 : 2, 9600 : 3, 14400 : 8, 19200 : 4, 38400 : 5,
+                                57600 : 6, 115200 : 7 }  # values of PAR_BAUD_RATE
+MAX_SERIAL_BODY : int = 1024  # a longer announced body is noise, and the receiver resynchronizes
 MODE_TIMEOUT : int = 5000     # ms for switching the emulator mode, which talks to the target: refusing
                               # the SPI mode while debugWIRE is active took 1 s once, more than 2 s another time
 
@@ -109,8 +118,11 @@ class Jtag2Error(BackendError):
 class Jtag2UsbError(Jtag2Error):
     """The USB transfer of a command or its response failed"""
 
-class Jtag2UsbTimeout(Jtag2UsbError):
-    """No response within the timeout"""
+class Jtag2Timeout(Jtag2Error):
+    """No response within the timeout, whatever the transport"""
+
+class Jtag2UsbTimeout(Jtag2UsbError, Jtag2Timeout):
+    """No response within the timeout on USB"""
 
 
 def _crc_table() -> list[int]:
@@ -272,6 +284,18 @@ def make_device_descriptor(device_info : dict) -> bytes:
         0,                                                   # ucEindAddress: avrdude sends 0 even for the m2560
         device_info['eecr_base'] + 0x20)                     # EECRAddress
     return io_masks(device_info) + tail
+
+def make_device_context(device_info : dict) -> list[tuple[int, bytes]]:
+    """
+    The sections of CMND_SET_DEVICE_CONTEXT (0x36, undocumented; avrdude names it
+    CMND_SET_XMEGA_PARAMS), as Microchip Studio 7 sends them to the JTAGICE mkII (captured): 0x02 the
+    31 bytes of EDBG's TINY device data, 0x80/0x88 the read/write masks of I/O 0x20-0x5F, 0x81/0x89
+    those of the extended I/O 0x60-0xFF. Unlike the device descriptor, the device data carry the page
+    buffers per flash block, which the parts with a 4-page erase need.
+    """
+    masks = io_masks(device_info)
+    return [(0x02, bytes(tiny_device_data(device_info))), (0x80, masks[0:8]), (0x88, masks[16:24]),
+            (0x81, masks[32:52]), (0x89, masks[136:156])]
 
 
 class Jtag2Isp():
@@ -452,15 +476,93 @@ class Jtag2UsbTransport():
         usb.util.dispose_resources(self.device)
 
 
+class Jtag2SerialTransport():
+    """
+    A probe on a serial port (dw-link): the frames of the USB transport as a byte stream (AVR067
+    section 2.1.1). A frame is recognized by MESSAGE_START, a plausible size and TOKEN; bytes
+    before it are skipped. Read timeouts are raised as TimeoutError.
+    """
+    def __init__(self, port : str) -> None:
+        self.logger : logging.Logger = logging.getLogger(__name__)
+        self.port : str = port
+        self.buffer : bytearray = bytearray()
+        self.serial : serial.Serial = serial.Serial()
+        self.serial.port = port
+        self.serial.baudrate = SERIAL_START_BAUD
+        self.serial.timeout = 0.01
+        # an Arduino resets when DTR is asserted at opening; where the OS lets us, it is not
+        self.serial.dtr = False
+        self.serial.rts = False
+        self.serial.exclusive = True   # no serial monitor at the same time
+        try:
+            self.serial.open()
+        except serial.SerialException as e:
+            raise Jtag2Error("Cannot open {}: {}".format(port, e)) from e
+
+    def flush(self) -> None:
+        """Discard what has arrived so far"""
+        self.serial.reset_input_buffer()
+        self.buffer.clear()
+
+    def write_frame(self, frame : bytes) -> None:
+        """Send one frame"""
+        try:
+            self.serial.write(frame)
+        except serial.SerialException as e:
+            raise Jtag2Error("Serial error on {}: {}".format(self.port, e)) from e
+
+    def read_frame(self, timeout : int = USB_TIMEOUT) -> bytes:
+        """Receive one frame, waiting at most timeout ms"""
+        deadline = time.monotonic() + timeout / 1000
+        while True:
+            start = self.buffer.find(MESSAGE_START)
+            if start != 0:
+                if self.buffer:
+                    self.logger.debug("Skipped on %s: %s", self.port,
+                                          bytes(self.buffer[:start if start > 0 else None]).hex())
+                del self.buffer[:start if start > 0 else len(self.buffer)]
+            if len(self.buffer) >= HEADER_SIZE:
+                size = int.from_bytes(self.buffer[3:7], 'little')
+                if self.buffer[7] != TOKEN or size > MAX_SERIAL_BODY:
+                    del self.buffer[:1]       # not the start of a frame: look for the next one
+                    continue
+                if len(self.buffer) >= HEADER_SIZE + size + CRC_SIZE:
+                    frame = bytes(self.buffer[:HEADER_SIZE + size + CRC_SIZE])
+                    del self.buffer[:len(frame)]
+                    return frame
+            if time.monotonic() >= deadline:
+                raise TimeoutError("No complete frame on {} within {} ms".format(self.port, timeout))
+            try:
+                self.buffer += self.serial.read(max(1, self.serial.in_waiting))
+            except serial.SerialException as e:
+                raise Jtag2Error("Serial error on {}: {}".format(self.port, e)) from e
+
+    def set_baudrate(self, baud : int) -> None:
+        """
+        Switch the host side, after the probe has acknowledged PAR_BAUD_RATE at the old speed.
+        Measured with dw-link on an Uno: after switching down, the first frame got lost without
+        a pause (the USB-serial chip of the Uno delivers a garbage byte); 10 ms are enough.
+        """
+        self.serial.baudrate = baud
+        time.sleep(0.01)
+
+    def close(self) -> None:
+        """Release the port"""
+        try:
+            self.serial.close()
+        except serial.SerialException:
+            pass
+
+
 #pylint: disable=too-many-public-methods # one method per AVR067 command
 class Jtag2Protocol():
     """
     Commands and responses with sequence numbers. Unlike pyedbglib, the sequence
     number of every response is checked; events, which carry 0xFFFF, are set aside.
     """
-    def __init__(self, transport : Jtag2UsbTransport) -> None:
+    def __init__(self, transport : Jtag2UsbTransport | Jtag2SerialTransport) -> None:
         self.logger : logging.Logger = logging.getLogger(__name__)
-        self.transport : Jtag2UsbTransport = transport
+        self.transport : Jtag2UsbTransport | Jtag2SerialTransport = transport
         self.sequence : int = 0
         self.events : list[bytes] = []
 
@@ -483,6 +585,8 @@ class Jtag2Protocol():
             except usb.core.USBTimeoutError as e:
                 # as a BackendError, the handler reports it to GDB instead of ending the packet with SIGABRT
                 raise Jtag2UsbTimeout("No response to command 0x{:02X} from the probe: {}".format(body[0], e)) from e
+            except TimeoutError as e:                   # the serial transport
+                raise Jtag2Timeout("No response to command 0x{:02X} from the probe: {}".format(body[0], e)) from e
             except usb.core.USBError as e:
                 raise Jtag2UsbError("USB error in command 0x{:02X}: {}".format(body[0], e)) from e
 
@@ -507,6 +611,24 @@ class Jtag2Protocol():
         """CMND_SET_DEVICE_DESCRIPTOR"""
         self.expect(self.command(bytes([CMND_SET_DEVICE_DESCRIPTOR]) + descriptor), RSP_OK,
                     "Set device descriptor")
+
+    def set_device_context(self, sections : list[tuple[int, bytes]]) -> None:
+        """CMND_SET_DEVICE_CONTEXT, one command per section: section, length (MSB first), data"""
+        for section, data in sections:
+            self.ok(bytes([CMND_SET_DEVICE_CONTEXT, section]) + len(data).to_bytes(2, 'big') + bytes(data),
+                    "Set device context 0x{:02X}".format(section))
+
+    def set_baud(self, baud : int) -> None:
+        """
+        PAR_BAUD_RATE on a serial line: the probe answers at the old speed and switches after it,
+        then the host follows
+        """
+        if baud not in BAUD_CODES:
+            raise Jtag2Error("{} bps is not a speed of the protocol".format(baud))
+        if not isinstance(self.transport, Jtag2SerialTransport):
+            raise Jtag2Error("The speed can only be set on a serial line")
+        self.set_parameter(PAR_BAUD_RATE, bytes([BAUD_CODES[baud]]))
+        self.transport.set_baudrate(baud)
 
     def ok(self, body : bytes, what : str) -> None:
         """A command answered by RSP_OK"""
@@ -626,7 +748,7 @@ class Jtag2Protocol():
             remaining = int((deadline - time.monotonic()) * 1000)
             try:
                 sequence, body = parse_frame(self.transport.read_frame(max(remaining, 1)))
-            except usb.core.USBTimeoutError:
+            except (usb.core.USBTimeoutError, TimeoutError):
                 return None
             if sequence == EVENT_SEQUENCE:
                 self.events.append(body)
@@ -642,9 +764,9 @@ class Jtag2Protocol():
             raise Jtag2Error("No break event within {} ms".format(timeout))
         return result
 
-    def sign_on(self) -> SignOn:
+    def sign_on(self, timeout : int = USB_TIMEOUT) -> SignOn:
         """CMND_GET_SIGN_ON: is the probe there, and which one is it"""
-        return parse_sign_on(self.command(bytes([CMND_GET_SIGN_ON])))
+        return parse_sign_on(self.command(bytes([CMND_GET_SIGN_ON]), timeout))
 
     def sign_off(self) -> None:
         """CMND_SIGN_OFF: end of the session"""

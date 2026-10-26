@@ -904,6 +904,8 @@ tests:
     steps:
       - stimulus: set logging file log/ioreg-classic.log
       - import: prolog
+      - stimulus: monitor info
+        success: dw-link  # dw-link has no ioreg command
       - stimulus: monitor ioreg CPU.MCUSR        # register and all its bitfields
         response: "CPU.MCUSR.WDRF (@0x"
       - stimulus: monitor ioreg mcusr            # lower case and no peripheral name
@@ -973,6 +975,8 @@ tests:
     steps:
       - stimulus: set logging file log/ioreg-errors.log
       - import: prolog
+      - stimulus: monitor info
+        success: dw-link  # dw-link has no ioreg command
       - stimulus: monitor ioreg
         response: "The 'ioregister' command requires 1 or 2 arguments"
       - stimulus: monitor ioreg CPU.SREG 1 2

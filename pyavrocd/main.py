@@ -33,10 +33,11 @@ from pymcuprog.pymcuprog_errors import PymcuprogToolConnectionError
 
 import pyedbglib
 
-from pyavrocd import dwlink
+from pyavrocd import dwlinkbackend
 from pyavrocd import jtag2
 from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.jtag2backend import Jtag2Backend
+from pyavrocd.dwlinkbackend import DwlinkBackend
 from pyavrocd.backend import DebugBackend, ProbeCandidate
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 from pyavrocd.monitor import monopts
@@ -495,6 +496,34 @@ def find_jtag2_tool(args : argparse.Namespace, num_edbg : int,
         return True, None
     return False, found[0]
 
+def find_dwlink(args : argparse.Namespace, intf : str,
+                    logger : logging.Logger) -> tuple[bool, ProbeCandidate | None]:
+    """
+    dw-link on a serial port. Returns (abort, probe) like find_jtag2_tool. Which serial port is
+    dw-link only the sign-on tells, and opening a port resets an Arduino; so the probe is taken only
+    if exactly one USB serial port is there, or -u names one by the end of its name.
+    """
+    if intf != 'debugwire':
+        logger.critical("dw-link can only debug debugWIRE targets" if args.tool == "dwlink"
+                            else "No compatible tool discovered")
+        return True, None
+    if args.baud not in jtag2.BAUD_CODES:
+        logger.critical("--dw-link-baud: %d bps is not possible, choose one of %s", args.baud,
+                            ", ".join(str(b) for b in sorted(jtag2.BAUD_CODES)))
+        return True, None
+    found = [c for c in dwlinkbackend.discover()
+             if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
+    if not found:
+        logger.critical("No compatible tool discovered")
+        return True, None
+    if len(found) > 1:
+        logger.critical("More than one serial port; name the one of dw-link with -u, e.g., -u %s",
+                            found[0].address.split('/')[-1])
+        for c in found:
+            logger.critical(" Port: %s", c.address)
+        return True, None
+    return False, found[0]
+
 def edbg_tool_with_serial(serial_suffix : str) -> bool:
     """
     Is an EDBG tool attached whose serial number ends in serial_suffix? False without libusb
@@ -608,9 +637,14 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
                          jtag2_tool.product, logger)
 
     if args.tool == "dwlink" or num_tools == 0:
-        dwlink.main(args, intf) # if we return, then there is no HW debugger
-        logger.critical("No compatible tool discovered")
-        return 1 # exit with error code
+        abort, dwlink_tool = find_dwlink(args, intf, logger)
+        if abort or dwlink_tool is None:
+            return 1
+        logger.info("Using dw-link on %s", dwlink_tool.address)
+        if args.reboot:
+            logger.warning("Rebooting is not supported by dw-link")
+        return serve(lambda: DwlinkBackend(dwlink_tool, device, intf, args), device, intf, args,
+                         dwlink_tool.product, logger)
 
     # Check whether all connected tools are available as HID devices
     backend : pymcuprog.backend.Backend = pymcuprog.backend.Backend()

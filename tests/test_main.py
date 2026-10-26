@@ -374,7 +374,7 @@ class TestMain(TestCase):
         mock_print.assert_has_calls([call('pyavrocd: error: unrecognized arguments: -z\n')])
 
     @patch('pyavrocd.main.importlib.metadata.version')
-    @patch('pyavrocd.main.dwlink.main')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
     def test_startup_no_dwlink(self, mock_dwlink, mock_version):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
@@ -411,7 +411,7 @@ class TestMain(TestCase):
         mock_logger.critical.assert_has_calls([call('Could not discover debug probes: %s', ANY),
                                                    call("Install libusb: 'sudo apt install libusb-1.0-0'")])
 
-    @patch('pyavrocd.main.dwlink.main')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     def test_startup_no_tools(self, mock_find,  mock_version, mock_dwlink):
@@ -457,7 +457,7 @@ class TestMain(TestCase):
 
     @patch('pyavrocd.main.EdbgBackend', MagicMock())
     @patch('pyavrocd.main.RspServer', MagicMock())
-    @patch('pyavrocd.main.dwlink.main')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')
@@ -477,7 +477,7 @@ class TestMain(TestCase):
                                                call('Connected to %s, SN: %s', ANY, ANY),
                                                call('Starting GDB server')])
 
-    @patch('pyavrocd.main.dwlink.main')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')

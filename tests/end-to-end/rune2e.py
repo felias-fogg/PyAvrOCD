@@ -29,8 +29,8 @@ import usb
 import usb.core
 import usb.util
 import serial
-from serial import SerialException
 import serial.tools.list_ports
+from pyavrocd import jtag2
 
 logger = logging.getLogger()
 schema = { 'includes': [ '<STR>' ],
@@ -528,30 +528,32 @@ def requirements_met(req : dict[ str, Any ], prov : dict[ str, Any ]) -> bool:
                 ok = False
     return ok
 
-def check_ports(baud : int) -> str | None:
+def check_ports(usbsn : str | None = None) -> str | None:
     """
-    Go through all connected serial ports and tests whether it is a dw-link server
+    The serial port of a dw-link (version 7 or later): every USB serial port, or the one whose name
+    ends in 'usbsn', is asked for the mkII sign-on at the start speed. Opening the port may reset
+    the Arduino, so the sign-on is tried for a few seconds.
     """
-    for delay in (0.2, 2):
-        for s in serial.tools.list_ports.comports(True):
-            if s.device in ["/dev/cu.Bluetooth-Incoming-Port", "/dev/cu.debug-console"]:
-                continue
-            try:
-                with serial.Serial(s.device, baud, timeout=0.1,
-                                    write_timeout=0.1, exclusive=True) as ser:
-                    sleep(delay)
-                    ser.write(b'\x05') # send ENQ
-                    resp = ser.read(7) # under Linux, the first response might be empty
-                    if resp != b'dw-link':
-                        sleep(0.2)
-                        ser.write(b'\x05') # try again sending ENQ
-                        resp = ser.read(7) # now it should be the right response!
-                    if resp == b'dw-link':
+    for s in serial.tools.list_ports.comports():
+        if s.vid is None or (usbsn and not s.device.endswith(usbsn)):
+            continue
+        try:
+            transport = jtag2.Jtag2SerialTransport(s.device)
+        except jtag2.Jtag2Error:
+            continue
+        try:
+            protocol = jtag2.Jtag2Protocol(transport)
+            deadline = monotonic() + 4
+            while monotonic() < deadline:
+                try:
+                    if protocol.sign_on(300).ident == 'dw-link':
+                        protocol.sign_off()
                         return s.device
-            except SerialException:
-                pass
-            except Exception as e:
-                logger.critical("Error: '%s'", str(e))
+                    break
+                except jtag2.Jtag2Error:
+                    transport.flush()
+        finally:
+            transport.close()
     return None
 
 def usb_serial(dev : Any) -> str:
@@ -564,7 +566,7 @@ def usb_serial(dev : Any) -> str:
     except (usb.core.USBError, ValueError, NotImplementedError):
         return ''
 
-def identify_programmer(intf : str, baud : int, usbsn : str | None = None) -> tuple [ str, str ]:
+def identify_programmer(intf : str, usbsn : str | None = None) -> tuple [ str, str ]:
     """
     Return pair of debugger id and port name for avrdude
     'intf' must be one of 'isp', 'jtag', or 'updi'
@@ -595,13 +597,13 @@ def identify_programmer(intf : str, baud : int, usbsn : str | None = None) -> tu
         if tools[0].idProduct == 0x2103:  # avrdude calls the mkII's JTAG programmer just 'jtag2'
             name = 'jtag2' if intf == 'jtag' else 'jtag2' + intf
         return name, ("usb:" + usb_serial(tools[0])) if usbsn else "usb"
+    if intf == 'isp': # dw-link, as an ISP programmer for avrdude
+        portname = check_ports(usbsn)
+        if portname:
+            return 'jtag2isp', portname
     if usbsn:
         logger.critical("No debugger with serial number '%s' found", usbsn)
         sys.exit(1)
-    if len(tools) == 0 and intf == 'isp': # check dw-link
-        portname = check_ports(baud)
-        if portname:
-            return 'arduino_as_isp', portname
     logger.critical("No compatible debugger found")
     sys.exit(1)
 
@@ -863,6 +865,8 @@ def server_options(args : argparse.Namespace, spec : dict [ str, Any ]) -> list 
         serveropts += [ '-u', args.usbsn ]
     if args.powercycle:
         serveropts += [ '--power-cycle-command', args.powercycle ]   # one line: spaces are fine
+    if args.baud != 115200:
+        serveropts += [ '--dw-link-baud', str(args.baud) ]   # e.g. 57600 on an XMini
     if args.port != 2000:
         serveropts += [ '-p', str(args.port) ]
         replaced = 0
@@ -1066,7 +1070,7 @@ def main() -> int:
         return 1
 
     #determine programmer and port
-    programmer, port = identify_programmer(interface, args.baud, args.usbsn)
+    programmer, port = identify_programmer(interface, args.usbsn)
 
     serveropts : list [ str ] = server_options(args, spec)
 

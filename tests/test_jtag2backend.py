@@ -146,3 +146,34 @@ class TestUsbErrorsReachGdb(TestCase):
         text = bytes.fromhex(reply[1:reply.index('#')]).decode()
         self.assertTrue(text.startswith("Fatal error: No response to command 0x"), text)
         self.assertEqual(handler.critical, text[len("Fatal error: "):].strip())
+
+
+class TestDeviceData(TestCase):
+    """debugWIRE, 4-page part, firmware 7: the device context (0x36) for the page buffers, then the descriptor"""
+
+    def entered(self, firmware, device='attiny1634'):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICEmkII', address='0700'),
+                                   device, 'debugwire', options(['-d', device]))
+        backend.sign_on_info = MagicMock(master_firmware=firmware)
+        backend.protocol = MagicMock()
+        backend._target_voltage = MagicMock(return_value=5.0)
+        backend._debugwire_active = MagicMock(return_value=True)
+        backend._enter_mode()
+        return backend.protocol
+
+    def test_firmware_7_sends_the_context_then_the_descriptor(self):
+        proto = self.entered((7, 0x27))
+        self.assertEqual(proto.set_device_context.call_args[0][0][0][1][20], 4)   # page buffers per flash block
+        names = [c[0] for c in proto.method_calls if c[0] in ('set_device_context', 'set_device_descriptor')]
+        self.assertEqual(names, ['set_device_context', 'set_device_descriptor'])  # the descriptor last
+
+    def test_firmware_6_sends_the_descriptor(self):
+        proto = self.entered((6, 0x0B))
+        proto.set_device_descriptor.assert_called_once()
+        proto.set_device_context.assert_not_called()
+
+    def test_one_page_parts_keep_the_descriptor(self):
+        proto = self.entered((7, 0x27), 'atmega328p')
+        proto.set_device_descriptor.assert_called_once()
+        proto.set_device_context.assert_not_called()

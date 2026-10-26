@@ -3,9 +3,10 @@ The test suit for the jtag2 module (JTAGICE mkII protocol, AVR067)
 """
 #pylint: disable=protected-access,missing-function-docstring,missing-class-docstring,invalid-name
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 import usb.core
+from pymcuprog.deviceinfo import deviceinfo
 
 from pyavrocd import jtag2
 from pyavrocd.backend import BackendError
@@ -298,3 +299,94 @@ class TestTransport(TestCase):
             self.assertEqual([(c.tool, c.address) for c in found],
                              [('jtagice2', '090000004262'), ('dragon', '00A200050860')]) # NUL gone, Atmel-ICE not ours
             self.assertEqual([c.tool for c in jtag2.discover('dragon')], ['dragon'])
+
+
+class FakeSerial():
+    """A serial port that delivers the given chunks, one per read, then nothing"""
+    def __init__(self, chunks):
+        self.chunks = list(chunks)
+        self.written = b""
+        self.baudrate = None
+    def read(self, _size):
+        return self.chunks.pop(0) if self.chunks else b""
+    @property
+    def in_waiting(self):
+        return len(self.chunks[0]) if self.chunks else 0
+    def write(self, data):
+        self.written += data
+    def reset_input_buffer(self):
+        self.chunks.clear()
+    def close(self):
+        pass
+
+def serial_transport(chunks):
+    transport = jtag2.Jtag2SerialTransport.__new__(jtag2.Jtag2SerialTransport)
+    transport.logger = MagicMock()
+    transport.port = "/dev/test"
+    transport.buffer = bytearray()
+    transport.serial = FakeSerial(chunks)
+    return transport
+
+class TestSerialTransport(TestCase):
+
+    def test_frame_split_over_reads_after_noise(self):
+        frame = make_frame(7, b"\x80")
+        transport = serial_transport([b"\x00\x1b\x41", frame[:5], frame[5:]])
+        self.assertEqual(transport.read_frame(100), frame)
+
+    def test_resynchronizes_on_a_false_start(self):
+        # 0x1B inside noise, with a header that is no header (TOKEN missing)
+        frame = make_frame(3, b"\x86dw-link")
+        transport = serial_transport([b"\x1b\x01\x00\x05\x00\x00\x00\x99" + frame])
+        self.assertEqual(transport.read_frame(100), frame)
+
+    def test_two_frames_in_one_read(self):
+        first, second = make_frame(1, b"\x80"), make_frame(0xFFFF, b"\xe0\x10\x00\x00\x00\x00")
+        transport = serial_transport([first + second])
+        self.assertEqual(transport.read_frame(100), first)
+        self.assertEqual(transport.read_frame(100), second)
+
+    def test_timeout(self):
+        transport = serial_transport([make_frame(1, b"\x80")[:6]])
+        with self.assertRaises(TimeoutError):
+            transport.read_frame(30)
+
+    def test_protocol_reports_serial_timeout_as_jtag2timeout(self):
+        proto = Jtag2Protocol(serial_transport([]))
+        with self.assertRaises(jtag2.Jtag2Timeout) as caught:
+            proto.command(b"\x01", 30)
+        self.assertNotIsInstance(caught.exception, jtag2.Jtag2UsbTimeout)
+
+    def test_set_baud_answer_first_then_switch(self):
+        transport = serial_transport([make_frame(0, b"\x80")])
+        transport.set_baudrate = MagicMock()
+        proto = Jtag2Protocol(transport)
+        proto.set_baud(115200)
+        self.assertEqual(parse_frame(transport.serial.written)[1], b"\x02\x05\x07")
+        transport.set_baudrate.assert_called_once_with(115200)
+        with self.assertRaises(jtag2.Jtag2Error):
+            proto.set_baud(250000)
+
+    def test_set_baud_only_on_serial(self):
+        with self.assertRaises(jtag2.Jtag2Error):
+            Jtag2Protocol(FakeTransport([])).set_baud(115200)
+
+
+class TestDeviceContext(TestCase):
+
+    def test_sections_for_attiny1634(self):
+        sections = jtag2.make_device_context(deviceinfo.getdeviceinfo("pyavrocd.deviceinfo.devices.attiny1634"))
+        self.assertEqual([(s, len(d)) for s, d in sections], [(0x02, 31), (0x80, 8), (0x88, 8), (0x81, 20), (0x89, 20)])
+        data = sections[0][1]
+        self.assertEqual(data[0:2], b"\x20\x00")                  # page size 32
+        self.assertEqual(int.from_bytes(data[2:6], 'little'), 0x4000)
+        self.assertEqual(data[20], 4)                              # page buffers per flash block: 4-page erase
+        self.assertEqual(data[24], 0x2E)                           # DWDR
+        # the ext I/O masks as Microchip Studio 7 sent them to the mkII (captured)
+        self.assertEqual(sections[3][1].hex(), "fffff7ffffffffffffffffffffffffffffffffff")
+        self.assertEqual(sections[4][1].hex(), "87fff6e9ffffffffffffffffffffffffffffffff")
+
+    def test_command_format(self):
+        proto = Jtag2Protocol(FakeTransport([('same', b"\x80")]))
+        proto.set_device_context([(0x80, b"\x01\x02")])
+        self.assertEqual(proto.transport.sent[0][1], b"\x36\x80\x00\x02\x01\x02")

@@ -123,6 +123,16 @@ class Jtag2Backend(AvrSession):
                 raise FatalError("debugWIRE is not active")
             mode = jtag2.EMULATOR_MODE_DEBUGWIRE
         proto.set_parameter(jtag2.PAR_EMULATOR_MODE, bytes([mode]), jtag2.MODE_TIMEOUT)
+        if self._iface == 'debugwire' and self.device_info.get('buffers_per_flash_page', 1) > 1 and \
+          self.sign_on_info is not None and self.sign_on_info.master_firmware[0] >= 7:
+            # The 4-page parts (ATtiny441/841/1634): only the device context (0x36, as Microchip Studio 7
+            # sends it) carries the page buffers per flash block, without which the mkII writes them
+            # wrongly. Measured on the ATtiny1634: that value survives a later device descriptor, which
+            # restores the I/O handling of the descriptor. With the context alone, the mkII refreshes
+            # its copy of every I/O register in the context's read masks at the first access after
+            # each stop (312 ms instead of 29), which made single-stepping several times slower
+            # (range_dw failed), and extended I/O registers outside the masks read as 0.
+            proto.set_device_context(jtag2.make_device_context(self.device_info))
         proto.set_device_descriptor(jtag2.make_device_descriptor(self.device_info))
         proto.set_parameter(jtag2.PAR_TIMERS_RUNNING, bytes([int(self.timers_run)]))
         self._mode_set = True
@@ -176,7 +186,7 @@ class Jtag2Backend(AvrSession):
 
     def _configure_session(self) -> None:
         self._enter_mode()
-        self.logger.info("Emulator mode, device descriptor and timer mode communicated to tool")
+        self.logger.info("Emulator mode, device data and timer mode communicated to tool")
 
     def _activate_interface(self, graceful : bool = False) -> int:
         """

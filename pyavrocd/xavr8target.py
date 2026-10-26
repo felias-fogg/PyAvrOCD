@@ -303,6 +303,78 @@ class XTinyXAvrTarget(TinyXAvrTarget):
 
 
 
+def tiny_device_data(device_info : dict[str, Any]) -> bytearray:
+    """
+    The 31 bytes of device data for a debugWIRE target, as the EDBG probes get them
+    (XTinyAvrTarget.setup_config) and as the JTAGICE mkII and dw-link get them in section 0x02
+    of the device context (jtag2.make_device_context)
+    """
+    # Parse the device info for memory descriptions
+    device_memory_info : deviceinfo.DeviceMemoryInfo = deviceinfo.DeviceMemoryInfo(device_info)
+
+    flash_info : dict = device_memory_info.memory_info_by_name(MemoryNames.FLASH)
+    eeprom_info : dict = device_memory_info.memory_info_by_name(MemoryNames.EEPROM)
+    sram_info : dict = device_memory_info.memory_info_by_name(MemoryNames.INTERNAL_SRAM)
+    # Extract settings
+    fl_page_size : int = flash_info[DeviceMemoryInfoKeys.PAGE_SIZE]
+    fl_size : int = flash_info[DeviceMemoryInfoKeys.SIZE]
+    fl_base : int = flash_info[DeviceMemoryInfoKeys.ADDRESS]
+    sram_base : int = sram_info[DeviceMemoryInfoKeys.ADDRESS]
+    ee_page_size : int = eeprom_info[DeviceMemoryInfoKeys.PAGE_SIZE]
+    ee_size : int = eeprom_info[DeviceMemoryInfoKeys.SIZE]
+    ocd_addr : int = device_info.get(DeviceInfoKeysAvr.OCD_BASE,0)
+    ocd_rev : int = device_info.get('ocd_rev',0)
+    pagebuffers_per_flash_block : int = device_info.get('buffers_per_flash_page',1)
+    eear_size : int = device_info.get('eear_size',0)
+    eearh_addr : int = device_info.get('eear_base',0) + eear_size - 1
+    eearl_addr : int = device_info.get('eear_base',0)
+    eecr_addr : int = device_info.get('eecr_base',0)
+    eedr_addr : int = device_info.get('eedr_base',0)
+    spmcsr_addr : int = device_info.get('spmcsr_base',0)
+    osccal_addr : int = device_info.get('osccal_base',0)
+
+    # Setup device structure and write to tool
+    # TINY_FLASH_PAGE_BYTES (2@0x00)
+    devdata : bytearray = bytearray([fl_page_size & 0xff, 0])
+    # TINY_FLASH_BYTES (4@0x02)
+    devdata += bytearray([fl_size & 0xFF, (fl_size >> 8) & 0xFF,
+                              (fl_size >> 16) & 0xFF, (fl_size >> 24) & 0xFF])
+    # TINY_FLASH_BASE (4@0x06)
+    devdata += bytearray([fl_base & 0xFF, (fl_base >> 8) & 0xFF,
+                              (fl_base >> 16) & 0xFF, (fl_base >> 24) & 0xFF])
+    # TINY_BOOT_BASE (4@0x0A)
+    boot_base = fl_size - fl_page_size # as is done for MegaAvr
+    devdata += bytearray([boot_base & 0xFF, (boot_base >> 8) & 0xFF,
+                              (boot_base >> 16) & 0xFF, (boot_base >> 24) & 0xFF])
+    # TINY_SRAM_BASE (2@0x0E)
+    devdata += bytearray([sram_base & 0xff, (sram_base >> 8) & 0xff])
+    # TINY_EEPROM_BYTES (2@0x10)
+    devdata += bytearray([ee_size & 0xff, (ee_size >> 8) & 0xff])
+    # TINY_EEPROM_PAGE_BYTES (1@0x12)
+    devdata += bytearray([ee_page_size])
+    # TINY_OCD_REVISION (1@0x13)
+    devdata += bytearray([ocd_rev])
+    # TINY_PAGEBUFFERS_PER_FLASH_BLOCK
+    devdata += bytearray([pagebuffers_per_flash_block])
+    # 3 byte gap (3@0x15)
+    devdata += bytearray([0, 0, 0])
+    # TINY_OCD_MODULE_ADDRESS (1@0x18)
+    devdata += bytearray([ocd_addr & 0xff])
+    # TINY_EEARH_BASE (1@0x19)
+    devdata += bytearray([eearh_addr & 0xFF])
+    # TINY_EEARL_BASE (1@0x1A)
+    devdata += bytearray([eearl_addr & 0xFF])
+    # TINY_EECR_BASE (1@0x1B)
+    devdata += bytearray([eecr_addr & 0xFF])
+    # TINY_EEDR_BASE (1@0x1C)
+    devdata += bytearray([eedr_addr & 0xFF])
+    # TINY_SPMCSR_BASE (1@0x1D)
+    devdata += bytearray([spmcsr_addr & 0xFF])
+    # TINY_OSCCAL_BASE (1@0x1E)
+    devdata += bytearray([osccal_addr & 0xFF])
+    return devdata
+
+
 class XTinyAvrTarget(TinyAvrTarget):
     """
     Implements Tiny AVR (debugWIRE) functionality of the AVR8 protocol
@@ -388,71 +460,7 @@ class XTinyAvrTarget(TinyAvrTarget):
                             by deviceinfo.deviceinfo.getdeviceinfo
         :type device_info: dict
         """
-
-        # Parse the device info for memory descriptions
-        device_memory_info : deviceinfo.DeviceMemoryInfo = deviceinfo.DeviceMemoryInfo(device_info)
-
-        flash_info : dict = device_memory_info.memory_info_by_name(MemoryNames.FLASH)
-        eeprom_info : dict = device_memory_info.memory_info_by_name(MemoryNames.EEPROM)
-        sram_info : dict = device_memory_info.memory_info_by_name(MemoryNames.INTERNAL_SRAM)
-        # Extract settings
-        fl_page_size : int = flash_info[DeviceMemoryInfoKeys.PAGE_SIZE]
-        fl_size : int = flash_info[DeviceMemoryInfoKeys.SIZE]
-        fl_base : int = flash_info[DeviceMemoryInfoKeys.ADDRESS]
-        sram_base : int = sram_info[DeviceMemoryInfoKeys.ADDRESS]
-        ee_page_size : int = eeprom_info[DeviceMemoryInfoKeys.PAGE_SIZE]
-        ee_size : int = eeprom_info[DeviceMemoryInfoKeys.SIZE]
-        ocd_addr : int = device_info.get(DeviceInfoKeysAvr.OCD_BASE,0)
-        ocd_rev : int = device_info.get('ocd_rev',0)
-        pagebuffers_per_flash_block : int = device_info.get('buffers_per_flash_page',1)
-        eear_size : int = device_info.get('eear_size',0)
-        eearh_addr : int = device_info.get('eear_base',0) + eear_size - 1
-        eearl_addr : int = device_info.get('eear_base',0)
-        eecr_addr : int = device_info.get('eecr_base',0)
-        eedr_addr : int = device_info.get('eedr_base',0)
-        spmcsr_addr : int = device_info.get('spmcsr_base',0)
-        osccal_addr : int = device_info.get('osccal_base',0)
-
-        # Setup device structure and write to tool
-        # TINY_FLASH_PAGE_BYTES (2@0x00)
-        devdata : bytearray = bytearray([fl_page_size & 0xff, 0])
-        # TINY_FLASH_BYTES (4@0x02)
-        devdata += bytearray([fl_size & 0xFF, (fl_size >> 8) & 0xFF,
-                                  (fl_size >> 16) & 0xFF, (fl_size >> 24) & 0xFF])
-        # TINY_FLASH_BASE (4@0x06)
-        devdata += bytearray([fl_base & 0xFF, (fl_base >> 8) & 0xFF,
-                                  (fl_base >> 16) & 0xFF, (fl_base >> 24) & 0xFF])
-        # TINY_BOOT_BASE (4@0x0A)
-        boot_base = fl_size - fl_page_size # as is done for MegaAvr
-        devdata += bytearray([boot_base & 0xFF, (boot_base >> 8) & 0xFF,
-                                  (boot_base >> 16) & 0xFF, (boot_base >> 24) & 0xFF])
-        # TINY_SRAM_BASE (2@0x0E)
-        devdata += bytearray([sram_base & 0xff, (sram_base >> 8) & 0xff])
-        # TINY_EEPROM_BYTES (2@0x10)
-        devdata += bytearray([ee_size & 0xff, (ee_size >> 8) & 0xff])
-        # TINY_EEPROM_PAGE_BYTES (1@0x12)
-        devdata += bytearray([ee_page_size])
-        # TINY_OCD_REVISION (1@0x13)
-        devdata += bytearray([ocd_rev])
-        # TINY_PAGEBUFFERS_PER_FLASH_BLOCK
-        devdata += bytearray([pagebuffers_per_flash_block])
-        # 3 byte gap (3@0x15)
-        devdata += bytearray([0, 0, 0])
-        # TINY_OCD_MODULE_ADDRESS (1@0x18)
-        devdata += bytearray([ocd_addr & 0xff])
-        # TINY_EEARH_BASE (1@0x19)
-        devdata += bytearray([eearh_addr & 0xFF])
-        # TINY_EEARL_BASE (1@0x1A)
-        devdata += bytearray([eearl_addr & 0xFF])
-        # TINY_EECR_BASE (1@0x1B)
-        devdata += bytearray([eecr_addr & 0xFF])
-        # TINY_EEDR_BASE (1@0x1C)
-        devdata += bytearray([eedr_addr & 0xFF])
-        # TINY_SPMCSR_BASE (1@0x1D)
-        devdata += bytearray([spmcsr_addr & 0xFF])
-        # TINY_OSCCAL_BASE (1@0x1E)
-        devdata += bytearray([osccal_addr & 0xFF])
-
+        devdata : bytearray = tiny_device_data(device_info)
         self.logger_loc.debug("Write all device data: %s",
                               [devdata.hex()[i:i+2] for i in range(0, len(devdata.hex()), 2)])
         self.protocol.write_device_data(devdata)
