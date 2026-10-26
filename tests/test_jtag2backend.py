@@ -183,3 +183,26 @@ class TestDeviceData(TestCase):
         proto = self.entered((7, 0x27), 'atmega328p')
         proto.set_device_descriptor.assert_called_once()
         proto.set_device_context.assert_not_called()
+
+
+class TestSoftReset(TestCase):
+    """PAR_SOFT_RESET (0x2D) = 3 right after the sign-on, so that the probe stays on the bus after a sign-off"""
+
+    def make(self):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='dragon', product='AVRDRAGON', address='0860'),
+                                   'atmega328p', 'debugwire', options(['-d', 'atmega328p']))
+        backend.protocol = MagicMock()
+        backend.protocol.sign_on.return_value = MagicMock(master_firmware=(7, 0x27))
+        return backend
+
+    def test_set_after_sign_on(self):
+        backend = self.make()
+        backend._sign_on()
+        backend.protocol.set_parameter.assert_called_once_with(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_NONE]))
+
+    def test_refusal_is_no_error(self):
+        backend = self.make()
+        backend.protocol.set_parameter.side_effect = jtag2.Jtag2Error("Set parameter 0x2D: RSP_ILLEGAL_PARAMETER")
+        backend._sign_on()
+        self.assertIsNotNone(backend.sign_on_info)

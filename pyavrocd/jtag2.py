@@ -91,6 +91,9 @@ PAR_JTAGID : int = 0x0E
 PAR_EXTERNAL_RESET : int = 0x13
 PAR_MCU_STATE : int = 0x1A
 PAR_TARGET_SIGNATURE : int = 0x1D   # in debugWIRE mode, LSB first
+PAR_SOFT_RESET : int = 0x2D         # AVR067 rev. D: 'soft reset (after signing off)', write only
+SOFT_RESET_NONE : int = 0x03        # no reset: the probe stays on the bus after CMND_SIGN_OFF; 0x00 (hard
+                                    # reset, the default after power-up) makes it re-enumerate (measured)
 MCU_STATES : dict[int, str] = { 0x00 : "STOPPED", 0x01 : "RUNNING", 0x02 : "PROGRAMMING" }
 
 # memory types (AVR067 section 10); addresses are byte addresses for all of them
