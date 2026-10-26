@@ -1199,6 +1199,8 @@ tests:
       - stimulus: set logging enabled on
       - stimulus: "target extended-remote :2000"
         timeout: 10
+      - stimulus: info program                # the server stops the program when GDB reconnects
+        response: Program stopped at
       - stimulus: print cnt
       - stimulus: print cnt > 0               # it was 0 at the breakpoint: the program kept running
         responses:
