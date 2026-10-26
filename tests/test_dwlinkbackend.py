@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch, call
 
 from pyavrocd import jtag2
 from pyavrocd.backend import ProbeCandidate, BackendNotSupportedError, BREAKCODE
-from pyavrocd.dwlinkbackend import DwlinkBackend, DwlinkProtocol, discover, \
+from pyavrocd.dwlinkbackend import DwlinkBackend, DwlinkProtocol, discover, reboot_probe, \
      CMND_EXECUTE_INSTRUCTION, PAR_TARGET_POWER, PAR_DWLINK_ERROR
 from pyavrocd.errors import FatalError
 from pyavrocd.main import options, find_dwlink
@@ -246,3 +246,51 @@ class TestSignOff(TestCase):
         backend.release()
         self.assertEqual(fake.sent[0][1], bytes([jtag2.CMND_SIGN_OFF]))
         backend.transport.set_baudrate.assert_called_once_with(19200)
+
+
+def serial_fake(answers):
+    fake = FakeTransport(answers)
+    fake.set_baudrate = MagicMock()
+    fake.flush = MagicMock()
+    fake.close = MagicMock()
+    return fake
+
+class TestReboot(TestCase):
+    """--reboot-debugger: sign off with PAR_SOFT_RESET 0 (dw-link restarts by its watchdog), sign on again"""
+
+    @patch('pyavrocd.dwlinkbackend.time.sleep')
+    @patch('pyavrocd.dwlinkbackend.jtag2.Jtag2SerialTransport')
+    def test_reboot(self, mock_transport, _sleep):
+        fake = serial_fake([('same', sign_on_body()), ('same', b"\x80"), ('same', b"\x80"),
+                            ('same', sign_on_body()), ('same', b"\x80")])
+        mock_transport.return_value = fake
+        self.assertTrue(reboot_probe(CANDIDATE, 115200, MagicMock()))
+        mock_transport.assert_called_once_with(CANDIDATE.address)    # one port open, one Arduino reset
+        self.assertEqual([body for _, body in fake.sent],
+                         [bytes([jtag2.CMND_GET_SIGN_ON]),
+                          bytes([jtag2.CMND_SET_PARAMETER, jtag2.PAR_SOFT_RESET, jtag2.SOFT_RESET_HARD]),
+                          bytes([jtag2.CMND_SIGN_OFF]),
+                          bytes([jtag2.CMND_GET_SIGN_ON]),
+                          bytes([jtag2.CMND_SIGN_OFF])])
+        fake.close.assert_called_once()
+
+    @patch('pyavrocd.dwlinkbackend.jtag2.Jtag2SerialTransport')
+    def test_not_dwlink(self, mock_transport):
+        fake = serial_fake([('same', sign_on_body(ident=b"JTAGICEmkII"))])
+        mock_transport.return_value = fake
+        logger = MagicMock()
+        self.assertFalse(reboot_probe(CANDIDATE, 115200, logger))
+        self.assertEqual(len(fake.sent), 1)                          # nothing after the sign-on
+        fake.close.assert_called_once()
+        logger.critical.assert_called_once()
+
+    @patch('pyavrocd.dwlinkbackend.time.sleep')
+    @patch('pyavrocd.dwlinkbackend.time.monotonic', side_effect=[0, 0, 10])
+    @patch('pyavrocd.dwlinkbackend.jtag2.Jtag2SerialTransport')
+    def test_not_back(self, mock_transport, _monotonic, _sleep):
+        fake = serial_fake([('same', sign_on_body()), ('same', b"\x80"), ('same', b"\x80")])
+        mock_transport.return_value = fake
+        logger = MagicMock()
+        self.assertFalse(reboot_probe(CANDIDATE, 115200, logger))
+        fake.close.assert_called_once()
+        self.assertIn("Could not reboot", logger.critical.call_args.args[0])

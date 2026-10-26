@@ -383,6 +383,39 @@ class TestMain(TestCase):
         mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
         self.assertEqual(mock_dwlink.call_count,1)
 
+    @patch('pyavrocd.main.serve')
+    @patch('pyavrocd.main.jtag2backend.reboot_probe', return_value=True)
+    @patch('pyavrocd.main.find_jtag2_tool')
+    @patch('pyavrocd.main.number_of_connected_edbg_tools', return_value=0)
+    @patch('pyavrocd.main.importlib.metadata.version', return_value='VERSION')
+    def test_startup_reboot_jtag2_only(self, _version, _num, mock_find, mock_reboot, mock_serve):
+        dragon = ProbeCandidate(tool='dragon', product='AVRDRAGON', address='00A200050860')
+        mock_find.return_value = (False, dragon)
+        mock_logger = MagicMock()
+        self.assertEqual(startup(['--reboot-debugger'], mock_logger), 0)
+        mock_reboot.assert_called_once_with(dragon, mock_logger)
+        mock_serve.assert_not_called()
+        mock_logger.info.assert_called_with('Terminating ...')
+
+    @patch('pyavrocd.main.serve', return_value=0)
+    @patch('pyavrocd.main.dwlinkbackend.reboot_probe', return_value=True)
+    @patch('pyavrocd.main.dwlinkbackend.discover')
+    @patch('pyavrocd.main.importlib.metadata.version', return_value='VERSION')
+    def test_startup_reboot_dwlink(self, _version, mock_discover, mock_reboot, mock_serve):
+        dwlink = ProbeCandidate(tool='dwlink', product='dw-link', address='/dev/cu.usbmodem242101')
+        mock_discover.return_value = [dwlink]
+        mock_logger = MagicMock()
+        self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink'], mock_logger), 0)  # no device
+        mock_reboot.assert_called_once_with(dwlink, 115200, mock_logger)
+        mock_serve.assert_not_called()
+        mock_reboot.reset_mock()
+        self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink', '-d', 'attiny85'], mock_logger), 0)
+        mock_reboot.assert_called_once()
+        mock_serve.assert_called_once()
+        mock_reboot.return_value = False
+        self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink', '-d', 'attiny85'], mock_logger), 1)
+        mock_serve.assert_called_once()                               # not again
+
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     @patch('pyavrocd.main.platform.system')

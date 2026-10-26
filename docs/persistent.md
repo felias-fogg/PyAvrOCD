@@ -30,3 +30,4 @@ If PyAvrOCD is invoked with the `--once` option, the GDB commands `disconnect`, 
 | `attach <num>` | Not available               | Attaches to detached program (argument is ignored)           | Useless because it is not possible to detach from a program  |
 | `monitor exit` | Terminates PyAvrOCD         | Terminates PyAvrOCD                                          | Terminates PyAvrOCD                                          |
 
+When GDB connects again after `detach` and `quit`, PyAvrOCD stops the program, and GDB is attached to it; `attach` is only needed after a `detach` within the same GDB session.

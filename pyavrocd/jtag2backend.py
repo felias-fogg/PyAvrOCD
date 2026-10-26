@@ -27,6 +27,7 @@ Behaviour of the probes that the code relies on (measured with a JTAGICE mkII cl
 - USB errors reach the session as Jtag2UsbError (a BackendError), timeouts as Jtag2UsbTimeout
 """
 import argparse
+import logging
 import time
 
 import usb.core
@@ -243,20 +244,8 @@ class Jtag2Backend(AvrSession):
         self._wait_for_reenumeration(gone=0.6)   # measured: a probe that resets is gone after 0.2 s
 
     def _wait_for_reenumeration(self, gone : float = 2.0, back : float = 6.0) -> None:
-        """
-        After a sign-off without PAR_SOFT_RESET, the probe leaves the bus for 1.5 to 3 s. Opening it
-        before it has gone can still succeed, and then commands reach a restarting probe. So wait
-        until it has gone, at most 'gone' seconds, then until it is back; _sign_on opens it again.
-        A probe that does not leave the bus within 'gone' has not reset.
-        """
-        def present() -> bool:
-            return any(c.address == self.candidate.address for c in jtag2.discover(self.candidate.tool))
-        deadline = time.monotonic() + gone
-        while present() and time.monotonic() < deadline:
-            time.sleep(0.1)
-        deadline = time.monotonic() + back
-        while not present() and time.monotonic() < deadline:
-            time.sleep(0.2)
+        """See wait_for_reenumeration; _sign_on opens the probe again"""
+        wait_for_reenumeration(self.candidate, gone, back)
 
     def _detach(self) -> None:
         """Nothing to do: the target runs on, and leaving the emulator mode happens at the sign-off"""
@@ -555,3 +544,60 @@ class Jtag2Backend(AvrSession):
         self.timers_run = run
         if self._mode_set:
             self._proto().set_parameter(jtag2.PAR_TIMERS_RUNNING, bytes([int(run)]))
+
+
+def wait_for_reenumeration(candidate : ProbeCandidate, gone : float = 2.0, back : float = 6.0) -> bool:
+    """
+    After a sign-off without PAR_SOFT_RESET, the probe leaves the bus for 1.5 to 3 s. Opening it
+    before it has gone can still succeed, and then commands reach a restarting probe. So wait
+    until it has gone, at most 'gone' seconds, then until it is back, at most 'back' seconds.
+    A probe that does not leave the bus within 'gone' has not reset. Returns whether it is there.
+    """
+    def present() -> bool:
+        return any(c.address == candidate.address for c in jtag2.discover(candidate.tool))
+    deadline = time.monotonic() + gone
+    while present() and time.monotonic() < deadline:
+        time.sleep(0.1)
+    deadline = time.monotonic() + back
+    while not present() and time.monotonic() < deadline:
+        time.sleep(0.2)
+    return present()
+
+def reboot_probe(candidate : ProbeCandidate, logger : logging.Logger) -> bool:
+    """
+    --reboot-debugger: sign off with PAR_SOFT_RESET set to a hard reset, after which the probe leaves
+    the bus and enumerates again, then sign on to it once more. Needs no target and no device data.
+    Returns False if the probe does not come back or does not answer.
+    """
+    logger.info("Rebooting debugger...")
+    try:
+        transport = jtag2.Jtag2UsbTransport.open(tool=candidate.tool, serial_suffix=candidate.address)
+        try:
+            proto = jtag2.Jtag2Protocol(transport)
+            proto.sign_on()
+            proto.set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_HARD]))
+            proto.sign_off()
+        finally:
+            transport.close()
+        if not wait_for_reenumeration(candidate, gone=2.0, back=6.0):
+            logger.critical("... could not reconnect")
+            return False
+        # it may be there before it answers: try for a while
+        deadline = time.monotonic() + 5
+        while True:
+            try:
+                transport = jtag2.Jtag2UsbTransport.open(tool=candidate.tool, serial_suffix=candidate.address)
+                try:
+                    jtag2.Jtag2Protocol(transport).sign_on()
+                finally:
+                    transport.close()
+                break
+            except (jtag2.Jtag2Error, usb.core.USBError):
+                if time.monotonic() > deadline:
+                    raise
+                time.sleep(0.3)
+    except (jtag2.Jtag2Error, usb.core.USBError) as e:
+        logger.critical("Could not reboot the %s: %s", candidate.product, e)
+        return False
+    logger.info("Reconnected to %s", candidate.product)
+    return True

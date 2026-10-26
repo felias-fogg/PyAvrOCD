@@ -9,7 +9,7 @@ import usb.core
 
 from pyavrocd import jtag2
 from pyavrocd.backend import ProbeCandidate
-from pyavrocd.jtag2backend import Jtag2Backend
+from pyavrocd.jtag2backend import Jtag2Backend, reboot_probe
 from pyavrocd.errors import FatalError
 from pyavrocd.main import options
 from pyavrocd.handler import GdbHandler
@@ -206,3 +206,48 @@ class TestSoftReset(TestCase):
         backend.protocol.set_parameter.side_effect = jtag2.Jtag2Error("Set parameter 0x2D: RSP_ILLEGAL_PARAMETER")
         backend._sign_on()
         self.assertIsNotNone(backend.sign_on_info)
+
+
+DRAGON = ProbeCandidate(tool='dragon', product='AVRDRAGON', address='00A200050860')
+SIGN_ON = bytes([jtag2.RSP_SIGN_ON, 1, 0xFF, 0, 0x27, 1, 0xFF, 0, 0x27, 1]) + \
+  bytes.fromhex("00A200050860") + b"AVRDRAGON\0"
+
+def closable(answers):
+    fake = FakeTransport(answers)
+    fake.close = MagicMock()
+    return fake
+
+class TestReboot(TestCase):
+    """--reboot-debugger: sign off with PAR_SOFT_RESET 0, wait until the probe is back, sign on again"""
+
+    @patch('pyavrocd.jtag2backend.wait_for_reenumeration', return_value=True)
+    @patch('pyavrocd.jtag2backend.jtag2.Jtag2UsbTransport.open')
+    def test_reboot(self, mock_open, mock_wait):
+        first = closable([('same', SIGN_ON), ('same', b"\x80"), ('same', b"\x80")])
+        second = closable([('same', SIGN_ON)])
+        mock_open.side_effect = [first, second]
+        self.assertTrue(reboot_probe(DRAGON, MagicMock()))
+        self.assertEqual([body for _, body in first.sent],
+                         [bytes([jtag2.CMND_GET_SIGN_ON]),
+                          bytes([jtag2.CMND_SET_PARAMETER, jtag2.PAR_SOFT_RESET, jtag2.SOFT_RESET_HARD]),
+                          bytes([jtag2.CMND_SIGN_OFF])])
+        self.assertEqual([body for _, body in second.sent], [bytes([jtag2.CMND_GET_SIGN_ON])])
+        first.close.assert_called_once()
+        second.close.assert_called_once()
+        mock_wait.assert_called_once()
+
+    @patch('pyavrocd.jtag2backend.wait_for_reenumeration', return_value=False)
+    @patch('pyavrocd.jtag2backend.jtag2.Jtag2UsbTransport.open')
+    def test_not_back(self, mock_open, _mock_wait):
+        mock_open.return_value = closable([('same', SIGN_ON), ('same', b"\x80"), ('same', b"\x80")])
+        logger = MagicMock()
+        self.assertFalse(reboot_probe(DRAGON, logger))
+        logger.critical.assert_called_once_with("... could not reconnect")
+
+    @patch('pyavrocd.jtag2backend.jtag2.Jtag2UsbTransport.open')
+    def test_no_answer(self, mock_open):
+        mock_open.return_value = closable([])
+        logger = MagicMock()
+        self.assertFalse(reboot_probe(DRAGON, logger))
+        mock_open.return_value.close.assert_called_once()
+        self.assertIn("Could not reboot", logger.critical.call_args.args[0])

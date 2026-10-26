@@ -35,6 +35,7 @@ import pyedbglib
 
 from pyavrocd import dwlinkbackend
 from pyavrocd import jtag2
+from pyavrocd import jtag2backend
 from pyavrocd.xavrdebugger import EdbgBackend
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.dwlinkbackend import DwlinkBackend
@@ -145,7 +146,8 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             metavar="SN",
                             type=str,
                             dest='serialnumber',
-                            help="Suffix of USB serial number of the tool to use")
+                            help="Suffix of USB serial number or serial port name")
+
 
     level_choices : list[str] = ['all', 'debug', 'info', 'warning', 'error', 'critical']
     parser.add_argument("-v", "--verbose",
@@ -215,7 +217,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
     args : argparse.Namespace = parser.parse_args(cmd)
 
     if args.webhelp:
-        webbrowser.open('https://pyavrocd.io/command-line-options/')
+        webbrowser.open('https://pyavrocd.io/latest/command-line-options/')
         sys.exit(0)
 
     if args.version:
@@ -506,7 +508,7 @@ def find_dwlink(args : argparse.Namespace, intf : str,
     dw-link only the sign-on tells, and opening a port resets an Arduino; so the probe is taken only
     if exactly one USB serial port is there, or -u names one by the end of its name.
     """
-    if intf != 'debugwire':
+    if intf and intf != 'debugwire':   # no interface: no device, only --reboot-debugger
         logger.critical("dw-link can only debug debugWIRE targets" if args.tool == "dwlink"
                             else "No compatible tool discovered")
         return True, None
@@ -639,7 +641,11 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     if jtag2_tool is not None:
         logger.info("Connected to %s, SN: %s", jtag2_tool.product, jtag2_tool.address)
         if args.reboot:
-            logger.warning("Rebooting is not supported by the %s", jtag2_tool.product)
+            if not jtag2backend.reboot_probe(jtag2_tool, logger):
+                return 1
+            if not device:
+                logger.info("Terminating ...")
+                return 0
         return serve(lambda: Jtag2Backend(jtag2_tool, device, intf, args), device, intf, args,
                          jtag2_tool.product, logger)
 
@@ -649,7 +655,11 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
             return 1
         logger.info("Using dw-link on %s", dwlink_tool.address)
         if args.reboot:
-            logger.warning("Rebooting is not supported by dw-link")
+            if not dwlinkbackend.reboot_probe(dwlink_tool, args.baud, logger):
+                return 1
+            if not device:
+                logger.info("Terminating ...")
+                return 0
         return serve(lambda: DwlinkBackend(dwlink_tool, device, intf, args), device, intf, args,
                          dwlink_tool.product, logger)
 

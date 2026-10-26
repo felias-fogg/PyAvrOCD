@@ -18,6 +18,7 @@ is different:
   at the end brings dw-link back to the start speed, where the next session expects it
 """
 import argparse
+import logging
 import time
 
 from serial.tools import list_ports
@@ -66,6 +67,60 @@ def discover() -> list[ProbeCandidate]:
             for port in list_ports.comports() if port.vid is not None]
 
 
+def connect(transport : jtag2.Jtag2SerialTransport, proto : jtag2.Jtag2Protocol, address : str, baud : int,
+                logger : logging.Logger) -> jtag2.SignOn:
+    """
+    Sign on at the start speed. Opening the port may have reset the Arduino, whose bootloader
+    then waits for a moment. A dw-link left at a higher speed by a server that ended without
+    signing off answers there: most likely at this configuration's speed (baud), but a server
+    started with another --dw-link-baud may have left it at any of them.
+    """
+    speeds = [jtag2.SERIAL_START_BAUD, baud] + \
+      [b for b in sorted(jtag2.BAUD_CODES, reverse=True) if b not in (jtag2.SERIAL_START_BAUD, baud)]
+    deadline = time.monotonic() + BOOT_TIME
+    while True:
+        for speed in speeds:
+            transport.set_baudrate(speed)
+            transport.flush()
+            try:
+                return proto.sign_on(SIGN_ON_TIMEOUT)
+            except jtag2.Jtag2Error as e:
+                logger.debug("No sign-on at %d bps: %s", speed, e)
+        if time.monotonic() > deadline:
+            raise FatalError("No dw-link (version {} or later) answers on {}".format(
+                MIN_MAJOR_VERSION, address))
+
+def reboot_probe(candidate : ProbeCandidate, baud : int, logger : logging.Logger) -> bool:
+    """
+    --reboot-debugger: sign off with PAR_SOFT_RESET set to a hard reset, after which dw-link restarts
+    (watchdog reset; the target is switched off and on again, as at every start of dw-link), then
+    sign on to it once more and off again. The port stays open, so that an Arduino that resets at
+    every port open does not restart a second time. Returns False if dw-link does not come back.
+    """
+    logger.info("Rebooting debugger...")
+    transport = jtag2.Jtag2SerialTransport(candidate.address)
+    try:
+        proto = DwlinkProtocol(transport)
+        info = connect(transport, proto, candidate.address, baud, logger)
+        if info.ident != DWLINK_IDENT or info.master_firmware[0] < MIN_MAJOR_VERSION:
+            logger.critical("%s %d.%d on %s cannot be rebooted", info.ident, *info.master_firmware,
+                                candidate.address)
+            return False
+        proto.set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_HARD]))
+        proto.sign_off()
+        transport.set_baudrate(jtag2.SERIAL_START_BAUD)
+        time.sleep(0.1)   # the watchdog fires after 15 ms; what comes before is not an answer
+        connect(transport, proto, candidate.address, jtag2.SERIAL_START_BAUD, logger)
+        proto.sign_off()
+    except (FatalError, BackendError) as e:
+        logger.critical("Could not reboot dw-link: %s", e)
+        return False
+    finally:
+        transport.close()
+    logger.info("Reconnected to dw-link on %s", candidate.address)
+    return True
+
+
 class DwlinkProtocol(jtag2.Jtag2Protocol):
     """The mkII protocol, with dw-link's error number added to the failures it explains"""
 
@@ -110,28 +165,9 @@ class DwlinkBackend(Jtag2Backend):
         self.protocol = DwlinkProtocol(self.transport)
 
     def _connect(self) -> jtag2.SignOn:
-        """
-        Sign on at the start speed. Opening the port may have reset the Arduino, whose bootloader
-        then waits for a moment. A dw-link left at a higher speed by a server that ended without
-        signing off answers there: most likely at this configuration's speed, but a server started
-        with another --dw-link-baud may have left it at any of them.
-        """
-        proto = self._proto()
+        """See connect"""
         assert isinstance(self.transport, jtag2.Jtag2SerialTransport)
-        speeds = [jtag2.SERIAL_START_BAUD, self.baud] + \
-          [b for b in sorted(jtag2.BAUD_CODES, reverse=True) if b not in (jtag2.SERIAL_START_BAUD, self.baud)]
-        deadline = time.monotonic() + BOOT_TIME
-        while True:
-            for baud in speeds:
-                self.transport.set_baudrate(baud)
-                self.transport.flush()
-                try:
-                    return proto.sign_on(SIGN_ON_TIMEOUT)
-                except jtag2.Jtag2Error as e:
-                    self.logger.debug("No sign-on at %d bps: %s", baud, e)
-            if time.monotonic() > deadline:
-                raise FatalError("No dw-link (version {} or later) answers on {}".format(
-                    MIN_MAJOR_VERSION, self.candidate.address))
+        return connect(self.transport, self._proto(), self.candidate.address, self.baud, self.logger)
 
     # ===== primitives for AvrSession =================================================
 
