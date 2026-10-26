@@ -64,7 +64,8 @@ schema = { 'includes': [ '<STR>' ],
                              'success': '<STR>',
                              'fail': '<STR>',
                              'interrupt': '<NUMBER>',
-                             'timeout': '<NUMBER>' } ] } },
+                             'timeout': '<NUMBER>',
+                             'restart_gdb': '<BOOL>' } ] } },
            'devices':
                   { '<STR>': {
                         'virtual': '<BOOL>',
@@ -902,21 +903,18 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
         if spec['tests'][script].get('serverargs', None):
             f.write("\n".join(spec['tests'][script]['serverargs'].split(" ")))
     sleep(1)
-    child = spawn("avr-gdb " + binary + " -n", encoding="utf-8")
-    resp = child.expect([r"\(gdb\)", TIMEOUT, EOF],timeout=5)
-    logger.debug("Initial response: %s", child.before)
-    if resp >= 1:
-        report_failure(child, "Failed %s calling avr-gdb" % script)
+    child = start_gdb(script, binary)
+    if child is None:
         return False
-    # Responses are matched line by line, so a line gdb wrapped to the terminal
-    # width does not match any more. Where the wrap falls depends on the length of
-    # the paths it prints, which differs from machine to machine.
-    for setting in ("set width unlimited", "set height unlimited"):
-        child.sendline(setting)
-        if child.expect([r"\(gdb\)", TIMEOUT, EOF], timeout=5) >= 1:
-            report_failure(child, "Failed %s sending '%s'" % (script, setting))
-            return False
     for s in steps:
+        if s.get('restart_gdb', False):
+            # a new GDB process with the same ELF file; the server keeps running (extended-remote)
+            child.close(force=True)
+            logger.debug("GDB restarted")
+            child = start_gdb(script, binary)
+            if child is None:
+                return False
+            continue
         ok, succfail = exec_step(child, s)
         if not ok:
             child.close()
@@ -926,6 +924,45 @@ def exec_all_steps(script : str, steps : list [ dict [ str, Any ] ], dev : str, 
             return succfail == 1
     child.close()
     return True
+
+def start_gdb(script : str, binary : str) -> pexpect.spawn | None:
+    """
+    Start AVR-GDB with 'binary' (may be empty) and wait for its prompt; None if it does not come
+    """
+    child = spawn("avr-gdb " + binary + " -n", encoding="utf-8")
+    resp = child.expect([r"\(gdb\)", TIMEOUT, EOF],timeout=5)
+    logger.debug("Initial response: %s", child.before)
+    if resp >= 1:
+        report_failure(child, "Failed %s calling avr-gdb" % script)
+        return None
+    # Responses are matched line by line, so a line gdb wrapped to the terminal
+    # width does not match any more. Where the wrap falls depends on the length of
+    # the paths it prints, which differs from machine to machine.
+    for setting in ("set width unlimited", "set height unlimited"):
+        child.sendline(setting)
+        if child.expect([r"\(gdb\)", TIMEOUT, EOF], timeout=5) >= 1:
+            report_failure(child, "Failed %s sending '%s'" % (script, setting))
+            return None
+    return child
+
+def end_extended_server(steps : list [ dict [ str, Any ] ]) -> None:
+    """
+    After a failed test in extended-remote mode: its server waits for GDB to come back, as it
+    should, and would hold the probe until the next test gives up waiting. So connect once more
+    and end it with 'monitor exit' (through GDB, which works on every host).
+    """
+    target = next((s['stimulus'] for s in steps if 'extended-remote' in s.get('stimulus', '')), None)
+    if target is None:
+        return
+    end = monotonic() + 2
+    while os.path.exists('pyavrocd.running') and monotonic() < end:
+        sleep(0.1)
+    if not os.path.exists('pyavrocd.running'):
+        return
+    logger.info("Ending the server left behind by the failed test")
+    out, status = run("avr-gdb -n -batch -ex '" + target.strip('"') + "' -ex 'monitor exit'",
+                      withexitstatus=1, timeout=30)
+    logger.debug("Exit status %s: %s", status, out.decode("utf-8", "replace") if out else "")
 
 def wait_for_server_exit(timeout : float = 30) -> None:
     """
@@ -991,6 +1028,8 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
         steps = spec['tests'][s].get('steps', None)
         if steps and run_ok:
             run_ok = exec_all_steps(s, steps, dev, spec, serveropts)
+            if not run_ok:
+                end_extended_server(steps)
         if not run_ok:
             print("FAILED")
             failed_run.append(s)

@@ -112,6 +112,13 @@ class DebugBackend(ABC):
         """
         return True
 
+    def release(self) -> None:
+        """
+        Let go of the probe. Called once by the server when it ends, after stop_debugging if that
+        was called at all, whatever the session did; e.g., a session whose start was refused or
+        failed ends without stop_debugging. Nothing to do for most backends.
+        """
+
     # ----- static target/tool properties ------------------------------------
 
     def get_devicename(self) -> str:

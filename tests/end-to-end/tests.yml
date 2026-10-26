@@ -1114,6 +1114,115 @@ tests:
         response: Not confirmed
       - import: epilog
 
+# Extended remote mode without --once: GDB disconnects and connects again. The server
+# keeps the debug session (and the probe, which stays signed on) while no GDB is
+# connected; after reconnecting, the target is where it was left, and breakpoints work.
+# 'monitor exit' ends the server, which 'detach' would not do in this mode.
+  extended-reconnect:
+    sketch: cblink
+    steps:
+      - stimulus: set style enabled off
+      - stimulus: set logging file log/extended-reconnect.log
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging enabled on
+      - stimulus: "target extended-remote :2000"
+        timeout: 10
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor debugwire enable
+        timeout: 40
+        responses:
+          - enabled
+          - This is not a debugWIRE target
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: break episode
+        response: Breakpoint 1
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: print cnt
+        response: "= 0"
+      - stimulus: disconnect
+        response: Ending remote debugging
+      - stimulus: "target extended-remote :2000"
+        timeout: 10
+        response: episode ()
+      - stimulus: monitor info
+        response: "Debugging enabled:        yes"
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: print cnt
+        response: "= 1"
+      - stimulus: "delete\ny"
+      - stimulus: monitor exit
+        response: Exiting from GDB server
+      - stimulus: quit
+
+# Extended remote mode without --once: detach (the program runs on), quit GDB, and connect
+# with a new GDB process ('restart_gdb'): the server stops the program, which kept running
+# meanwhile, and GDB is attached to it. Then detach and attach within this GDB.
+  extended-requit:
+    sketch: cblink
+    steps:
+      - stimulus: set style enabled off
+      - stimulus: set logging file log/extended-requit.log
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite on
+      - stimulus: set logging enabled on
+      - stimulus: "target extended-remote :2000"
+        timeout: 10
+      - stimulus: "!rm pyavrocd.options"
+      - stimulus: monitor debugwire enable
+        timeout: 40
+        responses:
+          - enabled
+          - This is not a debugWIRE target
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: break episode
+        response: Breakpoint 1
+      - stimulus: continue
+        response: Breakpoint 1
+      - stimulus: print cnt
+        response: "= 0"
+      - stimulus: "delete\ny"
+      - stimulus: detach
+        response: Detaching from
+      - stimulus: quit
+      - restart_gdb: true
+      - stimulus: set style enabled off
+      - stimulus: set logging file log/extended-requit.log
+      - stimulus: set trace-commands on
+      - stimulus: set logging overwrite off      # append to the first GDB's log
+      - stimulus: set logging enabled on
+      - stimulus: "target extended-remote :2000"
+        timeout: 10
+      - stimulus: print cnt
+      - stimulus: print cnt > 0               # it was 0 at the breakpoint: the program kept running
+        responses:
+          - = 1
+          - = true
+      - stimulus: break episode
+        response: Breakpoint
+      - stimulus: continue
+        response: Breakpoint
+      - stimulus: "delete\ny"
+      - stimulus: detach
+        response: Detaching from
+      - stimulus: attach 1
+        timeout: 10
+        response: Attaching to
+      - stimulus: break episode
+        response: Breakpoint
+      - stimulus: continue
+        response: Breakpoint
+      - stimulus: "delete\ny"
+      - stimulus: monitor exit
+        response: Exiting from GDB server
+      - stimulus: quit
+
 # Arduino sketch to measure supply voltage (needs Vcc library)
   measure:
     requires:

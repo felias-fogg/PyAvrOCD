@@ -112,13 +112,17 @@ class DwlinkBackend(Jtag2Backend):
     def _connect(self) -> jtag2.SignOn:
         """
         Sign on at the start speed. Opening the port may have reset the Arduino, whose bootloader
-        then waits for a moment; a dw-link left at a higher speed by an aborted session answers there.
+        then waits for a moment. A dw-link left at a higher speed by a server that ended without
+        signing off answers there: most likely at this configuration's speed, but a server started
+        with another --dw-link-baud may have left it at any of them.
         """
         proto = self._proto()
         assert isinstance(self.transport, jtag2.Jtag2SerialTransport)
+        speeds = [jtag2.SERIAL_START_BAUD, self.baud] + \
+          [b for b in sorted(jtag2.BAUD_CODES, reverse=True) if b not in (jtag2.SERIAL_START_BAUD, self.baud)]
         deadline = time.monotonic() + BOOT_TIME
         while True:
-            for baud in (jtag2.SERIAL_START_BAUD, self.baud):
+            for baud in speeds:
                 self.transport.set_baudrate(baud)
                 self.transport.flush()
                 try:
@@ -152,7 +156,14 @@ class DwlinkBackend(Jtag2Backend):
                                  info.serial, self.baud)
 
     def _sign_off(self) -> None:
-        """Leave ISP and the emulator mode; the sign-off itself comes when the session ends"""
+        """
+        Leave ISP and the emulator mode, and sign off: dw-link lets a stopped target run on and goes
+        back to the start speed, and so does the host side; the next _sign_on connects anew. Every
+        sign-off of the session is a real one, because a session can end without stop_debugging (when
+        debugging was refused, e.g., for set lock bits), and with the capacitor on RESET that keeps the
+        Arduino from resetting at the next port open, dw-link would stay at the higher speed, where
+        avrdude (always 19200 with jtag2isp) does not find it (measured).
+        """
         if self.protocol is None:
             return
         if self._isp is not None:
@@ -161,6 +172,13 @@ class DwlinkBackend(Jtag2Backend):
         if self._mode_set:
             self.protocol.set_parameter(jtag2.PAR_EMULATOR_MODE, bytes([jtag2.EMULATOR_MODE_UNKNOWN]))
             self._mode_set = False
+        if self.sign_on_info is not None and self.transport is not None:
+            try:
+                self.protocol.sign_off()
+            except BackendError as e:
+                self.logger.debug("Sign-off: %s", e)
+            self.transport.set_baudrate(jtag2.SERIAL_START_BAUD)
+            self.sign_on_info = None
 
     def _debugwire_active(self) -> bool:
         """The sync tells: dw-link answers RSP_DEBUGWIRE_SYNC_FAILED when it does not succeed"""
@@ -207,21 +225,23 @@ class DwlinkBackend(Jtag2Backend):
 
     def stop_debugging(self, skip : bool = False, leave : bool = False, graceful : bool = True) -> None:
         """
-        As in the session; then sign off, which lets a stopped target run on and brings dw-link back
-        to the start speed. The port stays open: the session may start again ('monitor debugwire
-        enable'), and reopening would reset the Arduino. The next _sign_on connects anew.
+        As in the session, which ends with _sign_off; if it was left by an error before that, sign
+        off here. The port stays open: the session may start again ('monitor debugwire enable'), and
+        reopening may reset the Arduino.
         """
         try:
             Jtag2Backend.stop_debugging(self, skip, leave, graceful)
         finally:
-            if self.protocol is not None and self.transport is not None:
-                try:
-                    self._proto().sign_off()
-                except BackendError as e:
-                    self.logger.debug("Sign-off: %s", e)
-                self.transport.set_baudrate(jtag2.SERIAL_START_BAUD)
-                self.sign_on_info = None
-                self._mode_set = False
+            self._mode_set = False
+            self._sign_off()
+
+    def release(self) -> None:
+        """
+        At the end of the server, sign off in any case: a session whose start failed (e.g., debugWIRE
+        not active and no 'monitor debugwire enable') ends without stop_debugging, and without the
+        sign-off dw-link would stay at the higher speed (measured), where avrdude does not find it
+        """
+        self._sign_off()
 
     def execute_instruction(self, opcode : int) -> None:
         self._proto().ok(bytes([CMND_EXECUTE_INSTRUCTION]) + opcode.to_bytes(2, 'little'),

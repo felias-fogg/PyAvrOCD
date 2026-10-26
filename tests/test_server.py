@@ -161,6 +161,23 @@ class TestRspServer(TestCase):
     @patch('pyavrocd.server.socket.socket')
     @patch('pyavrocd.server.select.select')
     @patch('pyavrocd.server.GdbHandler')
+    def test_serve_releases_probe_without_session(self, mock_handler, mock_select, mock_socket):
+        # a session that never started (e.g., debugWIRE not active) ends without stop_debugging,
+        # but the probe is released all the same (dw-link signs off)
+        self.set_up()
+        mock_socket.return_value.accept.return_value = (Mock(), '111.222.333.444')
+        mock_socket.return_value.accept.return_value[0].recv.side_effect = EndOfSession("")
+        mock_handler.return_value = Mock(mon=Mock(is_debugger_active=Mock(return_value=False)), spec=GdbHandler)
+        mock_select.side_effect = [(1,0,0), (1,0,0), (1,0,0)]
+        self.assertEqual(self.rs.serve(), 0)
+        self.rs.avrdebugger.stop_debugging.assert_not_called()
+        self.rs.avrdebugger.release.assert_called_once_with()
+
+    @patch('pyavrocd.server.time.sleep',Mock())
+    @patch('pyavrocd.server.signal.signal',Mock())
+    @patch('pyavrocd.server.socket.socket')
+    @patch('pyavrocd.server.select.select')
+    @patch('pyavrocd.server.GdbHandler')
     def test_serve_probe_gone(self, mock_handler, mock_select, mock_socket):
         # an error outside the packet handlers, e.g. the probe unplugged while events are polled
         self.set_up()

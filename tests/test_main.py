@@ -644,10 +644,23 @@ class TestFindJtag2Tool(TestCase):
         attempts = iter([[], [], [self.CLONE]])
         with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: next(attempts)), \
              patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
+             patch('pyavrocd.main.edbg_tool_with_serial', return_value=False), \
+             patch('pyavrocd.main.serial_port_with_suffix', return_value=False), \
              patch('pyavrocd.main.time.sleep') as sleep:
             self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='4262'), 0, logger),
                              (False, self.CLONE))
         self.assertEqual(sleep.call_count, 2)
+
+    def test_no_wait_when_a_serial_port_is_meant(self):
+        # -u naming the port of dw-link: no mkII or Dragon to wait for (the wait cost 5 s per start)
+        with patch('pyavrocd.main.jtag2.discover', return_value=[]) as discover, \
+             patch('pyavrocd.main.edbg_tool_with_serial', return_value=False), \
+             patch('pyavrocd.main.serial_port_with_suffix', return_value=True), \
+             patch('pyavrocd.main.time.sleep') as sleep:
+            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='232301'), 0, MagicMock()),
+                             (False, None))
+        self.assertEqual(discover.call_count, 1)
+        sleep.assert_not_called()
 
     def test_no_wait_when_an_edbg_tool_is_meant(self):
         with patch('pyavrocd.main.jtag2.discover', return_value=[]) as discover, \

@@ -148,6 +148,11 @@ class RspServer():
                 if self.handler is None or self.handler.mon is None or \
                     self.handler.mon.is_debugger_active():
                     self.avrdebugger.stop_debugging(leave=leave, graceful=True)
+            if self.avrdebugger:
+                try:
+                    self.avrdebugger.release()
+                except Exception as e: # pylint: disable=broad-exception-caught
+                    self.logger.debug("Releasing the probe: %s", e)
             # sleep 0.5 second before closing in order to allow the client to close first
             if platform.system() != "Windows":
                 time.sleep(0.5) # under Windows, a system exception is raised

@@ -469,9 +469,12 @@ def find_jtag2_tool(args : argparse.Namespace, num_edbg : int,
         return False, None
     # After a sign-off (avrdude's too) the probes leave the bus for about 3 s and enumerate
     # again; a server started right after an upload would not find them. So wait for them,
-    # unless the selection clearly means an EDBG tool.
-    wait : bool = args.tool in names or num_edbg == 0 or \
-      (bool(args.serialnumber) and not edbg_tool_with_serial(args.serialnumber))
+    # unless the selection clearly means an EDBG tool or a serial port (dw-link): the wait cost
+    # every dw-link start 5 s.
+    wait : bool = args.tool in names or \
+      (not args.serialnumber and num_edbg == 0) or \
+      (bool(args.serialnumber) and not edbg_tool_with_serial(args.serialnumber)
+       and not serial_port_with_suffix(args.serialnumber))
     deadline : float = time.monotonic() + (5 if wait else 0)
     while True:
         try:
@@ -523,6 +526,10 @@ def find_dwlink(args : argparse.Namespace, intf : str,
             logger.critical(" Port: %s", c.address)
         return True, None
     return False, found[0]
+
+def serial_port_with_suffix(suffix : str) -> bool:
+    """Is there a USB serial port whose name ends in suffix (where dw-link may be)?"""
+    return any(c.address.lower().endswith(suffix.lower()) for c in dwlinkbackend.discover())
 
 def edbg_tool_with_serial(serial_suffix : str) -> bool:
     """

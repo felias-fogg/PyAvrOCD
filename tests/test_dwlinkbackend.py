@@ -103,11 +103,29 @@ class TestSignOn(TestCase):
         backend.protocol.set_baud = MagicMock()
         backend._sign_on(announce=True)
         self.assertEqual(backend.protocol.sign_on.call_count, 3)
-        backend.transport.set_baudrate.assert_has_calls([call(19200), call(115200), call(19200)])
+        backend.transport.set_baudrate.assert_has_calls([call(19200), call(115200), call(57600)])
         backend.protocol.set_baud.assert_called_once_with(115200)
         backend._sign_on()                       # signed on: nothing more
         self.assertEqual(backend.protocol.sign_on.call_count, 3)
         self.assertEqual(fake.sent, [])
+
+    @patch('pyavrocd.dwlinkbackend.time.monotonic', return_value=0)
+    def test_found_at_another_speed(self, _monotonic):
+        # left at 38400 by a server with another --dw-link-baud that did not sign off
+        backend = make_backend()
+        attach(backend, [])
+        speed = {}
+        backend.transport.set_baudrate.side_effect = lambda b: speed.update(now=b)
+        def sign_on(_timeout):
+            if speed['now'] != 38400:
+                raise jtag2.Jtag2Timeout("wrong speed")
+            return jtag2.parse_sign_on(sign_on_body())
+        backend.protocol.sign_on = MagicMock(side_effect=sign_on)
+        backend.protocol.set_baud = MagicMock()
+        backend._sign_on()
+        tried = [c.args[0] for c in backend.transport.set_baudrate.call_args_list]
+        self.assertEqual(tried, [19200, 115200, 57600, 38400])
+        backend.protocol.set_baud.assert_called_once_with(115200)
 
     def test_not_dwlink(self):
         backend = make_backend()
@@ -205,3 +223,26 @@ class TestSession(TestCase):
         transport.set_baudrate.assert_called_once_with(19200)
         self.assertIsNone(self.backend.sign_on_info)
         self.assertIsNotNone(self.backend.protocol)
+
+
+class TestSignOff(TestCase):
+    """Every sign-off of the session is real, back at the start speed (a session can end without stop_debugging)"""
+
+    def test_sign_off_once(self):
+        backend = make_backend()
+        backend.sign_on_info = jtag2.parse_sign_on(sign_on_body())
+        fake = attach(backend, [('same', b"\x80")])
+        backend._sign_off()
+        self.assertEqual(fake.sent[0][1], bytes([jtag2.CMND_SIGN_OFF]))
+        backend.transport.set_baudrate.assert_called_once_with(19200)
+        self.assertIsNone(backend.sign_on_info)
+        backend._sign_off()                                  # nothing more to sign off
+        self.assertEqual(len(fake.sent), 1)
+
+    def test_release_signs_off(self):
+        backend = make_backend()
+        backend.sign_on_info = jtag2.parse_sign_on(sign_on_body())
+        fake = attach(backend, [('same', b"\x80")])
+        backend.release()
+        self.assertEqual(fake.sent[0][1], bytes([jtag2.CMND_SIGN_OFF]))
+        backend.transport.set_baudrate.assert_called_once_with(19200)
