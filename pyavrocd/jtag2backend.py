@@ -122,9 +122,14 @@ class Jtag2Backend(AvrSession):
             if not self._debugwire_active():
                 raise FatalError("debugWIRE is not active")
             mode = jtag2.EMULATOR_MODE_DEBUGWIRE
+        four_page = self._iface == 'debugwire' and self.device_info.get('buffers_per_flash_page', 1) > 1
+        if four_page and self.sign_on_info is not None and self.sign_on_info.master_firmware[0] < 7:
+            major, minor = self.sign_on_info.master_firmware
+            raise FatalError("Firmware {:X}.{:02X} of the {} cannot write the flash of the {} over debugWIRE "
+                             "(4-page erase); update it with Microchip Studio 7".format(
+                                 major, minor, self.candidate.product, self._devicename))
         proto.set_parameter(jtag2.PAR_EMULATOR_MODE, bytes([mode]), jtag2.MODE_TIMEOUT)
-        if self._iface == 'debugwire' and self.device_info.get('buffers_per_flash_page', 1) > 1 and \
-          self.sign_on_info is not None and self.sign_on_info.master_firmware[0] >= 7:
+        if four_page and self.sign_on_info is not None:
             # The 4-page parts (ATtiny441/841/1634): only the device context (0x36, as Microchip Studio 7
             # sends it) carries the page buffers per flash block, without which the mkII writes them
             # wrongly. Measured on the ATtiny1634: that value survives a later device descriptor, which

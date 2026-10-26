@@ -10,6 +10,7 @@ import usb.core
 from pyavrocd import jtag2
 from pyavrocd.backend import ProbeCandidate
 from pyavrocd.jtag2backend import Jtag2Backend
+from pyavrocd.errors import FatalError
 from pyavrocd.main import options
 from pyavrocd.handler import GdbHandler
 from pyavrocd.monitor import MonitorCommand
@@ -168,8 +169,13 @@ class TestDeviceData(TestCase):
         names = [c[0] for c in proto.method_calls if c[0] in ('set_device_context', 'set_device_descriptor')]
         self.assertEqual(names, ['set_device_context', 'set_device_descriptor'])  # the descriptor last
 
-    def test_firmware_6_sends_the_descriptor(self):
-        proto = self.entered((6, 0x0B))
+    def test_firmware_6_refuses_4_page_parts(self):
+        with self.assertRaises(FatalError) as caught:
+            self.entered((6, 0x0B))
+        self.assertIn("Firmware 6.0B", str(caught.exception))
+
+    def test_firmware_6_sends_the_descriptor_to_others(self):
+        proto = self.entered((6, 0x0B), 'atmega328p')
         proto.set_device_descriptor.assert_called_once()
         proto.set_device_context.assert_not_called()
 
