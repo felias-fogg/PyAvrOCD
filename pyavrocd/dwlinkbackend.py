@@ -90,37 +90,6 @@ def connect(transport : jtag2.Jtag2SerialTransport, proto : jtag2.Jtag2Protocol,
             raise FatalError("No dw-link (version {} or later) answers on {}".format(
                 MIN_MAJOR_VERSION, address))
 
-def reboot_probe(candidate : ProbeCandidate, baud : int, logger : logging.Logger) -> bool:
-    """
-    --reboot-debugger: sign off with PAR_SOFT_RESET set to a hard reset, after which dw-link restarts
-    (watchdog reset; the target is switched off and on again, as at every start of dw-link), then
-    sign on to it once more and off again. The port stays open, so that an Arduino that resets at
-    every port open does not restart a second time. Returns False if dw-link does not come back.
-    """
-    logger.info("Rebooting debugger...")
-    transport = jtag2.Jtag2SerialTransport(candidate.address)
-    try:
-        proto = DwlinkProtocol(transport)
-        info = connect(transport, proto, candidate.address, baud, logger)
-        if info.ident != DWLINK_IDENT or info.master_firmware[0] < MIN_MAJOR_VERSION:
-            logger.critical("%s %d.%d on %s cannot be rebooted", info.ident, *info.master_firmware,
-                                candidate.address)
-            return False
-        proto.set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_HARD]))
-        proto.sign_off()
-        transport.set_baudrate(jtag2.SERIAL_START_BAUD)
-        time.sleep(0.1)   # the watchdog fires after 15 ms; what comes before is not an answer
-        connect(transport, proto, candidate.address, jtag2.SERIAL_START_BAUD, logger)
-        proto.sign_off()
-    except (FatalError, BackendError) as e:
-        logger.critical("Could not reboot dw-link: %s", e)
-        return False
-    finally:
-        transport.close()
-    logger.info("Reconnected to dw-link on %s", candidate.address)
-    return True
-
-
 class DwlinkProtocol(jtag2.Jtag2Protocol):
     """The mkII protocol, with dw-link's error number added to the failures it explains"""
 
@@ -278,6 +247,37 @@ class DwlinkBackend(Jtag2Backend):
         sign-off dw-link would stay at the higher speed (measured), where avrdude does not find it
         """
         self._sign_off()
+
+    @staticmethod
+    def reboot_probe(candidate : ProbeCandidate, args : argparse.Namespace, logger : logging.Logger) -> bool:
+        """
+        --reboot-debugger: sign off with PAR_SOFT_RESET set to a hard reset, after which dw-link restarts
+        (watchdog reset; the target is switched off and on again, as at every start of dw-link), then
+        sign on to it once more and off again. The port stays open, so that an Arduino that resets at
+        every port open does not restart a second time. Returns False if dw-link does not come back.
+        """
+        logger.info("Rebooting debugger...")
+        transport = jtag2.Jtag2SerialTransport(candidate.address)
+        try:
+            proto = DwlinkProtocol(transport)
+            info = connect(transport, proto, candidate.address, args.baud, logger)
+            if info.ident != DWLINK_IDENT or info.master_firmware[0] < MIN_MAJOR_VERSION:
+                logger.critical("%s %d.%d on %s cannot be rebooted", info.ident, *info.master_firmware,
+                                    candidate.address)
+                return False
+            proto.set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_HARD]))
+            proto.sign_off()
+            transport.set_baudrate(jtag2.SERIAL_START_BAUD)
+            time.sleep(0.1)   # the watchdog fires after 15 ms; what comes before is not an answer
+            connect(transport, proto, candidate.address, jtag2.SERIAL_START_BAUD, logger)
+            proto.sign_off()
+        except (FatalError, BackendError) as e:
+            logger.critical("Could not reboot dw-link: %s", e)
+            return False
+        finally:
+            transport.close()
+        logger.info("Reconnected to dw-link on %s", candidate.address)
+        return True
 
     def execute_instruction(self, opcode : int) -> None:
         self._proto().ok(bytes([CMND_EXECUTE_INSTRUCTION]) + opcode.to_bytes(2, 'little'),

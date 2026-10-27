@@ -9,7 +9,7 @@ import usb.core
 
 from pyavrocd import jtag2
 from pyavrocd.backend import ProbeCandidate
-from pyavrocd.jtag2backend import Jtag2Backend, reboot_probe
+from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.errors import FatalError
 from pyavrocd.main import options
 from pyavrocd.handler import GdbHandler
@@ -204,6 +204,40 @@ class TestSoftReset(TestCase):
             self.assertNotEqual(call.args[0], jtag2.PAR_SOFT_RESET)
 
 
+class TestRelease(TestCase):
+    """At the end of the server, a real sign-off, so that the AVR Dragon resets"""
+
+    def make(self):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='dragon', product='AVRDRAGON', address='0860'),
+                                   'atmega328p', 'debugwire', options(['-d', 'atmega328p']))
+        backend.protocol = proto = MagicMock()
+        backend.transport = transport = MagicMock()
+        return backend, proto, transport
+
+    def test_signs_off_and_closes(self):
+        backend, proto, transport = self.make()
+        backend._mode_set = True
+        backend.release()
+        proto.set_parameter.assert_called_once_with(jtag2.PAR_EMULATOR_MODE,
+                                                    bytes([jtag2.EMULATOR_MODE_UNKNOWN]))
+        proto.sign_off.assert_called_once_with()
+        transport.close.assert_called_once_with()
+        self.assertIsNone(backend.protocol)
+
+    def test_errors_are_swallowed_and_closed(self):
+        backend, proto, transport = self.make()
+        proto.sign_off.side_effect = jtag2.Jtag2UsbTimeout("No response to command 0x00")
+        backend.release()
+        transport.close.assert_called_once_with()
+        self.assertIsNone(backend.protocol)
+
+    def test_nothing_to_do_without_probe(self):
+        backend, _, _ = self.make()
+        backend.protocol = None
+        backend.release()
+
+
 DRAGON = ProbeCandidate(tool='dragon', product='AVRDRAGON', address='00A200050860')
 SIGN_ON = bytes([jtag2.RSP_SIGN_ON, 1, 0xFF, 0, 0x27, 1, 0xFF, 0, 0x27, 1]) + \
   bytes.fromhex("00A200050860") + b"AVRDRAGON\0"
@@ -222,7 +256,7 @@ class TestReboot(TestCase):
         first = closable([('same', SIGN_ON), ('same', b"\x80"), ('same', b"\x80")])
         second = closable([('same', SIGN_ON)])
         mock_open.side_effect = [first, second]
-        self.assertTrue(reboot_probe(DRAGON, MagicMock()))
+        self.assertTrue(Jtag2Backend.reboot_probe(DRAGON, MagicMock(), MagicMock()))
         self.assertEqual([body for _, body in first.sent],
                          [bytes([jtag2.CMND_GET_SIGN_ON]),
                           bytes([jtag2.CMND_SET_PARAMETER, jtag2.PAR_SOFT_RESET, jtag2.SOFT_RESET_HARD]),
@@ -237,14 +271,14 @@ class TestReboot(TestCase):
     def test_not_back(self, mock_open, _mock_wait):
         mock_open.return_value = closable([('same', SIGN_ON), ('same', b"\x80"), ('same', b"\x80")])
         logger = MagicMock()
-        self.assertFalse(reboot_probe(DRAGON, logger))
+        self.assertFalse(Jtag2Backend.reboot_probe(DRAGON, MagicMock(), logger))
         logger.critical.assert_called_once_with("... could not reconnect")
 
     @patch('pyavrocd.jtag2backend.jtag2.Jtag2UsbTransport.open')
     def test_no_answer(self, mock_open):
         mock_open.return_value = closable([])
         logger = MagicMock()
-        self.assertFalse(reboot_probe(DRAGON, logger))
+        self.assertFalse(Jtag2Backend.reboot_probe(DRAGON, MagicMock(), logger))
         mock_open.return_value.close.assert_called_once()
         self.assertIn("Could not reboot", logger.critical.call_args.args[0])
 

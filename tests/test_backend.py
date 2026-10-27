@@ -112,3 +112,8 @@ class TestOptionalCapabilities(TestCase):
         self.assertFalse(be.can_switch_target_power())
         with self.assertRaises(BackendNotSupportedError):
             be.set_target_power(True)
+
+    def test_no_reboot_by_default(self):
+        logger = Mock()
+        self.assertFalse(DebugBackend.reboot_probe(Mock(), Mock(), logger))
+        logger.critical.assert_called_once()

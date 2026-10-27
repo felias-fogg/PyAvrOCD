@@ -119,6 +119,17 @@ class DebugBackend(ABC):
         failed ends without stop_debugging. Nothing to do for most backends.
         """
 
+    @staticmethod
+    def reboot_probe(candidate : Any, args : argparse.Namespace, logger : logging.Logger) -> bool:
+        """
+        --reboot-debugger: reboot the probe and wait until it answers again. Static, because it runs
+        before there is a backend: it needs neither device nor interface. 'candidate' is whatever the
+        backend's family found its probe by. Returns False if the probe does not come back.
+        """
+        _dummy = candidate, args
+        logger.critical("This debugger cannot be rebooted")
+        return False
+
     # ----- static target/tool properties ------------------------------------
 
     def get_devicename(self) -> str:

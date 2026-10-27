@@ -3,13 +3,14 @@ The debugger backend for the EDBG-based probes (Atmel-ICE, PICkit4, SNAP, (m/n)E
 built on pymcuprog's AvrDebugger. The probe-independent session logic is in session.py;
 this module supplies the primitives it needs.
 """
-from typing import Any #pylint disable=unused-import
+from typing import Any, NamedTuple #pylint disable=unused-import
 from collections.abc import Callable
 import functools
 
 # utilities
 import time
 import argparse
+import logging
 
 #edbg library
 from pyedbglib.protocols.jtagice3protocol import Jtagice3ResponseError
@@ -21,8 +22,10 @@ from pyedbglib.hidtransport.hidtransportbase import HidTransportBase
 
 # pymcuorig library
 from pymcuprog.avrdebugger import AvrDebugger
+from pymcuprog.backend import Backend
+from pymcuprog.toolconnection import ToolUsbHidConnection
 from pymcuprog.nvmspi import NvmAccessProviderCmsisDapSpi, NvmAccessProviderCmsisDapAvr
-from pymcuprog.pymcuprog_errors import PymcuprogNotSupportedError, PymcuprogError
+from pymcuprog.pymcuprog_errors import PymcuprogNotSupportedError, PymcuprogError, PymcuprogToolConnectionError
 from pymcuprog.utils import read_target_voltage, read_tool_info
 
 
@@ -34,6 +37,12 @@ from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
 from pyavrocd.xnvmmegaavrjtag import XNvmAccessProviderCmsisDapMegaAvrJtag
 from pyavrocd.xnvmupdi import XNvmAccessProviderCmsisDapUpdi
 from pyavrocd.errors import FatalError, EndOfSession
+
+class EdbgProbe(NamedTuple):
+    """How an EDBG probe was found: pymcuprog's backend, connected, and the tool it is connected to"""
+    backend : Backend
+    tool : ToolUsbHidConnection
+
 
 #pylint: disable=too-many-public-methods,too-many-instance-attributes
 class EdbgBackend(AvrSession, AvrDebugger):
@@ -96,6 +105,31 @@ class EdbgBackend(AvrSession, AvrDebugger):
         if self.manage == []:
             self.manage = [ 'none' ]
         self.logger.info("Managing fuses: %s", ", ".join(self.manage))
+
+    @staticmethod
+    def reboot_probe(candidate : EdbgProbe, args : argparse.Namespace, logger : logging.Logger) -> bool:
+        """
+        Reboots the tool and waits for it to reappear.
+        In case it takes too long (> 20sec), False is returned, otherwise True.
+        """
+        _dummy = args
+        backend, tool = candidate
+        logger.info("Rebooting debugger...")
+        backend.reboot_tool()
+        timeout : int = 200
+        while timeout > 0:
+            try:
+                backend.connect_to_tool(tool)
+                break
+            except (PymcuprogToolConnectionError, ValueError):
+                pass
+            time.sleep(0.1)
+            timeout -= 1
+        if timeout == 0:
+            logger.critical("... could not reconnect")
+            return False
+        logger.info("Reconnected to %s", backend.transport.hid_device.get_product_string())
+        return True
 
     ######## Primitives for AvrSession
 

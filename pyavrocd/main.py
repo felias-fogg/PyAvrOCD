@@ -2,6 +2,7 @@
 AVR GDB server main program
 """
 # args, logging
+from typing import Any
 from collections.abc import Callable
 import webbrowser
 import platform
@@ -35,8 +36,7 @@ import pyedbglib
 
 from pyavrocd import dwlinkbackend
 from pyavrocd import jtag2
-from pyavrocd import jtag2backend
-from pyavrocd.xavrdebugger import EdbgBackend
+from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.dwlinkbackend import DwlinkBackend
 from pyavrocd.backend import DebugBackend, ProbeCandidate
@@ -567,30 +567,6 @@ def number_of_connected_edbg_tools(logger : logging.Logger) -> int:
             logger.critical("On Windows, USB core is not used, i.e., this error should not happen!")
         return -1 # error return
 
-def tool_reboot(backend : pymcuprog.backend.Backend,
-                    tool : pyedbglib.hidtransport.hidtransportbase.HidTool,
-                    logger : logging.Logger) -> bool:
-    """
-    Reboots tool and waits for it to reappear.
-    In case it takes too long (> 20sec), False is returned, otherwise True.
-    """
-    logger.info("Rebooting debugger...")
-    backend.reboot_tool()
-    timeout : int = 200
-    while timeout > 0:
-        try:
-            backend.connect_to_tool(tool)
-            break
-        except (PymcuprogToolConnectionError, ValueError):
-            pass
-        time.sleep(0.1)
-        timeout -= 1
-    if timeout == 0:
-        logger.critical("... could not reconnect")
-        return False
-    logger.info("Reconnected to %s", backend.transport.hid_device.get_product_string())
-    return True
-
 #pylint: disable=too-many-branches
 def startup(command_line : list[str], logger : logging.Logger) -> int:
     """
@@ -640,28 +616,16 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
         return 1
     if jtag2_tool is not None:
         logger.info("Connected to %s, SN: %s", jtag2_tool.product, jtag2_tool.address)
-        if args.reboot:
-            if not jtag2backend.reboot_probe(jtag2_tool, logger):
-                return 1
-            if not device:
-                logger.info("Terminating ...")
-                return 0
-        return serve(lambda: Jtag2Backend(jtag2_tool, device, intf, args), device, intf, args,
-                         jtag2_tool.product, logger)
+        return reboot_or_serve(Jtag2Backend, jtag2_tool, lambda: Jtag2Backend(jtag2_tool, device, intf, args),
+                                   device, intf, args, jtag2_tool.product, logger)
 
     if args.tool == "dwlink" or num_tools == 0:
         abort, dwlink_tool = find_dwlink(args, intf, logger)
         if abort or dwlink_tool is None:
             return 1
         logger.info("Using dw-link on %s", dwlink_tool.address)
-        if args.reboot:
-            if not dwlinkbackend.reboot_probe(dwlink_tool, args.baud, logger):
-                return 1
-            if not device:
-                logger.info("Terminating ...")
-                return 0
-        return serve(lambda: DwlinkBackend(dwlink_tool, device, intf, args), device, intf, args,
-                         dwlink_tool.product, logger)
+        return reboot_or_serve(DwlinkBackend, dwlink_tool, lambda: DwlinkBackend(dwlink_tool, device, intf, args),
+                                   device, intf, args, dwlink_tool.product, logger)
 
     # Check whether all connected tools are available as HID devices
     backend : pymcuprog.backend.Backend = pymcuprog.backend.Backend()
@@ -702,16 +666,26 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
             logger.critical("Could not connect to debug probe: %s", str(e))
         return 1
 
+    # tool is connected, now we can start
+    return reboot_or_serve(EdbgBackend, EdbgProbe(backend, tool),
+                               lambda: EdbgBackend(backend.transport, device, intf, args),
+                               device, intf, args, toolname, logger)
+
+#pylint: disable=too-many-positional-arguments,too-many-arguments
+def reboot_or_serve(backend_class : type[DebugBackend], candidate : Any,
+                        make_backend : Callable[[], DebugBackend], device : str, intf : str,
+                        args : argparse.Namespace, toolname : str, logger : logging.Logger) -> int:
+    """
+    --reboot-debugger first, if asked for; then serve, unless there is no device, which means that
+    only a reboot was wanted. 'candidate' is what backend_class.reboot_probe needs to find the probe.
+    """
     if args.reboot:
-        if not tool_reboot(backend, tool, logger):
+        if not backend_class.reboot_probe(candidate, args, logger):
             return 1
         if not device:
             logger.info("Terminating ...")
             return 0
-
-    # tool is connected, now we can start
-    return serve(lambda: EdbgBackend(backend.transport, device, intf, args), device, intf, args,
-                     toolname, logger)
+    return serve(make_backend, device, intf, args, toolname, logger)
 
 #pylint: disable=too-many-positional-arguments,too-many-arguments
 def serve(make_backend : Callable[[], DebugBackend], device : str, intf : str,
@@ -730,7 +704,10 @@ def serve(make_backend : Callable[[], DebugBackend], device : str, intf : str,
                 logger.warning("Ignoring --debugwire option on %s target", intf)
             else:
                 if args.debugwire[0] == 'd' and intf == 'debugwire':
-                    avrdebugger.cold_dw_disable()
+                    try:
+                        avrdebugger.cold_dw_disable()
+                    finally:
+                        avrdebugger.release() # as the server does at its end, also after an error
                     return 0
         server = RspServer(avrdebugger, device, args, toolname)
     except Exception as e:

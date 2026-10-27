@@ -12,9 +12,10 @@ import sys
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
-     process_arguments, startup_helper_prog, run_server, startup, handle_simavr, tool_reboot, \
+     process_arguments, startup_helper_prog, run_server, startup, handle_simavr, \
      find_jtag2_tool
 from pyavrocd.backend import ProbeCandidate
+from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
 
 class TestMain(TestCase):
 
@@ -345,18 +346,18 @@ class TestMain(TestCase):
         mock_server = Mock(serve=Mock(side_effect = ValueError()))
         self.assertEqual(run_server(mock_server, Mock()), 1)
 
-    @patch('pyavrocd.main.time.sleep',Mock())
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     def test_reboot(self):
         mockbackend = MagicMock(reboot_tool=Mock(), connect_to_tool=Mock())
-        self.assertEqual(tool_reboot(mockbackend, Mock(), Mock()), True)
+        self.assertEqual(EdbgBackend.reboot_probe(EdbgProbe(mockbackend, Mock()), Mock(), Mock()), True)
         mockbackend.reboot_tool.assert_called_once()
         mockbackend.connect_to_tool.assert_called_once()
 
-    @patch('pyavrocd.main.time.sleep',Mock())
+    @patch('pyavrocd.xavrdebugger.time.sleep',Mock())
     def test_reboot_timeout(self):
         mockbackend = MagicMock(reboot_tool=Mock(), connect_to_tool=Mock(side_effect=ValueError()))
         mock_logger = Mock()
-        self.assertEqual(tool_reboot(mockbackend, Mock(), mock_logger), False)
+        self.assertEqual(EdbgBackend.reboot_probe(EdbgProbe(mockbackend, Mock()), Mock(), mock_logger), False)
         mock_logger.critical.assert_called_with("... could not reconnect")
 
     def test_startup_fail(self):
@@ -384,7 +385,7 @@ class TestMain(TestCase):
         self.assertEqual(mock_dwlink.call_count,1)
 
     @patch('pyavrocd.main.serve')
-    @patch('pyavrocd.main.jtag2backend.reboot_probe', return_value=True)
+    @patch('pyavrocd.main.Jtag2Backend.reboot_probe', return_value=True)
     @patch('pyavrocd.main.find_jtag2_tool')
     @patch('pyavrocd.main.number_of_connected_edbg_tools', return_value=0)
     @patch('pyavrocd.main.importlib.metadata.version', return_value='VERSION')
@@ -393,12 +394,12 @@ class TestMain(TestCase):
         mock_find.return_value = (False, dragon)
         mock_logger = MagicMock()
         self.assertEqual(startup(['--reboot-debugger'], mock_logger), 0)
-        mock_reboot.assert_called_once_with(dragon, mock_logger)
+        mock_reboot.assert_called_once_with(dragon, ANY, mock_logger)
         mock_serve.assert_not_called()
         mock_logger.info.assert_called_with('Terminating ...')
 
     @patch('pyavrocd.main.serve', return_value=0)
-    @patch('pyavrocd.main.dwlinkbackend.reboot_probe', return_value=True)
+    @patch('pyavrocd.main.DwlinkBackend.reboot_probe', return_value=True)
     @patch('pyavrocd.main.dwlinkbackend.discover')
     @patch('pyavrocd.main.importlib.metadata.version', return_value='VERSION')
     def test_startup_reboot_dwlink(self, _version, mock_discover, mock_reboot, mock_serve):
@@ -406,7 +407,8 @@ class TestMain(TestCase):
         mock_discover.return_value = [dwlink]
         mock_logger = MagicMock()
         self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink'], mock_logger), 0)  # no device
-        mock_reboot.assert_called_once_with(dwlink, 115200, mock_logger)
+        mock_reboot.assert_called_once_with(dwlink, ANY, mock_logger)
+        self.assertEqual(mock_reboot.call_args.args[1].baud, 115200)
         mock_serve.assert_not_called()
         mock_reboot.reset_mock()
         self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink', '-d', 'attiny85'], mock_logger), 0)
@@ -553,7 +555,7 @@ class TestMain(TestCase):
         mock_logger.critical.assert_has_calls([call('Could not connect to debug probe: %s', 'other')])
 
     @patch('pyavrocd.main.RspServer', MagicMock())
-    @patch('pyavrocd.main.EdbgBackend', MagicMock())
+    @patch('pyavrocd.main.EdbgBackend', MagicMock(reboot_probe=EdbgBackend.reboot_probe))
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')

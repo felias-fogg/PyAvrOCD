@@ -169,10 +169,10 @@ class Jtag2Backend(AvrSession):
             info = self._proto().sign_on()
         self.sign_on_info = info
         # PAR_SOFT_RESET stays at its default (hard reset after CMND_SIGN_OFF), on purpose. With 3, as
-        # Microchip Studio 7 sets it, the probe stays on the bus after a sign-off, but the AVR Dragon
-        # keeps the value until its next reset and then hangs at the next power cycle of the target,
-        # for every program, ISP included, until it is replugged (measured 2026-10-27, FW 7.27; the
-        # JTAGICE mkII clone forgets it at the next sign-off and does not hang)
+        # Microchip Studio 7 sets it, the probe stays on the bus after a sign-off, but an AVR Dragon
+        # that has not been reset since its last sign-on hangs at the next power cycle of the target,
+        # until it is replugged (see release; the JTAGICE mkII clone forgets the 3 at the next
+        # sign-off and does not hang)
         if announce:
             self.logger.info("Signed on to: %s FW: %X.%02X, HW: %d, SN: %s", info.ident,
                                  info.master_firmware[0], info.master_firmware[1],
@@ -376,6 +376,65 @@ class Jtag2Backend(AvrSession):
 
     def is_set_up(self) -> bool:
         return self.protocol is not None
+
+    def release(self) -> None:
+        """
+        At the end of the server, a real CMND_SIGN_OFF, which the session's own sign-offs avoid (see
+        _sign_off). With PAR_SOFT_RESET at its default, the probe then resets. An AVR Dragon that has
+        not been reset since its last sign-on hangs at the next power cycle of the target, for every
+        program, ISP included, until it is replugged; a sign-on alone is enough for that (measured
+        2026-10-27, FW 7.27). A killed server cannot prevent it.
+        """
+        if self.protocol is None:
+            return
+        try:
+            self._sign_off()
+            self.protocol.sign_off()
+        except (BackendError, usb.core.USBError) as e:
+            self.logger.debug("Final sign-off: %s", e)
+        finally:
+            self._close()
+
+    @staticmethod
+    def reboot_probe(candidate : ProbeCandidate, args : argparse.Namespace, logger : logging.Logger) -> bool:
+        """
+        --reboot-debugger: sign off with PAR_SOFT_RESET set to a hard reset, after which the probe leaves
+        the bus and enumerates again, then sign on to it once more. Needs no target and no device data.
+        Returns False if the probe does not come back or does not answer.
+        """
+        _dummy = args
+        logger.info("Rebooting debugger...")
+        try:
+            transport = jtag2.Jtag2UsbTransport.open(tool=candidate.tool, serial_suffix=candidate.address)
+            try:
+                proto = jtag2.Jtag2Protocol(transport)
+                proto.sign_on()
+                proto.set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_HARD]))
+                proto.sign_off()
+            finally:
+                transport.close()
+            if not wait_for_reenumeration(candidate, gone=2.0, back=6.0):
+                logger.critical("... could not reconnect")
+                return False
+            # it may be there before it answers: try for a while
+            deadline = time.monotonic() + 5
+            while True:
+                try:
+                    transport = jtag2.Jtag2UsbTransport.open(tool=candidate.tool, serial_suffix=candidate.address)
+                    try:
+                        jtag2.Jtag2Protocol(transport).sign_on()
+                    finally:
+                        transport.close()
+                    break
+                except (jtag2.Jtag2Error, usb.core.USBError):
+                    if time.monotonic() > deadline:
+                        raise
+                    time.sleep(0.3)
+        except (jtag2.Jtag2Error, usb.core.USBError) as e:
+            logger.critical("Could not reboot the %s: %s", candidate.product, e)
+            return False
+        logger.info("Reconnected to %s", candidate.product)
+        return True
 
     def get_toolname(self) -> str:
         return self.candidate.product
@@ -603,42 +662,3 @@ def wait_for_reenumeration(candidate : ProbeCandidate, gone : float = 2.0, back 
     while not present() and time.monotonic() < deadline:
         time.sleep(0.2)
     return present()
-
-def reboot_probe(candidate : ProbeCandidate, logger : logging.Logger) -> bool:
-    """
-    --reboot-debugger: sign off with PAR_SOFT_RESET set to a hard reset, after which the probe leaves
-    the bus and enumerates again, then sign on to it once more. Needs no target and no device data.
-    Returns False if the probe does not come back or does not answer.
-    """
-    logger.info("Rebooting debugger...")
-    try:
-        transport = jtag2.Jtag2UsbTransport.open(tool=candidate.tool, serial_suffix=candidate.address)
-        try:
-            proto = jtag2.Jtag2Protocol(transport)
-            proto.sign_on()
-            proto.set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_HARD]))
-            proto.sign_off()
-        finally:
-            transport.close()
-        if not wait_for_reenumeration(candidate, gone=2.0, back=6.0):
-            logger.critical("... could not reconnect")
-            return False
-        # it may be there before it answers: try for a while
-        deadline = time.monotonic() + 5
-        while True:
-            try:
-                transport = jtag2.Jtag2UsbTransport.open(tool=candidate.tool, serial_suffix=candidate.address)
-                try:
-                    jtag2.Jtag2Protocol(transport).sign_on()
-                finally:
-                    transport.close()
-                break
-            except (jtag2.Jtag2Error, usb.core.USBError):
-                if time.monotonic() > deadline:
-                    raise
-                time.sleep(0.3)
-    except (jtag2.Jtag2Error, usb.core.USBError) as e:
-        logger.critical("Could not reboot the %s: %s", candidate.product, e)
-        return False
-    logger.info("Reconnected to %s", candidate.product)
-    return True

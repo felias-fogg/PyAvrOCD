@@ -8,10 +8,11 @@ from unittest.mock import MagicMock, patch, call
 
 from pyavrocd import jtag2
 from pyavrocd.backend import ProbeCandidate, BackendNotSupportedError, BREAKCODE
-from pyavrocd.dwlinkbackend import DwlinkBackend, DwlinkProtocol, discover, reboot_probe, \
+from pyavrocd.dwlinkbackend import DwlinkBackend, DwlinkProtocol, discover, \
      CMND_EXECUTE_INSTRUCTION, PAR_TARGET_POWER, PAR_DWLINK_ERROR
 from pyavrocd.errors import FatalError
 from pyavrocd.main import options, find_dwlink
+from pyavrocd.jtag2backend import Jtag2Backend
 from tests.test_jtag2 import FakeTransport
 
 CANDIDATE = ProbeCandidate(tool='dwlink', product='dw-link', address='/dev/cu.usbmodem242101')
@@ -258,13 +259,17 @@ def serial_fake(answers):
 class TestReboot(TestCase):
     """--reboot-debugger: sign off with PAR_SOFT_RESET 0 (dw-link restarts by its watchdog), sign on again"""
 
+    def test_own_reboot(self):
+        """not the inherited one of Jtag2Backend, which would look for the probe on USB"""
+        self.assertIsNot(DwlinkBackend.reboot_probe, Jtag2Backend.reboot_probe)
+
     @patch('pyavrocd.dwlinkbackend.time.sleep')
     @patch('pyavrocd.dwlinkbackend.jtag2.Jtag2SerialTransport')
     def test_reboot(self, mock_transport, _sleep):
         fake = serial_fake([('same', sign_on_body()), ('same', b"\x80"), ('same', b"\x80"),
                             ('same', sign_on_body()), ('same', b"\x80")])
         mock_transport.return_value = fake
-        self.assertTrue(reboot_probe(CANDIDATE, 115200, MagicMock()))
+        self.assertTrue(DwlinkBackend.reboot_probe(CANDIDATE, SimpleNamespace(baud=115200), MagicMock()))
         mock_transport.assert_called_once_with(CANDIDATE.address)    # one port open, one Arduino reset
         self.assertEqual([body for _, body in fake.sent],
                          [bytes([jtag2.CMND_GET_SIGN_ON]),
@@ -279,7 +284,7 @@ class TestReboot(TestCase):
         fake = serial_fake([('same', sign_on_body(ident=b"JTAGICEmkII"))])
         mock_transport.return_value = fake
         logger = MagicMock()
-        self.assertFalse(reboot_probe(CANDIDATE, 115200, logger))
+        self.assertFalse(DwlinkBackend.reboot_probe(CANDIDATE, SimpleNamespace(baud=115200), logger))
         self.assertEqual(len(fake.sent), 1)                          # nothing after the sign-on
         fake.close.assert_called_once()
         logger.critical.assert_called_once()
@@ -291,6 +296,6 @@ class TestReboot(TestCase):
         fake = serial_fake([('same', sign_on_body()), ('same', b"\x80"), ('same', b"\x80")])
         mock_transport.return_value = fake
         logger = MagicMock()
-        self.assertFalse(reboot_probe(CANDIDATE, 115200, logger))
+        self.assertFalse(DwlinkBackend.reboot_probe(CANDIDATE, SimpleNamespace(baud=115200), logger))
         fake.close.assert_called_once()
         self.assertIn("Could not reboot", logger.critical.call_args.args[0])
