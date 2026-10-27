@@ -168,13 +168,11 @@ class Jtag2Backend(AvrSession):
             self._open()
             info = self._proto().sign_on()
         self.sign_on_info = info
-        try:
-            # as Microchip Studio 7 does (it sets it at the end of every session): no probe reset after
-            # CMND_SIGN_OFF. Measured on the AVR Dragon: with it, the probe stays on the bus; the value
-            # holds until the next reset or power cycle of the probe
-            self._proto().set_parameter(jtag2.PAR_SOFT_RESET, bytes([jtag2.SOFT_RESET_NONE]))
-        except jtag2.Jtag2Error as e:
-            self.logger.debug("Soft reset parameter not accepted: %s", e)
+        # PAR_SOFT_RESET stays at its default (hard reset after CMND_SIGN_OFF), on purpose. With 3, as
+        # Microchip Studio 7 sets it, the probe stays on the bus after a sign-off, but the AVR Dragon
+        # keeps the value until its next reset and then hangs at the next power cycle of the target,
+        # for every program, ISP included, until it is replugged (measured 2026-10-27, FW 7.27; the
+        # JTAGICE mkII clone forgets it at the next sign-off and does not hang)
         if announce:
             self.logger.info("Signed on to: %s FW: %X.%02X, HW: %d, SN: %s", info.ident,
                                  info.master_firmware[0], info.master_firmware[1],
@@ -241,8 +239,8 @@ class Jtag2Backend(AvrSession):
         DWEN -- until it has been signed off, however long one waits (15 s tried). So sign off here,
         and open the probe again. Not reproducible on 2026-10-26: the same Dragon (FW 7.27) accepted the
         SPI mode at once on an ATmega328P and an ATtiny1634, with and without the sign-off, with
-        PAR_SOFT_RESET 0 and 3; the sign-off stays as a precaution, which with PAR_SOFT_RESET (set at
-        the sign-on) costs a few ms: the probe stays on the bus. Only if it leaves it, wait until it is back.
+        PAR_SOFT_RESET 0 and 3; the sign-off stays as a precaution. With PAR_SOFT_RESET at its default
+        (see _sign_on), the probe then leaves the bus, so wait until it is back.
         """
         proto = self._proto()
         proto.debugwire_disable()

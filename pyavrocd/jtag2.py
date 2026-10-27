@@ -92,7 +92,8 @@ PAR_EXTERNAL_RESET : int = 0x13
 PAR_MCU_STATE : int = 0x1A
 PAR_TARGET_SIGNATURE : int = 0x1D   # in debugWIRE mode, LSB first
 PAR_SOFT_RESET : int = 0x2D         # AVR067 rev. D: 'soft reset (after signing off)', write only
-SOFT_RESET_NONE : int = 0x03        # no reset: the probe stays on the bus after CMND_SIGN_OFF
+SOFT_RESET_NONE : int = 0x03        # no reset: the probe stays on the bus after CMND_SIGN_OFF; not used:
+                                    # the AVR Dragon then hangs at the next target power cycle (measured)
 SOFT_RESET_HARD : int = 0x00        # hard reset, the default after power-up: the probe re-enumerates after
                                     # CMND_SIGN_OFF (measured); dw-link 7 restarts (WDT), its default is 3
 MCU_STATES : dict[int, str] = { 0x00 : "STOPPED", 0x01 : "RUNNING", 0x02 : "PROGRAMMING" }
