@@ -518,7 +518,7 @@ def usb_probes(args : argparse.Namespace, logger : logging.Logger) -> tuple[list
         try:
             # without a serial number, the probe cannot be opened either (Linux without udev rules)
             found += [c for c in jtag2.discover(args.tool) if c.address and
-                      (not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower()))]
+                      (not args.serialnumber or c.matches(args.serialnumber))]
         except usb.core.NoBackendError:
             logger.debug("No libusb, cannot look for JTAGICE mkII / AVR Dragon")
             libusb = False
@@ -561,7 +561,8 @@ def find_dwlink(args : argparse.Namespace, intf : str, logger : logging.Logger,
     """
     dw-link on a serial port. Returns (abort, probe) like find_probe. Which serial port is dw-link
     only the sign-on tells, and opening a port resets an Arduino; so the probe is taken only if
-    exactly one USB serial port is there, or -u names one by the end of its name. 'explain' adds
+    exactly one USB serial port is there, or -u names one by the end of its name or of the USB serial
+    number of the device behind it. 'explain' adds
     to 'No compatible tool discovered' why a probe on USB may have been missed.
     """
     if intf and intf != 'debugwire':   # no interface: no device, only --reboot-debugger
@@ -576,7 +577,7 @@ def find_dwlink(args : argparse.Namespace, intf : str, logger : logging.Logger,
                             ", ".join(str(b) for b in sorted(jtag2.BAUD_CODES)))
         return True, None
     found = [c for c in dwlinkbackend.discover()
-             if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
+             if not args.serialnumber or c.matches(args.serialnumber)]
     if not found:
         logger.critical("No compatible tool discovered")
         explain()
@@ -585,13 +586,16 @@ def find_dwlink(args : argparse.Namespace, intf : str, logger : logging.Logger,
         logger.critical("More than one serial port; name the one of dw-link with -u, e.g., -u %s",
                             found[0].address.split('/')[-1])
         for c in found:
-            logger.critical(" Port: %s", c.address)
+            if c.serial:
+                logger.critical(" Port: %s, SN: %s", c.address, c.serial)
+            else:
+                logger.critical(" Port: %s", c.address)
         return True, None
     return False, found[0]
 
 def serial_port_with_suffix(suffix : str) -> bool:
-    """Is there a USB serial port whose name ends in suffix (where dw-link may be)?"""
-    return any(c.address.lower().endswith(suffix.lower()) for c in dwlinkbackend.discover())
+    """Is there a USB serial port (where dw-link may be) whose name or serial number ends in suffix?"""
+    return any(c.matches(suffix) for c in dwlinkbackend.discover())
 
 #pylint: disable=too-many-branches
 def startup(command_line : list[str], logger : logging.Logger) -> int:

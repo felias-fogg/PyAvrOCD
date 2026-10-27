@@ -61,9 +61,13 @@ def discover() -> list[ProbeCandidate]:
     """
     Every USB serial port is a candidate (ports without a USB vendor ID, e.g., Bluetooth, are not);
     which one is dw-link only the sign-on can tell, and opening the port resets an Arduino. So the
-    caller opens only an unambiguous one, or the one -u names.
+    caller opens only an unambiguous one, or the one -u names, by port name or by the USB serial
+    number of the device behind it. That number stays when the device moves to another socket, the
+    port name on macOS and Linux does not (measured on macOS: usbmodem23401 is USB location 2-3.4);
+    a genuine Arduino has one, most CH340 clones do not.
     """
-    return [ProbeCandidate(tool='dwlink', product=DWLINK_IDENT, address=port.device)
+    return [ProbeCandidate(tool='dwlink', product=DWLINK_IDENT, address=port.device,
+                               serial=port.serial_number or "")
             for port in list_ports.comports() if port.vid is not None]
 
 

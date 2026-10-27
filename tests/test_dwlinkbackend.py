@@ -37,21 +37,28 @@ class TestDiscovery(TestCase):
 
     @patch('pyavrocd.dwlinkbackend.list_ports.comports')
     def test_only_usb_serial_ports(self, mock_ports):
-        mock_ports.return_value = [SimpleNamespace(device='/dev/cu.Bluetooth-Incoming-Port', vid=None),
-                                   SimpleNamespace(device='/dev/cu.usbmodem242101', vid=0x2341),
-                                   SimpleNamespace(device='/dev/cu.usbserial-24210', vid=0x1A86)]
-        self.assertEqual([c.address for c in discover()], ['/dev/cu.usbmodem242101', '/dev/cu.usbserial-24210'])
+        mock_ports.return_value = [SimpleNamespace(device='/dev/cu.Bluetooth-Incoming-Port', vid=None,
+                                                   serial_number=None),
+                                   SimpleNamespace(device='/dev/cu.usbmodem242101', vid=0x2341,
+                                                   serial_number='751333033323512101F0'),
+                                   SimpleNamespace(device='/dev/cu.usbserial-24210', vid=0x1A86,
+                                                   serial_number=None)]   # a CH340 has none
+        self.assertEqual([(c.address, c.serial) for c in discover()],
+                         [('/dev/cu.usbmodem242101', '751333033323512101F0'), ('/dev/cu.usbserial-24210', '')])
 
     @patch('pyavrocd.main.dwlinkbackend.discover')
     def test_find_dwlink(self, mock_discover):
         logger = MagicMock()
-        ports = [ProbeCandidate('dwlink', 'dw-link', '/dev/cu.usbmodem242101'),
+        ports = [ProbeCandidate('dwlink', 'dw-link', '/dev/cu.usbmodem242101', '751333033323512101F0'),
                  ProbeCandidate('dwlink', 'dw-link', '/dev/cu.usbserial-24210')]
         mock_discover.return_value = ports
         self.assertEqual(find_dwlink(options(['-d', 'attiny1634']), 'debugwire', logger), (True, None))
+        logger.critical.assert_any_call(" Port: %s, SN: %s", '/dev/cu.usbmodem242101', '751333033323512101F0')
         logger.critical.assert_any_call(" Port: %s", '/dev/cu.usbserial-24210')
         self.assertEqual(find_dwlink(options(['-d', 'attiny1634', '-u', '242101']), 'debugwire', logger),
                          (False, ports[0]))
+        self.assertEqual(find_dwlink(options(['-d', 'attiny1634', '-u', '2101f0']), 'debugwire', logger),
+                         (False, ports[0]))                    # by its serial number, case does not matter
         mock_discover.return_value = ports[1:]
         self.assertEqual(find_dwlink(options(['-d', 'attiny1634']), 'debugwire', logger), (False, ports[1]))
         mock_discover.return_value = []

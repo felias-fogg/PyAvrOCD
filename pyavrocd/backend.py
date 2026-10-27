@@ -582,6 +582,11 @@ class ProbeCandidate:
     tool: str       # registry name, e.g. 'atmelice'
     product: str    # what the probe calls itself
     address: str    # USB serial number or serial port
+    serial: str = ""   # of a serial port: the USB serial number of the device behind it, if it has one
+
+    def matches(self, suffix : str) -> bool:
+        """Does the address, or the serial number of a serial port, end in suffix (-u)? Case does not matter"""
+        return any(s.lower().endswith(suffix.lower()) for s in (self.address, self.serial) if s)
 
 
 @dataclass(frozen=True)
