@@ -234,7 +234,7 @@ class TestXAvrDebugger(TestCase):
         self.xaj.device_info['ocden_mask'] = 0x04
         self.assertRaises(FatalError, self.xaj._manage_fuses)
         self.xaj.logger.warning.assert_has_calls([
-            call("Or let payavrocd manage this fuse: '-m ocden'.")])
+            call("Or let PyAvrOCD manage this fuse: '-m ocden'.")])
 
     @patch('pyavrocd.session.logging.getLogger', MagicMock())
     def test__manage_fuses_sig_ok(self):

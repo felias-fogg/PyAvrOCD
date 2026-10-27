@@ -251,3 +251,71 @@ class TestReboot(TestCase):
         self.assertFalse(reboot_probe(DRAGON, logger))
         mock_open.return_value.close.assert_called_once()
         self.assertIn("Could not reboot", logger.critical.call_args.args[0])
+
+
+class TestJtagClock(TestCase):
+    """-D while debugging, -P in programming mode; only on JTAG targets"""
+
+    def make(self, iface, args, device='atmega324p'):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICE mkII', address='4262'),
+                                   device, iface, options(['-d', device] + args))
+        backend.protocol = MagicMock()
+        return backend
+
+    def clock_codes(self, backend):
+        return [c.args[1][0] for c in backend.protocol.set_parameter.call_args_list
+                if c.args[0] == jtag2.PAR_OCD_JTAG_CLK]
+
+    def test_switches_with_the_mode(self):
+        backend = self.make('jtag', ['-D', '200', '-P', '1000'])
+        backend.switch_to_progmode()
+        backend.switch_to_debmode()
+        self.assertEqual(self.clock_codes(backend), [jtag2.jtag_clock_code(1000), jtag2.jtag_clock_code(200)])
+        backend.protocol.enter_progmode.assert_called_once()
+
+    def test_not_on_debugwire(self):
+        backend = self.make('debugwire', ['-D', '200'], 'atmega328p')
+        backend._set_jtag_clock(200)
+        backend.switch_to_progmode()
+        self.assertEqual(self.clock_codes(backend), [])
+
+    def test_warning_below_minimum(self):
+        backend = self.make('jtag', ['-D', '5'])
+        backend.logger.warning.assert_called_once()
+
+
+class TestClockHint(TestCase):
+    """A failed stop or single step on JTAG points to -F and -D, once; the error itself goes on"""
+
+    def make(self, iface, device):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICE mkII', address='4262'),
+                                   device, iface, options(['-d', device, '-F', '128000']))
+        backend.protocol = MagicMock()
+        return backend
+
+    def test_stop_timeout(self):
+        backend = self.make('jtag', 'atmega324p')
+        backend.protocol.forced_stop.side_effect = jtag2.Jtag2UsbTimeout("No response to command 0x0A")
+        for _ in range(2):
+            with self.assertRaises(jtag2.Jtag2UsbTimeout):
+                backend.stop()
+        backend.logger.warning.assert_called_once()
+        self.assertIn("-F", backend.logger.warning.call_args.args[0])
+        self.assertEqual(backend.logger.warning.call_args.args[1:], (jtag2.jtag_clock_khz(6), '128000'))
+
+    def test_single_step(self):
+        backend = self.make('jtag', 'atmega324p')
+        backend._set_jtag_clock(25)
+        backend.protocol.single_step.side_effect = jtag2.Jtag2Error("Single step: RSP_ILLEGAL_MCU_STATE")
+        with self.assertRaises(jtag2.Jtag2Error):
+            backend._single_step()
+        self.assertEqual(backend.logger.warning.call_args.args[1], jtag2.jtag_clock_khz(53))
+
+    def test_not_on_debugwire(self):
+        backend = self.make('debugwire', 'atmega328p')
+        backend.protocol.single_step.side_effect = jtag2.Jtag2Error("Single step: RSP_ILLEGAL_MCU_STATE")
+        with self.assertRaises(jtag2.Jtag2Error):
+            backend._single_step()
+        backend.logger.warning.assert_not_called()

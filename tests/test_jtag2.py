@@ -390,3 +390,26 @@ class TestDeviceContext(TestCase):
         proto = Jtag2Protocol(FakeTransport([('same', b"\x80")]))
         proto.set_device_context([(0x80, b"\x01\x02")])
         self.assertEqual(proto.transport.sent[0][1], b"\x36\x80\x00\x02\x01\x02")
+
+
+class TestJtagClock(TestCase):
+    """PAR_OCD_JTAG_CLK: never faster than asked for, except below the slowest clock (measured on the mkII)"""
+
+    def test_measured_periods(self):
+        for code, period_ns in [(0, 624), (1, 1432), (2, 2184), (3, 2936), (6, 5184), (27, 20928), (255, 191920)]:
+            self.assertAlmostEqual(1e6 / jtag2.jtag_clock_khz(code), period_ns, delta=max(4, period_ns / 10000))
+
+    def test_codes(self):
+        for khz, code in [(10000, 0), (2000, 0), (1603, 0), (1602, 1), (699, 1), (698, 2), (400, 3),
+                          (200, 6), (1, 255)]:
+            self.assertEqual(jtag2.jtag_clock_code(khz), code, khz)
+
+    def test_never_faster(self):
+        for khz in range(6, 7000):
+            self.assertLessEqual(jtag2.jtag_clock_khz(jtag2.jtag_clock_code(khz)), khz, khz)
+
+    def test_memory_timeout_grows_with_the_bytes(self):
+        proto = Jtag2Protocol(FakeTransport([]))
+        self.assertEqual(proto._memory_timeout(500), jtag2.USB_TIMEOUT)
+        proto.byte_ms = jtag2.jtag_byte_ms(255)
+        self.assertGreater(proto._memory_timeout(256), 2 * 256 * 7.9)   # 2 s for 256 bytes at 255

@@ -84,7 +84,7 @@ EMULATOR_MODE_JTAG : int = 0x01
 EMULATOR_MODE_UNKNOWN : int = 0x02
 EMULATOR_MODE_SPI : int = 0x03
 PAR_OCD_VTARGET : int = 0x06
-PAR_OCD_JTAG_CLK : int = 0x07
+PAR_OCD_JTAG_CLK : int = 0x07      # a delay count, see jtag_clock_code
 PAR_OCD_BREAK_CAUSE : int = 0x08
 PAR_TIMERS_RUNNING : int = 0x09
 PAR_JTAGID : int = 0x0E
@@ -154,6 +154,31 @@ def make_frame(sequence : int, body : bytes) -> bytes:
     frame = struct.pack("<BHIB", MESSAGE_START, sequence, len(body), TOKEN) + bytes(body)
     return frame + struct.pack("<H", crc16(frame))
 
+
+def jtag_clock_khz(code : int) -> float:
+    """
+    The fastest JTAG clock in kHz for a PAR_OCD_JTAG_CLK value, a delay count. Measured on the JTAGICE
+    mkII (firmware 7.27) with a logic analyser on TCK of an ATmega324P: the probe bit-bangs TCK, and
+    the shortest period is 624 ns for 0 (no delay loop) and 682 ns + 750 ns * code from 1 on, to within
+    4 ns for 1, 2, 3, 6, 27 and 12 ns (0.006 %) for 255; between bytes it is several microseconds
+    longer. The table avrdude has from AVR Studio (0: 6.4 MHz, 1: 2.8 MHz, n: 5.35 MHz / n) is 4 to 5
+    times too fast.
+    """
+    return 1e6 / (624 if code == 0 else 682 + 750 * code)
+
+def jtag_clock_code(khz : int) -> int:
+    """
+    The PAR_OCD_JTAG_CLK value for a JTAG clock of at most khz kHz, because the debug clock must stay
+    below a quarter of the MCU clock; the slowest one, 255, if none is that slow
+    """
+    return next((code for code in range(256) if jtag_clock_khz(code) <= khz), 255)
+
+def jtag_byte_ms(code : int) -> float:
+    """
+    ms per byte of a memory access in debug mode at a PAR_OCD_JTAG_CLK value, measured on the mkII
+    (flash, 12 KB: 0.17 at 0, 0.36 at 6, 1.0 at 27; 256 bytes at 200: 1.6 s)
+    """
+    return 0.17 + 0.031 * code
 
 def parse_frame(frame : bytes) -> tuple[int, bytes]:
     """
@@ -569,6 +594,7 @@ class Jtag2Protocol():
         self.transport : Jtag2UsbTransport | Jtag2SerialTransport = transport
         self.sequence : int = 0
         self.events : list[bytes] = []
+        self.byte_ms : float = 0.0   # ms per byte read or written; memory commands wait that much longer
 
     def command(self, body : bytes, timeout : int = USB_TIMEOUT) -> bytes:
         """Send a command and return the body of its response"""
@@ -634,19 +660,24 @@ class Jtag2Protocol():
         self.set_parameter(PAR_BAUD_RATE, bytes([BAUD_CODES[baud]]))
         self.transport.set_baudrate(baud)
 
-    def ok(self, body : bytes, what : str) -> None:
+    def ok(self, body : bytes, what : str, timeout : int = USB_TIMEOUT) -> None:
         """A command answered by RSP_OK"""
-        self.expect(self.command(body), RSP_OK, what)
+        self.expect(self.command(body, timeout), RSP_OK, what)
 
     def read_memory(self, memtype : int, address : int, count : int) -> bytes:
         """CMND_READ_MEMORY"""
-        return self.expect(self.command(struct.pack("<BBII", CMND_READ_MEMORY, memtype, count, address)),
+        return self.expect(self.command(struct.pack("<BBII", CMND_READ_MEMORY, memtype, count, address),
+                                        self._memory_timeout(count)),
                            RSP_MEMORY, "Read memory 0x{:02X}:0x{:X}".format(memtype, address))[1:]
 
     def write_memory(self, memtype : int, address : int, data : bytes) -> None:
         """CMND_WRITE_MEMORY"""
         self.ok(struct.pack("<BBII", CMND_WRITE_MEMORY, memtype, len(data), address) + bytes(data),
-                "Write memory 0x{:02X}:0x{:X}".format(memtype, address))
+                "Write memory 0x{:02X}:0x{:X}".format(memtype, address), self._memory_timeout(len(data)))
+
+    def _memory_timeout(self, count : int) -> int:
+        """USB_TIMEOUT, plus twice the time the bytes take at a slow JTAG clock"""
+        return USB_TIMEOUT + int(2 * count * self.byte_ms)
 
     def read_pc(self) -> int:
         """CMND_READ_PC: a word address"""

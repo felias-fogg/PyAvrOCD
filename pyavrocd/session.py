@@ -320,7 +320,7 @@ class AvrSession(DebugBackend):
                 if 'ocden' not in self.manage:
                     self.logger.warning("The fuse OCDEN is not managed by PyAvrOCD.")
                     self.logger.warning("In order to allow debugging, you need to program this fuse manually.")
-                    self.logger.warning("Or let payavrocd manage this fuse: '-m ocden'.")
+                    self.logger.warning("Or let PyAvrOCD manage this fuse: '-m ocden'.")
                     raise FatalError("Debugging is impossible because OCDEN cannot be programmed")
                 newfuse = ofuse[0] & ~ofuse_mask & 0xFF
                 self.write_fuse(ofuse_addr, bytearray([newfuse]))
@@ -435,7 +435,7 @@ class AvrSession(DebugBackend):
                 if 'bootrst' not in self.manage:
                     self.logger.warning("BOOTRST is not managed by PyAvrOCD and will therefore not be cleared.")
                     self.logger.warning("If you do not want to start in the boot loader, clear this fuse manually.")
-                    self.logger.warning("Or let payavrocd manage this fuse: '-m bootrst'.")
+                    self.logger.warning("Or let PyAvrOCD manage this fuse: '-m bootrst'.")
                 else:
                     newfuse : int = bfuse[0] | bfuse_mask
                     self.logger.debug("Writing new fuse byte: 0x%x", newfuse)
@@ -535,7 +535,7 @@ class AvrSession(DebugBackend):
                     self.logger.warning("The DWEN fuse is not managed by PyAvrOCD.")
                     self.logger.warning("Therefore, the fuse will not be programmed.")
                     self.logger.warning("In order to allow debugging, you need to program this fuse manually.")
-                    self.logger.warning("Or let payavrocd manage this fuse: '-m dwen'.")
+                    self.logger.warning("Or let PyAvrOCD manage this fuse: '-m dwen'.")
                     raise FatalError("Debugging is impossible when DWEN is not programmed.")
                 if device_id in [ 0x1E9205, 0x1E930A ]:
                     self._check_atmega48_and_88(device_id)
@@ -762,7 +762,7 @@ class AvrSession(DebugBackend):
             return
         if 'ocden' not in self.manage:
             self.logger.warning("OCDEN cannot be disabled since this fuse is not managed by PyAvrOCD")
-            self.logger.warning("In order to let payavrocd manage this fuse use: '-m ocden'.")
+            self.logger.warning("In order to let PyAvrOCD manage this fuse use: '-m ocden'.")
             return
         try:
             # Disable OCDEN
@@ -788,7 +788,7 @@ class AvrSession(DebugBackend):
         if 'dwen' not in self.manage:
             self.logger.warning("DWEN cannot be disabled since this fuse is not managed by PyAvrOCD")
             self.logger.warning("Disable this fuse before switching the power of the MCU off!")
-            self.logger.warning("In order to let payavrocd manage this fuse use: '-m dwen'.")
+            self.logger.warning("In order to let PyAvrOCD manage this fuse use: '-m dwen'.")
             return
         try:
             self._sign_on()

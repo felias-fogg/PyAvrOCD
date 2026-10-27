@@ -52,6 +52,14 @@ class Jtag2Backend(AvrSession):
                                                .format(iface, candidate.product))
         self.candidate : ProbeCandidate = candidate
         self.timers_run : bool = args.timers[0] == 'r'
+        self.clkdeb : int | None = args.clkdeb   # JTAG clock in kHz while debugging (-D)
+        self.clkprg : int | None = args.clkprg   # and in programming mode (-P); None: keep the probe's
+        self._jtag_khz : float | None = None      # the JTAG clock set last; None: the probe's own
+        self._clock_hint_given : bool = False
+        for khz in {self.clkdeb, self.clkprg} - {None} if iface == 'jtag' else set():
+            if jtag2.jtag_clock_khz(jtag2.jtag_clock_code(khz)) > khz:
+                self.logger.warning("JTAG clock %d kHz is below the minimum of the %s; using %.1f kHz", khz,
+                                        candidate.product, jtag2.jtag_clock_khz(jtag2.jtag_clock_code(khz)))
         self.transport : jtag2.Jtag2UsbTransport | None = None
         self.protocol : jtag2.Jtag2Protocol | None = None
         self.sign_on_info : jtag2.SignOn | None = None
@@ -130,6 +138,7 @@ class Jtag2Backend(AvrSession):
                              "(4-page erase); update it with Microchip Studio 7".format(
                                  major, minor, self.candidate.product, self._devicename))
         proto.set_parameter(jtag2.PAR_EMULATOR_MODE, bytes([mode]), jtag2.MODE_TIMEOUT)
+        self._set_jtag_clock(self.clkdeb)
         if four_page and self.sign_on_info is not None:
             # The 4-page parts (ATtiny441/841/1634): only the device context (0x36, as Microchip Studio 7
             # sends it) carries the page buffers per flash block, without which the mkII writes them
@@ -280,8 +289,12 @@ class Jtag2Backend(AvrSession):
 
     def _single_step(self) -> None:
         self._proto().drain_breaks()
-        self._proto().single_step()
-        self._proto().wait_for_break()
+        try:
+            self._proto().single_step()
+            self._proto().wait_for_break()
+        except jtag2.Jtag2Error:
+            self._clock_hint()
+            raise
         self._breakpoints_updated()
 
     def _breakpoints_updated(self) -> None:
@@ -377,6 +390,7 @@ class Jtag2Backend(AvrSession):
         """On debugWIRE, programming and debugging mode are the same, as with the EDBG probes"""
         if self._iface == 'jtag':
             self._flush_pending_removals()
+            self._set_jtag_clock(self.clkprg)
             self._proto().enter_progmode()
         return True
 
@@ -384,12 +398,41 @@ class Jtag2Backend(AvrSession):
         if self._iface == 'jtag':
             self._proto().leave_progmode()
             self._proto().drain_breaks()
+            self._set_jtag_clock(self.clkdeb)
         return True
+
+    def _set_jtag_clock(self, khz : int | None) -> None:
+        """The JTAG clock for -D or -P, on JTAG targets only, never above khz unless that is below the minimum"""
+        if self._iface != 'jtag' or khz is None:
+            return
+        code = jtag2.jtag_clock_code(khz)
+        self.logger.debug("JTAG clock: %.1f kHz (asked for %d kHz)", jtag2.jtag_clock_khz(code), khz)
+        self._proto().set_parameter(jtag2.PAR_OCD_JTAG_CLK, bytes([code]))
+        self._proto().byte_ms = jtag2.jtag_byte_ms(code)
+        self._jtag_khz = jtag2.jtag_clock_khz(code)
+
+    def _clock_hint(self) -> None:
+        """
+        On JTAG, with TCK above a quarter of the MCU clock, stops of the running target time out at
+        random and single steps fail (RSP_ILLEGAL_MCU_STATE) or end at wrong addresses (measured with
+        the mkII on an ATmega324P at 128 kHz: up to 32.6 kHz all fine, from 47.8 kHz on not). The
+        default -D keeps below it if -F is right; so after such an error, point to both, once.
+        """
+        if self._iface != 'jtag' or self._clock_hint_given:
+            return
+        self._clock_hint_given = True
+        khz = self._jtag_khz if self._jtag_khz is not None else jtag2.jtag_clock_khz(6)   # the probe's default
+        self.logger.warning("The JTAG clock (%.1f kHz) may be too fast for the MCU clock, which must be more "
+                                "than four times faster; check -F (now %s Hz) or lower -D", khz, self.args.F_CPU)
 
     def stop(self) -> None:
         """Stop and consume the break events, so that poll_event does not report a stop later"""
-        self._proto().forced_stop()
-        self._proto().wait_for_break()
+        try:
+            self._proto().forced_stop()
+            self._proto().wait_for_break()
+        except jtag2.Jtag2Error:
+            self._clock_hint()
+            raise
         self._proto().drain_breaks()
 
     def reset(self) -> None:
