@@ -31,6 +31,12 @@ if platform.uname().system == "Darwin":
 # and through addsvd its import of svd2py -- none of which the server imports.
 hiddenimports = []
 hiddenimports += collect_submodules('pyavrocd.deviceinfo.devices')
+# jtag2.usb_backend imports libusb_package by name, which import analysis cannot see either; without
+# it, its hook does not run and the bundle has no libusb-1.0.dll for JTAGICE mkII / AVR Dragon
+# (measured: only a libusb0.dll that PyInstaller's pyusb hook found in the system). A dependency on
+# Windows only.
+if platform.uname().system == "Windows":
+    hiddenimports += ['libusb_package']
 
 # The SVD files are not read by the server -- monitor.py takes its register
 # descriptions from device_info['svd'], baked into the device modules -- but
