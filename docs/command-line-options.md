@@ -1,6 +1,6 @@
 # Invoking PyAvrOCD
 
-In a terminal window, you invoke PyAvrOCD as follows, whereby the only mandatory option is the `-d` or `--device` option, specifying the MCU:
+In a terminal window, you invoke PyAvrOCD as follows, where the only mandatory option is the `-d` or `--device` option, specifying the target MCU:
 
 ```
 $ pyavrocd [options]
@@ -8,9 +8,17 @@ $ pyavrocd [options]
 
 PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.
 
-If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command line options may be interesting to you because you may want to change some of them using a [configuration file](#providing-command-line-options-in-configuration-files).
+## Debug probe discovery
+
+The basic rule for PyAvrOCD is that it will connect to any compatible debug probe, as long as there is no ambiguity.  This means it will look for all debug probes connected by USB and, if there is only one, use it. Since some debug probes need a few seconds to re-enumerate on the USB bus, this can take up to 5 seconds. After that, PyAvrOCD checks whether there is a unique serial port on USB. If there is only one, it assumes that this is a debug probe for the specified target MCU.
+
+With the `-t`  and the `-u` options, one can disambiguate and speed up the discovery process. With `-t` or `--tool` you can restrict the discovery to a particular type of tool, e.g., `dwlink` or `atmelice`. With `-u` or `--usbsn` you can specify a suffix of either the USB serial number or the name of the serial port.
+
+Finally, a few words of caution. Under **Windows**, you may need to install USB drivers using the [Zadig USB drivers](https://zadig.akeo.ie) in order to access the debug probes using USB bulk transfer (e.g., Dragon or JTAGICE mkII). If you run Windows on ARM, such devices cannot be accessed at all (for the time being). On **Linux**, [you need to install a udev rules file](install.md), and your user must be allowed to access the serial port, typically by being a member of the `dialout` group.
 
 ## Command-line options
+
+If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, the command-line options may be interesting to you because you may want to change some of them using a [configuration file](#providing-command-line-options-in-configuration-files).
 
 | Option&nbsp;Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |

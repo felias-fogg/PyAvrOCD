@@ -134,8 +134,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
     parser.add_argument('-s', '--start',  dest='prg',
                             help='Start specified program (e.g., simavr or gede)')
 
-    tool_choices : list [str] = ['atmelice', 'dragon', 'dwlink', 'edbg', 'jtagice2', 'jtagice3', 'medbg', 'nedbg',
-                        'pickit4', 'powerdebugger', 'snap']
+    tool_choices : list [str] = sorted(EDBG_TOOLS | JTAG2_TOOLS | {'dwlink'})
     parser.add_argument("-t", "--tool",
                             metavar="TOOL",
                             type=str,
@@ -457,60 +456,121 @@ def run_server(server: RspServer, logger : logging.Logger) -> int:
         raise
     return 0
 
-EDBG_PRODUCT_IDS : tuple[int, ...] = (0x2140, 0x2141, 0x2144, 0x2111, 0x2169, 0x2145, 0x2175, 0x2FC0, 0x2177, 0x2180)
+EDBG_PRODUCTS : dict[int, str] = { 0x2140 : 'jtagice3', 0x2141 : 'atmelice', 0x2144 : 'powerdebugger',
+                                   0x2111 : 'edbg', 0x2169 : 'edbg', 0x2145 : 'medbg', 0x2175 : 'nedbg',
+                                   0x2FC0 : 'nedbg', 0x2177 : 'pickit4', 0x2180 : 'snap' }
+EDBG_TOOLS : frozenset[str] = frozenset(EDBG_PRODUCTS.values())
+JTAG2_TOOLS : frozenset[str] = frozenset(jtag2.PRODUCTS.values())
+REENUMERATION_WAIT : float = 5.0   # s, see find_probe
 
-def find_jtag2_tool(args : argparse.Namespace, num_edbg : int,
-                        logger : logging.Logger) -> tuple[bool, ProbeCandidate | None]:
+def find_probe(args : argparse.Namespace, intf : str,
+                   logger : logging.Logger) -> tuple[bool, ProbeCandidate | None]:
     """
-    Look for probes speaking the JTAGICE mkII protocol (JTAGICE mkII, AVR Dragon). Returns
-    (abort, probe): abort is True if the choice is ambiguous or the tool asked for is not there;
-    probe is the one to debug with, or None if the EDBG tools or dw-link are to be tried.
+    The probe to debug with. Returns (abort, probe); abort is True if there is none or the choice is
+    ambiguous, after the reason has been logged. First the probes on USB, EDBG tools (HID) and
+    JTAGICE mkII / AVR Dragon (bulk) alike: one of them is taken if it is the only one, -t and -u
+    narrowing the choice. Only if there is none on USB, or -t or -u mean a serial port, dw-link is
+    looked for there.
+    A JTAGICE mkII or AVR Dragon leaves the bus for 1.5 to 3 s after every sign-off, avrdude's at the
+    end of an upload too, and a server started right after it would not find the probe. So, with
+    nothing on USB, wait for it up to REENUMERATION_WAIT seconds, unless the selection rules it out
+    (an EDBG tool, which does not do this, or a serial port; the wait would cost every dw-link start).
     """
-    names = set(jtag2.PRODUCTS.values())
-    if args.tool is not None and args.tool not in names: # an EDBG tool or dw-link was asked for
-        return False, None
-    # After a sign-off (avrdude's too) the probes leave the bus for about 3 s and enumerate
-    # again; a server started right after an upload would not find them. So wait for them,
-    # unless the selection clearly means an EDBG tool or a serial port (dw-link): the wait cost
-    # every dw-link start 5 s.
-    wait : bool = args.tool in names or \
-      (not args.serialnumber and num_edbg == 0) or \
-      (bool(args.serialnumber) and not edbg_tool_with_serial(args.serialnumber)
-       and not serial_port_with_suffix(args.serialnumber))
-    deadline : float = time.monotonic() + (5 if wait else 0)
-    while True:
-        try:
-            candidates = jtag2.discover(args.tool)
-        except usb.core.NoBackendError: # no libusb: on Windows, the EDBG tools do not need it
-            logger.debug("No libusb, cannot look for JTAGICE mkII / AVR Dragon")
-            candidates = []
-        found = [c for c in candidates
-                 if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
-        if found or time.monotonic() >= deadline:
-            break
-        time.sleep(0.3)
-    if not found:
-        if args.tool in names:
-            logger.critical("No compatible tool discovered")
-            return True, None
-        return False, None
-    if len(found) > 1 or (args.tool is None and not args.serialnumber and num_edbg > 0):
+    serial_meant : bool = args.tool == 'dwlink' or \
+      (bool(args.serialnumber) and serial_port_with_suffix(args.serialnumber))
+    found : list[ProbeCandidate] = []
+    libusb : bool = True
+    if args.tool != 'dwlink':
+        wait : bool = not serial_meant and args.tool not in EDBG_TOOLS
+        deadline : float = time.monotonic() + (REENUMERATION_WAIT if wait else 0)
+        while True:
+            found, libusb = usb_probes(args, logger)
+            if found or time.monotonic() >= deadline:
+                break
+            time.sleep(0.3)
+    if len(found) == 1:
+        return False, found[0]
+    if len(found) > 1:
         logger.critical("More than one compatible tool! Use -t or -u to select.")
         for c in found:
             logger.critical(" Tool: %s, SN: %s", c.product, c.address)
         return True, None
-    return False, found[0]
+    if (args.tool is not None and args.tool != 'dwlink') or \
+      (not serial_meant and lacking_udev_rules(logger)):
+        logger.critical("No compatible tool discovered")
+        explain_missing_probe(args, libusb, logger)
+        return True, None
+    return find_dwlink(args, intf, logger, lambda: explain_missing_probe(args, libusb, logger))
 
-def find_dwlink(args : argparse.Namespace, intf : str,
-                    logger : logging.Logger) -> tuple[bool, ProbeCandidate | None]:
+def usb_probes(args : argparse.Namespace, logger : logging.Logger) -> tuple[list[ProbeCandidate], bool]:
     """
-    dw-link on a serial port. Returns (abort, probe) like find_jtag2_tool. Which serial port is
-    dw-link only the sign-on tells, and opening a port resets an Arduino; so the probe is taken only
-    if exactly one USB serial port is there, or -u names one by the end of its name.
+    The probes on USB that -t and -u allow, and whether libusb is there. The EDBG tools are found
+    through hidapi and do not need it; JTAGICE mkII and AVR Dragon do.
+    """
+    found : list[ProbeCandidate] = []
+    if args.tool is None or args.tool in EDBG_TOOLS:
+        found += [ProbeCandidate(tool=args.tool or EDBG_PRODUCTS.get(t.product_id, 'edbg'),
+                                     product=t.product_string, address=t.serial_number)
+                  for t in pymcuprog.backend.Backend().get_available_hid_tools(
+                      serialnumber_substring=args.serialnumber or '', tool_name=args.tool)]
+    libusb : bool = True
+    if args.tool is None or args.tool in JTAG2_TOOLS:
+        try:
+            # without a serial number, the probe cannot be opened either (Linux without udev rules)
+            found += [c for c in jtag2.discover(args.tool) if c.address and
+                      (not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower()))]
+        except usb.core.NoBackendError:
+            logger.debug("No libusb, cannot look for JTAGICE mkII / AVR Dragon")
+            libusb = False
+    return found, libusb
+
+def lacking_udev_rules(logger : logging.Logger) -> bool:
+    """
+    Linux: is there a probe on USB that this user may not open? libusb lists it all the same, but
+    hidapi leaves an EDBG tool out, and the serial number of a JTAGICE mkII / AVR Dragon cannot be
+    read. If so, say how to install the udev rules.
+    """
+    if platform.system() != 'Linux':
+        return False
+    try:
+        edbg_on_bus = [d for d in usb.core.find(find_all=True, idVendor=0x3EB) if d.idProduct in EDBG_PRODUCTS]
+        lacking = any(not c.address for c in jtag2.discover()) or \
+          len(pymcuprog.backend.Backend().get_available_hid_tools()) < len(edbg_on_bus)
+    except (usb.core.NoBackendError, usb.core.USBError):
+        return False
+    if lacking:
+        logger.critical("Perhaps you need to install the udev rules first:")
+        logger.critical("Download https://pyavrocd.io/99-edbg-debuggers.rules,")
+        logger.critical("review, edit, and install under /etc/udev/rules.d/.")
+    return lacking
+
+def explain_missing_probe(args : argparse.Namespace, libusb : bool, logger : logging.Logger) -> None:
+    """After 'No compatible tool discovered': why a JTAGICE mkII or AVR Dragon may not have been seen"""
+    if args.tool is not None and args.tool not in JTAG2_TOOLS:
+        return
+    if platform.system() == 'Windows':
+        logger.warning("A JTAGICE mkII or AVR Dragon needs libusb and a driver for it, "
+                           "e.g., WinUSB, installed with Zadig;")
+        logger.warning("on Windows on Arm, they cannot be used")
+    elif not libusb:
+        logger.warning("A JTAGICE mkII or AVR Dragon needs libusb: %s",
+                           "'brew install libusb'" if platform.system() == 'Darwin'
+                           else "'sudo apt install libusb-1.0-0'")
+
+def find_dwlink(args : argparse.Namespace, intf : str, logger : logging.Logger,
+                    explain : Callable[[], None] = lambda: None) -> tuple[bool, ProbeCandidate | None]:
+    """
+    dw-link on a serial port. Returns (abort, probe) like find_probe. Which serial port is dw-link
+    only the sign-on tells, and opening a port resets an Arduino; so the probe is taken only if
+    exactly one USB serial port is there, or -u names one by the end of its name. 'explain' adds
+    to 'No compatible tool discovered' why a probe on USB may have been missed.
     """
     if intf and intf != 'debugwire':   # no interface: no device, only --reboot-debugger
-        logger.critical("dw-link can only debug debugWIRE targets" if args.tool == "dwlink"
-                            else "No compatible tool discovered")
+        if args.tool == "dwlink":
+            logger.critical("dw-link can only debug debugWIRE targets")
+        else:
+            logger.critical("No compatible tool discovered")
+            explain()
         return True, None
     if args.baud not in jtag2.BAUD_CODES:
         logger.critical("--dw-link-baud: %d bps is not possible, choose one of %s", args.baud,
@@ -520,6 +580,7 @@ def find_dwlink(args : argparse.Namespace, intf : str,
              if not args.serialnumber or c.address.lower().endswith(args.serialnumber.lower())]
     if not found:
         logger.critical("No compatible tool discovered")
+        explain()
         return True, None
     if len(found) > 1:
         logger.critical("More than one serial port; name the one of dw-link with -u, e.g., -u %s",
@@ -532,40 +593,6 @@ def find_dwlink(args : argparse.Namespace, intf : str,
 def serial_port_with_suffix(suffix : str) -> bool:
     """Is there a USB serial port whose name ends in suffix (where dw-link may be)?"""
     return any(c.address.lower().endswith(suffix.lower()) for c in dwlinkbackend.discover())
-
-def edbg_tool_with_serial(serial_suffix : str) -> bool:
-    """
-    Is an EDBG tool attached whose serial number ends in serial_suffix? False without libusb
-    """
-    try:
-        return any(usb.util.get_string(d, d.iSerialNumber).lower().endswith(serial_suffix.lower())
-                       for d in usb.core.find(find_all=True)
-                       if d.idVendor == 0x3EB and d.idProduct in EDBG_PRODUCT_IDS)
-    except (usb.core.NoBackendError, usb.core.USBError, ValueError):
-        return False
-
-def number_of_connected_edbg_tools(logger : logging.Logger) -> int:
-    """
-    Find out how many debugging tools are connected
-    """
-    prodids = EDBG_PRODUCT_IDS
-    try:
-        #logger.debug("Microchip debuggers: %s", [d for d in usb.core.find(find_all=True) if
-        #                d.idVendor in [0x3EB, 0x4d8]])
-        if platform.system() == 'Windows':
-            return len([d for d in pymcuprog.backend.Backend().get_available_hid_tools() if
-                        d.vendor_id == 0x3EB and d.product_id in prodids ])
-        return len([d for d in usb.core.find(find_all=True) if
-                        d.idVendor == 0x3EB and d.idProduct in prodids])
-    except usb.core.NoBackendError as e:
-        logger.critical("Could not discover debug probes: %s", e)
-        if platform.system() == 'Darwin':
-            logger.critical("Install libusb: 'brew install libusb'")
-        elif platform.system() == 'Linux':
-            logger.critical("Install libusb: 'sudo apt install libusb-1.0-0'")
-        else:
-            logger.critical("On Windows, USB core is not used, i.e., this error should not happen!")
-        return -1 # error return
 
 #pylint: disable=too-many-branches
 def startup(command_line : list[str], logger : logging.Logger) -> int:
@@ -603,55 +630,20 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     if check_elf_file_for_relax_optimization(args.elffile, logger):
         return 1
 
-    # determine number of connected tools
-    num_tools : int = 0
-    if args.tool != "dwlink":
-        num_tools = number_of_connected_edbg_tools(logger)
-
-    # num_tools < 0 means that USB is not there
-    if num_tools < 0:
+    abort, probe = find_probe(args, intf, logger)
+    if abort or probe is None:
         return 1
-    abort, jtag2_tool = find_jtag2_tool(args, num_tools, logger)
-    if abort:
-        return 1
-    if jtag2_tool is not None:
-        logger.info("Connected to %s, SN: %s", jtag2_tool.product, jtag2_tool.address)
-        return reboot_or_serve(Jtag2Backend, jtag2_tool, lambda: Jtag2Backend(jtag2_tool, device, intf, args),
-                                   device, intf, args, jtag2_tool.product, logger)
+    if probe.tool in JTAG2_TOOLS:
+        logger.info("Connected to %s, SN: %s", probe.product, probe.address)
+        return reboot_or_serve(Jtag2Backend, probe, lambda: Jtag2Backend(probe, device, intf, args),
+                                   device, intf, args, probe.product, logger)
+    if probe.tool == 'dwlink':
+        logger.info("Using dw-link on %s", probe.address)
+        return reboot_or_serve(DwlinkBackend, probe, lambda: DwlinkBackend(probe, device, intf, args),
+                                   device, intf, args, probe.product, logger)
 
-    if args.tool == "dwlink" or num_tools == 0:
-        abort, dwlink_tool = find_dwlink(args, intf, logger)
-        if abort or dwlink_tool is None:
-            return 1
-        logger.info("Using dw-link on %s", dwlink_tool.address)
-        return reboot_or_serve(DwlinkBackend, dwlink_tool, lambda: DwlinkBackend(dwlink_tool, device, intf, args),
-                                   device, intf, args, dwlink_tool.product, logger)
-
-    # Check whether all connected tools are available as HID devices
     backend : pymcuprog.backend.Backend = pymcuprog.backend.Backend()
-    if len(backend.get_available_hid_tools()) != num_tools:
-        if platform.system() == 'Linux':
-            logger.critical("Perhaps you need to install the udev rules first:")
-            logger.critical("Download https://pyavrocd.io/99-edbg-debuggers.rules,")
-            logger.critical("review, edit, and install under /etc/udev/rules.d/.")
-            return 1
-        logger.error("Not all discovered tools are available")
-
-    available : list[pyedbglib.hidtransport.hidtransportbase.HidTool]
-    available = backend.get_available_hid_tools(serialnumber_substring=args.serialnumber,
-                                                    tool_name=args.tool)
-    if len(available) == 0:
-        logger.critical("No compatible tool discovered")
-        return 1 # exit with error code
-    if len(available) > 1:
-        logger.critical("More than one compatible tool! Use -t or -u to select.")
-        d : pyedbglib.hidtransport.hidtransportbase.HidTool
-        for d in available:
-            logger.critical(" Tool: %s, SN: %s", d.product_string, d.serial_number)
-        return 1 # exit with error code
-
-    tool : ToolUsbHidConnection = ToolUsbHidConnection(serialnumber=args.serialnumber,
-                                                           tool_name=args.tool)
+    tool : ToolUsbHidConnection = ToolUsbHidConnection(serialnumber=probe.address, tool_name=args.tool)
     # Now try to connect
     try:
         toolname : str = "Unknown tool"

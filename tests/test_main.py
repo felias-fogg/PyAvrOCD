@@ -13,9 +13,18 @@ from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup, handle_simavr, \
-     find_jtag2_tool
+     find_probe, EDBG_PRODUCTS
 from pyavrocd.backend import ProbeCandidate
 from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
+
+
+def hid_tool(pid=0x2141, product='Atmel-ICE CMSIS-DAP', sn='J42700018184'):
+    """an EDBG tool as libusb (idVendor, idProduct) and hidapi (the rest) see it"""
+    return SimpleNamespace(idVendor=0x3EB, idProduct=pid, vendor_id=0x3EB, product_id=pid,
+                           product_string=product, serial_number=sn)
+
+def no_hid_tools():
+    return MagicMock(get_available_hid_tools=MagicMock(return_value=[]))
 
 class TestMain(TestCase):
 
@@ -386,10 +395,9 @@ class TestMain(TestCase):
 
     @patch('pyavrocd.main.serve')
     @patch('pyavrocd.main.Jtag2Backend.reboot_probe', return_value=True)
-    @patch('pyavrocd.main.find_jtag2_tool')
-    @patch('pyavrocd.main.number_of_connected_edbg_tools', return_value=0)
+    @patch('pyavrocd.main.find_probe')
     @patch('pyavrocd.main.importlib.metadata.version', return_value='VERSION')
-    def test_startup_reboot_jtag2_only(self, _version, _num, mock_find, mock_reboot, mock_serve):
+    def test_startup_reboot_jtag2_only(self, _version, mock_find, mock_reboot, mock_serve):
         dragon = ProbeCandidate(tool='dragon', product='AVRDRAGON', address='00A200050860')
         mock_find.return_value = (False, dragon)
         mock_logger = MagicMock()
@@ -418,77 +426,68 @@ class TestMain(TestCase):
         self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink', '-d', 'attiny85'], mock_logger), 1)
         mock_serve.assert_called_once()                               # not again
 
-    @patch('pyavrocd.main.importlib.metadata.version')
-    @patch('pyavrocd.main.usb.core.find')
+    @patch('pyavrocd.main.time.sleep', Mock())
+    @patch('pyavrocd.main.time.monotonic', Mock(side_effect=itertools.count()))
+    @patch('pyavrocd.main.dwlinkbackend.discover', Mock(return_value=[]))
+    @patch('pyavrocd.main.pymcuprog.backend.Backend', Mock(return_value=no_hid_tools()))
+    @patch('pyavrocd.main.importlib.metadata.version', Mock(return_value='VERSION'))
+    @patch('pyavrocd.main.usb.core.find', Mock(side_effect=NoBackendError("")))
     @patch('pyavrocd.main.platform.system')
-    def test_startup_mac_no_backend(self, mock_system, mock_find, mock_version):
-        mock_logger = MagicMock()
-        mock_version.return_value='VERSION'
-        mock_find.side_effect = NoBackendError("")
-        mock_system.return_value = 'Darwin'
-        self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
-        mock_find.assert_called_once()
-        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
-        mock_logger.critical.assert_has_calls([call('Could not discover debug probes: %s', ANY),
-                                                   call("Install libusb: 'brew install libusb'")])
+    def test_startup_no_libusb(self, mock_system):
+        # the EDBG tools do not need libusb; without it, only JTAGICE mkII / AVR Dragon are missed
+        for system, hint in (('Darwin', "'brew install libusb'"), ('Linux', "'sudo apt install libusb-1.0-0'")):
+            mock_system.return_value = system
+            mock_logger = MagicMock()
+            self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
+            mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
+            mock_logger.critical.assert_called_with('No compatible tool discovered')
+            mock_logger.warning.assert_called_with('A JTAGICE mkII or AVR Dragon needs libusb: %s', hint)
 
-    @patch('pyavrocd.main.importlib.metadata.version')
-    @patch('pyavrocd.main.usb.core.find')
-    @patch('pyavrocd.main.platform.system')
-    def test_startup_linux_no_backend(self, mock_system, mock_find, mock_version):
-        mock_logger = MagicMock()
-        mock_version.return_value='VERSION'
-        mock_find.side_effect = NoBackendError("")
-        mock_system.return_value = 'Linux'
-        self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
-        mock_find.assert_called_once()
-        mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
-        mock_logger.critical.assert_has_calls([call('Could not discover debug probes: %s', ANY),
-                                                   call("Install libusb: 'sudo apt install libusb-1.0-0'")])
-
+    @patch('pyavrocd.main.time.sleep', Mock())
+    @patch('pyavrocd.main.time.monotonic', Mock(side_effect=itertools.count()))
+    @patch('pyavrocd.main.pymcuprog.backend.Backend', Mock(return_value=no_hid_tools()))
+    @patch('pyavrocd.main.platform.system', Mock(return_value='Darwin'))
     @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.usb.core.find')
     def test_startup_no_tools(self, mock_find,  mock_version, mock_dwlink):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2139
-        mock_find.return_value=[ t3 ]
+        mock_find.return_value=[ SimpleNamespace(idVendor=0x3EB, idProduct=0x2139) ]
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
         self.assertEqual(mock_dwlink.call_count,1)
         mock_logger.info.assert_has_calls([call('This is PyAvrOCD version %s', 'VERSION')])
         mock_logger.critical.assert_has_calls([call('No compatible tool discovered')])
+        mock_logger.warning.assert_not_called()
 
+    @patch('pyavrocd.main.time.sleep', Mock())
+    @patch('pyavrocd.main.time.monotonic', Mock(side_effect=itertools.count()))
+    @patch('pyavrocd.main.dwlinkbackend.discover')
     @patch('pyavrocd.main.usb.core.find')
-    @patch('pyavrocd.main.pymcuprog.backend.Backend')
-    @patch('pyavrocd.main.platform.system')
-    def test_startup_linux_no_udev(self, mock_system, mock_backend, mock_find):
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2141
-        mock_find.return_value=[ t3 ]
-        mock_backend.return_value = MagicMock(get_available_hid_tools=MagicMock(return_value=[]))
-        mock_system.return_value = 'Linux'
+    @patch('pyavrocd.main.pymcuprog.backend.Backend', Mock(return_value=no_hid_tools()))
+    @patch('pyavrocd.main.platform.system', Mock(return_value='Linux'))
+    def test_startup_linux_no_udev(self, mock_find, mock_dwlink):
+        mock_find.return_value=[ hid_tool() ]  # libusb lists the Atmel-ICE, hidapi does not
         mock_logger = MagicMock()
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
-        mock_logger.critical.assert_called_with("review, edit, and install under /etc/udev/rules.d/.")
+        mock_logger.critical.assert_has_calls([call("Perhaps you need to install the udev rules first:"),
+                                               call("Download https://pyavrocd.io/99-edbg-debuggers.rules,"),
+                                               call("review, edit, and install under /etc/udev/rules.d/."),
+                                               call("No compatible tool discovered")])
+        mock_dwlink.assert_not_called()     # an Arduino on a serial port would be reset for nothing
 
-    @patch('pyavrocd.main.usb.core.find')
-    @patch('pyavrocd.main.pymcuprog.backend.Backend')
-    @patch('pyavrocd.main.platform.system')
-    def test_startup_mac_not_available(self, mock_system, mock_backend, mock_find):
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2141
-        mock_find.return_value=[ t3 ]
-        mock_backend.return_value = MagicMock(get_available_hid_tools=MagicMock(return_value=[]))
-        mock_system.return_value = 'Darwin'
+    @patch('pyavrocd.main.time.sleep', Mock())
+    @patch('pyavrocd.main.time.monotonic', Mock(side_effect=itertools.count()))
+    @patch('pyavrocd.main.dwlinkbackend.discover', Mock(return_value=[]))
+    @patch('pyavrocd.main.usb.core.find', Mock(side_effect=NoBackendError("")))
+    @patch('pyavrocd.main.pymcuprog.backend.Backend', Mock(return_value=no_hid_tools()))
+    @patch('pyavrocd.main.platform.system', Mock(return_value='Windows'))
+    def test_startup_windows_nothing(self):
         mock_logger = MagicMock()
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
-        mock_logger.error.assert_called_with("Not all discovered tools are available")
         mock_logger.critical.assert_called_with("No compatible tool discovered")
+        self.assertIn("WinUSB", mock_logger.warning.call_args_list[0].args[0])
+        self.assertIn("Windows on Arm", mock_logger.warning.call_args_list[1].args[0])
 
     @patch('pyavrocd.main.EdbgBackend', MagicMock())
     @patch('pyavrocd.main.RspServer', MagicMock())
@@ -499,11 +498,7 @@ class TestMain(TestCase):
     def test_startup_with_tool(self, mock_backend, mock_find,  mock_version, mock_dwlink):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2141
-        t3.vendor_id = 0x3EB
-        t3.product_id = 0x2141
+        t3 = hid_tool()
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(),get_available_hid_tools=MagicMock(return_value=[t3]),transport=Mock())
         self.assertNotEqual(startup(['-d', 'atmega328p', '-v=all'], mock_logger), 1)
@@ -519,11 +514,7 @@ class TestMain(TestCase):
     def test_startup_oserror_busy(self, mock_backend, mock_find,  mock_version, mock_dwlink):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2141
-        t3.vendor_id = 0x3EB
-        t3.product_id = 0x2141
+        t3 = hid_tool()
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=OSError("open failed")),
                                                   get_available_hid_tools=MagicMock(return_value=[t3]),
@@ -541,11 +532,7 @@ class TestMain(TestCase):
     def test_startup_oserror_other(self, mock_backend, mock_find,  mock_version):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2141
-        t3.vendor_id = 0x3EB
-        t3.product_id = 0x2141
+        t3 = hid_tool()
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=OSError("other")),
                                                   get_available_hid_tools=MagicMock(return_value=[t3]),
@@ -562,11 +549,7 @@ class TestMain(TestCase):
     def test_startup_reboot(self, mock_backend, mock_find,  mock_version):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2141
-        t3.vendor_id = 0x3EB
-        t3.product_id = 0x2141
+        t3 = hid_tool()
         mock_find.return_value=[ t3 ]
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(),get_available_hid_tools=MagicMock(return_value=[t3]),transport=Mock())
         self.assertNotEqual(startup(['-d', 'atmega328p', '-v=all', '--reboot'], mock_logger), 1)
@@ -586,8 +569,6 @@ class TestMain(TestCase):
         mocked_popen.assert_called_once()
         mocked_exit.assert_not_called()
 
-    # Pinned to Linux: on Windows number_of_connected_edbg_tools creates a
-    # Backend of its own, and the call count below would be 2.
     @patch('pyavrocd.main.platform.system', MagicMock(return_value='Linux'))
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.pymcuprog.backend.Backend')
@@ -595,26 +576,10 @@ class TestMain(TestCase):
     def test_startup_two_tools(self, mock_find, mock_backend, mock_version):
         mock_logger = MagicMock()
         mock_version.return_value='VERSION'
-        t1 = SimpleNamespace()
-        t1.idVendor = 0x3EB
-        t1.idProduct = 0x2140
-        t1.vendor_id = 0x3EB
-        t1.product_id = 0x2140
-        t1.product_string = "PROD1"
-        t1.serial_number ="S/N01"
-        t2 = SimpleNamespace()
-        t2.idVendor = 0x3EB
-        t2.idProduct = 0x2141
-        t2.vendor_id = 0x3EB
-        t2.product_id = 0x2141
-        t2.product_string = "PROD2"
-        t2.serial_number ="S/N02"
-        t3 = SimpleNamespace()
-        t3.idVendor = 0x3EB
-        t3.idProduct = 0x2139
-        t4 = SimpleNamespace()
-        t4.idVendor = 0x3EC
-        t4.idProduct = 0x2140
+        t1 = hid_tool(0x2140, "PROD1", "S/N01")
+        t2 = hid_tool(0x2141, "PROD2", "S/N02")
+        t3 = SimpleNamespace(idVendor=0x3EB, idProduct=0x2139)
+        t4 = SimpleNamespace(idVendor=0x3EC, idProduct=0x2140)
         mock_find.return_value=(t1, t2, t3, t4)
         mock_backend.return_value = MagicMock(connect_to_tool=Mock(side_effect=pymcuprog.pymcuprog_errors.PymcuprogToolConnectionError("")),get_available_hid_tools=MagicMock(return_value=[t1,t2]))
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
@@ -625,88 +590,110 @@ class TestMain(TestCase):
                                                    call(' Tool: %s, SN: %s', 'PROD2', 'S/N02')])
 
 
-class TestFindJtag2Tool(TestCase):
-    """main picks a JTAGICE mkII / AVR Dragon to debug with, or leaves the choice to the EDBG tools"""
+class TestFindProbe(TestCase):
+    """main picks the probe: one on USB (EDBG or JTAGICE mkII / AVR Dragon), else dw-link on a serial port"""
 
     CLONE = ProbeCandidate('jtagice2', 'JTAGICE mkII', '090000004262')
     DRAGON = ProbeCandidate('dragon', 'AVRDRAGON', '00A200050860')
+    ICE = hid_tool()
+    ICE_CANDIDATE = ProbeCandidate('atmelice', 'Atmel-ICE CMSIS-DAP', 'J42700018184')
+    PORT = ProbeCandidate('dwlink', 'dw-link', '/dev/cu.usbmodem242101')
 
-    def find(self, found, tool=None, sn=None, num_edbg=0, edbg_serial=False):
+    def find(self, jtag2_found=(), hid=(), ports=(), cmd=(), intf='debugwire', system='Darwin', usb_bus=()):
+        """find_probe with the given probes attached; returns ((abort, probe), logger, sleep)"""
         logger = MagicMock()
-        args = SimpleNamespace(tool=tool, serialnumber=sn)
+        args = options(['-d', 'attiny85'] + list(cmd))
+        def hid_tools(serialnumber_substring='', tool_name=None):
+            return [t for t in hid if t.serial_number.lower().endswith(serialnumber_substring.lower())
+                    and tool_name in (None, EDBG_PRODUCTS[t.product_id])]
+        jtag2_discover = jtag2_found if callable(jtag2_found) else \
+          lambda t=None: [c for c in jtag2_found if t in (None, c.tool)]
         # one second per call to the clock: the wait for a re-enumerating probe takes no real time
-        with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: [c for c in found if t in (None, c.tool)]), \
+        with patch('pyavrocd.main.jtag2.discover', side_effect=jtag2_discover), \
+             patch('pyavrocd.main.pymcuprog.backend.Backend',
+                       return_value=MagicMock(get_available_hid_tools=MagicMock(side_effect=hid_tools))), \
+             patch('pyavrocd.main.dwlinkbackend.discover', return_value=list(ports)), \
+             patch('pyavrocd.main.usb.core.find', return_value=list(usb_bus)), \
+             patch('pyavrocd.main.platform.system', return_value=system), \
              patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
-             patch('pyavrocd.main.time.sleep'), \
-             patch('pyavrocd.main.edbg_tool_with_serial', return_value=edbg_serial):
-            return find_jtag2_tool(args, num_edbg, logger), logger
-
-    def test_none_attached(self):
-        (abort, probe), _ = self.find([])
-        self.assertEqual((abort, probe), (False, None)) # on to the EDBG tools or dw-link, as before
-
-    def test_none_attached_but_asked_for(self):
-        (abort, probe), logger = self.find([], tool='dragon')
-        self.assertEqual((abort, probe), (True, None))
-        logger.critical.assert_called_with("No compatible tool discovered")
+             patch('pyavrocd.main.time.sleep') as sleep:
+            return find_probe(args, intf, logger), logger, sleep
 
     def test_one_alone(self):
-        (abort, probe), logger = self.find([self.DRAGON])
-        self.assertEqual((abort, probe), (False, self.DRAGON))
-        logger.critical.assert_not_called()
+        for found, hid, probe in (([self.DRAGON], [], self.DRAGON), ([], [self.ICE], self.ICE_CANDIDATE)):
+            result, logger, sleep = self.find(found, hid, ports=[self.PORT])
+            self.assertEqual(result, (False, probe))      # USB first, the serial port is not looked at
+            logger.critical.assert_not_called()
+            sleep.assert_not_called()
 
-    def test_two_without_selection(self):
-        (abort, probe), logger = self.find([self.CLONE, self.DRAGON])
-        self.assertEqual((abort, probe), (True, None))
-        logger.critical.assert_any_call("More than one compatible tool! Use -t or -u to select.")
+    def test_ambiguous_across_families(self):
+        result, logger, _ = self.find([self.DRAGON], [self.ICE])
+        self.assertEqual(result, (True, None))
+        logger.critical.assert_has_calls([call("More than one compatible tool! Use -t or -u to select."),
+                                          call(" Tool: %s, SN: %s", 'Atmel-ICE CMSIS-DAP', 'J42700018184'),
+                                          call(" Tool: %s, SN: %s", 'AVRDRAGON', '00A200050860')])
+        self.assertEqual(self.find([self.CLONE, self.DRAGON])[0], (True, None))
 
     def test_selected_by_tool_and_by_serial(self):
-        self.assertEqual(self.find([self.CLONE, self.DRAGON], tool='jtagice2')[0], (False, self.CLONE))
-        self.assertEqual(self.find([self.CLONE, self.DRAGON], sn='0860')[0], (False, self.DRAGON))
-        self.assertEqual(self.find([self.CLONE, self.DRAGON], sn='a200050860')[0], # case does not matter
-                         (False, self.DRAGON))
-
-    def test_with_an_edbg_tool(self):
-        (abort, probe), logger = self.find([self.DRAGON], num_edbg=1)
-        self.assertEqual((abort, probe), (True, None)) # ambiguous without -t / -u
-        logger.critical.assert_any_call("More than one compatible tool! Use -t or -u to select.")
-        self.assertEqual(self.find([self.DRAGON], num_edbg=1, sn='18184')[0], (False, None)) # -u names the EDBG tool
-        self.assertEqual(self.find([self.DRAGON], num_edbg=1, tool='atmelice')[0], (False, None)) # an EDBG tool
+        both = ([self.CLONE, self.DRAGON], [self.ICE])
+        self.assertEqual(self.find(*both, cmd=['-t', 'jtagice2'])[0], (False, self.CLONE))
+        self.assertEqual(self.find(*both, cmd=['-t', 'atmelice'])[0], (False, self.ICE_CANDIDATE))
+        self.assertEqual(self.find(*both, cmd=['-u', '0860'])[0], (False, self.DRAGON))
+        self.assertEqual(self.find(*both, cmd=['-u', 'a200050860'])[0], (False, self.DRAGON)) # case does not matter
+        self.assertEqual(self.find(*both, cmd=['-u', '18184'])[0], (False, self.ICE_CANDIDATE))
+        self.assertEqual(self.find([], [hid_tool(0x2111, 'EDBG CMSIS-DAP', 'ATML1')])[0][1].tool, 'edbg')
 
     def test_waits_for_reenumeration(self):
         # after avrdude has signed off, the probe is back on the bus only after a few seconds
-        logger = MagicMock()
         attempts = iter([[], [], [self.CLONE]])
-        with patch('pyavrocd.main.jtag2.discover', side_effect=lambda t=None: next(attempts)), \
-             patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
-             patch('pyavrocd.main.edbg_tool_with_serial', return_value=False), \
-             patch('pyavrocd.main.serial_port_with_suffix', return_value=False), \
-             patch('pyavrocd.main.time.sleep') as sleep:
-            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='4262'), 0, logger),
-                             (False, self.CLONE))
+        result, _, sleep = self.find(lambda t=None: next(attempts), cmd=['-u', '4262'])
+        self.assertEqual(result, (False, self.CLONE))
         self.assertEqual(sleep.call_count, 2)
 
+    def test_nothing_after_the_wait(self):
+        result, logger, sleep = self.find(ports=[])
+        self.assertEqual(result, (True, None))
+        self.assertGreater(sleep.call_count, 0)
+        logger.critical.assert_called_with("No compatible tool discovered")
+        logger.warning.assert_not_called()
+
+    def test_dwlink_when_nothing_on_usb(self):
+        result, _, sleep = self.find(ports=[self.PORT])
+        self.assertEqual(result, (False, self.PORT))
+        self.assertGreater(sleep.call_count, 0)              # the price of a reliable start after an upload
+
     def test_no_wait_when_a_serial_port_is_meant(self):
-        # -u naming the port of dw-link: no mkII or Dragon to wait for (the wait cost 5 s per start)
-        with patch('pyavrocd.main.jtag2.discover', return_value=[]) as discover, \
-             patch('pyavrocd.main.edbg_tool_with_serial', return_value=False), \
-             patch('pyavrocd.main.serial_port_with_suffix', return_value=True), \
-             patch('pyavrocd.main.time.sleep') as sleep:
-            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='232301'), 0, MagicMock()),
-                             (False, None))
-        self.assertEqual(discover.call_count, 1)
-        sleep.assert_not_called()
+        # -t dwlink, or -u naming the port of dw-link: no mkII or Dragon to wait for
+        for cmd in (['-t', 'dwlink'], ['-u', '242101']):
+            result, _, sleep = self.find(ports=[self.PORT], cmd=cmd)
+            self.assertEqual(result, (False, self.PORT))
+            sleep.assert_not_called()
 
     def test_no_wait_when_an_edbg_tool_is_meant(self):
-        with patch('pyavrocd.main.jtag2.discover', return_value=[]) as discover, \
-             patch('pyavrocd.main.edbg_tool_with_serial', return_value=True):
-            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber='18184'), 1, MagicMock()),
-                             (False, None))
-        self.assertEqual(discover.call_count, 1)
+        result, logger, sleep = self.find([self.DRAGON], ports=[self.PORT], cmd=['-t', 'atmelice'])
+        self.assertEqual(result, (True, None))
+        sleep.assert_not_called()
+        logger.critical.assert_called_with("No compatible tool discovered")
 
     def test_no_libusb(self):
-        logger = MagicMock()
-        with patch('pyavrocd.main.jtag2.discover', side_effect=NoBackendError("none")):
-            self.assertEqual(find_jtag2_tool(SimpleNamespace(tool=None, serialnumber=None), 1, logger),
-                             (False, None))
+        def no_libusb(t=None):
+            raise NoBackendError("none")
+        self.assertEqual(self.find(no_libusb, [self.ICE])[0], (False, self.ICE_CANDIDATE))
+        result, logger, _ = self.find(no_libusb, cmd=['-t', 'dragon'])
+        self.assertEqual(result, (True, None))
+        logger.warning.assert_called_with('A JTAGICE mkII or AVR Dragon needs libusb: %s', "'brew install libusb'")
 
+    def test_linux_without_udev_rules(self):
+        # libusb lists the probes, but hidapi leaves the Atmel-ICE out / the Dragon's serial number is unreadable
+        for found, bus in (([], [hid_tool()]), ([ProbeCandidate('dragon', 'AVRDRAGON', '')], [])):
+            result, logger, _ = self.find(found, ports=[self.PORT], system='Linux', usb_bus=bus)
+            self.assertEqual(result, (True, None))
+            logger.critical.assert_any_call("Perhaps you need to install the udev rules first:")
+        # with rights: on to dw-link
+        self.assertEqual(self.find(ports=[self.PORT], system='Linux')[0], (False, self.PORT))
+
+    def test_not_debugwire(self):
+        result, logger, _ = self.find(ports=[self.PORT], intf='updi', system='Windows')
+        self.assertEqual(result, (True, None))
+        logger.critical.assert_called_with("No compatible tool discovered")
+        self.assertIn("WinUSB", logger.warning.call_args_list[0].args[0])
