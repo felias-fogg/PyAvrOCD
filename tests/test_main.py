@@ -685,10 +685,12 @@ class TestFindProbe(TestCase):
 
     def test_linux_without_udev_rules(self):
         # libusb lists the probes, but hidapi leaves the Atmel-ICE out / the Dragon's serial number is unreadable
-        for found, bus in (([], [hid_tool()]), ([ProbeCandidate('dragon', 'AVRDRAGON', '')], [])):
-            result, logger, _ = self.find(found, ports=[self.PORT], system='Linux', usb_bus=bus)
+        for found, bus, cmd in (([], [hid_tool()], []), ([ProbeCandidate('dragon', 'AVRDRAGON', '')], [], []),
+                                ([ProbeCandidate('jtagice2', 'JTAGICE mkII', '')], [], ['-t', 'jtagice2'])):
+            result, logger, _ = self.find(found, ports=[self.PORT], system='Linux', usb_bus=bus, cmd=cmd)
             self.assertEqual(result, (True, None))
             logger.critical.assert_any_call("Perhaps you need to install the udev rules first:")
+            logger.critical.assert_called_with("No compatible tool discovered")
         # with rights: on to dw-link
         self.assertEqual(self.find(ports=[self.PORT], system='Linux')[0], (False, self.PORT))
 

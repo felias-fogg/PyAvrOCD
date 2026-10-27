@@ -495,8 +495,8 @@ def find_probe(args : argparse.Namespace, intf : str,
         for c in found:
             logger.critical(" Tool: %s, SN: %s", c.product, c.address)
         return True, None
-    if (args.tool is not None and args.tool != 'dwlink') or \
-      (not serial_meant and lacking_udev_rules(logger)):
+    lacking_rules : bool = not serial_meant and lacking_udev_rules(logger)   # always ask: it explains
+    if lacking_rules or (args.tool is not None and args.tool != 'dwlink'):
         logger.critical("No compatible tool discovered")
         explain_missing_probe(args, libusb, logger)
         return True, None
