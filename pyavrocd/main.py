@@ -549,8 +549,7 @@ def explain_missing_probe(args : argparse.Namespace, libusb : bool, logger : log
     if args.tool is not None and args.tool not in JTAG2_TOOLS:
         return
     if platform.system() == 'Windows':
-        logger.warning("A JTAGICE mkII or AVR Dragon needs libusb and a driver for it, "
-                           "e.g., WinUSB, installed with Zadig;")
+        logger.warning("A JTAGICE mkII or AVR Dragon needs a libusb driver, e.g., WinUSB, installed with Zadig;")
         logger.warning("on Windows on Arm, they cannot be used")
     elif not libusb:
         logger.warning("A JTAGICE mkII or AVR Dragon needs libusb: %s",

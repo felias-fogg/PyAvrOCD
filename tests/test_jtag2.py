@@ -300,6 +300,20 @@ class TestTransport(TestCase):
                              [('jtagice2', '090000004262'), ('dragon', '00A200050860')]) # NUL gone, Atmel-ICE not ours
             self.assertEqual([c.tool for c in jtag2.discover('dragon')], ['dragon'])
 
+    def test_usb_backend(self):
+        # libusb-package (a dependency on Windows only) brings the libusb that pyusb needs
+        package = Mock(get_libusb1_backend=Mock(return_value="its backend"))
+        with patch('pyavrocd.jtag2.importlib.import_module', return_value=package) as imp:
+            self.assertEqual(jtag2.usb_backend(), "its backend")
+            imp.assert_called_once_with('libusb_package')
+        with patch('pyavrocd.jtag2.importlib.import_module', side_effect=ImportError):
+            self.assertIsNone(jtag2.usb_backend())     # pyusb's own search
+        with patch('pyavrocd.jtag2.usb_backend', return_value="its backend"), \
+             patch('pyavrocd.jtag2.usb.core.find', return_value=[]) as find:
+            jtag2.discover()
+            self.assertRaises(Jtag2Error, jtag2.Jtag2UsbTransport.open)
+            self.assertEqual([c.kwargs['backend'] for c in find.call_args_list], ["its backend"] * 2)
+
 
 class FakeSerial():
     """A serial port that delivers the given chunks, one per read, then nothing"""

@@ -7,6 +7,8 @@ This module covers the layers below the debugging commands: framing and CRC,
 the USB and the serial transport, discovery of the probes, and sign-on.
 """
 from dataclasses import dataclass
+from typing import Any
+import importlib
 import logging
 import struct
 import time
@@ -416,6 +418,18 @@ class Jtag2Isp():
                           bytes([0x81, 0, 0x40, 0x4C, 0, 0, 0]) + bytes(data), 2)
 
 
+def usb_backend() -> Any:
+    """
+    pyusb's backend: the libusb of the libusb-package wheel where that is installed (a dependency on
+    Windows, which has no libusb of its own), else None, i.e., pyusb's own search, which in a
+    PyInstaller bundle finds the copy that the wheel's hook put there
+    """
+    try:
+        return importlib.import_module('libusb_package').get_libusb1_backend()
+    except ImportError:
+        return None
+
+
 def usb_serial(device : usb.core.Device) -> str:
     """Serial number from the USB descriptor; both probes end it with a NUL"""
     try:
@@ -427,7 +441,7 @@ def usb_serial(device : usb.core.Device) -> str:
 def discover(tool : str | None = None) -> list[ProbeCandidate]:
     """All attached probes speaking this protocol, optionally only those of one kind"""
     found : list[ProbeCandidate] = []
-    for device in usb.core.find(find_all=True, idVendor=VENDOR_ATMEL):
+    for device in usb.core.find(find_all=True, idVendor=VENDOR_ATMEL, backend=usb_backend()):
         name = PRODUCTS.get(device.idProduct)
         if name is None or (tool is not None and name != tool):
             continue
@@ -476,7 +490,7 @@ class Jtag2UsbTransport():
     @staticmethod
     def open(tool : str | None = None, serial_suffix : str | None = None) -> 'Jtag2UsbTransport':
         """Open the one probe that matches"""
-        devices = [d for d in usb.core.find(find_all=True, idVendor=VENDOR_ATMEL)
+        devices = [d for d in usb.core.find(find_all=True, idVendor=VENDOR_ATMEL, backend=usb_backend())
                    if d.idProduct in PRODUCTS and (tool is None or PRODUCTS[d.idProduct] == tool)
                    and (not serial_suffix or usb_serial(d).lower().endswith(serial_suffix.lower()))]
         if not devices:
