@@ -4,10 +4,13 @@
 
 !!! info "Linux"
     Under Linux, users may need to add a few `udev` rules before they can use PyAvrOCD. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
+    
+!!! info "Windows"
+    Under Windows, it may be necessary to install the WinUSB driver using [Zadig](https://github.com/pbatard/libwdi/wiki/Zadig) when you want to employ a debug probe that uses the USB bulk transport mechanism (see section on [supported debug probes](supported-debuggers.md)).
 
 ## Arduino IDE 2, Arduino Maker Workshop, and PlatformIO
 
-If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file.
+If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file. These will make sure that PyAvrOCD will be installed in the background.
 
 ## Downloading binaries
 
