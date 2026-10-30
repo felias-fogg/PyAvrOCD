@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v2.0/quick_arduino_attiny/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quick arduino attiny - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quick arduino attiny";
+        var mkdocs_page_input_path = "quick_arduino_attiny.md";
+        var mkdocs_page_url = "/v2.0/quick_arduino_attiny/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../pics/logo-tiny.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Quick arduino attiny</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_arduino_attiny.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="quickstart-snap-attiny85">Quickstart: SNAP &amp; ATtiny85</h2>
+<p>This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on an ATtiny85 using the MPLAB SNAP debug probe.</p>
+<h3 id="required-hardware">Required hardware</h3>
+<ul>
+<li>SNAP</li>
+<li>USB cable</li>
+<li>ATtiny85 (or any other classic ATtiny or ATmegaX8) as the <em>target</em></li>
+<li>In order to set up the target, you need:<ul>
+<li>a breadboard together with</li>
+<li>jumper wires (male-to-male)</li>
+<li>1 LED</li>
+<li>2 resistors (10 kΩ, 1kΩ)</li>
+<li>1 capacitor (100 nF)</li>
+</ul>
+</li>
+</ul>
+<h3 id="step-1-install-the-debug-enabled-tinycore-package">Step 1: Install the debug-enabled TinyCore package</h3>
+<p>Add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
+<pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
+</code></pre>
+<details>
+  <summary><b>How to enter a new boards manager URL</b></summary>
+<p></p>
+  <p>First you need to open the <code>Preferences</code> dialog, which you find either in the <code>Arduino IDE</code> or the <code>File</code> menu. </p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences.png" width="30%">
+</p>
+<p>
+Next you have to open the field <code>Additional boards manager URLs</code>.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/preferences-dialog.png" width="50%">
+</p>
+<p>
+Now type in the package index URL.
+</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/additional-board-urls-xmini.png" width="50%">
+</p>
+<p>
+Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
+</p>
+</details>
+<p></p>
+
+<p>Next, you have to install the new package. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>.</p>
+<details>
+<summary><b>How to install a new Arduino package or update an existing one</b></summary>
+<p></p>
+<p>You need to activate the <code>Boards Manager</code> by clicking on the board symbol in the left side bar (1). After the boards manager pane has been opened, type part of the package's name into the search line (2). Then all packages with the search word in their description are displayed. Scroll down until you see the one you want to install (3). Install this package by clicking on <code>Install</code> (4). If the package is already installed, then an <code>Update</code> button will be shown that you need to click on.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/IDE-boardmanager-xmini.png" width="90%"></p>
+</details>
+<p></p>
+
+<div class="admonition info">
+<p class="admonition-title">Linux systems</p>
+<p>After the installation, users of Linux systems will need to add <code>udev</code> rules. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
+</div>
+<h3 id="step-2-connect-the-target-with-the-debug-probe">Step 2: Connect the target with the debug probe</h3>
+<p>You need to set up the hardware on a breadboard and use a few jumper wires to connect the ATtiny to the debug probe. Further, as is obvious from the Fritzing sketch, you need an external power supply. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/snap+attiny85.png" width="80%">
+</p>
+
+<details>
+<summary><b>Table of breadboard connections</b></summary>
+<p></p>
+<p>You can use this table to check whether you have made all the connections.</p>
+<table>
+<thead>
+<tr>
+<th>ATtiny pin</th>
+<th>SNAP pin</th>
+<th>component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1 (Reset)</td>
+<td>TAUX #6</td>
+<td>10 kΩ resistor to Vcc</td>
+</tr>
+<tr>
+<td>#2 (D3)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>#3 (D4)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>#4 (GND)</td>
+<td>GND #3</td>
+<td>GND on breadboard, LED (-), decoupling cap 100 nF</td>
+</tr>
+<tr>
+<td>#5 (D0, MOSI)</td>
+<td>TTDI #7</td>
+<td></td>
+</tr>
+<tr>
+<td>#6 (D1, MISO)</td>
+<td>PGD #4</td>
+<td></td>
+</tr>
+<tr>
+<td>#7 (D2, SCK)</td>
+<td>PGC #5</td>
+<td>1 kΩ resistor to LED (+)</td>
+</tr>
+<tr>
+<td>#8 (Vcc)</td>
+<td>TVDD #2</td>
+<td>Vcc on breadboard, 10k resistor, decoupling cap 100 nF</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>connect LED (+) and 1 kΩ resistor</td>
+</tr>
+</tbody>
+</table>
+<!--
+| ATtiny pin    | SNAP pin | component                                              |
+| ------------- | -------- | ------------------------------------------------------ |
+| #1 (Reset)    | TAUX #6  | 10 kΩ resistor to Vcc                                  |
+| #2 (D3)       | &nbsp;   | &nbsp;                                                 |
+| #3 (D4)       | &nbsp;   | &nbsp;                                                 |
+| #4 (GND)      | GND #3   | GND on breadboard, LED (-), decoupling cap 100 nF      |
+| #5 (D0, MOSI) | TTDI #7  |                                                        |
+| #6 (D1, MISO) | PGD #4   |                                                        |
+| #7 (D2, SCK)  | PGC #5   | 1 kΩ resistor to LED (+)                               |
+| #8 (Vcc)      | TVDD #2  | Vcc on breadboard, 10k resistor, decoupling cap 100 nF |
+|               |          | connect LED (+) and 1 kΩ resistor                      |
+-->
+
+</details>
+<p></p>
+
+<h3 id="step-3-load-sketch-and-select-board">Step 3: Load sketch and select board</h3>
+<p>Load a sketch, e.g., the <code>Blink</code> sketch, and select the right board: <code>Tools -&gt; Board -&gt; TinyCore -&gt; ATtiny85</code>. If this is a chip is fresh from the factory, you need to adjust for the clock frequency. Choose <code>1 MHz internal osc.</code> under <code>Tools -&gt; Clock</code>.</p>
+<h3 id="step-4-compile-the-sketch">Step 4: Compile the sketch</h3>
+<p>Activate <code>Optimize for Debugging</code> in the <code>Sketch</code> menu. This only needs to be done once. Then click on the <code>Verify</code> button (checkmark symbol) in the top bar. This will compile the sketch.</p>
+<h3 id="step-5-start-debugging">Step 5: Start debugging</h3>
+<p>Now it is time to start debugging by clicking the <code>Debug</code> button (bug in front of a triangle) in the top bar. If the target MCU is not already in debugWIRE mode, the debugger will request 'power cycling'.</p>
+<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-attiny-power-cycle.png " width="90%"></p>
+
+<p>Power cycling means to remove the Vcc jumper cable and, after a few seconds, to reinsert it. After a while, the <code>DEBUG</code> pane should open.</p>
+<h3 id="step-6-debug-the-sketch">Step 6: Debug the sketch</h3>
+<p>You can now start and stop execution, inspect variables, set breakpoints, and the like (see section on <a href="../debugging/">debugging</a>). Clicking on the red square in the top bar of the DEBUG pane will terminate the current debugging episode.</p>
+<h3 id="step-7-start-over-or-terminate-the-debugging-session">Step 7: Start over or terminate the debugging session</h3>
+<p>After leaving the debugger, you can edit the sketch and start again at step 4. Note that you always have to recompile and restart the debugger before any changes you made to the sketch are effective.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to end debugging. In this case, you should switch the MCU back from debugWIRE mode to normal mode, in which SPI programming is possible. In order to achieve that, type <code>monitor debugwire disable</code> into the prompt line of the <code>Debug Console</code> before ending the last debug episode. It may also be a good idea to disable the <code>Optimize for Debugging</code> flag in the <code>Sketch</code> menu.</p>
+<h3 id="what-can-go-wrong">What can go wrong?</h3>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>gdb-server</code> console. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
