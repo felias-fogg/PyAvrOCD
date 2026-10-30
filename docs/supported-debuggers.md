@@ -21,10 +21,10 @@ The following debug probes use the HID USB protocol and can be used without inst
 In addition, the following probes are supported, which rely on the USB bulk transport mechanism:
 
 
-* **[AVR Dragon](https://www.microchip.com/en-us/development-tool/atavrdragon)** (firmware version 7.0 or newer)
-* [**AVR JTAGICE mkII**](https://www.microchip.com/en-us/development-tool/atjtagice2) (firmware version 7.0 or newer)
+* **[AVR Dragon](https://www.microchip.com/en-us/development-tool/atavrdragon)** (firmware version 7.0 or newer),
+* [**AVR JTAGICE mkII**](https://www.microchip.com/en-us/development-tool/atjtagice2) (firmware version 7.0 or newer).
 
-Note that under Windows, you may have to install the WinUSB driver using [Zadig](https://github.com/pbatard/libwdi/wiki/Zadig).
+Note that under Windows, you may have to install the WinUSB driver using [Zadig](https://zadig.akeo.ie).
 
 Finally, there are debug probes that use the serial line:
 
