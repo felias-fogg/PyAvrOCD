@@ -50,6 +50,14 @@
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Debug probes</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#hardware-debug-probes">Hardware debug probes</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-probes-using-the-usb-hid-protocol">Debug probes using the USB HID protocol</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-probes-using-usb-bulk-transfer">Debug probes using USB bulk transfer</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-probes-using-a-serial-line">Debug probes using a serial line</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#switching-to-avr-mode">Switching to AVR mode</a>
     </li>
@@ -157,7 +165,8 @@
                 <h1 id="supported-debug-probes">Supported debug probes</h1>
 <p>PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. In addition, it also provides an interface to some DIY debug probes.</p>
 <h2 id="hardware-debug-probes">Hardware debug probes</h2>
-<p>The following debug probes use the HID USB protocol and can be used without installing any drivers:</p>
+<h3 id="debug-probes-using-the-usb-hid-protocol">Debug probes using the USB HID protocol</h3>
+<p>The following debug probes use the human interface device protocol (HID) and can be used without installing any drivers:</p>
 <ul>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164140">MPLAB PICkit 4 In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>),</li>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/pg164100">MPLAB Snap In-Circuit Debugger</a></strong> (<a href="#switching-to-avr-mode">when in 'AVR mode'</a>),</li>
@@ -173,15 +182,17 @@
 <li><a href="https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html"><strong>nEDBG</strong></a> - on-board debuggers on Curiosity Nano boards (can also be used stand-alone to debug other UPDI targets),</li>
 <li><a href="https://github.com/MCUdude/microUPDI"><strong>microUPDI</strong></a> - a debugger for UPDI targets based on the mEDBG firmware. It does not work on the Dx-/Ex-/Sx-series chips. And in order to debug on 0-series ATmegas, you need the most recent firmware 1.19.57, which you get from the <a href="https://github.com/MCUdude/microUPDIcore">microUPDIcore</a> repo. Note that you can use the firmware on any ATmega32U4 development board without additional hardware if you do not need any level-shifting for the serial line. </li>
 </ul>
-<p>In addition, the following probes are supported, which rely on the USB bulk transport mechanism:</p>
+<h3 id="debug-probes-using-usb-bulk-transfer">Debug probes using USB bulk transfer</h3>
+<p>In addition, the following probes are supported, which rely on the USB bulk transfer mechanism:</p>
 <ul>
 <li><strong><a href="https://www.microchip.com/en-us/development-tool/atavrdragon">AVR Dragon</a></strong> (firmware version 7.0 or newer),</li>
 <li><a href="https://www.microchip.com/en-us/development-tool/atjtagice2"><strong>AVR JTAGICE mkII</strong></a> (firmware version 7.0 or newer).</li>
 </ul>
 <p>Note that under Windows, you may have to install the WinUSB driver using <a href="https://zadig.akeo.ie">Zadig</a>.</p>
+<h3 id="debug-probes-using-a-serial-line">Debug probes using a serial line</h3>
 <p>Finally, there are debug probes that use the serial line:</p>
 <ul>
-<li><strong><a href="https://felias-fogg.github.io/dw-link">dw-link</a></strong> (firmware version 7 or newer) - DIY debugger running on an Arduino UNO R3 (only debugWIRE), which uses a variant of the JTAGICE mkÍI protocol.</li>
+<li><strong><a href="https://felias-fogg.github.io/dw-link">dw-link</a></strong> (firmware version 7 or newer) - DIY debugger running on an Arduino UNO R3 , which uses a variant of the JTAGICE mkÍI protocol (only debugWIRE is supported).</li>
 </ul>
 <h2 id="switching-to-avr-mode">Switching to AVR mode</h2>
 <p>Note that Snap and PICkit4 need to be switched to 'AVR mode'. This can be accomplished as follows by using avrdude (&gt;= Version 7.3):</p>
