@@ -7,7 +7,7 @@ edit_uri: blob/main/docs/
 theme:
   name: readthedocs
   locale: en
-  logo: pics/logo-tiny.png
+#  logo: pics/logo-tiny.png
   include_homepage_in_sidebar: True
   features:
     - content.footnote.tooltips

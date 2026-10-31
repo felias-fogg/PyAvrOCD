@@ -20,7 +20,43 @@ platform = https://github.com/felias-fogg/platform-atmelavr.git
 ...
 ```
 
-Some examples for `platformio.ini` files using PyAvrOCD can be found in the section on [PlatformIO quickstart guides](quick_pio.md).
+This debug-enabled platform fork has already the right `debug_server` command with all the right parameters and contains the `debug_init_cmds` setting up a GDB session with PyAvrOCD. If you want to change something in these settings, you should check the original settings in `~/.platformio/platforms/atmelavr/platform.py`.
+
+A complete platformio.ini file for an ATtiny85 project when using the [dw-link debug probe](https://github.com/felias-fogg/dw-link) could look las follows:
+
+```
+[platformio]
+default_envs = debug
+
+[env:attiny85]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = ATtiny85
+board_build.mcu = attiny85
+board_build.f_cpu = 800000L
+
+[env:debug]
+extends = env:attiny85
+build_type = debug
+debug_tool = pyavrocd
+
+[env:release]
+extends = env:attiny85
+build_type = release
+build_flags =
+  -DNDEBUG
+upload_protocol = jtag2isp          ; protocol for dw-link
+upload_port = SERIALPORT            ; Define your serial port here or use VSC command
+upload_speed = 19200
+```
+
+The following repos provide example projects with `platformio.ini` files for different MCUs and debug probes:
+
+```
+https://github.com/felias-fogg/pio-attiny85-example
+https://github.com/felias-fogg/pio-atmega328p-example
+https://github.com/felias-fogg/pio-atmega1284p-example
+```
 
 For the modern parts, i.e., UPDI targets, there is no supporting fork yet, but it will be added real soon.
 

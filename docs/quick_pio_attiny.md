@@ -27,64 +27,58 @@ This quickstart guide demonstrates how to set up a PlatformIO project for debugg
 
 ### Step 1: Set up a project with the right platform
 
-Setup a PlatformIO project and instead of using `atmelavr` as the platform, specify the following in your `platformio.ini` configuration file:
+Setup a PlatformIO project and instead of using `atmelavr` as the `platform`, specify the `plarform-atmelavr` fork by felias-fogg in your `platformio.ini` configuration file:
 
 ```
-[platformio]
-
-[env:attiny85]
-platform = https://github.com/felias-fogg/platform-atmelavr.git
-framework = arduino
-board = attiny85
-...
-```
-
-The best way to start is to clone or download the following repository.
-
-```bash
-https://github.com/felias-fogg/pio-attiny85-example
-```
-
-The `plaformio.ini` file contains the following sections:
-
-```wasm
 [platformio]
 default_envs = debug
 
 [env:attiny85]
-;;contains all information about the platform & chip and
-;;how to commuincate with dw-link
-...
+platform = https://github.com/felias-fogg/platform-atmelavr.git ; important!
+framework = arduino
+board = ATtiny85
+board_build.mcu = attiny85
+board_build.f_cpu = 800000L
 
 [env:debug]
-;; enables debugging
+extends = env:attiny85
 build_type = debug
-...
+debug_tool = pyavrocd
 
 [env:release]
-;; supports uploading in release mode
+extends = env:attiny85
 build_type = release
-...
+build_flags =
+  -DNDEBUG
+upload_protocol = jtag2isp
+upload_port = SERIALPORT            ; Define your serial port here or use VSC command
+upload_speed = 19200
+```
+
+You find this example also in the following repo:
+
+```bash
+https://github.com/felias-fogg/pio-attiny85-example
 ```
 
 ### Step 2: Turn an UNO into a debug probe
 
 First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).
 
-The simplest way to install the firmware is to download an uploader from the Release assets of the [GitHub repo](https://github.com/felias-fogg/dw-link). The uploader should fit your architecture, e.g., `dw-uploader-windows-intel64` for Windows. Under *Linux* and *macOS*, open a terminal window, go to the download folder, and set the executable permission using `chmod +x`. Afterward, execute the program. Under *Windows*, it is enough to start the program after downloading by double-clicking on it.
-
-Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using PlatformIO.
-
-The Uno now acts as a debug probe providing a [GDB RSP](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html) interface. If you configured the serial line to the Uno as 115200 baud, and click on `Monitor` in the `PROJECT TASK` menu, select the `Terminal` window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".
+The simplest way to install the firmware is to download or clone the dw-link repository, open the root folder of the repo as a PlatformIO project, and then compile and upload the dw-link Arduino sketch. The Uno now acts as a debug probe.
 
 
 ### Step 3: Set up the hardware
 
-You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left.
+You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left. 
+
+
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny85-debug-new.png" width="70%">
 </p>
+The yellow system LED and the electrolyte cap between RESET and GND are optional but very versatile. The LED gives information about the internal state of the debug probe, and the cap prohibits a RESET when the host opens the serial line to the board.
+
 In reality, this could be like in the following photo.
 
 <p align="center">
@@ -107,7 +101,7 @@ Here is a table of all the connections so that you can check that you have made 
 | &nbsp;       | RESET           | RESET blocking cap of 10 µF (+)                              |
 | &nbsp;       | D7              | 220 Ω to system (yellow) LED (+)                             |
 
-The yellow LED is the *system LED*, and the red one is the *ATtiny-LED*. The system LED gives you information about the internal state of the debugger:
+The red LED is the *ATtiny-LED* and the yellow one is the *system LED*. The latter gives you information about the internal state of the debugger:
 
 1. debugWIRE mode disabled (LED is off),
 2. waiting for power-cycling the target (LED flashes every second for 0.1 sec),3.

@@ -2,7 +2,7 @@
 
 This is the list of the AVR MCUs that should be compatible with PyAvrOCD. MCUs tested with PyAvrOCD are marked in bold. MCUs known not to work with PyAvrOCD are struck out. Underlined MCUs are sitting on my desk and are waiting to be tested. All other MCUs listed are supposed to be compatible because their close cousins are. However, this assumption can be wrong, as I have experienced repeatedly.
 
-MCUs marked with an asterisk are supported by the [simulator simavr](supported-debuggers.md#software-simulator).
+MCUs marked with an asterisk are supported by the [simulator simavr](supported-simulator.md).
 
 The list is structured by the Arduino packages that support the chips, where some of the MCUs are supported by more than one package. If you want to know whether a particular chip is supported, simply use the search function.
 

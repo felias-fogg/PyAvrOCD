@@ -1,10 +1,12 @@
 # Supported debug probes
 
-PyAvrOCD has been built to provide access to AVR OCDs by means of Microchip's debug probes. In addition, it also provides an interface to some DIY debug probes.
+PyAvrOCD provides access to AVR OCDs by means of Microchip's debug probes. In addition, it also supports some DIY debug probes.
 
 ## Hardware debug probes
 
-The following debug probes use the HID USB protocol and can be used without installing any drivers:
+### Debug probes using the USB HID protocol
+
+The following debug probes use the human interface device protocol (HID) and can be used without installing any drivers:
 
 
 * **[MPLAB PICkit 4 In-Circuit Debugger](https://www.microchip.com/en-us/development-tool/pg164140)** ([when in 'AVR mode'](#switching-to-avr-mode)),
@@ -18,7 +20,9 @@ The following debug probes use the HID USB protocol and can be used without inst
 * [**nEDBG**](https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html) - on-board debuggers on Curiosity Nano boards (can also be used stand-alone to debug other UPDI targets),
 * [**microUPDI**](https://github.com/MCUdude/microUPDI) - a debugger for UPDI targets based on the mEDBG firmware. It does not work on the Dx-/Ex-/Sx-series chips. And in order to debug on 0-series ATmegas, you need the most recent firmware 1.19.57, which you get from the [microUPDIcore](https://github.com/MCUdude/microUPDIcore) repo. Note that you can use the firmware on any ATmega32U4 development board without additional hardware if you do not need any level-shifting for the serial line. 
 
-In addition, the following probes are supported, which rely on the USB bulk transport mechanism:
+### Debug probes using USB bulk transfer
+
+In addition, the following probes are supported, which rely on the USB bulk transfer mechanism:
 
 
 * **[AVR Dragon](https://www.microchip.com/en-us/development-tool/atavrdragon)** (firmware version 7.0 or newer),
@@ -26,10 +30,12 @@ In addition, the following probes are supported, which rely on the USB bulk tran
 
 Note that under Windows, you may have to install the WinUSB driver using [Zadig](https://zadig.akeo.ie).
 
+### Debug probes using a serial line
+
 Finally, there are debug probes that use the serial line:
 
 
-* **[dw-link](https://felias-fogg.github.io/dw-link)** (firmware version 7 or newer) - DIY debugger running on an Arduino UNO R3 (only debugWIRE), which uses a variant of the JTAGICE mkÍI protocol.
+* **[dw-link](https://felias-fogg.github.io/dw-link)** (firmware version 7 or newer) - DIY debugger running on an Arduino UNO R3 , which uses a variant of the JTAGICE mkÍI protocol (only debugWIRE is supported).
 
 ## Switching to AVR mode
 

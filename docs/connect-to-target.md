@@ -43,7 +43,7 @@ Note the notches on the left side of the headers. Since almost all SPI programmi
 
 ### Connecting to targets with an SPI programming header
 
-If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! For all the Arduino boards, pin 1 is always oriented towards the USB connector. However, if you plug it in the wrong way, nothing will be destroyed.
+If the target board has an SPI programming header, it is easy to connect to it. Simply use the SPI programming cable and plug it into the target board's header. Be aware of the correct orientation when the header is not keyed! For all Arduino boards, pin 1 is always oriented towards the USB connector. However, if you plug it in the wrong way, most often nothing bad will happen. But do not rely on that! The Dragon is said to be damaged by such a miswiring.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/atmel-ice-connect.png" width="70%">
