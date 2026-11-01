@@ -174,7 +174,37 @@
 platform = https://github.com/felias-fogg/platform-atmelavr.git
 ...
 </code></pre>
-<p>Some examples for <code>platformio.ini</code> files using PyAvrOCD can be found in the section on <a href="../quick_pio/">PlatformIO quickstart guides</a>.</p>
+<p>This debug-enabled platform fork has already the right <code>debug_server</code> command with all the right parameters and contains the <code>debug_init_cmds</code> setting up a GDB session with PyAvrOCD. If you want to change something in these settings, you should check the original settings in <code>~/.platformio/platforms/atmelavr/platform.py</code>.</p>
+<p>A complete platformio.ini file for an ATtiny85 project when using the <a href="https://github.com/felias-fogg/dw-link">dw-link debug probe</a> could look las follows:</p>
+<pre><code>[platformio]
+default_envs = debug
+
+[env:attiny85]
+platform = https://github.com/felias-fogg/platform-atmelavr.git
+framework = arduino
+board = ATtiny85
+board_build.mcu = attiny85
+board_build.f_cpu = 800000L
+
+[env:debug]
+extends = env:attiny85
+build_type = debug
+debug_tool = pyavrocd
+
+[env:release]
+extends = env:attiny85
+build_type = release
+build_flags =
+  -DNDEBUG
+upload_protocol = jtag2isp          ; protocol for dw-link
+upload_port = SERIALPORT            ; Define your serial port here or use VSC command
+upload_speed = 19200
+</code></pre>
+<p>The following repos provide example projects with <code>platformio.ini</code> files for different MCUs and debug probes:</p>
+<pre><code>https://github.com/felias-fogg/pio-attiny85-example
+https://github.com/felias-fogg/pio-atmega328p-example
+https://github.com/felias-fogg/pio-atmega1284p-example
+</code></pre>
 <p>For the modern parts, i.e., UPDI targets, there is no supporting fork yet, but it will be added real soon.</p>
 <h2 id="platformio-and-clion">PlatformIO and CLion</h2>
 <p>Similar to Visual Studio Code, you can install a PlatfromIO plugin that exposes the most important PlatformIO commands in CLion. After you have installed CLion, follow the instructions of the <a href="https://www.jetbrains.com/help/clion/platformio.html">CLion documentation</a> for installing PlatformIO. Then you can use the way described above in order to use the debug-enabled fork of the platform package.</p>
