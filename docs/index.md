@@ -1,6 +1,6 @@
 # PyAvrOCD
 
-PyAvrOCD[^1] is *the missing AVR debugging solution* for  [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org). It is a Python GDB server[^2] for 8-bit AVR MCUs, enabling you to debug programs running on these MCUs using the [GNU Project Debugger GDB](https://www.sourceware.org/gdb/). It communicates with Microchip's debug probes, such as [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100). In addition, it provides a pass-through service for the UNO-based debug probe [dw-link](https://felias-fogg.github.io/dw-link) and the simulation tool [simavr](https://github.com/buserror/simavr).
+PyAvrOCD[^1] is *the missing AVR debugging solution* for  [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org). It is a Python GDB server[^2] for 8-bit AVR MCUs, enabling you to debug programs running on these MCUs using the [GNU Project Debugger GDB](https://www.sourceware.org/gdb/). It communicates with debug probes, such as [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100) or [dw-link](https://felias-fogg.github.io/dw-link), and it provides a pass-through service for the simulation tool [simavr](https://github.com/buserror/simavr).
 
 ![ide2-6](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-6.png)
 
