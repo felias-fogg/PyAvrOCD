@@ -2,9 +2,7 @@
 
 PyAvrOCD provides access to AVR OCDs by means of Microchip's debug probes. In addition, it also supports some DIY debug probes.
 
-## Hardware debug probes
-
-### Debug probes using the USB HID protocol
+## Debug probes using the USB HID protocol
 
 The following debug probes use the human interface device protocol (HID) and can be used without installing any drivers:
 
@@ -18,9 +16,9 @@ The following debug probes use the human interface device protocol (HID) and can
 * [**EDBG**](http://content.alexandria.atmel.com/webhelp/GUID-43D69EB5-28C5-4F23-97B7-43CD3961DC33-en-US-3/index.html?GUID-180AB3C3-775A-482F-961D-D9862473CD85) - on-board debuggers on Xplained Pro/Ultra boards,
 * [**mEDBG**](https://onlinedocs.microchip.com/oxy/GUID-FC2A0384-AC9D-45B4-951E-5C0DEFE8B2E9-en-US-5/GUID-4063E88C-69CE-4393-ABBF-46E406D92BD3.html) - on-board debuggers on Xplained Mini/Nano boards,
 * [**nEDBG**](https://onlinedocs.microchip.com/oxy/GUID-B4A268FD-55AC-4EA1-A026-5F06B0F3D18E-en-US-1/index.html) - on-board debuggers on Curiosity Nano boards (can also be used stand-alone to debug other UPDI targets),
-* [**microUPDI**](https://github.com/MCUdude/microUPDI) - a debugger for UPDI targets based on the mEDBG firmware. It does not work on the Dx-/Ex-/Sx-series chips. And in order to debug on 0-series ATmegas, you need the most recent firmware 1.19.57, which you get from the [microUPDIcore](https://github.com/MCUdude/microUPDIcore) repo. Note that you can use the firmware on any ATmega32U4 development board without additional hardware if you do not need any level-shifting for the serial line. 
+* [**microUPDI**](https://github.com/MCUdude/microUPDI) - a DIY debugger for UPDI targets based on the mEDBG firmware. It does not work on the Dx-/Ex-/Sx-series chips. And in order to debug on 0-series ATmegas, you need the most recent firmware 1.19.57, which you get from the [microUPDIcore](https://github.com/MCUdude/microUPDIcore) repo. Note that you can use the firmware on any ATmega32U4 development board without additional hardware if you do not need any level-shifting for the serial line. 
 
-### Debug probes using USB bulk transfer
+## Debug probes using USB bulk transfer
 
 In addition, the following probes are supported, which rely on the USB bulk transfer mechanism:
 
@@ -30,7 +28,7 @@ In addition, the following probes are supported, which rely on the USB bulk tran
 
 Note that under Windows, you may have to install the WinUSB driver using [Zadig](https://zadig.akeo.ie).
 
-### Debug probes using a serial line
+## Debug probes using a serial line
 
 Finally, there are debug probes that use the serial line:
 
