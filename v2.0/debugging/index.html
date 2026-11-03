@@ -302,7 +302,7 @@ EXINT.EICRA.ISC0 = 3 (old value was: 0)
 </code></pre>
 <h3 id="structured-uis">Structured UIs</h3>
 <p>In addition to the command-line interface, GDB also supports more structured user interfaces. The <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI.html"><em>Text User Interface</em></a>, or TUI, is one of them. In order to use it, GDB has to be compiled with TUI enabled. Another very nice text-based interface is <a href="https://github.com/cyrus-and/gdb-dashboard">gdb-dashboard</a>. A setup for debugging an AVR chip with gdb-dashboard is described <a href="https://github.com/lkoepsel/AVR64DD/blob/main/docs/gdb-dashboard.md">here</a>. For this, the GDB client needs to be compiled with Python support.</p>
-<p>Note that the GDB binaries shipped with PyAvrOCD do not support TUI or Python. So, you have to look somewhere else for a client. This also means that <a href="https://arduino-craft-corner.de/index.php/2026/01/19/when-unused-program-counter-bits-go-rogue/">for some Microchip MCUs, debugging will not work</a>.</p>
+<p>Note that the GDB binaries shipped with PyAvrOCD do not support Python. And TUI is only compiled in on Linux and macOS. So, you have to look somewhere else for a GDB client. This also means that <a href="https://arduino-craft-corner.de/index.php/2026/01/19/when-unused-program-counter-bits-go-rogue/">for some Microchip MCUs, debugging will not work</a>.</p>
               
             </div>
           </div><footer>
