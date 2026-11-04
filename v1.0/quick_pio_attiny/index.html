@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v1.0/quick_pio_attiny/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quick pio attiny - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quick pio attiny";
+        var mkdocs_page_input_path = "quick_pio_attiny.md";
+        var mkdocs_page_url = "/v1.0/quick_pio_attiny/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="..">
+          <img src="../pics/logo-tiny.png" class="logo" alt="Logo"/>
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Supported devices & platforms</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation & Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install-link/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-cores/">Arduino cores</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Quick pio attiny</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/quick_pio_attiny.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="quickstart-guide-dw-link-attiny85">Quickstart guide: dw-link &amp; ATtiny85</h2>
+<p>This quickstart guide demonstrates how to set up a PlatformIO project for debugging on an ATtiny85 without requiring you to invest in a commercial debug probe. Instead, we will build our own debug probe.</p>
+<p>It explains</p>
+<ul>
+<li>
+<p>how to install the PyAvrOCD GDB server,</p>
+</li>
+<li>
+<p>how to turn an Arduino UNO R3 into a <a href="https://debugwire.de/">debugWIRE</a> debug probe using the <a href="https://felias-fogg.github.io/dw-link/">dw-link</a> firmware,</p>
+</li>
+<li>how to set up the breadboard with the ATtiny85 on it, and</li>
+<li>how to use PlatformIO for debugging a program on the ATtiny.</li>
+</ul>
+<h3 id="required-hardware">Required hardware</h3>
+<ul>
+<li>Arduino Uno (will become the <em>debug probe</em>)</li>
+<li>USB cable</li>
+<li>ATtiny85 as the <em>target</em></li>
+<li>In order to connect the debug probe to the target, you need:<ul>
+<li>a breadboard together with</li>
+<li>11 Jumper wires (male-to-male)</li>
+<li>2 LEDs</li>
+<li>3 Resistors (10 kΩ, 220Ω, 220Ω)</li>
+<li>2 Capacitors (100 nF, 10 µF)</li>
+</ul>
+</li>
+</ul>
+<h3 id="step-1-installing-pyavrocd">Step 1: Installing PyAvrOCD</h3>
+<p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD/">PyAvrOCD GitHub repo</a> and click on the <code>Latest</code> button below <strong>Releases</strong> on the right side of the page.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/repo.png" width="55%">
+</p>
+
+<p>This will open the latest release page with all its assets.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/release.png" width="55%">
+</p>
+
+<p>Here you can download the debug server executables for your platform. If there is nothing for you, there is an alternative way to install PyAvrOCD described <a href="step-1a:-alternative-way-of-installing-pyavrocd">below</a>. After downloading the archive, extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):</p>
+<pre><code class="language-sh">&gt; tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz
+</code></pre>
+<p>Once you have downloaded the archive and uncompressed it, you need to decide where to place the files contained in it. I prefer the folder <code>~/.local/bin/</code> (where <code>~</code> signifies the user folder). Move the three items that you find in the <code>tools</code> folder of the uncompressed archive to this folder (or any other place you have chosen):</p>
+<ul>
+<li><code>pyavrocd</code>[<code>.exe</code>] - the debug server executable,</li>
+<li><code>pyavrocd-util</code> - a folder with auxiliary code and data that should always be stored alongside the executable, and</li>
+<li><code>avr-gdb</code>[<code>.exe</code>] - a current version (16.3) of the GDB debugger for AVR chips with a minimal amount of dependencies on dynamic libraries.</li>
+</ul>
+<pre><code class="language-shell">&gt; mkdir ~/.local
+&gt; mkdir ~/.local/bin
+&gt; rm -rf ~/.local/bin/pyavrocd-util
+&gt; mv tools/* ~/.local/bin/
+</code></pre>
+<div class="admonition info">
+<p class="admonition-title">Windows</p>
+<p>On Windows, use <code>rmdir</code> instead of <code>rm -rf</code> above.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Linux</p>
+<p>Under Linux, you need to install <code>udev</code> rules so that the debug probes can communicate with the host. Download <a href="https://pyavrocd.io/99-edbg-debuggers.rules">https://pyavrocd.io/99-edbg-debuggers.rules</a>, edit if you want, and copy to <code>/etc/udev/rules.d/</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">macOS</p>
+<p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -d com.apple.quarantine FILE</code> in order to remove the extended attribute <code>com.apple.quarantine</code> from the binary executable FILE.</p>
+</div>
+<h3 id="step-1a-an-alternative-way-of-installing-pyavrocd">Step 1a: An alternative way of installing PyAvrOCD</h3>
+<p>When you are not happy with the choices provided to you above, when the PyAvrOCD binaries will not start because of incompatibilities, or when you have a compatible Python installation that you do not want to duplicate, it is also possible to install PyAvrOCD from <a href="https://pypi.org">PyPI, the Python Package Index</a>. The preferred way of doing that is using <a href="https://pipx.pypa.io/stable/">pipx</a>, which will install an executable in the folder <code>~/.local/bin/</code> and a virtual Python environment with all the required modules in <code>~/.local/pipx/</code>. Although this is, in theory, platform agnostic, you may encounter problems when USB and HIDAPI libraries have to be built from source. Note that Linux users need to install <code>udev</code> rules (see above).</p>
+<p>Assuming that you have been successful in installing PyAvrOCD using pipx, we also want to download SVD files that we will need during our IDE debugging sessions. Create the folder <code>pyavrocd-util</code> in the folder <code>~/.local/bin</code> , download the SVD archive into it, and extract the folder:</p>
+<pre><code class="language-sh">&gt; cd ~/.local/bin
+&gt; mkdir pyavrocd-util
+&gt; cd pyavrocd-util
+&gt; wget https://github.com/felias-fogg/PyAvrOCD/releases/latest/download/svd.tar.gz -O svd.tar.gz
+&gt; tar xvzf svd.tar.gz
+</code></pre>
+<h3 id="step-2-replace-the-outdated-avr-gdb-client">Step 2: Replace the outdated avr-gdb client</h3>
+<p>The avr-gdb client in the AVR toolchain, as delivered by PlatformIO, is seriously outdated (version 7.8 from 2014). Even worse, under recent versions of macOS and Ubuntu, it will not start because of incompatibilities. For this reason, it makes sense to employ a more recent version of avr-gdb. Either use the one obtainable from your OS or make use of the binary downloaded in <a href="#step-1-installing-pyavrocd">Step 1</a>. The folder you need to copy the client to is <code>~/.platformio/packages/toolchain-atmelavr/bin</code>:</p>
+<pre><code class="language-sh">cp ~/.local/bin/avr-gdb .platformio/packages/toolchain-atmelavr/bin/
+</code></pre>
+<h3 id="step-3-turn-an-uno-into-a-debug-probe">Step 3: Turn an UNO into a debug probe</h3>
+<p>First, connect the UNO to your computer using the USB cable. Make sure that you have the permission to access the serial interface (under Linux).</p>
+<p>The simplest way to install the firmware is to download an uploader from the Release assets of the <a href="https://github.com/felias-fogg/dw-link">GitHub repo</a>. The uploader should fit your architecture, e.g., <code>dw-uploader-windows-intel64</code> for Windows. Under <em>Linux</em> and <em>macOS</em>, open a terminal window, go to the download folder, and set the executable permission using <code>chmod +x</code>. Afterward, execute the program. Under <em>Windows</em>, it is enough to start the program after downloading by double-clicking on it.</p>
+<p>Alternatively, you can download or clone the dw-link repository and then compile and upload the dw-link Arduino sketch using PlatformIO.</p>
+<p>The Uno now acts as a debug probe providing a <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Remote-Protocol.html">GDB RSP</a> interface. If you configured the serial line to the Uno as 115200 baud, and click on <code>Monitor</code> in the <code>PROJECT TASK</code> menu, select the <code>Terminal</code> window, and then type a minus sign into this window, you should get the response "$#00". If you type Ctrl-E, the probe should respond with "dw-link".</p>
+<h3 id="step-4-set-up-the-example-project">Step 4: Set up the example project</h3>
+<p>Since PyAvrOCD is a custom debug solution, a number of things have to be specified in the PlatformIO configuration file <code>platformio.ini</code>, too long to present here. You can clone a project containing this file, together with a small program, from</p>
+<pre><code>https://github.com/felias-fogg/pio-attiny85-example
+</code></pre>
+<p>After opening a <code>new window</code>, click on <code>Clone Git Repository...</code> and type the above line into the input field. Perhaps VS Code asks you to log in to GitHub first.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-attiny-1.png" width="90%">
+</p>
+
+<p>The repo will be cloned, and you have to provide a destination for it.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-clone-2.png" width="90%">
+</p>
+
+<h3 id="step-5-set-up-the-hardware">Step 5: Set up the hardware</h3>
+<p>You need to set up the hardware on a breadboard and use six wires to connect the ATtiny to your Uno, turned into a hardware debugger. Note that the notch or dot on the ATtiny is oriented towards the left.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny85-debug-new.png" width="70%">
+</p>
+<p>In reality, this could be like in the following photo.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/attiny-breadboard.jpg" width="30%">
+</p>
+
+<p>Here is a table of all the connections so that you can check that you have made all the connections.</p>
+<table>
+<thead>
+<tr>
+<th>ATtiny pin#</th>
+<th>Arduino Uno pin</th>
+<th>component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (Reset)</td>
+<td>D8</td>
+<td>10k resistor to Vcc</td>
+</tr>
+<tr>
+<td>2 (D3)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3 (D4)</td>
+<td></td>
+<td>220 Ω resistor to target (red) LED (+)</td>
+</tr>
+<tr>
+<td>4 (GND)</td>
+<td>GND</td>
+<td>red and yellow LED (-), decoupling cap 100 nF, RESET blocking cap of 10µF (-)</td>
+</tr>
+<tr>
+<td>5 (D0, MOSI)</td>
+<td>D11</td>
+<td></td>
+</tr>
+<tr>
+<td>6 (D1, MISO)</td>
+<td>D12</td>
+<td></td>
+</tr>
+<tr>
+<td>7 (D2, SCK)</td>
+<td>D13</td>
+<td></td>
+</tr>
+<tr>
+<td>8 (Vcc)</td>
+<td>5V</td>
+<td>10k resistor, decoupling cap 100 nF</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>RESET</td>
+<td>RESET blocking cap of 10 µF (+)</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td>D7</td>
+<td>220 Ω to system (yellow) LED (+)</td>
+</tr>
+</tbody>
+</table>
+<p>The yellow LED is the <em>system LED</em>, and the red one is the <em>ATtiny-LED</em>. The system LED gives you information about the internal state of the debugger:</p>
+<ol>
+<li>debugWIRE mode disabled (LED is off),</li>
+<li>waiting for power-cycling the target (LED flashes every second for 0.1 sec),3.</li>
+<li>debugWIRE mode enabled (LED is on),</li>
+<li>ISP programming (LED is blinking slowly),</li>
+<li>error state, i.e., not possible to connect to target or internal error (LED blinks furiously every 0.1 sec).</li>
+</ol>
+<h3 id="step-6-debug-the-program">Step 6: Debug the program</h3>
+<p>If you have not activated the <code>debug</code> environment, now is the time to do it.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-1.png" width="90%">
+</p>
+
+<p>And then we are ready to go into business seriously. First, click the debug symbol (bug in front of the triangle) in the left side bar, which will bring up the debug panes on the left side. Then, click the green triangle at the top.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-2.png" width="90%">
+</p>
+
+<p>This will start the debugging process and open the <code>TERMINAL</code> window below the editor window. Click on the <code>DEBUG CONSOLE</code> label, so that this console will be opened. There, you will probably see that you should power cycle the target.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-3.png" width="90%">
+</p>
+
+<p>After having done that, the ATtiny is in debugWIRE mode, the executable will be loaded, and after that, execution is started. As required, execution will stop in the setup function, which is signified by the yellow triangle and the highlighted line (A). The most crucial control panel (B) is now the one shown on the right side at the top. It enables you (from left to right) to</p>
+<ul>
+<li><em>continuing/suspending</em> execution,</li>
+<li><em>stepping-over</em>, i.e., making a step to the beginning of the following source line in the same function,</li>
+<li><em>stepping-in</em>, that is, making a step to the following source line (entering perhaps a new function),</li>
+<li><em>stepping-out</em>, that is, executing the current function until it returns to the calling function,</li>
+<li><em>resetting</em> the MCU, and</li>
+<li><em>terminating</em> the debugging session.</li>
+</ul>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-4.png" width="90%">
+</p>
+<p>From here on, I believe, you know your way around. Otherwise, consult, e.g., the <a href="#step-5-debug-the-program">debugging section of another quickstart guide</a>.</p>
+<h3 id="step-7-start-over-or-terminate-the-debugging-session">Step 7: Start over or terminate the debugging session</h3>
+<p>If you have found the bug you were hunting, you can now leave the editor (red square), edit the program, and start again at step 6. Note that you always have to restart the debugger before any changes you made to the program are effective. In fact, changing the source text while you are debugging is not a good idea, because the correspondence between the compiled code and the source code will be lost.</p>
+<p>Instead of starting a new edit/compile/debug cycle, you may want to call it a day and end debugging. In this case, you may wish to switch the MCU back into normal mode, in which ordinary SPI programming is possible. This can be accomplished by typing the command <code>monitor debugwire disable</code> into the input line of the <code>DEBUG CONSOLE</code> window (1) just before terminating the debugger (2).</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pio-debug-attiny-5.png" width="90%">
+</p>
+
+<h3 id="potential-problems">Potential Problems</h3>
+<p>There is always the chance that something goes south, either debugging does not start at all, or something funny happens while debugging. If so, it is a good idea to have a look at the output in the <code>DEBUG CONSOLE</code>. Messages with the prefix [CRITICAL] often tell what went wrong. It may also be a good idea to consult the <a href="../troubleshooting/">Troubleshooting</a> and the <a href="../limitations/">Limitations</a> sections.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
