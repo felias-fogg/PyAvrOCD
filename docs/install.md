@@ -115,7 +115,9 @@ Furthermore, you can create a binary standalone package as follows:
 <code class="language-bash hljs">poetry run pyinstaller pyavrocd.spec</code>
 </pre>
 <p>
-  As a result, under Linux, you find an executable <code>pyavrocd</code> in the directory <code>dist</code>code>. Under macOS and Windows, wou will find the executable in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can move the executable (and if present <code>pyavrocd-util</code>) to a place in your <code>PATH</code>.
+  As a result, you will find the executable in the directory
+  <code>dist/pyavrocd/</code> together with the folder
+  <code>pyavrocd-util</code>. You can move the executable together with <code>pyavrocd-util</code> to a place in your <code>PATH</code>.
 </p>
 </details>
 <p></p>
