@@ -1,4 +1,4 @@
-Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. When using dw-link, error messages might be brief or missing.
+Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. 
 
 | Signal or error code | Error message                                                | Explanation                                                  |
 | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |

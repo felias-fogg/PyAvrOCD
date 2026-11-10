@@ -5,9 +5,12 @@
 !!! info "Linux"
     Under Linux, users may need to add a few `udev` rules before they can use PyAvrOCD. Download [https://pyavrocd.io/99-edbg-debuggers.rules](https://pyavrocd.io/99-edbg-debuggers.rules), edit if you want, and copy to `/etc/udev/rules.d/`.
 
+!!! info "Windows"
+    Under Windows, it may be necessary to install the WinUSB driver using [Zadig](https://zadig.akeo.ie) when you want to employ a debug probe that uses the USB bulk transport mechanism (see section on [supported debug probes](supported-debuggers.md)).
+
 ## Arduino IDE 2, Arduino Maker Workshop, and PlatformIO
 
-If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file.
+If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to [install a debug-enabled Arduino package](supporting-packages.md) in the IDE or set [the right platform](debugging-software.md#platformio-and-visual-studio-code) in your `platform.ini` configuration file. These will make sure that PyAvrOCD will be installed in the background.
 
 ## Downloading binaries
 
@@ -115,7 +118,9 @@ Furthermore, you can create a binary standalone package as follows:
 <code class="language-bash hljs">poetry run pyinstaller pyavrocd.spec</code>
 </pre>
 <p>
-  As a result, under Linux, you find an executable <code>pyavrocd</code> in the directory <code>dist</code>code>. Under macOS and Windows, wou will find the executable in the directory <code>dist/pyavrocd/</code> together with the folder <code>pyavrocd-util</code>. You can move the executable (and if present <code>pyavrocd-util</code>) to a place in your <code>PATH</code>.
+  As a result, you will find the executable  together with the folder
+  <code>pyavrocd-util</code> in the directory
+  <code>dist/pyavrocd/</code>. You can move both together to a place in your <code>PATH</code>.
 </p>
 </details>
 <p></p>

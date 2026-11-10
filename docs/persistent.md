@@ -16,7 +16,7 @@ This works always for UPDI targets. For debugWIRE targets, you need to have star
 
 ## Disconnecting from PyAvrOCD
 
-Instead of disconnecting from the MCU and terminating the GDB server, one could leave the GDB server running. This is supported in the *extended remote mode*, which you enter when you use the GDB command `target extended-remote <port>` instead of `target remote <port>`. When disconnecting, quitting, detaching, or killing, PyAvrOCD will not terminate but will wait for GDB to reconnect, attach, or run again---similar to what the [gdbserver program](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Connecting.html) does. In addition, in this mode, the `run` and `attach` commands are available.
+Instead of disconnecting from the MCU and terminating the GDB server, one could leave the GDB server running. This is supported by GDB's *extended remote mode*, which you enter when you use the GDB command `target extended-remote <port>` instead of `target remote <port>`. When disconnecting, quitting, detaching, or killing, PyAvrOCD will not terminate but will wait for GDB to reconnect, attach, or run again---similar to what the [gdbserver program](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Connecting.html) does. In addition, in this mode, the `run` and `attach` commands are available.
 
 If PyAvrOCD is invoked with the `--once` option, the GDB commands `disconnect`, `detach`, and `quit` will immediately terminate the GDB server, even when in extended remote mode. The command `monitor exit` will also lead to the immediate termination of PyAvrOCD, regardless of mode and option. The following table summarizes this somewhat complicated state of affairs.
 
@@ -30,4 +30,4 @@ If PyAvrOCD is invoked with the `--once` option, the GDB commands `disconnect`, 
 | `attach <num>` | Not available               | Attaches to detached program (argument is ignored)           | Useless because it is not possible to detach from a program  |
 | `monitor exit` | Terminates PyAvrOCD         | Terminates PyAvrOCD                                          | Terminates PyAvrOCD                                          |
 
-When GDB connects again after `detach` and `quit`, PyAvrOCD stops the program, and GDB is attached to it; `attach` is only needed after a `detach` within the same GDB session.
+When GDB connects again after `detach` or `quit`, PyAvrOCD stops the program, and GDB is attached to it; `attach` is only needed after a `detach` within the same GDB session.

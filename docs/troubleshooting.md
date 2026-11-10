@@ -123,9 +123,7 @@ Usually, the bootloader is erased before debugging starts. As stated in [the sec
 
 ## Internal and fatal dw-link errors
 
-When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware.
-
-If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error. This might not be immediately reported by GDB, but one can get information about the specific error by using the `monitor info` command. The errors are only reported by number. {!../../dw-link/docs/internal_errors.md!}
+When using the dw-link debug probe, internal errors are reported directly by the dw-link firmware. If the LED blinks furiously (0.1 seconds on/ 0.1 seconds off), then the debug server has hit an unrecoverable error, and it is probably necessary to restart it by power-cycling. An error message will be shown in the PyAvrOCD log or when you use the `monitor info` command.
 
 ## Reporting bugs
 

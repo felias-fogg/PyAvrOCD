@@ -20,7 +20,7 @@
 </p>
 
 
-PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)),  communicating with Microchip's EDBG-based debug probes, e.g., [MPLAB Snap](https://www.microchip.com/en-us/development-tool/pg164100). So, is it simply [another open-source GDB server for AVR MCUs](https://arduino-craft-corner.de/index.php/2026/02/10/pyavrocd-1-0-0-released/#what-are-alternatives-to-pyavrocd)? No! It is a *cross-platform* AVR GDB server. This means that it was easily possible to integrate it into [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org) board packages, bringing AVR debugging to these IDEs. Additionally, PyAvrOCD excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
+PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)),  communicating with debug probes such as [Snap](https://www.microchip.com/en-us/development-tool/pg164100) or [Dragon](https://www.microchip.com/en-us/development-tool/atavrdragon). So, is it simply [another open-source GDB server for AVR MCUs](https://arduino-craft-corner.de/index.php/2026/02/10/pyavrocd-1-0-0-released/#what-are-alternatives-to-pyavrocd)? No! It is a *cross-platform* AVR GDB server. This means that it was easily possible to integrate it into [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org) board packages, bringing AVR debugging to these IDEs. Additionally, PyAvrOCD excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
 Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavrocd.io/install/) it. Want to learn more about it? [Read the docs](https://pyavrocd.io). Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
 
@@ -32,7 +32,10 @@ Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavro
 
 Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas.
 
-I made some leeway into integrating PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension. <s>There is the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front</s>. My attempt at using the GCC 15.1 toolchain was abruptly stopped when I discovered that the compiler produces buggy debug information concerning local variables, whereas the old compiler works without a flaw at that point. I guess more research and/or debugging is necessary before GCC 15.1 is a viable solution.
+I made some leeway to integrate PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension.
+
+Currently, I work on integrating more debug probes, such as the Dragon, and also DIY probes, such as serialUPDI.
 
  Finally, I am committed to fixing some of the more obvious bugs in the AVR part of the GDB debugger.
 
+ There was the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front. My attempt at using the GCC 15.1 toolchain was abruptly stopped when I discovered that the compiler produces buggy debug information concerning local variables, whereas the old compiler works without a flaw at that point. I guess more research and/or debugging is necessary before GCC 15.1 is a viable solution.

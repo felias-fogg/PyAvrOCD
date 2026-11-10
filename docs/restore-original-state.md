@@ -8,8 +8,8 @@ If, after debugging, you want to restore a target board to its original state, a
       - To restore the board to its exact original state before debugging, you must get hold of the bootloader and record the fuses before initiating the debugging process. Then you can easily restore the original state using a programmer.
       - In the Arduino IDE, you can do this by using the `Burn Bootloader` command in the `Tools` menu. This will set the correct fuses and reinstall the bootloader (if needed). Note that if you want only to set the fuses without installing a bootloader, you still have to use the `Burn Bootloader` command.
 
-!!! info "Use dw-link as an 'Arduino as ISP' programmer"
-    You can use dw-link as a programmer. Select as the `Port` in the `Tools` menu the serial connection to dw-link and choose `Arduino as ISP` as the `Programmer`. Now you can upload programs and burn bootloaders and fuses.
+!!! info "Use dw-link as a programmer"
+    You can use dw-link as a programmer. Select as the `Port` in the `Tools` menu the serial connection to dw-link and choose `dw-link` as the `Programmer`. Now you can upload programs and burn bootloaders and fuses.
 
 !!! warning "Burning the bootloader using the Arduino AVR Boards package"
     If you have debugged a board using, e.g., `MiniCore`, and now want to restore an Uno R3 board to its previous state under the`Arduino AVR Boards` package as an `Arduino Uno`, you may encounter problems when using one of the Microchip debug probes. Use a cheap USBasp programmer or something similar instead for burning the boot loader. Alternatively, you may consider staying with MiniCore and employing [Urboot](https://github.com/stefanrueger/urboot) as the bootloader.

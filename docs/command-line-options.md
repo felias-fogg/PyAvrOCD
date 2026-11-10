@@ -10,11 +10,9 @@ PyAvrOCD will then look for a debug probe, establish a connection to it, and wai
 
 ## Debug probe discovery
 
-The basic rule for PyAvrOCD is that it will connect to any compatible debug probe, as long as there is no ambiguity.  This means it will look for all debug probes connected by USB and, if there is only one, use it. Since some debug probes need a few seconds to re-enumerate on the USB bus, this can take up to 5 seconds. After that, PyAvrOCD checks whether there is a unique serial port on USB. If there is only one, it assumes that this is a debug probe for the specified target MCU.
+The basic rule for PyAvrOCD is that it will find and sign on to any compatible debug probe, as long as there is only one probe connected to the host.  If the probe is connected via a serial port, it has to be the only serial port on USB. In all other cases, you need to specify the `-u` or `-t` option. With `-t` or `--tool` you can restrict the discovery to a particular type of tool, e.g., `dwlink` or `atmelice`. With `-u` or `--usbsn` you can specify a suffix of either the USB serial number or the name of the serial port. Note that the USB serial number also works with serial ports.
 
-With the `-t`  and the `-u` options, one can disambiguate and speed up the discovery process. With `-t` or `--tool` you can restrict the discovery to a particular type of tool, e.g., `dwlink` or `atmelice`. With `-u` or `--usbsn` you can specify a suffix of either the USB serial number or the name of the serial port. Note that the USB serial number also works with serial ports, and it is more stable than port names.
-
-Finally, a few words of caution. Under **Windows**, you may need to install USB drivers using the [Zadig USB drivers](https://zadig.akeo.ie) in order to access the debug probes using USB bulk transfer (e.g., Dragon or JTAGICE mkII). If you run Windows on ARM, such devices cannot be accessed at all (for the time being). On **Linux**, [you need to install a udev rules file](install.md), and your user must be allowed to access the serial port, typically by being a member of the `dialout` group.
+Finally, a few words of caution. Under **Windows**, you may need to install the WinUSB driver using [Zadig](https://zadig.akeo.ie) in order to access the debug probes using USB bulk transfer (e.g., Dragon or JTAGICE mkII). If you run Windows on ARM, such devices cannot be accessed at all (for the time being). On **Linux**, [you need to install a udev rules file](install.md), and your user account must be allowed to access the serial port, typically by being a member of the `dialout` group.
 
 ## Command-line options
 
@@ -86,4 +84,4 @@ With the usual abbreviation rules, the fact that the equal sign can simply be su
 </details>
 <p></p>
 
-Note that implicitly `@pyavrocd.options` is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file `pyavrocd.options`.
+Note that implicitly `@pyavrocd.options` is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file `pyavrocd.options`. This is, for instance, a way to communicate a `--tool` or -`-usbsn` option to PyAvroCD. 
