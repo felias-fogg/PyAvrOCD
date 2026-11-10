@@ -1,5 +1,5 @@
 """
-Live Tests for dw-gdbserver
+Live tests for PyAvrOCD, run on the connected target with the monitor command 'LiveTests'
 """
 #pylint: disable=protected-access
 

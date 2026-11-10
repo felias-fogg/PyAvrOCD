@@ -43,12 +43,12 @@ class _Deferral():
     """
     Nesting depth of the running transactions and the interrupt waiting for their end
 
-    The guard covers only the EDBG-based probes, whose traffic passes through the two
-    pyedbglib methods wrapped by guard_probe_transactions. Any other transport has to be
-    wrapped in transaction() the same way: dw-link over serial, and the bulk-transport
-    tools (AVRISP mkII, Dragon, PICkit5) through libusb, once they arrive. What counts as
-    one transaction there -- a command together with its complete response -- depends on
-    the transport, so the wrapped methods will look different.
+    For the EDBG-based probes, all traffic passes through the two pyedbglib methods
+    wrapped by guard_probe_transactions. The JTAGICE mkII, the AVR Dragon and dw-link
+    use transaction() directly: Jtag2Protocol.command runs every command together with
+    its complete response inside it, over USB bulk as well as over the serial line.
+    A future transport (AVRISP mkII, PICkit5) has to be wrapped the same way, at the place
+    where a command and its complete response belong together.
     """
     def __init__(self) -> None:
         self.depth : int = 0

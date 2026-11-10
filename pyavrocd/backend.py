@@ -1,12 +1,17 @@
 """
-DRAFT (v2): Abstract debugger backend for PyAvrOCD.
+Abstract debugger backend for PyAvrOCD.
 
 Everything above this layer (handler, breakexec, hardwarebp, memory, monitor,
 server, livetests) talks to the hardware debugger only through this interface.
-Concrete backends:
-  - EdbgBackend       (today's XAvrDebugger: Atmel-ICE, PICkit4, SNAP, (m/n)EDBG, ...)
+The probe-independent session logic between this interface and the backends is
+AvrSession (session.py). Concrete backends:
+  - EdbgBackend       (xavrdebugger.py: Atmel-ICE, PICkit4, SNAP, (m/n)EDBG, ...,
+                       over USB HID through pymcuprog and pyedbglib)
+  - Jtag2Backend      (jtag2backend.py: JTAGICE mkII and AVR Dragon, the AVR067
+                       protocol over USB bulk through pyavrocd.jtag2)
+  - DwlinkBackend     (dwlinkbackend.py: dw-link 7 and later, a subset of AVR067
+                       over a serial line; derived from Jtag2Backend)
   - SerialUpdiBackend (planned, based on the avr-absurd approach)
-  - DwLinkBackend     (planned, dw-link firmware reduced to debugWIRE primitives)
   - Pk5Backend        (planned, script-based MPLAB tools)
 
 Design rules:
@@ -203,8 +208,11 @@ class DebugBackend(ABC):
         raise BackendNotSupportedError("cold debugWIRE disable not supported")
 
     # ----- execution control -------------------------------------------------
-    # run, run_to and step bring the software breakpoints into flash first; the
-    # backends implement the bare operations _run, _run_to and _step.
+    # run, run_to and step bring the software breakpoints into flash first, then call
+    # the bare operations _run, _run_to and _step. For the backends derived from
+    # AvrSession, AvrSession implements these: it writes back the register cache
+    # (and applies the stuck PC bits for _run_to) and calls the backend's _go, _go_to
+    # and _single_step. A backend without AvrSession implements them itself.
 
     def run(self) -> None:
         """Resume execution"""

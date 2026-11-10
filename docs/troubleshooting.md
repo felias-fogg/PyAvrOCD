@@ -33,6 +33,10 @@ This could be the same problem as above. If you tried to start the simulator, th
 
 This could mean that no debug tool is connected, that you specified an incompatible debug probe using the `--tool` option, that the serial line the tool is attached to is busy, or that [you have not yet installed the necessary udev rules under Linux](install.md).
 
+### `No dw-link (version 7 or later) answers on ...`
+
+The serial port named in the message does not belong to a dw-link with version 7 or later. Most likely, the Arduino still runs dw-link 6 or older, which PyAvrOCD 2.0 and later cannot talk to. To update, install the library `dw-link` with the Arduino Library Manager and upload its example sketch `dw-link`, or flash `dw-link.hex` from the [dw-link releases page](https://github.com/felias-fogg/dw-link/releases). It could also be that the board runs a different sketch, or that the `--usbsn` option names the wrong serial port.
+
 ### `[Errno 48] Address already in use`
 
 This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the `--port` option and tell GDB about the port when connecting with the `target remote` command. However, waiting a few minutes will also resolve the problem.

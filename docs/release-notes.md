@@ -1,5 +1,16 @@
 # Release Notes
 
+## Release v2.0.0
+
+- **dw-link users have to update to dw-link 7.** PyAvrOCD now talks to dw-link using the JTAGICE mkII protocol instead of passing GDB's messages through, and dw-link 6 is no longer supported. dw-link is now an Arduino library: install `dw-link` with the Library Manager and upload the example sketch `dw-link` to the Uno, or flash `dw-link.hex` from the [releases page](https://github.com/felias-fogg/dw-link/releases).
+- **New debug probes**: the JTAGICE mkII (including clones) and the AVR Dragon, for debugWIRE and JTAG targets. Under Windows, they need a WinUSB driver, which can be installed with [Zadig](https://zadig.akeo.ie); the libusb library is now included. On Linux, the [udev rules file](https://pyavrocd.io/99-edbg-debuggers.rules) now covers them as well.
+- The discovery of debug probes has been reworked: PyAvrOCD uses any compatible probe as long as it is the only one, and `-t` and `-u` select one otherwise. `-u` now also accepts the end of the USB serial number of a device behind a serial port, e.g., a genuine Arduino Uno running dw-link, which, unlike the port name, does not change when the board is plugged into another USB socket.
+- `-D` and `-P` set the JTAG clock of the JTAGICE mkII and the AVR Dragon as well.
+- `--reboot-debugger` now works for all debug probes.
+- New option `--power-cycle-command`, which runs a command to power-cycle the target when debugWIRE needs it and the probe cannot do it itself.
+- A SIGTERM or SIGINT, e.g., from an IDE stopping the debug session, no longer interrupts a probe transaction halfway.
+- On UPDI targets, single-stepping after the PC has been set onto a software breakpoint (`jump`, `set $pc`, or an IDE's "set next statement") now executes the instruction there (after the breakpoint has been removed from flash).
+
 ## Release v1.7.0
 
 - The binaries run on older systems again: Linux x86_64 and ARM64 need GLIBC 2.35 instead of 2.38, so Debian 12, Ubuntu 22.04 and Raspberry Pi OS bookworm are supported once more. On macOS, the ARM64 binaries need 11.0 (Big Sur) and the Intel binaries 10.15 (Catalina), where both needed 14 (Sonoma) before.
