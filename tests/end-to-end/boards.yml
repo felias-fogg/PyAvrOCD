@@ -44,6 +44,13 @@ devices:
     board: uno
     setup: Uno board with open RESET EN
 
+  mega2560:
+    import: atmega2560
+    core: arduino
+    clocks: [ 16 ]
+    board: mega
+    setup: Arduino Mega 2560 with the JTAG adapter from pcbs/arduino-jtag; JTAGEN must be programmed via ISP first
+
 ####################### Arduino Boards (ArduinoCore-megaavr) ##################################
 
   uno-wifi:

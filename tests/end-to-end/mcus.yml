@@ -325,6 +325,7 @@ devices:
   attiny1634:
     mcu: attiny1634
     import: classic_tiny
+    clocks: [ 1, 4, 8 ]   # at most 12 MHz, so TinyCore has no 16MHz_external for it
     provides:
       ram: 1
       flash: 16
@@ -523,8 +524,49 @@ devices:
     variant: modelP
     setup: ATmega324P with Atmel-ICE (JTAG)
 
+  atmega16:
+    mcu: atmega16
+    import: classic_mega
+    core: MightyCore
+    provides:
+      ram: 1
+      flash: 16
+    board: '16'
+    setup: ATmega16 on the 40-pin DIP board (JTAG)
+
+  atmega1284p:
+    mcu: atmega1284p
+    import: classic_mega
+    core: MightyCore
+    provides:
+      ram: 16
+      flash: 128
+    board: '1284'
+    variant: modelP
+    setup: ATmega1284P on the 40-pin DIP board (JTAG)
+
 
 ####################### Classic Megas (MegaCore) ##################################
+
+  atmega128:
+    mcu: atmega128
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 4
+      flash: 128
+    board: '128'
+    setup: ATmega128 board (JTAG); needs MegaCore installed for arduino-cli
+
+  atmega2560:
+    mcu: atmega2560
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 8
+      flash: 256
+    board: '2560'
+    setup: ATmega2560 (JTAG)
 
 ####################### Classic Megas (MajorCore) ##################################
 
