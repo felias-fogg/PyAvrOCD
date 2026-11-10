@@ -111,6 +111,7 @@ MEMTYPE_LOCK : int = 0xB3
 MEMTYPE_SIGNATURE : int = 0xB4
 
 USB_TIMEOUT : int = 2000      # ms for one USB packet
+POLL_SLICE : int = 100        # ms, longest read in poll_break, during which a signal is deferred
 SERIAL_START_BAUD : int = 19200 # a serial mkII starts at this speed (AVR067 section 2.1.1)
 BAUD_CODES : dict[int, int] = { 2400 : 1, 4800 : 2, 9600 : 3, 14400 : 8, 19200 : 4, 38400 : 5,
                                 57600 : 6, 115200 : 7 }  # values of PAR_BAUD_RATE
@@ -625,7 +626,11 @@ class Jtag2Protocol():
                         self.events.append(response)
                         continue
                     if answer != sequence:
-                        raise Jtag2Error("Response to message {} while waiting for {}".format(answer, sequence))
+                        # the response to an earlier command whose reading was cut short; AVR067 leaves lost
+                        # and stray messages to the application, and avrdude drops them and reads on, too
+                        self.logger.debug("Response to message %d dropped while waiting for %d: %s",
+                                              answer, sequence, response.hex())
+                        continue
                     return response
             except usb.core.USBTimeoutError as e:
                 # as a BackendError, the handler reports it to GDB instead of ending the packet with SIGABRT
@@ -796,14 +801,23 @@ class Jtag2Protocol():
                     return int.from_bytes(event[1:5], 'little'), event[5]
                 self.logger.debug("Event dropped: %s", event.hex())
             remaining = int((deadline - time.monotonic()) * 1000)
-            try:
-                sequence, body = parse_frame(self.transport.read_frame(max(remaining, 1)))
-            except (usb.core.USBTimeoutError, TimeoutError):
+            # A SIGTERM/SIGINT between reading a frame and setting it aside would lose an EVT_BREAK, and
+            # the stop() of the cleanup would then wait in vain for it. So read inside a transaction,
+            # in slices of at most POLL_SLICE ms, which is as long as a signal can be deferred here.
+            with transaction():
+                try:
+                    frame : bytes | None = self.transport.read_frame(min(max(remaining, 1), POLL_SLICE))
+                except (usb.core.USBTimeoutError, TimeoutError):
+                    frame = None
+                if frame is not None:
+                    sequence, body = parse_frame(frame)
+                    if sequence == EVENT_SEQUENCE:
+                        self.events.append(body)
+                    else:
+                        self.logger.warning("Unexpected response to message %d dropped: %s",
+                                                sequence, body.hex())
+            if frame is None and remaining <= POLL_SLICE:
                 return None
-            if sequence == EVENT_SEQUENCE:
-                self.events.append(body)
-            else:
-                self.logger.warning("Unexpected response to message %d dropped: %s", sequence, body.hex())
             if remaining <= 0 and not self.events:
                 return None
 

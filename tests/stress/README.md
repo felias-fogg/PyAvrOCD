@@ -56,3 +56,48 @@ Measured with housekeeping and AVR8 configuration commands, no target attached:
   carries, execute that, and drop the next command.
 - pyedbglib notices neither: `Jtagice3Command.validate_response`, which would compare
   sequence numbers, is never called.
+
+## sigstress_jtag2.py: the same for the mkII protocol
+
+The counterpart for the JTAGICE mkII, the AVR Dragon (USB bulk) and dw-link (serial).
+`Jtag2Protocol.command` runs every command with its response inside
+`termination.transaction()`, and `poll_break` reads inside one as well, in slices of
+at most 100 ms, so that an EVT_BREAK cannot be lost. The loop mixes a short
+GET_PARAMETER, a device descriptor that spans several USB packets (about 170 ms on
+the serial line at 19200 bps), and a poll for break events. No target needed.
+`unguarded` replaces the guard in `jtag2` with a `nullcontext`.
+
+```
+python tests/stress/sigstress_jtag2.py list                               # mkII/Dragon on USB
+python tests/stress/sigstress_jtag2.py usb <serial suffix> guarded 1000
+python tests/stress/sigstress_jtag2.py serial <port> unguarded 100        # dw-link
+```
+
+### Results, 2026-11-10, macOS, SIGTERM
+
+First run, while `Jtag2Protocol.command` still raised an error on a wrong sequence number:
+
+| Probe              | Firmware | unguarded: wrong answer / rounds | guarded: ok / rounds |
+|--------------------|----------|----------------------------------|----------------------|
+| JTAGICE mkII clone | 7.27     | 9 / 1000                         | 1000 / 1000          |
+| dw-link on Uno     | 7.00     | 94 / 100                         | 100 / 100            |
+
+Every wrong answer left one response pending; neither probe ever hung. What happens
+unguarded is milder than with the EDBG probes: the probe is not confused, because each
+frame is self-contained (CRC, sequence number) and a command frame is written in one
+call, so it cannot be cut in the middle. What is left is the response to the
+interrupted command, which the next command reads first. In the server, that next
+command would be the first of the cleanup.
+
+Since then, `Jtag2Protocol.command` drops a response with another sequence number and
+reads on, as avrdude's `jtagmkII_recv` does; AVR067 (section 2) leaves lost and stray
+messages to the application layer. So the guard and the sequence check now both protect
+the cleanup. The script counts the dropped responses as `stale dropped`. Second run,
+dw-link 7.00, 100 rounds each: unguarded 100 ok with 95 stale dropped, guarded 100 ok
+with none.
+
+Why the rates differ: with pyusb nearly all the time is spent inside libusb, which
+retries a read a signal interrupts, and Python runs the handler only when the call
+returns -- usually after the whole response has been read, which is harmless. The
+serial transport loops in Python in 10 ms steps, so the handler runs in the middle
+of the wait.

@@ -10,6 +10,8 @@ from pymcuprog.deviceinfo import deviceinfo
 
 from pyavrocd import jtag2
 from pyavrocd.backend import BackendError
+from pyavrocd.errors import TerminationRequest
+from pyavrocd.termination import interrupt
 from pyavrocd.deviceinfo.devices import atmega324p, atmega2560, atmega328p, attiny85, attiny13
 from pyavrocd.jtag2 import crc16, make_frame, parse_frame, parse_sign_on, Jtag2Error, \
      Jtag2Protocol, Jtag2UsbTransport, EVENT_SEQUENCE
@@ -145,9 +147,15 @@ class TestProtocol(TestCase):
         self.assertEqual(proto.command(b"\x00"), b"\x80")
         self.assertEqual(proto.events, [b"\xe0\x01"])
 
-    def test_wrong_sequence_number(self):
+    def test_wrong_sequence_number_dropped(self):
+        # a stale response (an earlier command whose reading was cut short) is dropped, the own one returned
+        proto = Jtag2Protocol(FakeTransport([(42, b"\x81\x01"), ('same', b"\x80")]))
+        with self.assertLogs('pyavrocd.jtag2', 'DEBUG') as logs:
+            self.assertEqual(proto.command(b"\x00"), b"\x80")
+        self.assertIn("Response to message 42 dropped while waiting for 0", logs.output[0])
+        # only stale ones: a timeout, as if no response had come
         proto = Jtag2Protocol(FakeTransport([(42, b"\x80")]))
-        with self.assertRaises(Jtag2Error):
+        with self.assertRaises(jtag2.Jtag2Timeout):
             proto.command(b"\x00")
 
     def test_sign_on_and_off(self):
@@ -209,6 +217,30 @@ class TestProtocol(TestCase):
         proto.forced_stop()
         self.assertEqual(proto.read_pc(), 0x6B)    # the event came first and was set aside
         self.assertEqual(proto.poll_break(), (0x6B, 0))
+
+    def test_signal_while_reading_a_break_event(self):
+        # SIGTERM arrives while the EVT_BREAK is being read: deferred until the event has been set aside
+        class Interrupted(FakeTransport):
+            def read_frame(self, _timeout=None):
+                interrupt(TerminationRequest())
+                return super().read_frame(_timeout)
+        proto = Jtag2Protocol(Interrupted([(EVENT_SEQUENCE, bytes.fromhex("e06b00000000"))]))
+        with self.assertRaises(TerminationRequest):
+            proto.poll_break(0)
+        self.assertEqual(proto.poll_break(), (0x6B, 0))    # not lost
+
+    def test_poll_break_reads_in_slices(self):
+        clock = [0.0]
+        timeouts = []
+        class Silent(FakeTransport):
+            def read_frame(self, timeout=None):
+                timeouts.append(timeout)
+                clock[0] += timeout / 1000
+                raise usb.core.USBTimeoutError("Operation timed out")
+        with patch('pyavrocd.jtag2.time.monotonic', lambda: clock[0]):
+            self.assertIsNone(Jtag2Protocol(Silent([])).poll_break(350))
+        self.assertEqual(len(timeouts), 4)
+        self.assertTrue(all(t <= jtag2.POLL_SLICE for t in timeouts), timeouts)
 
     def test_breakpoint_and_progmode_frames(self):
         # the formats measured on the mkII clone (324P): word addresses, numbers 1-3 and 0 for SW BPs
