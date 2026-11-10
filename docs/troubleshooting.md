@@ -117,6 +117,10 @@ It is also possible that you locked yourself out by setting the wrong fuses (thi
 
 Usually, the bootloader is erased before debugging starts. As stated in [the section on restoring your target board after debugging](restore-original-state.md), you may have to reflash the bootloader and set some fuses after debugging.
 
+### The AVR Dragon no longer responds, or debugging fails, after the target was power-cycled
+
+Unplug it and plug it in again. To avoid it, end PyAvrOCD before you power-cycle the target, as Microchip Studio also asks.
+
 ## Signals and error messages
 
 {!signals_and_errors.md!}
