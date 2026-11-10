@@ -2,7 +2,7 @@ name: Unit test matrix
 
 on:
   workflow_dispatch:   # to run it manually
-  # Once a week, so that the day a dependency drops Python 3.10 (or 3.14 breaks
+  # Once a week, so that the day a dependency drops Python 3.11 (or 3.14 breaks
   # something) shows up here and not in a user's report. Two things about cron
   # in Actions: a schedule only ever runs the copy of this file on the default
   # branch, and GitHub disables scheduled workflows in a repository that has
@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     defaults:
       run:
         shell: bash

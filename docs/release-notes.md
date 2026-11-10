@@ -3,6 +3,7 @@
 ## Release v2.0.0
 
 - **dw-link users have to update to dw-link 7.** PyAvrOCD now talks to dw-link using the JTAGICE mkII protocol instead of passing GDB's messages through, and dw-link 6 is no longer supported. dw-link is now an Arduino library: install `dw-link` with the Library Manager and upload the example sketch `dw-link` to the Uno, or flash `dw-link.hex` from the [releases page](https://github.com/felias-fogg/dw-link/releases).
+- **The Python package needs Python 3.11 or later**; Python 3.10 reached its end of life in October 2026. The binaries are not affected.
 - **New debug probes**: the JTAGICE mkII (including clones) and the AVR Dragon, for debugWIRE and JTAG targets. Under Windows, they need a WinUSB driver, which can be installed with [Zadig](https://zadig.akeo.ie); the libusb library is now included. On Linux, the [udev rules file](https://pyavrocd.io/99-edbg-debuggers.rules) now covers them as well.
 - The discovery of debug probes has been reworked: PyAvrOCD uses any compatible probe as long as it is the only one, and `-t` and `-u` select one otherwise. `-u` now also accepts the end of the USB serial number of a device behind a serial port, e.g., a genuine Arduino Uno running dw-link, which, unlike the port name, does not change when the board is plugged into another USB socket.
 - `-D` and `-P` set the JTAG clock of the JTAGICE mkII and the AVR Dragon as well.

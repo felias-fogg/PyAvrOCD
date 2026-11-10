@@ -71,7 +71,7 @@ Now, you only need to add <code>~/.local/bin/</code> to your <code>PATH</code>
 
 ## PyPI
 
-If you are a Pythonist, you may want to install the Python package instead of the much larger binary. I assume you already installed a recent Python version (>=3.10). Then [PyPI](https://pypi.org/project/pyavrocd/), with the help of [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/) or [pipx](https://pipx.pypa.io/), will bring PyAvrOCD to your computer.
+If you are a Pythonist, you may want to install the Python package instead of the much larger binary. I assume you already installed a recent Python version (>=3.11). Then [PyPI](https://pypi.org/project/pyavrocd/), with the help of [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/) or [pipx](https://pipx.pypa.io/), will bring PyAvrOCD to your computer.
 
 <details>
 <summary><b>How to install PyAvrOCD with pip or pipx</b></summary>
