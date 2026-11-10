@@ -486,7 +486,7 @@ class TestMain(TestCase):
         mock_logger = MagicMock()
         self.assertEqual(startup(['-d', 'atmega328p'], mock_logger), 1)
         mock_logger.critical.assert_called_with("No compatible tool discovered")
-        self.assertIn("WinUSB", mock_logger.warning.call_args_list[0].args[0])
+        self.assertIn("WinUSB", " ".join(c.args[0] for c in mock_logger.warning.call_args_list))
         self.assertIn("Windows on Arm", mock_logger.warning.call_args_list[1].args[0])
 
     @patch('pyavrocd.main.EdbgBackend', MagicMock())
@@ -698,4 +698,4 @@ class TestFindProbe(TestCase):
         result, logger, _ = self.find(ports=[self.PORT], intf='updi', system='Windows')
         self.assertEqual(result, (True, None))
         logger.critical.assert_called_with("No compatible tool discovered")
-        self.assertIn("WinUSB", logger.warning.call_args_list[0].args[0])
+        self.assertIn("WinUSB", " ".join(c.args[0] for c in logger.warning.call_args_list))
