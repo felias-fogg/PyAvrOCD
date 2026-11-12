@@ -955,7 +955,10 @@ def start_gdb(script : str, binary : str) -> pexpect.spawn | None:
     """
     Start AVR-GDB with 'binary' (may be empty) and wait for its prompt; None if it does not come
     """
-    child = spawn("avr-gdb " + binary + " -n", encoding="utf-8")
+    # The responses in the specs are gdb's English messages; a localized gdb (German on one of
+    # the Linux hosts: 'Haltepunkt 1' for 'Breakpoint 1') would fail them. LC_ALL=C overrides
+    # LANG and LANGUAGE.
+    child = spawn("avr-gdb " + binary + " -n", encoding="utf-8", env={**os.environ, 'LC_ALL': 'C'})
     resp = child.expect([r"\(gdb\)", TIMEOUT, EOF],timeout=5)
     logger.debug("Initial response: %s", child.before)
     if resp >= 1:
