@@ -29,6 +29,7 @@ Behaviour of the probes that the code relies on (measured with a JTAGICE mkII cl
 import argparse
 import logging
 import time
+from collections.abc import Callable
 
 import usb.core
 
@@ -68,6 +69,7 @@ class Jtag2Backend(AvrSession):
         self._pending_removals : dict[int, int] = {}  # cleared, but still in flash -> original word
         self._isp : jtag2.Jtag2Isp | None = None
         self._mode_set : bool = False
+        self._ext_reset_held : bool = False   # see _activate_interface
         self.logger.info("mkII backend for %s (%s), iface: %s, HWBPs: %d", candidate.product,
                              candidate.address, iface, self._hwbpnum)
         if self.manage == []:
@@ -147,8 +149,8 @@ class Jtag2Backend(AvrSession):
             # its copy of every I/O register in the context's read masks at the first access after
             # each stop (312 ms instead of 29), which made single-stepping several times slower
             # (range_dw failed), and extended I/O registers outside the masks read as 0.
-            proto.set_device_context(jtag2.make_device_context(self.device_info))
-        proto.set_device_descriptor(jtag2.make_device_descriptor(self.device_info))
+            proto.set_device_context(jtag2.make_device_context(self.device_info, self.masked_registers))
+        proto.set_device_descriptor(jtag2.make_device_descriptor(self.device_info, self.masked_registers))
         proto.set_parameter(jtag2.PAR_TIMERS_RUNNING, bytes([int(self.timers_run)]))
         self._mode_set = True
 
@@ -221,6 +223,17 @@ class Jtag2Backend(AvrSession):
             self.logger.info("debugWIRE signature: 0x%04X", signature)
             return signature
         jtag_id = int.from_bytes(self._proto().get_parameter(jtag2.PAR_JTAGID), 'little')
+        if jtag_id in (0, 0xFFFFFFFF):
+            # Measured with the mkII on an ATmega16 in power-down (OCDEN unprogrammed): no JTAG ID, and
+            # entering programming mode is refused (RSP_ILLEGAL_JTAG_ID) -- unless the reset line is
+            # held, which avrdude does as its fallback, too. The probe determines the JTAG ID when the
+            # emulator mode is set, so set it again. Released in switch_to_progmode.
+            self._proto().set_parameter(jtag2.PAR_EXTERNAL_RESET, b'\x01')
+            self._ext_reset_held = True
+            self._enter_mode()
+            jtag_id = int.from_bytes(self._proto().get_parameter(jtag2.PAR_JTAGID), 'little')
+            if jtag_id not in (0, 0xFFFFFFFF):
+                self.logger.info("Target reachable over JTAG only with its reset line held")
         self.logger.info("JTAG ID: 0x%08X", jtag_id)
         return jtag_id
 
@@ -275,20 +288,47 @@ class Jtag2Backend(AvrSession):
     def _ocd_erase(self) -> None:
         self._proto().chip_erase()
 
+    def _flash_change_timeout(self, changes : int) -> int:
+        """
+        The probe answers GO, RUN_TO_ADDR, SINGLE_STEP and RESTORE_TARGET only after it has rewritten
+        the flash pages of the software breakpoints it plants or removes. Measured with the mkII on the
+        ATmega2560 (256-byte pages): 0.44 s per page at JTAG clock code 0, 1.06 s at code 6, i.e. 10 to
+        12 times the time byte_ms gives for its bytes; twice that as margin. debugWIRE: byte_ms is 0.
+        """
+        page = self.device_info['flash_page_size_bytes']
+        return jtag2.USB_TIMEOUT + int(changes * page * 24 * self._proto().byte_ms)
+
+    def _pending_flash_changes(self) -> int:
+        """Software breakpoints to plant (set, not planted yet) plus those to remove"""
+        return len(self._swbps - self._planted) + len(self._pending_removals)
+
+    def _start(self, what : str, command : Callable[[int], None]) -> None:
+        """Send a command that lets the target run; on a timeout, say what the probe had to do"""
+        changes = self._pending_flash_changes()
+        timeout = self._flash_change_timeout(changes)
+        try:
+            command(timeout)
+        except jtag2.Jtag2Timeout:
+            self.logger.error("%s: no answer within %.1f s; %d software breakpoint(s) to plant or remove, "
+                              "%d-byte pages, JTAG clock %s", what, timeout / 1000, changes,
+                              self.device_info['flash_page_size_bytes'],
+                              "%.1f kHz" % self._jtag_khz if self._jtag_khz else "as the probe has it")
+            raise
+
     def _go(self) -> None:
         self._proto().drain_breaks()
-        self._proto().go()
+        self._start("Go", self._proto().go)
         self._breakpoints_updated()
 
     def _go_to(self, address : int) -> None:
         self._proto().drain_breaks()
-        self._proto().run_to(address >> 1)
+        self._start("Run to address", lambda timeout: self._proto().run_to(address >> 1, timeout))
         self._breakpoints_updated()
 
     def _single_step(self) -> None:
         self._proto().drain_breaks()
         try:
-            self._proto().single_step()
+            self._start("Single step", self._proto().single_step)
             self._proto().wait_for_break()
         except jtag2.Jtag2Error:
             self._clock_hint()
@@ -311,7 +351,7 @@ class Jtag2Backend(AvrSession):
             return
         self.logger.debug("Removing %d cleared software breakpoint(s) from flash before writing",
                               len(self._pending_removals))
-        self._proto().restore_target()
+        self._proto().restore_target(self._flash_change_timeout(len(self._planted | set(self._pending_removals))))
         time.sleep(0.1)
         self.stop()
         self._pending_removals.clear()
@@ -449,6 +489,9 @@ class Jtag2Backend(AvrSession):
             self._flush_pending_removals()
             self._set_jtag_clock(self.clkprg)
             self._proto().enter_progmode()
+            if self._ext_reset_held:  # programming mode holds the MCU in reset over JTAG
+                self._proto().set_parameter(jtag2.PAR_EXTERNAL_RESET, b'\x00')
+                self._ext_reset_held = False
         return True
 
     def switch_to_debmode(self) -> bool:
@@ -511,7 +554,10 @@ class Jtag2Backend(AvrSession):
         self._proto().write_pc(program_counter)
 
     def stack_pointer_read(self) -> bytearray:
-        return bytearray(self._proto().read_memory(jtag2.MEMTYPE_SRAM, 0x5D, 2))
+        sp = bytearray(self._proto().read_memory(jtag2.MEMTYPE_SRAM, 0x5D, 2))
+        if 0x5E in self.masked_registers:   # no SPH (8-bit SP): mkII, Dragon and dw-link from 2026-11-11
+            sp[1] = 0                       # honour the I/O mask; older dw-link firmware returns garbage
+        return sp
 
     def stack_pointer_write(self, data : bytes) -> None:
         self._proto().write_memory(jtag2.MEMTYPE_SRAM, 0x5D, bytes(data))
@@ -547,11 +593,27 @@ class Jtag2Backend(AvrSession):
                     data[bp + i - start] = (orig >> (8*i)) & 0xFF
         return data[address - start:end - start]
 
+    # In JTAG programming mode, the EEPROM goes through EEPROM_PAGE. Measured with the mkII on an
+    # ATmega128: there, EEPROM reads are refused (RSP_ILLEGAL_MCU_STATE) and EEPROM writes are
+    # acknowledged but not done; EEPROM_PAGE reads work at any address, EEPROM_PAGE writes only for
+    # whole aligned pages (a partial one is acknowledged, but not done either). The EDBG backend
+    # switches by prog_mode, too (pymcuprog).
     def eeprom_read(self, address : int, numbytes : int, prog_mode : bool = False) -> bytes:
+        if prog_mode and self._iface == 'jtag':
+            return self._proto().read_memory(jtag2.MEMTYPE_EEPROM_PAGE, address, numbytes)
         return self._proto().read_memory(jtag2.MEMTYPE_EEPROM, address, numbytes)
 
     def eeprom_write(self, address : int, data : bytes, prog_mode : bool = False) -> None:
-        self._proto().write_memory(jtag2.MEMTYPE_EEPROM, address, bytes(data))
+        if not (prog_mode and self._iface == 'jtag'):
+            self._proto().write_memory(jtag2.MEMTYPE_EEPROM, address, bytes(data))
+            return
+        page = self.device_info['eeprom_page_size_bytes']
+        end = address + len(data)
+        for base in range(address - address % page, end, page):
+            content = bytearray(self._proto().read_memory(jtag2.MEMTYPE_EEPROM_PAGE, base, page))
+            for a in range(max(base, address), min(base + page, end)):
+                content[a - base] = data[a - address]
+            self._proto().write_memory(jtag2.MEMTYPE_EEPROM_PAGE, base, bytes(content))
 
     def read_fuse(self, addr : int, size : int) -> bytearray:
         return bytearray(self._proto().read_memory(jtag2.MEMTYPE_FUSE, addr, size))
@@ -576,7 +638,25 @@ class Jtag2Backend(AvrSession):
             return
         if not prog_mode:
             self.switch_to_progmode()
+        # As the EDBG backend (xnvmmegaavrjtag.erase_chip): with '-m eesave', program EESAVE for the
+        # erase, so that the EEPROM survives it (the EEPROM part of a load comes before the erase)
+        eesave_base : int | None = self.device_info.get('eesave_base')
+        eesave_mask : int | None = self.device_info.get('eesave_mask')
+        saved_fuse : bytes | None = None
+        if 'eesave' in self.manage:
+            if eesave_base is not None and eesave_mask:
+                fuse = self._proto().read_memory(jtag2.MEMTYPE_FUSE, eesave_base, 1)
+                if fuse[0] & eesave_mask:                       # unprogrammed (active low)
+                    self._proto().write_memory(jtag2.MEMTYPE_FUSE, eesave_base,
+                                               bytes([fuse[0] & ~eesave_mask & 0xFF]))
+                    saved_fuse = fuse
+                    self.logger.debug("EESAVE programmed temporarily")
+            else:
+                self.logger.error("EESAVE fuse data unknown. EEPROM will be deleted")
         self._proto().chip_erase()
+        if saved_fuse is not None and eesave_base is not None:
+            self._proto().write_memory(jtag2.MEMTYPE_FUSE, eesave_base, saved_fuse)
+            self.logger.debug("EESAVE fuse restored")
         if not prog_mode:
             self.switch_to_debmode()
 

@@ -146,7 +146,9 @@ class MonitorCommand():
 
         self._verify = self._args.verify[0] != 'd'           # default: verify enable
         self._old_exec = False
-        # The ATmega128 special case:
+        # The ATmega128 special case: no software breakpoints, as all the user guides of the
+        # JTAGICE mkII and later debuggers state (the JTAGICE mkI guide restricts it to the
+        # ATmega103 compatibility mode). Tried with EDBG: the probe returns an error.
         if self._args.dev.lower() in [ 'atmega128', 'atmega128a' ]:
             self._onlyhwbps = True
             self._onlyswbps = False

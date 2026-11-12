@@ -2,6 +2,7 @@
 The test suit for the jtag2 module (JTAGICE mkII protocol, AVR067)
 """
 #pylint: disable=protected-access,missing-function-docstring,missing-class-docstring,invalid-name
+import importlib
 from unittest import TestCase
 from unittest.mock import Mock, MagicMock, patch
 
@@ -93,8 +94,21 @@ class TestFraming(TestCase):
     def test_device_descriptor_large_flash(self):
         # avrdude 8.3 -p m2560 sent RAMPZ 0x3B, flash size 0x40000, boot section 0xFE00 (0x1FE00 truncated), EIND 0
         ours = jtag2.DESCRIPTOR_TAIL.unpack(jtag2.make_device_descriptor(atmega2560.DEVICE_INFO)[240:])
-        self.assertEqual((ours[2], ours[7], ours[16], ours[23]), (0x3B, 0x40000, 0xFF80, 0)) # 0x1FF80 truncated
+        self.assertEqual((ours[2], ours[7], ours[16]), (0x3B, 0x40000, 0xFF80)) # 0x1FF80 truncated
+        self.assertEqual(ours[23], 0x3C)       # EIND, unlike avrdude: see jtag2.EIND_NOTE
         self.assertEqual(ours[5], 0x1FF80)                    # ulBootAddress has 32 bits
+        ours = jtag2.DESCRIPTOR_TAIL.unpack(jtag2.make_device_descriptor(atmega328p.DEVICE_INFO)[240:])
+        self.assertEqual(ours[23], 0)          # 128 KB and less: none
+
+    def test_device_descriptor_full_page_bitstream(self):
+        # captured on 2026-11-11: avrdude 8.3 -c jtag2 -p m16 sends ucAllowFullPageBitstream 1; without it
+        # the mkII reads flash pages in programming mode shifted by one byte
+        def full_page(name):
+            info = importlib.import_module('pyavrocd.deviceinfo.devices.' + name).DEVICE_INFO
+            return jtag2.DESCRIPTOR_TAIL.unpack(jtag2.make_device_descriptor(info)[240:])[15]
+        self.assertEqual([full_page(n) for n in ('atmega16', 'atmega128', 'atmega162')], [1, 1, 1])
+        self.assertEqual([full_page(n) for n in ('atmega324p', 'atmega1284p', 'atmega2560', 'atmega169pa')],
+                         [0, 0, 0, 0])
 
     def test_io_masks(self):
         info = atmega324p.DEVICE_INFO

@@ -231,7 +231,7 @@ def parse_sign_on(body : bytes) -> SignOn:
 DESCRIPTOR_TAIL = struct.Struct("<BBBHBIHI20s3sBBHBBBHBBHBBBBH")
 DESCRIPTOR_SIZE : int = 240 + DESCRIPTOR_TAIL.size  # 298
 
-def io_masks(device_info : dict) -> bytes:
+def io_masks(device_info : dict, masked : list[int] | None = None) -> bytes:
     """
     The 240 bytes of I/O masks: ucReadIO, ucReadIOShadow, ucWriteIO, ucWriteIOShadow (8 bytes each,
     memory addresses 0x20-0x5F), then the four ext arrays (52 bytes each, from 0x60). Measured on the
@@ -241,9 +241,12 @@ def io_masks(device_info : dict) -> bytes:
     without the bit; the write bits go to neither ronly nor masked registers, presumably because the
     probe writes them back at GO -- which would clear interrupt flags or send a byte through UDR.
     The shadow arrays stay zero. The ext range ends where the SRAM begins.
+    'masked' is the session's list (device info plus SPH where it does not exist); default: the
+    device info's.
     """
     masks = bytearray(240)
-    masked = device_info.get('masked_registers', [])
+    if masked is None:
+        masked = device_info.get('masked_registers', [])
     ronly = device_info.get('ronly_registers', [])
     for address in range(0x20, min(device_info['internal_sram_address_byte'], 0x60 + 52 * 8)):
         read_at, write_at, bit = ((0, 16, address - 0x20) if address < 0x60 else
@@ -281,7 +284,28 @@ def debugwire_instructions(device_info : dict) -> tuple[bytes, bytes]:
     return (b"".join(op.to_bytes(2, 'big') for op in eeprom),
             _in(0, dwdr).to_bytes(2, 'big') + bytes([_out(dwdr, 1) & 0xFF]))
 
-def make_device_descriptor(device_info : dict) -> bytes:
+# EIND_NOTE: ucEindAddress (I/O address of EIND) on parts with more than 128 KB of flash. avrdude sends 0;
+# Microchip Studio 7 sends no descriptor, only the device context, which has no such field (captured on
+# 2026-11-12, ATmega2560, extras/testbed/results/mkii-2560.pcapng). Measured with the mkII on the
+# ATmega2560: with 0, each software breakpoint planted or removed costs about 5 s, almost independent
+# of the JTAG clock (5.19 s at code 6, 4.66 s at code 0); with 0x3C 1.06 s and 0.44 s -- the same as
+# under Studio (two pages in 2.10 s at code 6). The boot section, where the probe has to run SPM, lies
+# above word address 0xFFFF there, which only EIJMP/EICALL reach, with EIND as the high byte.
+
+def allow_full_page_bitstream(device_info : dict) -> bool:
+    """
+    ucAllowFullPageBitstream for the older JTAG megas (OCD revision 1 and 2). Measured on the
+    ATmega16 with the mkII: without it, a flash page read in programming mode comes back shifted
+    by one byte (a leading 0x00), so every load fails verification. The parts are those for which
+    avrdude.conf sets allowfullpagebitstream: ATmega16(A), 32(A), 64(A), 128(A), 162. The ATmega169
+    variants have revision 2 as well, but must not get it: measured with the Dragon on a Butterfly
+    (JTAG ID 0x6940503F), page 0 reads correctly with 0 and as zeros with 1. debugWIRE parts have
+    revision 1, too, and get 0, as from avrdude.
+    """
+    return ('JTAG' in device_info.get('interface', '') and device_info.get('ocd_rev', 0) in (1, 2)
+            and not device_info['name'].startswith('atmega169'))
+
+def make_device_descriptor(device_info : dict, masked : list[int] | None = None) -> bytes:
     """
     The device descriptor for CMND_SET_DEVICE_DESCRIPTOR from PyAvrOCD's device info.
     I/O addresses as the mkII expects them, which is not the convention of the device info:
@@ -306,7 +330,8 @@ def make_device_descriptor(device_info : dict) -> bytes:
           else (bytes(20), bytes(3))),                       # ucEepromInst, ucFlashInst
         0, 0,                                                # ucSPHaddr, ucSPLaddr
         flash_size // page_size,                             # uiFlashpages
-        0, 0, 0,                                             # ucDWDRAddress, ucDWBasePC, ucAllowFullPageBitstream
+        0, 0,                                                # ucDWDRAddress, ucDWBasePC
+        int(allow_full_page_bitstream(device_info)),         # ucAllowFullPageBitstream
         ((flash_size - page_size) // 2) & 0xFFFF,            # uiStartSmallestBootLoaderSection: last page,
                                                              # as EDBG's boot_base, in words; 16 bits only,
                                                              # avrdude truncates it the same way (m2560)
@@ -314,11 +339,11 @@ def make_device_descriptor(device_info : dict) -> bytes:
         0,                                                   # ucCacheType
         0,                                                   # uiSramStartAddr
         0, 0, 0,                                             # ucResetType, ucPCMaskExtended, ucPCMaskHigh
-        0,                                                   # ucEindAddress: avrdude sends 0 even for the m2560
+        0x3C if flash_size > 0x20000 else 0,                 # ucEindAddress: see EIND_NOTE
         device_info['eecr_base'] + 0x20)                     # EECRAddress
-    return io_masks(device_info) + tail
+    return io_masks(device_info, masked) + tail
 
-def make_device_context(device_info : dict) -> list[tuple[int, bytes]]:
+def make_device_context(device_info : dict, masked : list[int] | None = None) -> list[tuple[int, bytes]]:
     """
     The sections of CMND_SET_DEVICE_CONTEXT (0x36, undocumented; avrdude names it
     CMND_SET_XMEGA_PARAMS), as Microchip Studio 7 sends them to the JTAGICE mkII (captured): 0x02 the
@@ -326,7 +351,7 @@ def make_device_context(device_info : dict) -> list[tuple[int, bytes]]:
     those of the extended I/O 0x60-0xFF. Unlike the device descriptor, the device data carry the page
     buffers per flash block, which the parts with a 4-page erase need.
     """
-    masks = io_masks(device_info)
+    masks = io_masks(device_info, masked)
     return [(0x02, bytes(tiny_device_data(device_info))), (0x80, masks[0:8]), (0x88, masks[16:24]),
             (0x81, masks[32:52]), (0x89, masks[136:156])]
 
@@ -707,17 +732,17 @@ class Jtag2Protocol():
         """CMND_WRITE_PC: a word address"""
         self.ok(struct.pack("<BI", CMND_WRITE_PC, pc), "Write PC")
 
-    def go(self) -> None:
-        """CMND_GO"""
-        self.ok(bytes([CMND_GO]), "Go")
+    def go(self, timeout : int = USB_TIMEOUT) -> None:
+        """CMND_GO; the probe answers only after it has planted and removed software breakpoints"""
+        self.ok(bytes([CMND_GO]), "Go", timeout)
 
     def forced_stop(self) -> None:
         """CMND_FORCED_STOP; the probe confirms the stop with EVT_BREAK (see wait_for_break)"""
         self.ok(bytes([CMND_FORCED_STOP, LOW_LEVEL]), "Stop")
 
-    def single_step(self) -> None:
+    def single_step(self, timeout : int = USB_TIMEOUT) -> None:
         """CMND_SINGLE_STEP; EVT_BREAK follows"""
-        self.ok(bytes([CMND_SINGLE_STEP, LOW_LEVEL, STEP_INTO]), "Single step")
+        self.ok(bytes([CMND_SINGLE_STEP, LOW_LEVEL, STEP_INTO]), "Single step", timeout)
 
     def reset(self) -> None:
         """CMND_RESET: the target stops at 0; EVT_BREAK follows"""
@@ -727,17 +752,17 @@ class Jtag2Protocol():
         """CMND_RESET with the debugWIRE disable flag: ISP works again until the next power cycle"""
         self.ok(bytes([CMND_RESET, RESET_DEBUGWIRE_DISABLE]), "debugWIRE disable")
 
-    def restore_target(self) -> None:
+    def restore_target(self, timeout : int = USB_TIMEOUT) -> None:
         """
         CMND_RESTORE_TARGET: stop, replace the software breakpoints with the original instructions,
         reset, run. Measured: immediate (not deferred to the next go like CMND_CLR_BREAK), and the
         probe forgets all software breakpoints; EVT_BREAKs may follow
         """
-        self.ok(bytes([CMND_RESTORE_TARGET]), "Restore target")
+        self.ok(bytes([CMND_RESTORE_TARGET]), "Restore target", timeout)
 
-    def run_to(self, pc : int) -> None:
+    def run_to(self, pc : int, timeout : int = USB_TIMEOUT) -> None:
         """CMND_RUN_TO_ADDR: run until the word address pc"""
-        self.ok(struct.pack("<BI", CMND_RUN_TO_ADDR, pc), "Run to address")
+        self.ok(struct.pack("<BI", CMND_RUN_TO_ADDR, pc), "Run to address", timeout)
 
     def set_break(self, number : int, pc : int) -> None:
         """

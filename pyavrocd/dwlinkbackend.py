@@ -206,7 +206,7 @@ class DwlinkBackend(Jtag2Backend):
         if not self._mode_set and not self._debugwire_active():
             raise FatalError("debugWIRE is not active")
         proto = self._proto()
-        proto.set_device_context(jtag2.make_device_context(self.device_info))
+        proto.set_device_context(jtag2.make_device_context(self.device_info, self.masked_registers))
         proto.set_parameter(jtag2.PAR_TIMERS_RUNNING, bytes([int(self.timers_run)]))
         self._mode_set = True
 

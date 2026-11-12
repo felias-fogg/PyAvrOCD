@@ -38,6 +38,116 @@ class TestJtag2Backend(TestCase):
         self.assertIs(self.backend.protocol, second)
         self.assertIs(self.backend.sign_on_info, second.sign_on.return_value)
 
+    def test_go_waits_longer_for_breakpoints_to_plant(self):
+        # measured on the ATmega2560: 0.44 s per 256-byte page at JTAG clock code 0
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICEmkII', address='4262'),
+                                   'atmega2560', 'jtag', options(['-d', 'atmega2560']))
+        proto = MagicMock()
+        proto.byte_ms = jtag2.jtag_byte_ms(0)
+        backend.protocol = proto
+        backend._go()
+        self.assertEqual(proto.go.call_args.args, (jtag2.USB_TIMEOUT,))  # nothing to plant
+        backend._swbps = {0x400, 0x800, 0xC00}
+        backend._planted = {0x400}
+        backend._pending_removals = {0x1000: 0xFFFF}
+        backend._go()                                                     # 2 to plant, 1 to remove
+        timeout = proto.go.call_args.args[0]
+        self.assertEqual(timeout, jtag2.USB_TIMEOUT + int(3 * 256 * 24 * jtag2.jtag_byte_ms(0)))
+        self.assertGreater(timeout - jtag2.USB_TIMEOUT, 3 * 440)          # above what was measured
+        self.assertEqual(backend._pending_flash_changes(), 0)             # all planted now
+        backend._go_to(0x200)
+        self.assertEqual(proto.run_to.call_args.args, (0x100, jtag2.USB_TIMEOUT))
+        # a timeout is logged with what the probe had to do, and passed on
+        backend._swbps.add(0x1400)
+        proto.go.side_effect = jtag2.Jtag2UsbTimeout("No response to command 0x08 from the probe")
+        with self.assertRaises(jtag2.Jtag2UsbTimeout):
+            backend._go()
+        message = backend.logger.error.call_args.args
+        self.assertIn("software breakpoint(s) to plant or remove", message[0])
+        self.assertEqual(message[1:4], ("Go", (jtag2.USB_TIMEOUT + int(256 * 24 * jtag2.jtag_byte_ms(0))) / 1000, 1))
+
+    def test_eeprom_in_jtag_programming_mode_goes_by_whole_pages(self):
+        # measured on an ATmega128: EEPROM_PAGE writes take effect only for whole aligned pages
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICEmkII', address='4262'),
+                                   'atmega128', 'jtag', options(['-d', 'atmega128']))
+        eeprom = bytearray(range(0x80, 0x98))                           # 3 pages of 8 bytes
+        proto = MagicMock()
+        proto.read_memory.side_effect = lambda memtype, addr, n: bytes(eeprom[addr:addr + n])
+        backend.protocol = proto
+        backend.eeprom_write(6, b'\x01\x02\x03\x04\x05', prog_mode=True)  # 6..10: two pages, both partial
+        writes = [c.args for c in proto.write_memory.call_args_list]
+        self.assertEqual([(m, a, len(d)) for m, a, d in writes],
+                         [(jtag2.MEMTYPE_EEPROM_PAGE, 0, 8), (jtag2.MEMTYPE_EEPROM_PAGE, 8, 8)])
+        self.assertEqual(writes[0][2], bytes(eeprom[0:6]) + b'\x01\x02')
+        self.assertEqual(writes[1][2], b'\x03\x04\x05' + bytes(eeprom[11:16]))
+        backend.eeprom_read(3, 4, prog_mode=True)
+        self.assertEqual(proto.read_memory.call_args.args, (jtag2.MEMTYPE_EEPROM_PAGE, 3, 4))
+        proto.reset_mock()
+        backend.eeprom_write(6, b'\x01', prog_mode=False)              # debug mode: as before
+        self.assertEqual(proto.write_memory.call_args.args, (jtag2.MEMTYPE_EEPROM, 6, b'\x01'))
+
+    def test_chip_erase_keeps_eeprom_with_managed_eesave(self):
+        # as the EDBG backend: EESAVE programmed for the erase and restored afterwards
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICEmkII', address='4262'),
+                                   'atmega128', 'jtag', options(['-d', 'atmega128', '-m', 'eesave']))
+        proto = MagicMock()
+        proto.read_memory.return_value = b'\x89'                       # hfuse of the ATmega128A: EESAVE off
+        backend.protocol = proto
+        backend.erase_chip(prog_mode=True)
+        self.assertEqual([c.args for c in proto.write_memory.call_args_list],
+                         [(jtag2.MEMTYPE_FUSE, 1, b'\x81'), (jtag2.MEMTYPE_FUSE, 1, b'\x89')])
+        self.assertEqual([c[0] for c in proto.mock_calls].index('chip_erase'), 2) # between the fuse writes
+        proto.reset_mock()
+        proto.read_memory.return_value = b'\x81'                       # EESAVE already programmed
+        backend.erase_chip(prog_mode=True)
+        proto.write_memory.assert_not_called()
+
+    def test_sleeping_jtag_target_reached_with_reset_held(self):
+        # measured on an ATmega16 in power-down: no JTAG ID until the reset line is held and the
+        # emulator mode is set again; the reset is released once programming mode holds the MCU
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICEmkII', address='4262'),
+                                   'atmega16', 'jtag', options(['-d', 'atmega16']))
+        proto = MagicMock()
+        backend.protocol = proto
+        ids = iter([b'\xff\xff\xff\xff', (0x0940303F).to_bytes(4, 'little')])
+        proto.get_parameter.side_effect = lambda par: (5000).to_bytes(2, 'little') \
+            if par == jtag2.PAR_OCD_VTARGET else next(ids)
+        self.assertEqual(backend._activate_interface(), 0x0940303F)
+        resets = [c.args[1] for c in proto.set_parameter.call_args_list if c.args[0] == jtag2.PAR_EXTERNAL_RESET]
+        modes = [c for c in proto.set_parameter.call_args_list if c.args[0] == jtag2.PAR_EMULATOR_MODE]
+        self.assertEqual((resets, len(modes)), ([b'\x01'], 1))
+        backend.switch_to_progmode()
+        resets = [c.args[1] for c in proto.set_parameter.call_args_list if c.args[0] == jtag2.PAR_EXTERNAL_RESET]
+        self.assertEqual(resets, [b'\x01', b'\x00'])
+        backend.switch_to_progmode()                                    # released only once
+        self.assertEqual(sum(c.args[0] == jtag2.PAR_EXTERNAL_RESET for c in proto.set_parameter.call_args_list), 2)
+
+    def test_sph_masked_on_parts_with_8bit_sp(self):
+        # the t2313 has no SPH; the mkII returned 0x21 there, EDBG returns 0
+        self.assertNotIn(0x5E, self.backend.masked_registers)          # m328p: 16-bit SP
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            small = Jtag2Backend(ProbeCandidate(tool='jtagice2', product='JTAGICEmkII', address='4262'),
+                                 'attiny2313', 'debugwire', options(['-d', 'attiny2313']))
+        self.assertIn(0x5E, small.masked_registers)
+        self.assertNotIn(0x5E, small.device_info['masked_registers']) # the device info stays as generated
+        sph_read_bit = (0x5E - 0x20) // 8, 1 << ((0x5E - 0x20) % 8)
+        masks = jtag2.make_device_descriptor(small.device_info, small.masked_registers)[:240]
+        self.assertFalse(masks[sph_read_bit[0]] & sph_read_bit[1])
+        context = dict(jtag2.make_device_context(small.device_info, small.masked_registers))
+        self.assertFalse(context[0x80][sph_read_bit[0]] & sph_read_bit[1])
+        self.assertTrue(context[0x80][(0x5D - 0x20) // 8] & 1 << ((0x5D - 0x20) % 8))   # SPL stays readable
+        # dw-link ignores the mask and delivers what the chip has at 0x5E: the high byte is dropped
+        small.protocol = MagicMock()
+        small.protocol.read_memory.return_value = bytes([0x23, 0x23])
+        self.assertEqual(small.stack_pointer_read(), bytearray([0x23, 0x00]))
+        self.backend.protocol = MagicMock()
+        self.backend.protocol.read_memory.return_value = bytes([0xFF, 0x08])
+        self.assertEqual(self.backend.stack_pointer_read(), bytearray([0xFF, 0x08]))   # m328p untouched
+
     @patch('pyavrocd.jtag2backend.jtag2.Jtag2Protocol')
     @patch('pyavrocd.jtag2backend.jtag2.Jtag2UsbTransport.open')
     def test_sign_on_without_reopen(self, mock_open, mock_protocol):

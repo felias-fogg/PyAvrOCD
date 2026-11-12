@@ -93,6 +93,11 @@ class AvrSession(DebugBackend):
         if iface not in str(self.device_info['interface']).lower():
             raise BackendError("Incompatible debugging interface")
         self.masked_registers = self.device_info.get('masked_registers',[])
+        if (self.device_info['internal_sram_address_byte'] + self.device_info['internal_sram_size_bytes'] <= 0x100
+                and 0x5E not in self.masked_registers):
+            # An 8-bit SP: SPH (0x5E) does not exist. EDBG reads it as 0, the mkII returns whatever
+            # the chip delivers there (0x21 on an ATtiny2313). Not in the ATDF, hence added here.
+            self.masked_registers = self.masked_registers + [0x5E]
         self.ronly_registers = self.device_info.get('ronly_registers',[])
         self.memory_info = deviceinfo.DeviceMemoryInfo(self.device_info)
 
