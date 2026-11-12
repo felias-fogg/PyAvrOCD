@@ -23,7 +23,9 @@ ifeq ($(DW),yes)
 	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -T "config dwen=1"
 endif
 ifeq ($(LOCK),yes)
-	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -U lock:w:0x00:m
+# 0xFC, not 0x00: only LB1/LB2 are needed, and on the ATtiny85/2313 avrdude 8.3 verifies the six
+# bits of the ISP write pattern although the part has two, so 0x00 reads back as 0xFC and fails
+	python3 ../setfuse.py -- -c "$(PROG)" -p "$(MCU)" -P "$(PORT)" -e -U lock:w:0xFC:m
 else
 	@echo "nolock: this debugger cannot write lock bits, the test will skip itself"
 endif

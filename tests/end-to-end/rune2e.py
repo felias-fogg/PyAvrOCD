@@ -49,7 +49,8 @@ schema = { 'includes': [ '<STR>' ],
                                        'cadc': '<BOOL>',
                                        'autopower': '<BOOL>',
                                        'nolto': '<BOOL>',
-                                       'dirty': '<BOOL>' },
+                                       'dirty': '<BOOL>',
+                                       'onlyhwbp': '<BOOL>' },
                          'import': '<STR>',
                          'after': '<STR>',
                          'sketch': '<STR>',
@@ -90,6 +91,7 @@ schema = { 'includes': [ '<STR>' ],
                                'dirty': '<BOOL>',
                                'nolto': '<BOOL>',
                                'nolock': '<BOOL>',
+                               'onlyhwbp': '<BOOL>',
                                'usb': '<BOOL>' },
                         'clocks': [ '<NUMBER>' ],
                         'core': '<STR>',
@@ -673,6 +675,30 @@ def resolve_toolchain(spec : dict [ str, Any ], dev : str, override : str | None
     logger.info("Toolchain for make: %s", folder)
     return folder
 
+def check_make_toolchain(spec : dict [ str, Any ], dev : str, script_list : list [ str ],
+                             toolchain : str | None) -> bool:
+    """
+    The make sketches need an avr-gcc. resolve_toolchain has checked a configured one; without
+    one, the PATH has to provide it, which it does not on every host. Refuse to start then,
+    naming the tests that would fail and the two ways out.
+    """
+    if toolchain is not None:
+        return True
+    def compiles(test : str) -> bool:
+        """Does the Makefile of the test's sketch call the compiler? Some only run avrdude."""
+        sketch = spec['tests'][test].get('sketch')
+        makefile = os.path.join('sketches', sketch or '', 'Makefile')
+        if not sketch or not os.path.exists(makefile):
+            return False
+        with open(makefile, encoding="utf-8") as src:
+            return any(re.search(r'avr-gcc|\$\((CC|CXX)\)', line) for line in src)
+    needy = [ test for test in script_list if compiles(test) ]
+    if not needy or shutil.which('avr-gcc'):
+        return True
+    logger.critical("No avr-gcc on the PATH, but %s are built with make; give --toolchain or a "
+                    "'toolchain' for core '%s' in cores.yml", sorted(needy), spec['devices'][dev]['core'])
+    return False
+
 def run_compile_command(cmd : str, toolchain : str | None = None) -> bool:
     """
     Compile sketch by running 'cmd' and return success value.
@@ -1120,11 +1146,17 @@ def main() -> int:
     if not check_avrdude(spec, script_list):
         return 1
 
+    # check the compiler for the make sketches before the first test, not when the first
+    # of them is reached halfway through the run
+    toolchain = resolve_toolchain(spec, args.dev, args.toolchain)
+    if not check_make_toolchain(spec, args.dev, script_list, toolchain):
+        return 1
+
     # run scripts
     try:
         failed_comp, failed_scripts = run_scripts(script_list, spec, args.dev, args.clock, programmer, port,
                                                       serveropts=serveropts,
-                                                      toolchain=resolve_toolchain(spec, args.dev, args.toolchain))
+                                                      toolchain=toolchain)
     except KeyError as e:
         logger.critical("Missing value for key %s", str(e))
         return 1

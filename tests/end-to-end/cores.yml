@@ -1,5 +1,6 @@
 cores:
   MicroCore:
+    toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
     options:
       clock: true
       bootloader: true
@@ -13,6 +14,7 @@ cores:
     default: 9.6
 
   TinyCore:
+    toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
     options:
       clock: true
       chip: true
@@ -34,6 +36,7 @@ cores:
     default: 8
 
   MiniCore:
+    toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
     options:
       clock: true
       LTO: true
@@ -61,6 +64,7 @@ cores:
     default: 16
 
   XMiniCore:
+    toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
     options:
       clock: true
       LTO: true
@@ -181,6 +185,7 @@ cores:
     default: 20
 
   arduino:
+    toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
     options:
       cpu: true
       clock: false

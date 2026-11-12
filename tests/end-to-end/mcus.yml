@@ -555,6 +555,7 @@ devices:
     provides:
       ram: 4
       flash: 128
+      onlyhwbp: true     # PyAvrOCD allows only hardware breakpoints on the ATmega128
     board: '128'
     setup: ATmega128 board (JTAG); needs MegaCore installed for arduino-cli
 
