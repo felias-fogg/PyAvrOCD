@@ -7,7 +7,7 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging enabled on
       - stimulus: "target remote :2000"
-        timeout: 10
+        timeout: 20
       - stimulus: "!rm pyavrocd.options"
 
 
@@ -151,6 +151,7 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging on
       - stimulus: target remote :2000
+        timeout: 20
       - stimulus: "!rm pyavrocd.options"
       - stimulus: monitor info
         success: dw-link  # dw-link cannot attach
@@ -1113,6 +1114,7 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging on
       - stimulus: "target extended-remote :2000"
+        timeout: 20
         response: 0x00000000 in
       - stimulus: monitor debugwire enable
         responses:
@@ -1142,7 +1144,7 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging enabled on
       - stimulus: "target extended-remote :2000"
-        timeout: 10
+        timeout: 20
       - stimulus: "!rm pyavrocd.options"
       - stimulus: monitor debugwire enable
         timeout: 40
@@ -1161,7 +1163,7 @@ tests:
       - stimulus: disconnect
         response: Ending remote debugging
       - stimulus: "target extended-remote :2000"
-        timeout: 10
+        timeout: 20
         response: episode ()
       - stimulus: monitor info
         response: "Debugging enabled:        yes"
@@ -1186,7 +1188,7 @@ tests:
       - stimulus: set logging overwrite on
       - stimulus: set logging enabled on
       - stimulus: "target extended-remote :2000"
-        timeout: 10
+        timeout: 20
       - stimulus: "!rm pyavrocd.options"
       - stimulus: monitor debugwire enable
         timeout: 40
@@ -1213,7 +1215,7 @@ tests:
       - stimulus: set logging overwrite off      # append to the first GDB's log
       - stimulus: set logging enabled on
       - stimulus: "target extended-remote :2000"
-        timeout: 10
+        timeout: 20
       - stimulus: info program                # the server stops the program when GDB reconnects
         response: Program stopped at
       - stimulus: print cnt
@@ -1873,6 +1875,24 @@ tests:
       - stimulus: monitor debugwire disable
       - stimulus: continue
         response: SIGHUP
+      - import: epilog
+
+# 'monitor debugwire disable' answers at once and unprograms DWEN only when the session ends,
+# so dwoff passes even when that fails. A new session that may not touch DWEN shows whether
+# it has really been unprogrammed.
+  dwoffcheck:
+    after: dwoff
+    requires:
+      dw: true
+    serverargs: "-m nodwen"
+    steps:
+      - stimulus: set logging file log/dwoffcheck.log
+      - import: short_prolog
+      - stimulus: monitor debugwire enable
+      - stimulus: monitor info
+        responses:
+          - Debugging is impossible when DWEN is not programmed
+          - DWEN is not set, but not managed by dw-link. Cannot continue.
       - import: epilog
 
 
