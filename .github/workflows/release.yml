@@ -135,7 +135,7 @@ jobs:
        os: [ arm64-apple-darwin, aarch64-linux-gnu,  x86_64-mingw32,  x86_64-apple-darwin,  x86_64-linux-gnu, i686-mingw32]
        include:
          - os: arm64-apple-darwin
-           runner: macos-14
+           runner: macos-15
            arch: arm64
            # What every other bundled file on this platform already says,
            # measured: the Python framework, libssl, libcrypto, hid and the
@@ -154,7 +154,7 @@ jobs:
            runner: windows-2022
            arch: x64
          - os: x86_64-apple-darwin
-           runner: macos-14-large
+           runner: macos-15-intel
            arch: x64
            deployment: '10.15'
          - os: x86_64-linux-gnu
@@ -519,9 +519,9 @@ jobs:
           - os: i686-linux-gnu
             runner: ubuntu-22.04
           - os: arm64-apple-darwin
-            runner: macos-14
+            runner: macos-15
           - os: x86_64-apple-darwin
-            runner: macos-14-large
+            runner: macos-15-intel
           - os: x86_64-mingw32
             runner: windows-2022
           - os: i686-mingw32

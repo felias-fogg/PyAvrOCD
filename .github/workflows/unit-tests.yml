@@ -7,8 +7,6 @@ on:
       - '**.py'
     branches:
       - 'main'
-      # the integration of further debuggers, until it is merged (see the badge steps)
-      - 'backends'
   pull_request:
 
 
