@@ -82,6 +82,7 @@ tests:
     requires:
       updi: false
       boot: true
+      resetto0: false    # the probe's reset has to honour BOOTRST
     serverargs: "-m nobootrst"
     steps:
       - stimulus: set logging file log/nobootrst.log
@@ -603,6 +604,7 @@ tests:
     requires:
       arduino: true
       jtag: true
+      slowstep: false    # 2 s of range-stepping must get through the loop more than once
     sketch: range
     steps:
       - stimulus: set logging file log/range_jtag.log
@@ -735,30 +737,37 @@ tests:
         responses:
           - All breakpoints are allowed
           - On this MCU, only hardware breakpoints are allowed
+          - With this debugger, only hardware breakpoints are allowed
       - stimulus: monitor breakpoints s
         responses:
           - Only software breakpoints
           - Breakpoint mode cannot be changed on this MCU
+          - Breakpoint mode cannot be changed with this debugger
       - stimulus: monitor breakpoints
         responses:
           - Only software breakpoints
           - On this MCU, only hardware breakpoints are allowed
+          - With this debugger, only hardware breakpoints are allowed
       - stimulus: monitor breakpoints hardware
         responses:
           - Only hardware breakpoints
           - Breakpoint mode cannot be changed on this MCU
+          - Breakpoint mode cannot be changed with this debugger
       - stimulus: monitor breakpoints
         responses:
           - Only hardware breakpoints
           - On this MCU, only hardware breakpoints are allowed
+          - With this debugger, only hardware breakpoints are allowed
       - stimulus: monitor breakpoints all
         responses:
           - All breakpoints are allowed
           - Breakpoint mode cannot be changed on this MCU
+          - Breakpoint mode cannot be changed with this debugger
       - stimulus: monitor breakpoints
         responses:
           - All breakpoints are allowed
           - On this MCU, only hardware breakpoints are allowed
+          - With this debugger, only hardware breakpoints are allowed
       - stimulus: monitor caching
         responses:
           - Flash memory will be cached
@@ -1032,6 +1041,7 @@ tests:
         responses:
           - Only software breakpoints
           - On this MCU, only hardware breakpoints are allowed
+          - With this debugger, only hardware breakpoints are allowed
       - stimulus: monitor caching
         responses:
           - Flash memory will not be cached
@@ -1322,7 +1332,8 @@ tests:
       - stimulus: disable 2
       - stimulus: info b
         response: stop only if cycle == 4
-      - stimulus: continue
+      - stimulus: continue          # three stops to evaluate the condition before the fourth hit
+        timeout: 15
         response: Breakpoint 4
       - stimulus: delete 1-10
         response: No breakpoint number 10
@@ -1416,7 +1427,7 @@ tests:
       - stimulus: finish
         response: LedOff
       - stimulus: monitor breakpoints all
-        success: Breakpoint mode cannot be changed on this MCU
+        success: Breakpoint mode cannot be changed *
       - stimulus: break LedInit
         response: Breakpoint 6
       - stimulus: continue
@@ -1558,7 +1569,8 @@ tests:
       - stimulus: set remote hardware-watchpoint-limit 0
       - stimulus: "watch memo[7]"
         response: 'Watchpoint 5: memo[[]7[]]'
-      - stimulus: continue
+      - stimulus: continue          # a software watchpoint: GDB single-steps until memo[7] changes
+        timeout: 20
         response: "Watchpoint 5: memo[[]7[]]"
       - stimulus: p memo[7]
         response: " = 1"

@@ -534,6 +534,16 @@ devices:
     board: '16'
     setup: ATmega16 on the 40-pin DIP board (JTAG)
 
+  atmega32:
+    mcu: atmega32
+    import: classic_mega
+    core: MightyCore
+    provides:
+      ram: 2
+      flash: 32
+    board: '32'
+    setup: ATmega32 on the 40-pin DIP board (JTAG)
+
   atmega1284p:
     mcu: atmega1284p
     import: classic_mega
@@ -558,6 +568,70 @@ devices:
       onlyhwbp: true     # PyAvrOCD allows only hardware breakpoints on the ATmega128
     board: '128'
     setup: ATmega128 board (JTAG); needs MegaCore installed for arduino-cli
+
+  atmega64:
+    mcu: atmega64
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 4
+      flash: 64
+    board: '64'
+    setup: TQFP-64 test socket (JTAG), internal 8 MHz, so run with -c 8; needs MegaCore installed for arduino-cli
+
+  at90can128:
+    mcu: at90can128
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 4
+      flash: 128
+    board: 'can128'
+    setup: Olimex AT90CAN128 board (JTAG); needs MegaCore installed for arduino-cli
+
+  atmega169p:
+    mcu: atmega169p
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 1
+      flash: 16
+    board: '169'
+    variant: modelP
+    setup: AVR Butterfly (JTAG), internal 8 MHz, so run with -c 8; needs MegaCore installed for arduino-cli
+
+  atmega169a:
+    mcu: atmega169a
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 1
+      flash: 16
+    board: '169'
+    variant: modelA
+    setup: TQFP-64 test socket (JTAG), internal 8 MHz with CKDIV8, so run with -c 1; needs MegaCore
+
+  atmega165pa:
+    mcu: atmega165pa
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 1
+      flash: 16
+    board: '165'
+    variant: modelP
+    setup: TQFP-64 test socket (JTAG), internal 8 MHz with CKDIV8, so run with -c 1; needs MegaCore
+
+  atmega645a:
+    mcu: atmega645a
+    import: classic_mega
+    core: MegaCore
+    provides:
+      ram: 4
+      flash: 64
+    board: '645'
+    variant: model645
+    setup: TQFP-64 test socket (JTAG); needs MegaCore installed for arduino-cli
 
   atmega2560:
     mcu: atmega2560

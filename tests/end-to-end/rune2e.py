@@ -7,7 +7,7 @@ serv.h bash script.
 The specification of the tests is given by the YAML file e2e.yml
 """
 
-#pylint: disable=line-too-long,too-many-locals
+#pylint: disable=line-too-long,too-many-locals,too-many-lines
 import fnmatch
 from typing import Any
 import pprint
@@ -30,7 +30,7 @@ import usb.core
 import usb.util
 import serial
 import serial.tools.list_ports
-from pyavrocd import jtag2
+from pyavrocd import jtag1, jtag2
 
 logger = logging.getLogger()
 schema = { 'includes': [ '<STR>' ],
@@ -50,7 +50,9 @@ schema = { 'includes': [ '<STR>' ],
                                        'autopower': '<BOOL>',
                                        'nolto': '<BOOL>',
                                        'dirty': '<BOOL>',
-                                       'onlyhwbp': '<BOOL>' },
+                                       'onlyhwbp': '<BOOL>',
+                                       'slowstep': '<BOOL>',
+                                       'resetto0': '<BOOL>' },
                          'import': '<STR>',
                          'after': '<STR>',
                          'sketch': '<STR>',
@@ -559,6 +561,38 @@ def check_ports(usbsn : str | None = None) -> str | None:
             transport.close()
     return None
 
+def check_mki_ports(usbsn : str | None = None) -> str | None:
+    """
+    The serial port of a JTAGICE mkI: every USB serial port, or the one whose name ends in 'usbsn',
+    is asked for the mkI sign-on (AVR060). A probe found at another speed than the start speed is
+    set back to it, where avrdude and the server look first.
+    """
+    for s in serial.tools.list_ports.comports():
+        if s.vid is None or (usbsn and not s.device.endswith(usbsn)):
+            continue
+        try:
+            transport = jtag1.Jtag1SerialTransport(s.device)
+        except jtag1.Jtag1Error:
+            continue
+        try:
+            protocol = jtag1.Jtag1Protocol(transport)
+            if protocol.sync() != jtag1.START_BAUD:
+                protocol.set_baud(jtag1.START_BAUD)
+            return s.device
+        except jtag1.Jtag1Error:
+            pass
+        finally:
+            transport.close()
+    return None
+
+# What a probe adds to the 'provides' of the device it debugs, by avrdude's programmer name
+PROBE_PROVIDES : dict[str, dict[str, Any]] = {
+    # JTAGICE mkI: PyAvrOCD sets only hardware breakpoints with it; a safe single step takes about
+    # 300 ms (the probe refreshes its copy of the I/O registers after every stop); its reset
+    # starts at 0, whatever BOOTRST says (measured on an ATmega16)
+    'jtag1' : { 'onlyhwbp' : True, 'slowstep' : True, 'resetto0' : True },
+    }
+
 def usb_serial(dev : Any) -> str:
     """
     Serial number of a USB device, or '' if it cannot be read
@@ -604,6 +638,10 @@ def identify_programmer(intf : str, usbsn : str | None = None) -> tuple [ str, s
         portname = check_ports(usbsn)
         if portname:
             return 'jtag2isp', portname
+    if intf == 'jtag': # JTAGICE mkI
+        portname = check_mki_ports(usbsn)
+        if portname:
+            return 'jtag1', portname
     if usbsn:
         logger.critical("No debugger with serial number '%s' found", usbsn)
         sys.exit(1)
@@ -1016,6 +1054,9 @@ def run_scripts(scripts : list [ str ], spec : dict [ str, Any ],
     # If no clock value has been given, then apply default (from core) if applicable
     if clock is None and spec['cores'][spec['devices'][dev]['core']].get('default', None):
         clock = spec['cores'][spec['devices'][dev]['core']]['default']
+    if clock:
+        # as the cores do in the IDE: the server derives the JTAG clock while debugging from it
+        serveropts = (serveropts or []) + [ '-F', str(round(clock * 1_000_000)) ]
     compiled = []
     failed_comp = []
     failed_run = []
@@ -1139,6 +1180,7 @@ def main() -> int:
 
     #determine programmer and port
     programmer, port = identify_programmer(interface, args.usbsn)
+    spec['devices'][args.dev]['provides'].update(PROBE_PROVIDES.get(programmer, {}))
 
     serveropts : list [ str ] = server_options(args, spec)
 
