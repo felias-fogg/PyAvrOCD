@@ -46,6 +46,9 @@ If you are using an IDE, then the IDE will invoke the GDB server. Nevertheless, 
 | `--memory-map-disable`                                       | This option, which does not take a value, will disable the usage of the XML memory map. This option is only there for testing purposes. |
 | `--skip-signature-verification`                              | Do not perform chip signature verification. This is another option for testing purposes. |
 | `--power-cycle-command`                                      | Command that power-cycles the target, for instance by switching a laboratory supply off and on again. It is run through the shell whenever debugWIRE needs a power cycle and the debug probe cannot do it itself (only the mEDBG and dw-link on a dw-probe shield can). If it does not finish with exit status 0 within 60 seconds, you are asked to power-cycle as usual. An example for a Siglent SPD3303X on the network is `extras/powercycle/spd3303x.py` in the repository: `--power-cycle-command "python3 extras/powercycle/spd3303x.py supply 1"`. |
+| `--min-version`                                              | PyAvrOCD refuses to start if its version is lower than the one given, e.g., `--min-version 2.1`. Meant for IDE integrations that rely on a newer feature. |
+
+Options PyAvrOCD does not know are not rejected: they are ignored, and an error message names them.
 
 ## Additional command-line options derived from monitor commands
 
@@ -84,4 +87,4 @@ With the usual abbreviation rules, the fact that the equal sign can simply be su
 </details>
 <p></p>
 
-Note that implicitly `@pyavrocd.options` is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file `pyavrocd.options`. This is, for instance, a way to communicate a `--tool` or -`-usbsn` option to PyAvroCD. 
+Note that implicitly `@pyavrocd.options` is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file `pyavrocd.options`. This is, for instance, a way to communicate a `--tool` or -`-usbsn` option to PyAvroCD.

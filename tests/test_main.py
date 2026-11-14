@@ -13,7 +13,7 @@ from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup, handle_simavr, \
-     find_probe, EDBG_PRODUCTS
+     find_probe, EDBG_PRODUCTS, version_tuple
 from pyavrocd.backend import ProbeCandidate
 from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
 
@@ -96,16 +96,16 @@ class TestMain(TestCase):
         mocked_print.assert_has_calls([call("Supported devices:")])
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=True))
-    @patch('pyavrocd.main.argparse.ArgumentParser.parse_args')
+    @patch('pyavrocd.main.argparse.ArgumentParser.parse_known_args')
     def test_add_pyavrocd_options(self,mockparse):
-        mockparse.return_value = SimpleNamespace(dev="atmega328p",
+        mockparse.return_value = (SimpleNamespace(dev="atmega328p",
                                                      webhelp=False,
                                                      version=False,
                                                      interface="debugwire",
                                                      manage=[],
                                                      tool='dwlink',
                                                      verbose='all',
-                                                     kbps=None)
+                                                     kbps=None), [])
         options(["-d", "atmega328p"])
         mockparse.assert_called_with(["-d", "atmega328p", "@pyavrocd.options"])
 
@@ -378,10 +378,36 @@ class TestMain(TestCase):
         self.assertRaises(SystemExit,startup, [], Mock)
         self.assertEqual(mock_print.call_count,1)
 
-    @patch('pyavrocd.main.sys.stderr.write')
-    def test_startup_wrong_args(self, mock_print):
-        self.assertRaises(SystemExit,startup, ['-z'], Mock)
-        mock_print.assert_has_calls([call('pyavrocd: error: unrecognized arguments: -z\n')])
+    @patch('pyavrocd.main.importlib.metadata.version', return_value='2.0.0')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
+    def test_startup_unknown_args_are_logged(self, _dwlink, _version):
+        # an option a later PyAvrOCD may introduce: logged, not rejected (with its value)
+        mock_logger = MagicMock()
+        self.assertEqual(startup(['-d', 'atmega328p', '-t', 'dwlink', '-z', '--future-option', '5'],
+                                 mock_logger), 1)                  # 1: no dw-link attached
+        mock_logger.error.assert_has_calls([call("Unknown command-line option(s) ignored: %s",
+                                                 "-z --future-option 5")])
+
+    @patch('pyavrocd.main.importlib.metadata.version', return_value='2.0.0rc1')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
+    def test_startup_min_version(self, mock_dwlink, _version):
+        mock_logger = MagicMock()
+        self.assertEqual(startup(['-d', 'atmega328p', '-t', 'dwlink', '--min-version', '2.1'], mock_logger), 1)
+        mock_logger.critical.assert_has_calls([call("This setup needs PyAvrOCD %s or later, but version %s is installed",
+                                                    '2.1', '2.0.0rc1')])
+        mock_dwlink.assert_not_called()                             # stopped before looking for a probe
+        mock_logger.reset_mock()
+        startup(['-d', 'atmega328p', '-t', 'dwlink', '--min-version', '2.0.0'], mock_logger)
+        mock_dwlink.assert_called_once()                            # 2.0.0rc1 counts as 2.0.0
+        mock_logger.reset_mock()
+        startup(['-d', 'atmega328p', '-t', 'dwlink', '--min-version', 'abc'], mock_logger)
+        mock_logger.error.assert_has_calls([call("Ignoring --min-version '%s': not a version number", 'abc')])
+
+    def test_version_tuple(self):
+        self.assertEqual(version_tuple('2.0.0rc1'), (2, 0, 0))
+        self.assertEqual(version_tuple(' 1.10 '), (1, 10))
+        self.assertIsNone(version_tuple('v2'))
+        self.assertLess(version_tuple('1.9'), version_tuple('1.10'))
 
     @patch('pyavrocd.main.importlib.metadata.version')
     @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])

@@ -11,6 +11,7 @@ import sys
 import os
 import argparse
 import logging
+import re
 import shutil
 import subprocess
 import contextlib
@@ -169,6 +170,11 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             action='store_true',
                             help="Terminate when GDB disconnects or detaches")
 
+    parser.add_argument("--min-version",
+                            dest='minversion',
+                            metavar="VERSION",
+                            help="Refuse to start if this PyAvrOCD is older than VERSION")
+
     parser.add_argument("--dw-link-baud",
                             dest='baud',
                             type=int,
@@ -213,7 +219,13 @@ def options(cmd: list[str]) -> argparse.Namespace:
         cmd.append('-h')
     cmd = [x for x in cmd if not x.startswith('@') or os.path.exists(x[1:]) ]
 
-    args : argparse.Namespace = parser.parse_args(cmd)
+    # Unknown options are not rejected but reported (in main, once logging is set up): an IDE
+    # integration such as a core's platform.txt may pass an option that a later PyAvrOCD
+    # introduced, and an older one should still run. --min-version is for when it must not.
+    args : argparse.Namespace
+    unknown : list[str]
+    args, unknown = parser.parse_known_args(cmd)
+    args.unknown_options = unknown
 
     if args.webhelp:
         webbrowser.open('https://pyavrocd.io/latest/command-line-options/')
@@ -397,6 +409,28 @@ def handle_simavr(args : argparse.Namespace, device : str) -> bool:
     print("Listening on port %d for gdb connection" % args.port, flush=True)
     sim : subprocess.Popen = subprocess.Popen( [ prg ] + simavr_args, bufsize=0, shell=False)
     sim.wait()
+    return True
+
+def version_tuple(version : str) -> tuple[int, ...] | None:
+    """The numeric part of a version string as a tuple, e.g. (2, 0, 0) for '2.0.0rc1'; None if there is none"""
+    match = re.match(r"\d+(\.\d+)*", version.strip())
+    return tuple(int(part) for part in match.group(0).split('.')) if match else None
+
+def version_sufficient(installed : str, required : str | None, logger : logging.Logger) -> bool:
+    """
+    False if --min-version asks for a newer PyAvrOCD than this one. A suffix such as 'rc1' is
+    not taken into account, so 2.0.0rc1 counts as 2.0.0.
+    """
+    if not required:
+        return True
+    wanted = version_tuple(required)
+    if wanted is None:
+        logger.error("Ignoring --min-version '%s': not a version number", required)
+        return True
+    have = version_tuple(installed) or ()
+    if have < wanted:
+        logger.critical("This setup needs PyAvrOCD %s or later, but version %s is installed", required, installed)
+        return False
     return True
 
 def check_elf_file_for_relax_optimization(elf_file : str, logger : logging.Logger) -> bool:
@@ -628,6 +662,10 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
 
     # now report startup
     logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
+    if args.unknown_options:
+        logger.error("Unknown command-line option(s) ignored: %s", " ".join(args.unknown_options))
+    if not version_sufficient(importlib.metadata.version("pyavrocd"), args.minversion, logger):
+        return 1
 
     # check that ELF file has not been produced using the -mrelax option
     if check_elf_file_for_relax_optimization(args.elffile, logger):
