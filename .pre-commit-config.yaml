@@ -6,6 +6,7 @@ repos:
     -   id: check-illegal-windows-names
     -   id: check-toml
     -   id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]   # two trailing spaces are a line break in Markdown
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
