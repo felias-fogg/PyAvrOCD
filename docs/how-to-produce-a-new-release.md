@@ -29,7 +29,7 @@
   appears only once everything before it has passed, which also means a failed
   build leaves nothing half-published behind: delete the tag and push it again.
 
-- A release candidate (`./extras/release.sh 1.7.1rc1`) goes through the same
+- A release candidate (`./extras/release.sh 1.7.1-rc1`) goes through the same
   machinery and is built and tested exactly like a release, but it stays on
   GitHub, marked as a pre-release. PyPI only ever sees a plain version, so a
   candidate is something you hand to the people you want to try it, and nobody
