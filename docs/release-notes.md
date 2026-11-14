@@ -9,7 +9,8 @@
 - The discovery of debug probes has been reworked: PyAvrOCD uses any compatible probe as long as it is the only one, and `-t` and `-u` select one otherwise. `-u` now also accepts the end of the USB serial number of a device behind a serial port, e.g., a genuine Arduino Uno running dw-link, which, unlike the port name, does not change when the board is plugged into another USB socket.
 - `-D` and `-P` set the JTAG clock of the JTAGICE mkII and the AVR Dragon as well.
 - `--reboot-debugger` now works for all debug probes.
-- New option `--power-cycle-command`, which runs a command to power-cycle the target when debugWIRE needs it and the probe cannot do it itself.
+- New option `--power-cycle-command`, which runs a command to power-cycle the target when debugWIRE needs it and the probe cannot do it itself. This is mainly for running e2e tests.
+- New option `--min-version`, which asserts that PyAvrOCD has at least this version. This option is intended to be used in IDEs.
 - A SIGTERM or SIGINT, e.g., from an IDE stopping the debug session, no longer interrupts a probe transaction halfway.
 - On UPDI targets, single-stepping after the PC has been set onto a software breakpoint (`jump`, `set $pc`, or an IDE's "set next statement") now executes the instruction there (after the breakpoint has been removed from flash).
 

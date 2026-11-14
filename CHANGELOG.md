@@ -7,7 +7,7 @@
   - Probe discovery has been adapted.
 - **Added:**
   - PyAvrOCD can now speak with the AVR Dragon, AVR JTAGICE mkII, and AVR JTAG ICE (the very first one)
-  - New option `--power-cycle-command`
+  - New options: `--power-cycle-command` for specifying a command to power cycle externally (mainly for running the e2e tests) and `--min-version` which checks that PyAvrOCD has at least this version (mainly for use in IDEs)
 - **Fixed:**
   - When single-stepping on UPDI targets after setting the PC explicitly to a location with a software breakpoint works now.
   - Terminating signals (SIGTERM and SIGINT) will not any longer interrupt transactions of the probe.
