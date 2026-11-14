@@ -135,6 +135,15 @@ class TestMemory(TestCase):
         self.mem.dbg.device_info.__getitem__.return_value = 0x1e950f
         self.assertEqual(self.mem.writemem("840000", bytearray([0x0f, 0x95, 0x1e])), "OK")
 
+    def test_writemem_sig_compatible(self):
+        # avr-libc gives the ATmega169A the signature of the ATmega169PA
+        self.set_up()
+        self.mem.programming_mode = True
+        self.mem.dbg.device_info.__getitem__.return_value = 0x1e9411
+        self.assertEqual(self.mem.writemem("840000", bytearray([0x05, 0x94, 0x1e])), "OK")
+        self.mem.dbg.device_info.__getitem__.return_value = 0x1e9405       # but not the other way round
+        self.assertRaises(FatalError, self.mem.writemem, "840000", bytearray([0x11, 0x94, 0x1e]))
+
     def test_writemem_no_data(self):
         self.set_up()
         self.assertEqual(self.mem.writemem("810022", bytearray()), "OK")

@@ -14,7 +14,7 @@ import argparse
 
 # error exceptions
 from pyavrocd.errors import FatalError
-from pyavrocd.backend import DebugBackend
+from pyavrocd.backend import DebugBackend, SwbpSupport
 
 
 # This is a list of monitor commands, of which many also be used as command line options
@@ -66,6 +66,7 @@ class MonitorCommand():
         self._onlyhwbps : bool = False # only hardware breakpoints permitted
         self._onlyswbps : bool = False # only software breakpoints permitted
         self._bpfixed : bool = False # It is possible to change
+        self._bpfixed_by_tool : bool = False # fixed because the debugger has no software breakpoints
         self._cache : bool  = False # cache executable and use the cache instead of the MCU's flash
         self._erase_before_load : bool = False  # erase flash memory before load
         self._read_before_write : bool = False # read before write
@@ -150,6 +151,12 @@ class MonitorCommand():
         # JTAGICE mkII and later debuggers state (the JTAGICE mkI guide restricts it to the
         # ATmega103 compatibility mode). Tried with EDBG: the probe returns an error.
         if self._args.dev.lower() in [ 'atmega128', 'atmega128a' ]:
+            self._onlyhwbps = True
+            self._onlyswbps = False
+            self._bpfixed = True
+        # The same for a debugger that cannot handle software breakpoints (JTAGICE mkI)
+        self._bpfixed_by_tool = self._dbg.SWBP_SUPPORT == SwbpSupport.NONE and not self._bpfixed
+        if self._bpfixed_by_tool:
             self._onlyhwbps = True
             self._onlyswbps = False
             self._bpfixed = True
@@ -329,12 +336,15 @@ class MonitorCommand():
             if self._onlyswbps:
                 return("", "Only software breakpoints")
             if self._onlyhwbps:
+                if self._bpfixed_by_tool:
+                    return("", "With this debugger, only hardware breakpoints are allowed")
                 if self._bpfixed:
                     return("", "On this MCU, only hardware breakpoints are allowed")
                 return("", "Only hardware breakpoints")
             return("", "All breakpoints are allowed")
         if optix in [1, 2, 3] and self._bpfixed:
-            return("", "Breakpoint mode cannot be changed on this MCU")
+            return("", "Breakpoint mode cannot be changed " +
+                       ("with this debugger" if self._bpfixed_by_tool else "on this MCU"))
         if optix == 1:
             self._onlyhwbps = False
             self._onlyswbps = False

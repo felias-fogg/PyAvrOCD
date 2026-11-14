@@ -11,6 +11,7 @@ from pyavrocd.errors import  FatalError
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 from pyavrocd.backend import DebugBackend
 from pyavrocd.monitor import MonitorCommand
+from pyavrocd.session import COMPATIBLE_IDS
 
 def is_blank(data : bytes) -> bool:
     """
@@ -374,9 +375,14 @@ class Memory():
         _dummy = addr
         filesig = (data[2]<<16) + (data[1]<<8) + data[0]
         if filesig != self.dbg.device_info['device_id']:
-            raise FatalError("File compiled for %s, current MCU is: %s" %
-                                 (dev_name.get(filesig, "Unknown"),
-                                    dev_name[self.dbg.device_info['device_id']]))
+            # the pairs the chip check accepts, too. Not only chips mix them up: avr-libc gives the
+            # ATmega169A the signature of the ATmega169PA (iom169a.h: 0x1E9405 instead of 0x1E9411)
+            if (filesig, self.dbg.device_info['device_id']) not in COMPATIBLE_IDS:
+                raise FatalError("File compiled for %s, current MCU is: %s" %
+                                     (dev_name.get(filesig, "Unknown"),
+                                        dev_name[self.dbg.device_info['device_id']]))
+            self.logger.info("Signature 0x%X in the file accepted for %s", filesig,
+                                 dev_name[self.dbg.device_info['device_id']])
         self.logger.info("MCU signature read and verified")
 
     def usig_read(self, address : int, numbytes : int) -> bytes:

@@ -40,6 +40,8 @@ from pyavrocd import jtag2
 from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.dwlinkbackend import DwlinkBackend
+from pyavrocd import jtag1backend
+from pyavrocd.jtag1backend import Jtag1Backend
 from pyavrocd.backend import DebugBackend, ProbeCandidate
 from pyavrocd.deviceinfo.devices.alldevices import dev_id, dev_iface
 from pyavrocd.monitor import monopts
@@ -135,7 +137,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
     parser.add_argument('-s', '--start',  dest='prg',
                             help='Start specified program (e.g., simavr or gede)')
 
-    tool_choices : list [str] = sorted(EDBG_TOOLS | JTAG2_TOOLS | {'dwlink'})
+    tool_choices : list [str] = sorted(EDBG_TOOLS | JTAG2_TOOLS | SERIAL_TOOLS)
     parser.add_argument("-t", "--tool",
                             metavar="TOOL",
                             type=str,
@@ -495,6 +497,7 @@ EDBG_PRODUCTS : dict[int, str] = { 0x2140 : 'jtagice3', 0x2141 : 'atmelice', 0x2
                                    0x2FC0 : 'nedbg', 0x2177 : 'pickit4', 0x2180 : 'snap' }
 EDBG_TOOLS : frozenset[str] = frozenset(EDBG_PRODUCTS.values())
 JTAG2_TOOLS : frozenset[str] = frozenset(jtag2.PRODUCTS.values())
+SERIAL_TOOLS : frozenset[str] = frozenset({'dwlink', jtag1backend.TOOL})   # probes on a serial port
 REENUMERATION_WAIT : float = 5.0   # s, see find_probe
 
 def find_probe(args : argparse.Namespace, intf : str,
@@ -503,18 +506,18 @@ def find_probe(args : argparse.Namespace, intf : str,
     The probe to debug with. Returns (abort, probe); abort is True if there is none or the choice is
     ambiguous, after the reason has been logged. First the probes on USB, EDBG tools (HID) and
     JTAGICE mkII / AVR Dragon (bulk) alike: one of them is taken if it is the only one, -t and -u
-    narrowing the choice. Only if there is none on USB, or -t or -u mean a serial port, dw-link is
-    looked for there.
+    narrowing the choice. Only if there is none on USB, or -t or -u mean a serial port, dw-link (for
+    debugWIRE targets) or the JTAGICE mkI (for the JTAG parts it knows) is looked for there.
     A JTAGICE mkII or AVR Dragon leaves the bus for 1.5 to 3 s after every sign-off, avrdude's at the
     end of an upload too, and a server started right after it would not find the probe. So, with
     nothing on USB, wait for it up to REENUMERATION_WAIT seconds, unless the selection rules it out
     (an EDBG tool, which does not do this, or a serial port; the wait would cost every dw-link start).
     """
-    serial_meant : bool = args.tool == 'dwlink' or \
+    serial_meant : bool = args.tool in SERIAL_TOOLS or \
       (bool(args.serialnumber) and serial_port_with_suffix(args.serialnumber))
     found : list[ProbeCandidate] = []
     libusb : bool = True
-    if args.tool != 'dwlink':
+    if args.tool not in SERIAL_TOOLS:
         wait : bool = not serial_meant and args.tool not in EDBG_TOOLS
         deadline : float = time.monotonic() + (REENUMERATION_WAIT if wait else 0)
         while True:
@@ -530,11 +533,14 @@ def find_probe(args : argparse.Namespace, intf : str,
             logger.critical(" Tool: %s, SN: %s", c.product, c.address)
         return True, None
     lacking_rules : bool = not serial_meant and lacking_udev_rules(logger)   # always ask: it explains
-    if lacking_rules or (args.tool is not None and args.tool != 'dwlink'):
+    if lacking_rules or (args.tool is not None and args.tool not in SERIAL_TOOLS):
         logger.critical("No compatible tool discovered")
         explain_missing_probe(args, libusb, logger)
         return True, None
-    return find_dwlink(args, intf, logger, lambda: explain_missing_probe(args, libusb, logger))
+    explain = lambda: explain_missing_probe(args, libusb, logger)  # pylint: disable=unnecessary-lambda-assignment
+    if args.tool == jtag1backend.TOOL or (args.tool is None and intf == 'jtag'):
+        return find_jtagice1(args, intf, logger, explain)
+    return find_dwlink(args, intf, logger, explain)
 
 def usb_probes(args : argparse.Namespace, logger : logging.Logger) -> tuple[list[ProbeCandidate], bool]:
     """
@@ -627,6 +633,33 @@ def find_dwlink(args : argparse.Namespace, intf : str, logger : logging.Logger,
         return True, None
     return False, found[0]
 
+def find_jtagice1(args : argparse.Namespace, intf : str, logger : logging.Logger,
+                      explain : Callable[[], None] = lambda: None) -> tuple[bool, ProbeCandidate | None]:
+    """
+    The JTAGICE mkI on a serial port, for the JTAG parts it knows. Returns (abort, probe) like
+    find_probe. As for dw-link, only an unambiguous serial port is taken, or the one -u names.
+    """
+    if intf and (intf != 'jtag' or not jtag1backend.supported_part(args.dev)):  # no interface: only --reboot-debugger
+        if args.tool == jtag1backend.TOOL:
+            logger.critical("The %s cannot debug the %s", jtag1backend.PRODUCT, args.dev)
+        else:
+            logger.critical("No compatible tool discovered")
+            explain()
+        return True, None
+    found = [c for c in jtag1backend.discover()
+             if not args.serialnumber or c.matches(args.serialnumber)]
+    if not found:
+        logger.critical("No compatible tool discovered")
+        explain()
+        return True, None
+    if len(found) > 1:
+        logger.critical("More than one serial port; name the one of the %s with -u, e.g., -u %s",
+                            jtag1backend.PRODUCT, found[0].address.split('/')[-1])
+        for c in found:
+            logger.critical(" Port: %s%s", c.address, ", SN: " + c.serial if c.serial else "")
+        return True, None
+    return False, found[0]
+
 def serial_port_with_suffix(suffix : str) -> bool:
     """Is there a USB serial port (where dw-link may be) whose name or serial number ends in suffix?"""
     return any(c.matches(suffix) for c in dwlinkbackend.discover())
@@ -678,10 +711,18 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
         logger.info("Connected to %s, SN: %s", probe.product, probe.address)
         return reboot_or_serve(Jtag2Backend, probe, lambda: Jtag2Backend(probe, device, intf, args),
                                    device, intf, args, probe.product, logger)
+    if probe.tool == jtag1backend.TOOL:
+        logger.info("Using %s on %s", jtag1backend.PRODUCT, probe.address)
+        return reboot_or_serve(Jtag1Backend, probe, lambda: Jtag1Backend(probe, device, intf, args),
+                                   device, intf, args, probe.product, logger)
     if probe.tool == 'dwlink':
         logger.info("Using dw-link on %s", probe.address)
-        return reboot_or_serve(DwlinkBackend, probe, lambda: DwlinkBackend(probe, device, intf, args),
-                                   device, intf, args, probe.product, logger)
+        result = reboot_or_serve(DwlinkBackend, probe, lambda: DwlinkBackend(probe, device, intf, args),
+                                     device, intf, args, probe.product, logger)
+        if result and args.reboot and not device and args.tool is None:
+            # without a device and a tool, a serial port is taken for dw-link's
+            logger.info("For a JTAGICE mkI, add '-t %s'", jtag1backend.TOOL)
+        return result
 
     backend : pymcuprog.backend.Backend = pymcuprog.backend.Backend()
     tool : ToolUsbHidConnection = ToolUsbHidConnection(serialnumber=probe.address, tool_name=args.tool)

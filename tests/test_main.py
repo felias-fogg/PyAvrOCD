@@ -451,6 +451,12 @@ class TestMain(TestCase):
         mock_reboot.return_value = False
         self.assertEqual(startup(['--reboot-debugger', '-t', 'dwlink', '-d', 'attiny85'], mock_logger), 1)
         mock_serve.assert_called_once()                               # not again
+        mock_logger.reset_mock()
+        # no tool, no device: USB is searched first, which must not really happen here (hidapi and libusb
+        # start threads of their own, and a later test that sends itself SIGTERM would lose it to them)
+        with patch('pyavrocd.main.usb_probes', return_value=([], True)):
+            self.assertEqual(startup(['--reboot-debugger', '-u', '242101'], mock_logger), 1)
+        mock_logger.info.assert_any_call("For a JTAGICE mkI, add '-t %s'", 'jtagice1')
 
     @patch('pyavrocd.main.time.sleep', Mock())
     @patch('pyavrocd.main.time.monotonic', Mock(side_effect=itertools.count()))
@@ -725,3 +731,48 @@ class TestFindProbe(TestCase):
         self.assertEqual(result, (True, None))
         logger.critical.assert_called_with("No compatible tool discovered")
         self.assertIn("WinUSB", " ".join(c.args[0] for c in logger.warning.call_args_list))
+
+
+class TestFindJtagice1(TestCase):
+    """For the JTAG parts it knows, the JTAGICE mkI is looked for on the serial ports"""
+
+    MKI = ProbeCandidate('jtagice1', 'JTAGICE mkI', '/dev/cu.usbserial-23210')
+    OTHER = ProbeCandidate('jtagice1', 'JTAGICE mkI', '/dev/cu.usbmodem242101', 'SN42')
+
+    def find(self, device='atmega16', ports=(), cmd=(), usb_found=()):
+        logger = MagicMock()
+        args = options(['-d', device] + list(cmd))
+        with patch('pyavrocd.main.usb_probes', return_value=(list(usb_found), True)), \
+             patch('pyavrocd.main.jtag1backend.discover', return_value=list(ports)), \
+             patch('pyavrocd.main.dwlinkbackend.discover', return_value=list(ports)), \
+             patch('pyavrocd.main.platform.system', return_value='Darwin'), \
+             patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
+             patch('pyavrocd.main.time.sleep'):
+            return find_probe(args, 'jtag', logger), logger
+
+    def test_the_only_serial_port(self):
+        self.assertEqual(self.find(ports=[self.MKI])[0], (False, self.MKI))
+        self.assertEqual(self.find(ports=[self.MKI], cmd=['-t', 'jtagice1'])[0], (False, self.MKI))
+
+    def test_usb_first(self):
+        dragon = ProbeCandidate('dragon', 'AVRDRAGON', '00A200050860')
+        self.assertEqual(self.find(ports=[self.MKI], usb_found=[dragon])[0], (False, dragon))
+
+    def test_ambiguous_and_selected(self):
+        result, logger = self.find(ports=[self.MKI, self.OTHER])
+        self.assertEqual(result, (True, None))
+        logger.critical.assert_any_call(" Port: %s%s", '/dev/cu.usbmodem242101', ", SN: SN42")
+        self.assertEqual(self.find(ports=[self.MKI, self.OTHER], cmd=['-u', '23210'])[0], (False, self.MKI))
+
+    def test_part_the_mki_does_not_know(self):
+        result, logger = self.find('atmega324p', ports=[self.MKI])
+        self.assertEqual(result, (True, None))
+        logger.critical.assert_called_with("No compatible tool discovered")
+        result, logger = self.find('atmega324p', ports=[self.MKI], cmd=['-t', 'jtagice1'])
+        self.assertEqual(result, (True, None))
+        logger.critical.assert_called_with("The %s cannot debug the %s", 'JTAGICE mkI', 'atmega324p')
+
+    def test_no_serial_port(self):
+        result, logger = self.find(ports=[])
+        self.assertEqual(result, (True, None))
+        logger.critical.assert_called_with("No compatible tool discovered")
