@@ -34,7 +34,7 @@ Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsu
 
 I made some leeway to integrate PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension.
 
-The next step is to work on the integration of the most recent Microchip debug probes.
+The next step is to work on the integration of the most recent Microchip debug probes, PICkit5 and PICkit Basic.
 
 There was the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front. My attempt at using the GCC 15.1 toolchain was abruptly stopped when I discovered that the compiler produces buggy debug information concerning local variables, whereas the old compiler works without a flaw at that point. I guess more research and/or debugging is necessary before GCC 15.1 is a viable solution.
 
