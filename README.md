@@ -20,9 +20,9 @@
 </p>
 
 
-PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/supported-boards/)),  communicating with debug probes such as [Snap](https://www.microchip.com/en-us/development-tool/pg164100) or [Dragon](https://www.microchip.com/en-us/development-tool/atavrdragon). So, is it simply [another open-source GDB server for AVR MCUs](https://arduino-craft-corner.de/index.php/2026/02/10/pyavrocd-1-0-0-released/#what-are-alternatives-to-pyavrocd)? No! It is a *cross-platform* AVR GDB server. This means that it was easily possible to integrate it into [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org) board packages, bringing AVR debugging to these IDEs. Additionally, PyAvrOCD excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
+PyAvrOCD is a GDB server for 8-bit AVR MCUs (see [list of supported MCUs](https://felias-fogg.github.io/PyAvrOCD/latest/supported-mcus/) and [supported boards](https://felias-fogg.github.io/PyAvrOCD/latest/supported-boards/)),  communicating with debug probes such as [Snap](https://www.microchip.com/en-us/development-tool/pg164100) or [Dragon](https://www.microchip.com/en-us/development-tool/atavrdragon). So, is it simply [another open-source GDB server for AVR MCUs](https://arduino-craft-corner.de/index.php/2026/02/10/pyavrocd-1-0-0-released/#what-are-alternatives-to-pyavrocd)? No! It is a *cross-platform* AVR GDB server. This means that it was easily possible to integrate it into [Arduino IDE 2](https://www.arduino.cc/en/software/) and [PlatformIO](https://platformio.org) board packages, bringing AVR debugging to these IDEs. Additionally, PyAvrOCD excels in [minimizing flash wear](https://arduino-craft-corner.de/index.php/2025/05/05/stop-and-go/) and [protects single-stepping against interrupts](https://arduino-craft-corner.de/index.php/2025/03/19/interrupted-and-very-long-single-steps/).
 
-Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavrocd.io/install/) it. Want to learn more about it? [Read the docs](https://pyavrocd.io). Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
+Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavrocd.io/latest/install/) it. Want to learn more about it? [Read the docs](https://pyavrocd.io). Any feedback, be it bug reports, crazy ideas, or praise, is welcome.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide2-6.png" width="70%">
@@ -30,12 +30,12 @@ Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavro
 
 ## What has been done so far, and what to expect in the future
 
-Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas.
+Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas. Recently, the coverage of debug probes has been extended to cover also JTAG ICE, JTAGICE mkII, and the Dragon.
 
 I made some leeway to integrate PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension.
 
-Currently, I work on integrating more debug probes, such as the Dragon, and also DIY probes, such as serialUPDI.
+The next step is to work on the integration of the most recent Microchip debug probes.
+
+There was the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front. My attempt at using the GCC 15.1 toolchain was abruptly stopped when I discovered that the compiler produces buggy debug information concerning local variables, whereas the old compiler works without a flaw at that point. I guess more research and/or debugging is necessary before GCC 15.1 is a viable solution.
 
  Finally, I am committed to fixing some of the more obvious bugs in the AVR part of the GDB debugger.
-
- There was the idea of basing everything on more recent versions of the GCC toolchain because it will probably solve a number of problems on the debugging front. My attempt at using the GCC 15.1 toolchain was abruptly stopped when I discovered that the compiler produces buggy debug information concerning local variables, whereas the old compiler works without a flaw at that point. I guess more research and/or debugging is necessary before GCC 15.1 is a viable solution.
