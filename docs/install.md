@@ -35,7 +35,7 @@ This will open the latest release page with all its assets.
 Select the archive matching your architecture and download it.
 Then extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):
 <pre>
-<code class="language-bash hljs">tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz</code>
+<code class="language-bash hljs">tar xvzf avr-debugger-X.Y.Z-architecture.tar.gz</code>
 </pre>
 </p>
 </details>
@@ -54,8 +54,6 @@ Once you have downloaded the archive and uncompressed it, you need to move the f
 <code class="language-bash hljs">mkdir ~/.local
 mkdir ~/.local/bin
 rm -rf ~/.local/bin/pyavrocd-util
-mv pyavrocd* ~/.local/bin/
-mv avr-gdb*  ~/.local/bin/
 mv bin/* ~/.local/bin/
 mv lib ~/.local/</code>
 </pre>

@@ -1,18 +1,24 @@
 #!/bin/bash
-#This is a script for packing the avrocd-link tools: avr-gdb + pyavrocd + pyavrocd-util + simavr.
-#The archives will be uploaded as assests in each release and can be downloaded from there
-#as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/pyavrocd-<machine-type>.tar.gz.
+#This is a script for packing the AVR debug tools: avr-gdb + pyavrocd + pyavrocd-util + simavr.
+#The archives will be uploaded as assets in each release and can be downloaded from there
+#as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/avr-debugger-<version>-<machine-type>.tar.gz.
+#Inside, all executables are in bin/ and the simavr libraries in lib/.
 #Additionally, the pyavrocd binaries will be uploaded stand-alone
 #
 #usage: call the script from the root folder; version will be deduced from pyavrocd -V
+
+# Stop at the first failure. Without it, a failed avr-gdb download went
+# unnoticed: the script carried on and packed an archive without avr-gdb.
+set -e
 
 # upload-artifact packs into a ZIP, which loses the executable bit, so
 # anything that travels through an artifact has to get it back. pyavrocd
 # does today. simavr comes from the repository, where git keeps the bit --
 # the second line is there for the day it goes through an artifact as
-# well; the redirect swallows the complaint when a triple has no such file.
+# well; the redirect swallows the complaint when a triple has no such file,
+# and the '|| true' keeps that from ending the script under set -e.
 chmod +x extras/binaries/*/pyavrocd
-chmod +x extras/binaries/*/bin/simavr 2>/dev/null
+chmod +x extras/binaries/*/bin/simavr 2>/dev/null || true
 
 #assume that we are running on a compatible runner
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -38,9 +44,7 @@ else
 fi
 
 rm -rf assets
-rm -rf avrocd-tools
 mkdir assets
-mkdir avrocd-tools
 
 # And once on the working copies themselves: the archives are downloaded
 # with a browser, so everything unpacked into binaries/ carries
@@ -97,10 +101,17 @@ for dir in binaries/*; do
                 popd
                 echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"Debugging tools for AVR microcontrollers: pyavrocd, avr-gdb, and simavr\", \"keywords\": [\"GDB server\", \"GDB client\", \"simulator\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", ${BASEFRAG}\"system\": \"${SYSTEM}\"} > tools/package.json
 		cp -r $dir/* tools/
+		# All executables go into bin/, where simavr already is: pyavrocd
+		# with its pyavrocd-util beside it (PyInstaller's onedir needs the
+		# two side by side), and avr-gdb, which is a single file. lib/ stays
+		# a sibling of bin/, because simavr finds its libraries on Linux
+		# through an RPATH of $ORIGIN/../lib.
+		mkdir -p tools/bin
+		mv tools/pyavrocd* tools/avr-gdb* tools/bin/
 		# The simavr archives come from 'make install-simavr', so they also
 		# carry its development files: the headers, the static library, the
 		# pkg-config files and the bare .so symlink that only a linker uses.
-		# A headless run needs none of it -- just bin/simavr, libsimavr.so.1
+		# A headless run needs none of it -- just bin/simavr, lib/libsimavr.so.1
 		# and the libelf/libz beside it -- and it is some 3.7 MB per package.
 		rm -rf tools/include tools/lib/pkgconfig tools/lib/*.a \
 		       tools/lib/libsimavr.so tools/lib/libsimavrparts.so
@@ -110,7 +121,7 @@ for dir in binaries/*; do
 		# only on macOS, hence the guard -- on a Linux runner there is
 		# nothing to strip in the first place.
 		command -v xattr >/dev/null && xattr -r -d com.apple.quarantine tools 2>/dev/null || true
-		tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avrocd-tools-${VERNUM}-${type}.tar.gz tools/
+		tar -zc --exclude="*DS_Store" --exclude="*/._*" -f ./assets/avr-debugger-${VERNUM}-${type}.tar.gz tools/
 		rm -rf tools
                 cp -r $dir/pyavrocd* tool/
                 echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", ${BASEFRAG}\"system\": \"${SYSTEM}\"} > tool/package.json

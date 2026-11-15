@@ -18,8 +18,9 @@
 #   extras/gdb-simavr-test.sh <folder> [port] [--direct]
 #   extras/gdb-simavr-test.sh extras/binaries/x86_64-linux-gnu
 #
-# <folder> is a triple folder holding pyavrocd, avr-gdb and bin/simavr -- the
-# arrangement packer.sh produces and the user receives. With --direct, PyAvrOCD
+# <folder> is either a triple folder holding pyavrocd, avr-gdb and bin/simavr,
+# or the unpacked avr-debugger archive, where all three are in bin/ -- the
+# arrangement the user receives. With --direct, PyAvrOCD
 # is left out and gdb talks to simavr's own stub; useful where there is no
 # pyavrocd binary to hand.
 
@@ -31,15 +32,20 @@ MODE=${3:-}
 HERE=$(cd "$(dirname "$0")" && pwd)
 DIR=$(cd "$DIR" && pwd)
 
-GDB=$DIR/avr-gdb
-[ -f "$GDB" ] || GDB=$DIR/avr-gdb.exe
+# The packed archive has avr-gdb and pyavrocd in bin/, a triple folder beside it
+BIN=$DIR
+if [ -f "$DIR/bin/avr-gdb" ] || [ -f "$DIR/bin/avr-gdb.exe" ]; then
+    BIN=$DIR/bin
+fi
+GDB=$BIN/avr-gdb
+[ -f "$GDB" ] || GDB=$BIN/avr-gdb.exe
 # Deliberately without the .exe: PyAvrOCD only recognises simavr when the
 # basename is exactly 'simavr', and shutil.which adds the extension on Windows.
 SIM_ARG=$DIR/bin/simavr
 SIM=$SIM_ARG
 [ -f "$SIM" ] || SIM=$SIM_ARG.exe
-SERVER=$DIR/pyavrocd
-[ -f "$SERVER" ] || SERVER=$DIR/pyavrocd.exe
+SERVER=$BIN/pyavrocd
+[ -f "$SERVER" ] || SERVER=$BIN/pyavrocd.exe
 FW=$HERE/ci/smoke-atmega328p.elf
 SRC=$HERE/ci/smoke.c
 

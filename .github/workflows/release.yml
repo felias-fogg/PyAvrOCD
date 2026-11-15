@@ -652,8 +652,7 @@ jobs:
         run: bash extras/packer.sh
 
       - name: Do the shipped clients actually debug?
-        # After packing, because that is when packer.sh has put avr-gdb beside
-        # bin/simavr in the triple folder -- the arrangement the user gets.
+        # After packing, because only then does the archive the user gets exist.
         # avr-gdb attaches to simavr's GDB stub, resolves a breakpoint through
         # the firmware's line table and reads a local variable out of SRAM;
         # none of that works if avr-gdb was built without usable DWARF support
@@ -665,7 +664,14 @@ jobs:
         # here, and this is deliberately not worth a matrix: the clients are
         # built from the same sources on every platform, and what differs per
         # platform -- the floors -- is measured where they are built.
-        run: bash extras/gdb-simavr-test.sh extras/binaries/x86_64-linux-gnu
+        #
+        # On the unpacked archive itself, not on the triple folder it was made
+        # from: packer.sh moves everything into bin/, and that layout is what
+        # the user gets.
+        run: |
+          mkdir -p "$RUNNER_TEMP/packed"
+          tar xzf extras/assets/avr-debugger-*-x86_64-linux-gnu.tar.gz -C "$RUNNER_TEMP/packed"
+          bash extras/gdb-simavr-test.sh "$RUNNER_TEMP/packed/tools"
 
       - name: The release notes, out of docs/release-notes.md
         if: ${{ github.event_name == 'push' }}
