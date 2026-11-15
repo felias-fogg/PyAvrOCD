@@ -9,6 +9,7 @@ from unittest import TestCase
 from types import SimpleNamespace
 import os
 import sys
+import tempfile
 from usb.core import NoBackendError
 import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
@@ -136,6 +137,36 @@ class TestMain(TestCase):
         args = options(["-m", "all", "-m", "nobootrst", "-m=nodwen"])
         self.assertEqual(args.manage, [ "none", "all", "nobootrst", "nodwen"])
         sys.exit.assert_not_called()
+
+    @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
+    def test_options_arduino_ide(self):
+        self.assertEqual(options(["-d", "atmega328p"]).arduino_ide, None)
+        args = options(["-d", "atmega328p", "--arduino-ide"])
+        self.assertTrue(args.once)
+        self.assertEqual(args.arduino_ide, ['--once'])
+        self.assertEqual(args.unknown_options, [])
+
+    @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
+    @patch.dict('pyavrocd.main.IDE_EXPANSIONS', {'arduino_ide' : ['--once', '-p', '3000']})
+    def test_options_arduino_ide_in_place(self):
+        # an option after the meta option wins, one before it is overridden
+        self.assertEqual(options(["--arduino-ide", "-p", "4000"]).port, 4000)
+        self.assertEqual(options(["-p", "4000", "--arduino-ide"]).port, 3000)
+        self.assertEqual(options(["-d", "atmega328p", "--arduino-ide"]).dev, "atmega328p")
+
+    def test_options_arduino_ide_from_file(self):
+        # argparse reads @files before the actions run, so the meta option works there, too.
+        # A real file: patching open or os.path.exists is global and also hits gettext,
+        # which argparse consults for its messages under a non-English locale.
+        real_exists = os.path.exists
+        with tempfile.TemporaryDirectory() as tmp:
+            optfile = os.path.join(tmp, "ide.options")
+            with open(optfile, "w", encoding="utf-8") as f:
+                f.write("--arduino-ide\n")
+            with patch('pyavrocd.main.os.path.exists',
+                           side_effect=lambda p: p != 'pyavrocd.options' and real_exists(p)):
+                args = options(["-d", "atmega328p", "@" + optfile])
+        self.assertTrue(args.once)
 
     @patch('pyavrocd.main.logging.basicConfig', MagicMock())
     @patch('pyavrocd.main.sys.stdout', MagicMock)
@@ -387,6 +418,14 @@ class TestMain(TestCase):
                                  mock_logger), 1)                  # 1: no dw-link attached
         mock_logger.error.assert_has_calls([call("Unknown command-line option(s) ignored: %s",
                                                  "-z --future-option 5")])
+
+    @patch('pyavrocd.main.importlib.metadata.version', return_value='2.0.0')
+    @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
+    def test_startup_arduino_ide_is_logged(self, _dwlink, _version):
+        mock_logger = MagicMock()
+        self.assertEqual(startup(['-d', 'atmega328p', '-t', 'dwlink', '--arduino-ide'],
+                                 mock_logger), 1)                  # 1: no dw-link attached
+        mock_logger.info.assert_has_calls([call("--arduino-ide stands for: %s", "--once")])
 
     @patch('pyavrocd.main.importlib.metadata.version', return_value='2.0.0rc1')
     @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])

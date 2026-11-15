@@ -48,6 +48,22 @@ from pyavrocd.monitor import monopts
 from pyavrocd.server import RspServer
 
 
+# What a meta option stands for: defaults that only make sense when an IDE starts the server.
+# Options that a core sets itself do not belong here.
+IDE_EXPANSIONS : dict[str, list[str]] = { 'arduino_ide' : ['--once'] }
+
+class ExpandAction(argparse.Action):
+    """
+    Parse the expansion of a meta option into the namespace, as if it stood in place of the
+    option: options after it win, options before it are overridden. The expansion is stored
+    under the option's dest, so that main can log it.
+    """
+    def __call__(self, parser : argparse.ArgumentParser, namespace : argparse.Namespace,
+                     values : Any, option_string : str | None = None) -> None:
+        expansion : list[str] = IDE_EXPANSIONS[self.dest]
+        parser.parse_known_args(expansion, namespace)
+        setattr(namespace, self.dest, expansion)
+
 def options(cmd: list[str]) -> argparse.Namespace:
     """
     Option processing. Returns processed options.
@@ -172,10 +188,16 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             action='store_true',
                             help="Terminate when GDB disconnects or detaches")
 
+    parser.add_argument("--arduino-ide",
+                            dest='arduino_ide',
+                            nargs=0,
+                            action=ExpandAction,
+                            help=argparse.SUPPRESS)
+
     parser.add_argument("--min-version",
                             dest='minversion',
                             metavar="VERSION",
-                            help="Refuse to start if this PyAvrOCD is older than VERSION")
+                            help=argparse.SUPPRESS)
 
     parser.add_argument("--dw-link-baud",
                             dest='baud',
@@ -697,6 +719,8 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     logger.info("This is PyAvrOCD version %s", importlib.metadata.version("pyavrocd"))
     if args.unknown_options:
         logger.error("Unknown command-line option(s) ignored: %s", " ".join(args.unknown_options))
+    if args.arduino_ide:
+        logger.info("--arduino-ide stands for: %s", " ".join(args.arduino_ide))
     if not version_sufficient(importlib.metadata.version("pyavrocd"), args.minversion, logger):
         return 1
 
