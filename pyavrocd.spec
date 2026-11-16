@@ -39,13 +39,11 @@ if platform.uname().system == "Windows":
     hiddenimports += ['libusb_package']
 
 # The SVD files are not read by the server -- monitor.py takes its register
-# descriptions from device_info['svd'], baked into the device modules -- but
-# the IDE's peripheral register view reads them from inside the package:
-# debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd in
-# the cores' platform.txt. So they ship on every platform. Linux used to be
-# excluded, presumably because staticx had to pack everything into a single
-# file, which left Linux users without that view.
-datalist = [('./svd','svd')]
+# descriptions from device_info['svd'], baked into the device modules. Only the
+# IDE's peripheral register view reads them, so they are not bundled here:
+# packer.sh puts the repository's svd/ into the tools package beside bin/, where
+# the cores' platform.txt finds them as {runtime.tools.avr-debugger.path}/svd/.
+datalist : list = []
 
 # actions/python-versions builds its CPython unstripped, and PyInstaller bundles
 # libpython as it finds it: the x86_64 and aarch64 artifacts came to 41 MB against

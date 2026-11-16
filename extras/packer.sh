@@ -2,7 +2,7 @@
 #This is a script for packing the AVR debug tools: avr-gdb + pyavrocd + pyavrocd-util + simavr.
 #The archives will be uploaded as assets in each release and can be downloaded from there
 #as https://github.com/felias-fogg/PyAvrOCD/releases/download/<version>/avr-debugger-<version>-<machine-type>.tar.gz.
-#Inside, all executables are in bin/ and the simavr libraries in lib/.
+#Inside, all executables are in bin/, the simavr libraries in lib/, and the SVD files in svd/.
 #Additionally, the pyavrocd binaries will be uploaded stand-alone
 #
 #usage: call the script from the root folder; version will be deduced from pyavrocd -V
@@ -108,6 +108,13 @@ for dir in binaries/*; do
 		# through an RPATH of $ORIGIN/../lib.
 		mkdir -p tools/bin
 		mv tools/pyavrocd* tools/avr-gdb* tools/bin/
+		# The SVDs are for the IDE's register view only (the server takes its
+		# register descriptions from the device modules), so they sit at the top,
+		# beside bin/: {runtime.tools.avr-debugger.path}/svd/<mcu>.svd. They come
+		# from the repository; a build made before the spec stopped bundling them
+		# still has a copy in pyavrocd-util, which goes.
+		rm -rf tools/bin/pyavrocd-util/svd
+		cp -r ../svd tools/svd
 		# The simavr archives come from 'make install-simavr', so they also
 		# carry its development files: the headers, the static library, the
 		# pkg-config files and the bare .so symlink that only a linker uses.
@@ -127,7 +134,8 @@ for dir in binaries/*; do
                 echo {\"name\": \"tool-pyavrocd\", \"version\": \"${VERNUM}\", \"description\": \"GDB server for AVR microcontrollers\", \"keywords\": [\"GDB server\", \"debugging\", \"compiler\", \"microchip\", \"avr\"], \"homepage\": \"https://pyavrocd.io\", \"url\": \"https://github.com/felias-fogg/pyavrocd\", \"license\": \"MIT\", ${BASEFRAG}\"system\": \"${SYSTEM}\"} > tool/package.json
                 # The stand-alone server does not need the SVD files: those are for
                 # the IDE's register view, which gets them from the tools package
-                # above. Everything else in pyavrocd-util stays -- it holds
+                # above. The spec no longer bundles them; the rm is for a build
+                # made before that. Everything else in pyavrocd-util stays -- it holds
                 # libpython and the extension modules. Linux used to have the whole
                 # folder removed here, which was right while staticx made a single
                 # file out of the build, but since 1.6.0 (staticx gone, onedir on

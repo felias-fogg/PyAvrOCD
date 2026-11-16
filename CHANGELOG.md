@@ -1,13 +1,17 @@
 # Changelog
 
-## 2.0.0 (14-Nov-2026)
+## 2.0.0
 
 - **Changed**:
   - This release introduces a breaking change. The dw-link debugger is now expected to speak a variant of the JTAGICE mkII (AVR067) protocol, instead of GDB RSP. This means working with dw-link is now more consistent because the entire debugging logic is handled by PyAvrOCD.
   - Probe discovery has been adapted.
+  - Unknown options are now tolerated and marked as an error in the log.
+  - The **SVD** folder has been moved from pyavrocd-utils to the root folder of the tools package.
 - **Added:**
   - PyAvrOCD can now speak with the AVR Dragon, AVR JTAGICE mkII, and AVR JTAG ICE (the very first one)
-  - New options: `--power-cycle-command` for specifying a command to power cycle externally (mainly for running the e2e tests) and `--min-version` which checks that PyAvrOCD has at least this version (mainly for use in IDEs)
+  - New option: `--power-cycle-command` for specifying a command to power cycle externally (mainly for running the e2e tests) and
+  - New option:`--min-version` which checks that PyAvrOCD has at least this version (mainly for use in IDEs)
+  - New option: `--arduino-ide` that splices in all options necessary for the Arduino IDE 2 (including those to be added in the future).
 - **Fixed:**
   - When single-stepping on UPDI targets after setting the PC explicitly to a location with a software breakpoint works now.
   - Terminating signals (SIGTERM and SIGINT) will not any longer interrupt transactions of the probe.

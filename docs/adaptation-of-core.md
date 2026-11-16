@@ -24,14 +24,14 @@ Extending a package to enable it for debugging (using PyAvrOCD) is almost always
      bootloader.tool.default=avrdude
      ```
 
-5. In the end, add the following section
+5. In the end, add the following section. The debug tools come from the *AvrDebugger* package (tool `avr-debugger`), which the user installs once for all cores. If it is missing, the last line makes the IDE report a path containing `INSTALL-the-AvrDebugger-package`, which tells the user what to do.
 
      ```
      # Debugger configuration (general options)
      # ----------------------------------------
      debug.executable={build.path}/{build.project_name}.elf
      debug.toolchain=gcc
-     debug.toolchain.path={runtime.tools.avrocd-tools.path}
+     debug.toolchain.path={runtime.tools.avr-debugger.path}/bin
      debug.server=openocd
      debug.server.openocd.path={debug.toolchain.path}/pyavrocd
      #next doesn't matter, but should be specified so that cortex-debug is happy
@@ -39,34 +39,42 @@ Extending a package to enable it for debugging (using PyAvrOCD) is almost always
      debug.cortex-debug.custom.gdbPath={debug.toolchain.path}/avr-gdb
      debug.cortex-debug.custom.overrideGDBServerStartedRegex=Listening on port \d+ for gdb connection
      debug.cortex-debug.custom.objdumpPath={runtime.tools.avr-gcc.path}/bin/avr-objdump
-     debug.cortex-debug.custom.serverArgs.0=-s
-     # The nop should be the serverArgs.1 because the programmer simavr may change that!
-     debug.cortex-debug.custom.serverArgs.1=nop
-     debug.cortex-debug.custom.serverArgs.2=-d
-     debug.cortex-debug.custom.serverArgs.3={build.mcu}
-     debug.cortex-debug.custom.serverArgs.4=--manage
-     debug.cortex-debug.custom.serverArgs.5=all
-     debug.cortex-debug.custom.serverArgs.6=--F_CPU
-     debug.cortex-debug.custom.serverArgs.7={build.f_cpu}
-     # The next two lines are for boards with auto-power-cycle capabilities
-     #debug.cortex-debug.custom.serverArgs.8=--atexit
-     #debug.cortex-debug.custom.serverArgs.9=leavedebugwire
+     # Two-digit keys without gaps: the simavr programmer replaces serverArgs.01
+     debug.cortex-debug.custom.serverArgs.00=-s
+     debug.cortex-debug.custom.serverArgs.01=nop
+     debug.cortex-debug.custom.serverArgs.02=--device
+     debug.cortex-debug.custom.serverArgs.03={build.mcu}
+     debug.cortex-debug.custom.serverArgs.04=--manage
+     debug.cortex-debug.custom.serverArgs.05=all
+     debug.cortex-debug.custom.serverArgs.06=--F_CPU
+     debug.cortex-debug.custom.serverArgs.07={build.f_cpu}
      # For JTAG MCUs the next one is a good thing
-     debug.cortex-debug.custom.serverArgs.8=--prog-clock
-     debug.cortex-debug.custom.serverArgs.9=2000
+     debug.cortex-debug.custom.serverArgs.08=--prog-clock
+     debug.cortex-debug.custom.serverArgs.09=2000
+     debug.cortex-debug.custom.serverArgs.10=--elf-file
+     debug.cortex-debug.custom.serverArgs.11={debug.executable}
+     # Stands for the options an IDE needs, currently --once
+     debug.cortex-debug.custom.serverArgs.12=--arduino-ide
      # The next line is only necessary for debugWIRE targets (but will not hurt)
      debug.cortex-debug.custom.preLaunchCommands.0=monitor debugwire enable
      debug.cortex-debug.custom.runToEntryPoint=main
-     debug.svd_file={debug.toolchain.path}/pyavrocd-util/svd/{build.mcu}.svd
+     debug.svd_file={runtime.tools.avr-debugger.path}/svd/{build.mcu}.svd
+     # Used only when AvrDebugger is not installed
+     runtime.tools.avr-debugger.path={runtime.platform.path}/INSTALL-the-AvrDebugger-package
      ```
 
-6. If JTAG boards are debugged and there are no individual clock settings in `board.txt`, then you may want to add (depending on the lowest possible CPU clock):
+6. Further arguments continue the numbering with `serverArgs.13`. For boards with auto-power-cycle capabilities:
 
      ```
-     debug.cortex-debug.custom.serverArgs.8=-D
-     debug.cortex-debug.custom.serverArgs.9=200
-     debug.cortex-debug.custom.serverArgs.10=-P
-     debug.cortex-debug.custom.serverArgs.11=3000
+     debug.cortex-debug.custom.serverArgs.13=--atexit
+     debug.cortex-debug.custom.serverArgs.14=leavedebugwire
+     ```
+
+     If JTAG boards are debugged and there are no individual clock settings in `boards.txt`, then you may want to set the clocks depending on the lowest possible CPU clock, e.g., `serverArgs.09=3000` and in addition:
+
+     ```
+     debug.cortex-debug.custom.serverArgs.13=--debug-clock
+     debug.cortex-debug.custom.serverArgs.14=200
      ```
 
 ## `boards.txt`
@@ -90,7 +98,7 @@ be added:
 #### A 'virtual' programmer signalling that simavr should be used
 
 simavr.name=Simulator (simavr)
-simavr.debug.cortex-debug.custom.serverArgs.1={debug.toolchain.path}/bin/simavr
+simavr.debug.cortex-debug.custom.serverArgs.01={debug.toolchain.path}/simavr
 simavr.protocol=This_is_not_a_programmer_but_only_a_signal_to_use_the_simulator_when_debugging
 simavr.upload.protocol=This_is_not_a_programmer_but_only_a_flag_to_use_the_simulator_when_debugging
 simavr.program.protocol=This_is_not_a_programmer_but_only_a_flag_to_use_the_simulator_when_debugging

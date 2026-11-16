@@ -6,11 +6,14 @@
 - **The Python package needs Python 3.11 or later**; Python 3.10 reached its end of life in October 2026. The binaries are not affected.
 - **New debug probes**: the *AVR JTAGICE mkII* (including clones) and the *AVR Dragon*, for debugWIRE and JTAG targets. Under Windows, they need a WinUSB driver, which can be installed with [Zadig](https://zadig.akeo.ie); the libusb library is now included. On Linux, the [udev rules file](https://pyavrocd.io/99-edbg-debuggers.rules) now covers them as well.
 - **And, for historical interest, the very first one**: the *AVR JTAG ICE* (JTAGICE mkI) and its clones on a serial port, for the JTAG MCUs it was made for, with hardware breakpoints only. Microchip Studio 7 no longer supports it.
+- The **SVD** folder has been moved from pyavrocd-utils to the root folder of the tools package.
 - The discovery of debug probes has been reworked: PyAvrOCD uses any compatible probe as long as it is the only one, and `-t` and `-u` select one otherwise. `-u` now also accepts the end of the USB serial number of a device behind a serial port, e.g., a genuine Arduino Uno running dw-link, which, unlike the port name, does not change when the board is plugged into another USB socket.
 - `-D` and `-P` set the JTAG clock of the JTAGICE mkII and the AVR Dragon as well.
 - `--reboot-debugger` now works for all debug probes.
 - New option `--power-cycle-command`, which runs a command to power-cycle the target when debugWIRE needs it and the probe cannot do it itself. This is mainly for running e2e tests.
 - New option `--min-version`, which asserts that PyAvrOCD has at least this version. This option is intended to be used in IDEs.
+- New option `--arduino-ide`, which consists of all options common to the Arduino IDE invocation, not containing any invocation-dependent arguments.
+- Unknown options will not lead to a critical error with subsequent termination, but are now simply marked as an error in the log.
 - A SIGTERM or SIGINT, e.g., from an IDE stopping the debug session, no longer interrupts a probe transaction halfway.
 - On UPDI targets, single-stepping after the PC has been set onto a software breakpoint (`jump`, `set $pc`, or an IDE's "set next statement") now executes the instruction there (after the breakpoint has been removed from flash).
 
