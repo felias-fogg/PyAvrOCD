@@ -195,18 +195,17 @@
 <li><strong>AVR16EB32 Curiosity Nano</strong>: <a href="../supporting-packages/#dxcore">DxCore (Debug enabled)</a>; onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, <code>RESET</code>); programmer should be <code>Curiosity Nano</code>; serial I/O through the debug interface is routed via <code>Serial</code>, however, you need to swap the I/O pins using <code>Serial.swap(4)</code>.</li>
 </ul>
 <h2 id="arduino-boards">Arduino boards</h2>
-<p>All the Arduino boards with AVR chips are also supported by the debug-enabled forks of the <a href="../supporting-packages/#debug-enabled-forks-of-official-arduino-packages"><em>Arduino (mega)AVR Boards</em></a> packages.</p>
 <ul>
 <li>Arduino Yún</li>
-<li><strong>Arduino UNO R3</strong>:   <a href="../supporting-packages/#minicore">MiniCore</a>; <a href="../board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
+<li><strong>Arduino UNO R3</strong>:   <a href="../supporting-packages/#minicore">MiniCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; <a href="../board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a></li>
 <li>Arduino UNO Mini:  <a href="../supporting-packages/#minicore">MiniCore</a>; remove capacitor <code>C3</code></li>
 <li>Arduino Duemilanove:  <a href="../supporting-packages/#minicore">MiniCore</a>; <code>RESET EN</code> needs to be cut</li>
 <li>Arduino Diecimila:  <a href="../supporting-packages/#minicore">MiniCore</a>; <a href="https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/">remove 100nF capacitor</a></li>
-<li><strong>Arduino Nano:</strong>  <a href="../supporting-packages/#minicore">MiniCore</a>; <a href="../board-preparation/#arduino-nano-and-clones">100 nF cap and 1kΩ resistor needs to be removed</a></li>
-<li><strong>Arduino Mega</strong>: <a href="../supporting-packages/#megacore">MegaCore</a>; JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
-<li><strong>Arduino Mega 2560:</strong> <a href="https://github.com/MCUdude/MegaCore">MegaCore</a>; JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
+<li><strong>Arduino Nano:</strong>  <a href="../supporting-packages/#minicore">MiniCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; <a href="../board-preparation/#arduino-nano-and-clones">100 nF cap and 1kΩ resistor needs to be removed</a></li>
+<li><strong>Arduino Mega</strong>: <a href="../supporting-packages/#megacore">MegaCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
+<li><strong>Arduino Mega 2560:</strong> <a href="https://github.com/MCUdude/MegaCore">MegaCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; JTAG pins are A4-A7, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a>, <code>RESET EN</code> does not need to be opened</li>
 <li>Arduino Mega ADK: <a href="../supporting-packages/#megacore">MegaCore</a></li>
-<li><strong>Arduino Leonardo</strong>: JTAG pins are A0-A3, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a></li>
+<li><strong>Arduino Leonardo</strong>:  <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; JTAG pins are A0-A3, use <a href="https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag">this board adapter</a></li>
 <li>Arduino Leonardo ETH</li>
 <li><u>Arduino Micro</u></li>
 <li><s>Arduino Esplora</s>: JTAG pins are not accessible</li>
@@ -217,7 +216,7 @@
 <li><s>LilyPad Arduino USB</s>: JTAG pins are not accessible</li>
 <li><u>LilyPad Arduino</u>:  <a href="../supporting-packages/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
 <li><u>Arduino Pro</u>:  <a href="../supporting-packages/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
-<li><u>Arduino Pro Mini</u>:  <a href="../supporting-packages/#minicore">MiniCore</a>; do not connect the DTR pin of the FTDI header</li>
+<li><u>Arduino Pro Mini</u>:  <a href="../supporting-packages/#minicore">MiniCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; do not connect the DTR pin of the FTDI header</li>
 <li>Arduino NG (ATmega168):  <a href="../supporting-packages/#minicore">MiniCore</a>; no modifications necessary</li>
 <li><s>Arduino NG (ATmega8)</s>: no debugging interface</li>
 <li>Arduino Robot Control</li>
@@ -228,18 +227,18 @@
 <li>Arduino Industrial 101</li>
 <li>Arduino Linino One</li>
 <li>Arduino UNO WiFi (Rev 1):  <a href="../supporting-packages/#minicore">MiniCore</a>; cut <code>RESET EN</code> solder bridge</li>
-<li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-packages/#megacorex">MegaCoreX</a>; board has an onboard debugger; the recommended pinout is <code>Uno Wifi</code>; serial I/O is via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 25 (PD6); there is no bootloader support because you can load via the onboard debugger/programmer <code>microUPDI/Uno WiFi</code></li>
-<li><strong>Arduino Nano Every:</strong> <a href="../supporting-packages/#megacorex">MegaCoreX</a>; <a href="../board-preparation/#preparing-a-updi-target">UPDI pad on the backside</a>; the only pinout is <code>Nano Every</code>; serial I/O is routed via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 13 (PE2); there is no bootloader support because you can load via the onboard programmer <code>JTAG2UPDI</code></li>
+<li><strong>Arduino Uno WiFi (Rev 2)</strong>: <a href="../supporting-packages/#megacorex">MegaCoreX</a>, <a href="supporting-packages#arduino-megaavr-boards">Arduino megaAVR Boards (Debug enabled)</a>; board has an onboard debugger; the recommended pinout is <code>Uno Wifi</code>; serial I/O is via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 25 (PD6); there is no bootloader support because you can load via the onboard debugger/programmer <code>microUPDI/Uno WiFi</code></li>
+<li><strong>Arduino Nano Every:</strong> <a href="../supporting-packages/#megacorex">MegaCoreX</a>, <a href="supporting-packages#arduino-megaavr-boards">Arduino megaAVR Boards (Debug enabled)</a>; <a href="../board-preparation/#preparing-a-updi-target">UPDI pad on the backside</a>; the only pinout is <code>Nano Every</code>; serial I/O is routed via <code>Serial</code>; <code>LED_BUILTIN</code> is digital pin 13 (PE2); there is no bootloader support because you can load via the onboard programmer <code>JTAG2UPDI</code></li>
 </ul>
 <h2 id="sparkfun-boards">Sparkfun boards</h2>
 <ul>
-<li>RedBoard (ATmega328P): <a href="../supporting-packages/#minicore">MiniCore</a>, remove <code>C8</code></li>
+<li>RedBoard (ATmega328P): <a href="../supporting-packages/#minicore">MiniCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a>; <a href="../board-preparation/#preparing-a-debugwire-target">the <code>RESET EN</code> solder bridge needs to be cut</a> remove <code>C8</code></li>
 <li><u>Pro Micro 3.3V (ATmega32U4)</u></li>
-<li><u>Pro Micro 5V (ATmega32U4)</u></li>
+<li><u>Pro Micro 5V (ATmega32U4)</u>: <a href="../supporting-packages/#avrdebugger">AvrDebug</a></li>
 <li>Fio v3</li>
-<li>Qduino Mini (ATmega32U4)</li>
-<li>Mega Pro 3.3V: <a href="../supporting-packages/#megacore">MegaCore</a></li>
-<li>Mega Pro 5V: <a href="../supporting-packages/#megacore">MegaCore</a></li>
+<li>Qduino Mini (ATmega32U4): <a href="../supporting-packages/#avrdebugger">AvrDebug</a></li>
+<li>Mega Pro 3.3V: <a href="../supporting-packages/#megacore">MegaCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a></li>
+<li>Mega Pro 5V: <a href="../supporting-packages/#megacore">MegaCore</a>, <a href="../supporting-packages/#avrdebugger">AvrDebug</a></li>
 <li>RedBot (ATmega328P): <a href="../supporting-packages/#minicore">MiniCore</a></li>
 <li><u>Serial-7-Segment-Display</u> (ATmega328P): <a href="../supporting-packages/#minicore">MiniCore</a></li>
 <li>ATmega128RFA1 Development Board</li>
@@ -264,9 +263,9 @@
 <li>Pro Trinket 5V/16MHz (FTDI): <a href="../supporting-packages/#minicore">MiniCore</a></li>
 <li>Pro Trinket 3V/12MHz (FTDI): <a href="../supporting-packages/#minicore">MiniCore</a></li>
 <li>ItsyBitsy 32u4 (3V)</li>
-<li><u>ItsyBitsy 32u4 (5V)</u></li>
+<li><u>ItsyBitsy 32u4 (5V)</u>: <a href="../supporting-packages/#avrdebugger">AvrDebug</a></li>
 <li>Bluefruit Micro</li>
-<li>ATmega32u4 Breakout Board</li>
+<li>ATmega32u4 Breakout Board: <a href="../supporting-packages/#avrdebugger">AvrDebug</a></li>
 <li><strong>SEESAW Breakout ATtiny817</strong>: <a href="../supporting-packages/#megatinycore">megaTinyCore (Debug enabled)</a></li>
 <li><strong>SEESAW Breakout ATtiny1616</strong>: <a href="../supporting-packages/#megatinycore">megaTinyCore (Debug enabled)</a></li>
 </ul>
