@@ -4,8 +4,13 @@ The test suit for extras/powercycle/supplyctl.py, the gateway to the laboratory 
 #pylint: disable=missing-function-docstring,missing-class-docstring,wrong-import-position,import-error
 import os
 import sys
-from unittest import TestCase
+from unittest import TestCase, SkipTest
 from unittest.mock import patch
+
+# The gateway runs on the Raspberry Pi and imports fcntl and syslog, which Windows
+# does not have. SkipTest at module level is honoured by unittest and pytest alike.
+if sys.platform == "win32":
+    raise SkipTest("supplyctl.py is Unix-only (fcntl, syslog)")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "extras", "powercycle"))
 import supplyctl   # type: ignore[import-not-found]
