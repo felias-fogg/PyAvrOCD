@@ -158,6 +158,20 @@ wait "$PID"; SRVST=$?
 set -e
 PID=
 [ "$SRVST" = 0 ] || fail "the server exited with status $SRVST"
+# One exception, a race inside gdb: the k packet makes simavr end and the server
+# close the connection, and when gdb notices that before it has finished the
+# kill, it has already dropped the remote target and stops with this internal
+# error and status 3. Seen once on the Windows runner (v2.0.0 release, while
+# the same binaries had passed in rc2). The server's status 0 above shows that
+# k arrived and everything ended as it should, so only this one message is let
+# through; any other failure of gdb still fails the test.
+if [ "$GDBST" = 3 ] \
+   && grep -q 'internal-error: could not find a target to follow mourn inferior' \
+           "$WORK/gdb.log"; then
+    echo "note: gdb lost the race between its kill and the closed connection" \
+         "(internal error, status 3); the server ended cleanly, so this passes"
+    GDBST=0
+fi
 [ "$GDBST" = 0 ] || fail "avr-gdb exited with status $GDBST"
 
 echo "OK: avr-gdb, PyAvrOCD and simavr debugged the firmware together"
