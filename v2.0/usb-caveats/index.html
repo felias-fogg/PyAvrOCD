@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://pyavrocd.io/v2.0/usb-caveats/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Debugging sketches that use the MCU's own USB - PyAvrOCD</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../style.css" rel="stylesheet" />
+        <link href="../css/version-select.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Debugging sketches that use the MCU\u0027s own USB";
+        var mkdocs_page_input_path = "usb-caveats.md";
+        var mkdocs_page_url = "/v2.0/usb-caveats/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> PyAvrOCD
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Coverage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-mcus/">MCUs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-boards/">Boards</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-debuggers/">Debug probes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-simulator/">Simulator</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-platforms/">Platforms</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supported-ides/">IDEs</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../supporting-packages/">Arduino packages</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Quickstart Guides</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_arduino/">Arduino IDE 2</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quick_pio/">PlatformIO</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../install/">PyAvrOCD</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging-software/">Debugging software</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../board-preparation/">Preparing the target board</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../fuse-preparation/">Setting the right fuses</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../connect-to-target/">Connecting to the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../compilation-options/">Compiling the program</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../command-line-options/">Invoking the server</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../debugging/">Debugging on the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../persistent/">Persistent debugging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../monitor-commands/">Monitor commands</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../restore-original-state/">Restoring the target</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../troubleshooting/">Troubleshooting</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Caveats</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../disclaimer/">Disclaimer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">About</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../license-link/">License</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../release-notes/">Release notes</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../credits-link/">Credits</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_of_conduct-link/">Code of conduct</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../privacy/">Privacy policy</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../contact/">Contact</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="https://github.com/felias-fogg/PyAvrOCD">GitHub repo</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">PyAvrOCD</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Debugging sketches that use the MCU's own USB</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/felias-fogg/PyAvrOCD/blob/main/docs/usb-caveats.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="debugging-sketches-that-use-the-mcus-own-usb">Debugging sketches that use the MCU's own USB</h1>
+<p>Boards like the Arduino Leonardo or the Micro have no separate USB chip: the ATmega32U4 itself is the USB device, and the sketch -- with the help of the Arduino core -- provides the USB function, be it a serial port (CDC), a keyboard or mouse (HID), or something like a debug probe. Such sketches can be debugged, and stops in <code>loop()</code> are usually harmless. There are a few places, however, where one has to be careful.</p>
+<p>What follows is derived from the USB specification and the ATmega32U4 datasheet. The basic behaviour -- stops in <code>loop()</code> work, a breakpoint at the beginning of <code>setup()</code> lets the USB enumeration fail -- has been observed on a Leonardo; the rest has not been tested systematically.</p>
+<h2 id="why-a-stopped-mcu-usually-does-no-harm">Why a stopped MCU usually does no harm</h2>
+<p>The USB controller of the ATmega32U4 does much of its work in hardware, independently of the CPU. When the host sends data to an endpoint whose buffer the firmware has not emptied, or asks for data the firmware has not provided yet, the controller answers with <em>NAK</em> ("not ready yet"). For the <em>bulk</em> and <em>interrupt</em> endpoints, which carry the data of CDC and HID, this is a perfectly normal state: the host keeps asking for as long as it takes and does not drop the device. Start-of-frame packets and the electrical presence on the bus are handled by the hardware as well.</p>
+<p>What the firmware has to answer itself are <em>control transfers</em> on endpoint 0. The hardware only acknowledges the receipt of the request; the answer has to come from the code, and the host waits only a few seconds (about 5 s on common operating systems). This is where all of the problems below come from.</p>
+<h2 id="caveats-for-all-usb-sketches">Caveats for all USB sketches</h2>
+<ul>
+<li><strong>No breakpoints during enumeration.</strong> The Arduino core attaches the device to the bus in <code>main()</code>, before <code>setup()</code> is called, and from then on the host enumerates it with a series of control transfers (descriptors, address, configuration). A breakpoint at the beginning of <code>setup()</code> stops the CPU in exactly this phase, the requests time out, and the host reports the device as failed. If a breakpoint early in <code>setup()</code> is needed, delay the program for a second or two first, or accept that USB will not be available in this debug session.</li>
+<li><strong>The bootloader is erased.</strong> When debugging over JTAG, PyAvrOCD erases the chip before loading (the default <em>erase before load</em>) and, with <code>-m bootrst</code>, unprograms BOOTRST. This removes the USB bootloader (Caterina on the Leonardo). Uploading over USB is then no longer possible until the bootloader has been burned again.</li>
+<li><strong>A0 to A3 are the JTAG pins.</strong> On the ATmega32U4, PF4 to PF7 serve as TCK, TMS, TDO and TDI. While debugging over JTAG, they cannot be used as analog inputs or digital I/O.</li>
+<li><strong>No 1200 bps reset while stopped.</strong> The "touch at 1200 bps", which makes the board enter its bootloader, is handled by the firmware. This does not matter while debugging, since the program is loaded over JTAG anyway.</li>
+</ul>
+<h2 id="caveats-for-the-serial-port-cdc">Caveats for the serial port (CDC)</h2>
+<ul>
+<li><strong>Sending data while stopped is safe.</strong> Characters sent from the serial monitor over an already open connection are bulk transfers. The MCU's USB hardware answers NAK, the host's driver keeps the data and tries again, and once the program runs again, the characters arrive. Only a program on the host that gives up writing after a timeout of its own may report an error during a long stop.</li>
+<li><strong>Opening, closing and reconfiguring the port fails while stopped.</strong> Opening or closing the serial monitor and changing the baud rate are control transfers (SET_LINE_CODING, SET_CONTROL_LINE_STATE), which the sketch has to answer. While the MCU is stopped, they time out: the port cannot be opened, or the operating system reports an error. So open the serial monitor before stopping, and leave it alone while the program is stopped.</li>
+</ul>
+<h2 id="caveats-for-keyboards-mice-and-other-hid-devices">Caveats for keyboards, mice and other HID devices</h2>
+<ul>
+<li><strong>Stuck keys and buttons.</strong> This is the one that can do real damage. If the sketch has sent a "key down" report and the CPU stops before the "key up" report, the host considers the key to be held down -- and its auto-repeat types the key over and over into whatever window has the focus, quite possibly the editor of the IDE. The same holds for a pressed mouse button, which the host takes for a drag. So do not stop the program between <code>Keyboard.press()</code> and <code>Keyboard.release()</code> (or between <code>Mouse.press()</code> and <code>Mouse.release()</code>), and do not set breakpoints there. <code>Keyboard.write()</code> sends both reports in direct succession and is less exposed.</li>
+<li><strong>Keyboard LEDs.</strong> The operating system sets the Caps, Num and Scroll Lock LEDs on all keyboards, often by a control transfer (SET_REPORT). Pressing Caps Lock on the real keyboard while the Leonardo is stopped makes this request time out; depending on the operating system, this ends in an error message or, in the worst case, in the host resetting the device.</li>
+<li><strong>HID reports themselves are harmless.</strong> HID data travels over interrupt endpoints, which the host polls; a stopped MCU just answers that there is no new report, and the device stays present.</li>
+<li><strong>A host program waiting for an answer.</strong> If the sketch implements a device that a program on the host talks to -- for example, a debug probe firmware such as mEDBG, which speaks CMSIS-DAP over HID -- that program sends a command and waits for the answer, which does not come while the MCU is stopped. Whether that is harmless depends on the host program: avrdude gives up after its timeout, whereas a program that reads without a timeout simply waits until the MCU runs again.</li>
+</ul>
+<p>A sketch that combines CDC and HID -- the Arduino core does that by default when the Keyboard or Mouse library is used -- is subject to all of the above.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/felias-fogg/PyAvrOCD" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+      <script src="../js/version-select.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

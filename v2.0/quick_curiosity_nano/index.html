@@ -154,10 +154,13 @@
 </p>
 
 <h3 id="step-1-install-a-debug-enabled-arduino-package">Step 1: Install a debug-enabled Arduino package</h3>
-<p>Add new <em>boards manager URL</em>s in the <code>Preferences</code> dialog:<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></p>
+<p>Add one of the following URLs, depending on <a href="../supported-boards/">what board you want to deal with</a>, to the list of <em>boards manager URL</em>s in the <code>Preferences</code> dialog:</p>
 <pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
+</code></pre>
+<p>In addition, you need the <code>AvrDebugger</code> board package as well.<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> So add the following URL as well:</p>
+<pre><code>https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 </code></pre>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -212,7 +215,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <hr />
 <ol>
 <li id="fn:*">
-<p>You actually will need to add only one of these URLs which depends on the <a href="../supported-mcus/">MCU on the board</a>.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Strictly speaking, you need to install it only for future board packages. But then it does not hurt to do that right now, already.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>

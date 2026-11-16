@@ -166,7 +166,7 @@
 <p>Under Windows, it may be necessary to install the WinUSB driver using <a href="https://zadig.akeo.ie">Zadig</a> when you want to employ a debug probe that uses the USB bulk transport mechanism (see section on <a href="../supported-debuggers/">supported debug probes</a>).</p>
 </div>
 <h2 id="arduino-ide-2-arduino-maker-workshop-and-platformio">Arduino IDE 2, Arduino Maker Workshop, and PlatformIO</h2>
-<p>If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to <a href="../supporting-packages/">install a debug-enabled Arduino package</a> in the IDE or set <a href="../debugging-software/#platformio-and-visual-studio-code">the right platform</a> in your <code>platform.ini</code> configuration file. These will make sure that PyAvrOCD will be installed in the background.</p>
+<p>If you want to use PyAvrOCD as part of one of the mentioned IDEs, it is sufficient to <a href="../supporting-packages/">install debug-enabled Arduino packages</a> in the IDE or set <a href="../debugging-software/#platformio-and-visual-studio-code">the right platform</a> in your <code>platform.ini</code> configuration file. These will make sure that PyAvrOCD will be installed in the background.</p>
 <h2 id="downloading-binaries">Downloading binaries</h2>
 <p>In order to use PyAvrOCD stand-alone or as part of another IDE, you need to install the PyAvrOCD package explicitly. This can be done, e.g., by downloading the binaries.</p>
 <p>Go to the <a href="https://github.com/felias-fogg/PyAvrOCD">PyAvrOCD GitHub repo</a>, and download  the archive containing the binary for your architecture from the set of assets of the latest <code>Releases</code>.  This archive includes the folder <code>tools</code>.</p>
@@ -187,7 +187,7 @@ This will open the latest release page with all its assets.
 Select the archive matching your architecture and download it.
 Then extract the files (for Windows, I assume, you use the <code>Windows PowerShell</code>):
 <pre>
-<code class="language-bash hljs">tar xvzf avrocd-tools-X.Y.Z-architecture.tar.gz</code>
+<code class="language-bash hljs">tar xvzf avr-debugger-X.Y.Z-architecture.tar.gz</code>
 </pre>
 </p>
 </details>
@@ -205,8 +205,6 @@ Once you have downloaded the archive and uncompressed it, you need to move the f
 <code class="language-bash hljs">mkdir ~/.local
 mkdir ~/.local/bin
 rm -rf ~/.local/bin/pyavrocd-util
-mv pyavrocd* ~/.local/bin/
-mv avr-gdb*  ~/.local/bin/
 mv bin/* ~/.local/bin/
 mv lib ~/.local/</code>
 </pre>
@@ -222,7 +220,7 @@ Now, you only need to add <code>~/.local/bin/</code> to your <code>PATH</code>
 <p>On a Mac, files downloaded through a browser or from an email are marked as potentially dangerous, and the system may not allow them to be executed. In this case, use the command <code>xattr -r -d com.apple.quarantine FOLDER</code> in a terminal window to remove the extended attribute <code>com.apple.quarantine</code> from all the binary executables in FOLDER. After that, you can start the executables without a hitch.</p>
 </div>
 <h2 id="pypi">PyPI</h2>
-<p>If you are a Pythonist, you may want to install the Python package instead of the much larger binary. I assume you already installed a recent Python version (&gt;=3.10). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a>, with the help of <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a> or <a href="https://pipx.pypa.io/">pipx</a>, will bring PyAvrOCD to your computer.</p>
+<p>If you are a Pythonist, you may want to install the Python package instead of the much larger binary. I assume you already installed a recent Python version (&gt;=3.11). Then <a href="https://pypi.org/project/pyavrocd/">PyPI</a>, with the help of <a href="https://packaging.python.org/en/latest/tutorials/installing-packages/">pip</a> or <a href="https://pipx.pypa.io/">pipx</a>, will bring PyAvrOCD to your computer.</p>
 <details>
 <summary><b>How to install PyAvrOCD with pip or pipx</b></summary>
 <p></p>

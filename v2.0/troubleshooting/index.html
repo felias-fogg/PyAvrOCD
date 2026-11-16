@@ -104,6 +104,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#no-compatible-tool-discovered">No compatible tool discovered</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#no-dw-link-version-7-or-later-answers-on">No dw-link (version 7 or later) answers on ...</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#errno-48-address-already-in-use">[Errno 48] Address already in use</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#isp-programming-failed-wrong-connection-or-wrong-mcu">ISP programming failed. Wrong connection or wrong MCU?</a>
@@ -145,6 +147,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-flash-a-new-program-using-a-programmer">After debugging, it is impossible to flash a new program using a programmer</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-avr-dragon-no-longer-responds-or-debugging-fails-after-the-target-was-power-cycled">The AVR Dragon no longer responds, or debugging fails, after the target was power-cycled</a>
     </li>
         </ul>
     </li>
@@ -225,6 +229,8 @@
 <p>This could be the same problem as above. If you tried to start the simulator, then it might be an indication that simavr is not compatible with your platform. You could try to build simavr from source.</p>
 <h3 id="no-compatible-tool-discovered"><code>No compatible tool discovered</code></h3>
 <p>This could mean that no debug tool is connected, that you specified an incompatible debug probe using the <code>--tool</code> option, that the serial line the tool is attached to is busy, or that <a href="../install/">you have not yet installed the necessary udev rules under Linux</a>.</p>
+<h3 id="no-dw-link-version-7-or-later-answers-on"><code>No dw-link (version 7 or later) answers on ...</code></h3>
+<p>The serial port named in the message does not belong to a dw-link with version 7 or later. Most likely, the Arduino still runs dw-link 6 or older, which PyAvrOCD 2.0 and later cannot talk to. To update, install the library <code>dw-link</code> with the Arduino Library Manager and upload its example sketch <code>dw-link</code>, or flash <code>dw-link.hex</code> from the <a href="https://github.com/felias-fogg/dw-link/releases">dw-link releases page</a>. It could also be that the board runs a different sketch, or that the <code>--usbsn</code> option names the wrong serial port.</p>
 <h3 id="errno-48-address-already-in-use"><code>[Errno 48] Address already in use</code></h3>
 <p>This error can happen after the GDB server was terminated before the debugger. If you are working in a CLI environment, you can start PyAvrOCD with a different port using the <code>--port</code> option and tell GDB about the port when connecting with the <code>target remote</code> command. However, waiting a few minutes will also resolve the problem.</p>
 <h3 id="isp-programming-failed-wrong-connection-or-wrong-mcu"><code>ISP programming failed. Wrong connection or wrong MCU?</code></h3>
@@ -265,6 +271,8 @@
 <p>It is also possible that you locked yourself out by setting the wrong fuses (this applies to JTAG and UPDI targets as well).</p>
 <h3 id="after-debugging-it-is-impossible-to-upload-a-new-program-using-the-bootloader">After debugging, it is impossible to upload a new program using the bootloader.</h3>
 <p>Usually, the bootloader is erased before debugging starts. As stated in <a href="../restore-original-state/">the section on restoring your target board after debugging</a>, you may have to reflash the bootloader and set some fuses after debugging.</p>
+<h3 id="the-avr-dragon-no-longer-responds-or-debugging-fails-after-the-target-was-power-cycled">The AVR Dragon no longer responds, or debugging fails, after the target was power-cycled</h3>
+<p>Unplug it and plug it in again. To avoid it, end PyAvrOCD before you power-cycle the target, as Microchip Studio also asks.</p>
 <h2 id="signals-and-error-messages">Signals and error messages</h2>
 <p>Sometimes, GDB commands fail, often showing a signal that has been received, an error code, and/or an error message. The following is a list of those. </p>
 <table>

@@ -236,7 +236,7 @@
 </tr>
 <tr>
 <td><code>--tool</code><br><code>-t</code></td>
-<td>Specifying the debug tool. Possible values are <code>atmelice</code>, <code>dragon</code>, <code>edbg</code>, <code>jtagice2</code>, <code>jtagice3</code>, <code>medbg</code>, <code>nedbg</code>, <code>pickit4</code>, <code>powerdebugger</code>, <code>snap</code>, <code>dwlink</code>. Use of this option is necessary only if more than one debugging tool is connected to the computer. If a '?' mark is given, all possible values are listed.</td>
+<td>Specifying the debug tool. Possible values are <code>atmelice</code>, <code>dragon</code>, <code>edbg</code>, <code>jtagice1</code>, <code>jtagice2</code>, <code>jtagice3</code>, <code>medbg</code>, <code>nedbg</code>, <code>pickit4</code>, <code>powerdebugger</code>, <code>snap</code>, <code>dwlink</code>. Use of this option is necessary only if more than one debugging tool is connected to the computer. If a '?' mark is given, all possible values are listed.</td>
 </tr>
 <tr>
 <td><code>--usbsn</code> <br><code>-u</code></td>
@@ -278,8 +278,17 @@
 <td><code>--power-cycle-command</code></td>
 <td>Command that power-cycles the target, for instance by switching a laboratory supply off and on again. It is run through the shell whenever debugWIRE needs a power cycle and the debug probe cannot do it itself (only the mEDBG and dw-link on a dw-probe shield can). If it does not finish with exit status 0 within 60 seconds, you are asked to power-cycle as usual. An example for a Siglent SPD3303X on the network is <code>extras/powercycle/spd3303x.py</code> in the repository: <code>--power-cycle-command "python3 extras/powercycle/spd3303x.py supply 1"</code>.</td>
 </tr>
+<tr>
+<td><code>--arduino-ide</code></td>
+<td>Stands for the options that only make sense when the Arduino IDE 2 starts the GDB server, currently <code>--once</code>. They take effect as if they stood in place of <code>--arduino-ide</code>, so an option given after it overrides them.</td>
+</tr>
+<tr>
+<td><code>--min-version</code></td>
+<td>PyAvrOCD refuses to start if its version is lower than the one given, e.g., <code>--min-version 2.1</code>. Meant for IDE integrations that rely on a newer feature.</td>
+</tr>
 </tbody>
 </table>
+<p>Options PyAvrOCD does not know are not rejected: they are ignored, and an error message names them.</p>
 <h2 id="additional-command-line-options-derived-from-monitor-commands">Additional command-line options derived from monitor commands</h2>
 <p>You can also use the <a href="../monitor-commands/">monitor command options</a> as command-line options when invoking PyAvrOCD. For example, you may specify <code>--verify enable,</code> which has the same effect as issuing the command <code>monitor verify enable</code> in the debugger after a connection to the GDB server has been established. One-character abbreviations for such option values are possible, and with the usual abbreviation rules for options, one can shorten this to <code>--veri e</code>.</p>
 <h2 id="providing-command-line-options-in-configuration-files">Providing command-line options in configuration files</h2>
@@ -313,7 +322,7 @@ With the usual abbreviation rules, the fact that the equal sign can simply be su
 </details>
 <p></p>
 
-<p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>. This is, for instance, a way to communicate a <code>--tool</code> or -<code>-usbsn</code> option to PyAvroCD. </p>
+<p>Note that implicitly <code>@pyavrocd.options</code> is added to the end of the command line. This means that even if you cannot change the command line that invokes PyAvrOCD, because, e.g., PyAvrOCD is invoked by an IDE, you still can specify arguments that have precedence by using the configuration file <code>pyavrocd.options</code>. This is, for instance, a way to communicate a <code>--tool</code> or -<code>-usbsn</code> option to PyAvroCD.</p>
               
             </div>
           </div><footer>

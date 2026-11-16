@@ -104,7 +104,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-1-turning-an-uno-into-a-debug-probe">Step 1: Turning an UNO into a debug probe</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-2-install-the-debug-enabled-minicore">Step 2: Install the debug-enabled MiniCore</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-install-the-debug-enabled-board-package">Step 2: Install the debug-enabled board package</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-3-prepare-the-target-board-for-debugging">Step 3: Prepare the target board for debugging</a>
     </li>
@@ -128,7 +128,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-hardware_3">Required hardware</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-the-debug-enabled-tinycore-package">Step 1: Install the debug-enabled TinyCore package</a>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-install-debug-enabled-packages">Step 1: Install debug-enabled packages</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#step-2-connect-the-target-with-the-debug-probe">Step 2: Connect the target with the debug probe</a>
     </li>
@@ -254,10 +254,13 @@
 </p>
 
 <h3 id="step-1-install-a-debug-enabled-arduino-package">Step 1: Install a debug-enabled Arduino package</h3>
-<p>Add new <em>boards manager URL</em>s in the <code>Preferences</code> dialog:<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></p>
+<p>Add one of the following URLs, depending on <a href="../supported-boards/">what board you want to deal with</a>, to the list of <em>boards manager URL</em>s in the <code>Preferences</code> dialog:</p>
 <pre><code>https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
+</code></pre>
+<p>In addition, you need the <code>AvrDebugger</code> board package as well.<sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup> So add the following URL as well:</p>
+<pre><code>https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 </code></pre>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -318,8 +321,9 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </p>
 
 <h3 id="step-1-install-the-debug-enabled-xminicore">Step 1: Install the debug-enabled XMiniCore</h3>
-<p>Add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
+<p>Add new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
 <pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
+https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 </code></pre>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -346,7 +350,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Next you have to install the new package. Activate the <code>Boards Manager</code>, select <code>XMiniCore</code>, and click on <code>Install</code>.</p>
+<p>Next you have to install the new packages. Activate the <code>Boards Manager</code>, select <code>XMiniCore</code>, and click on <code>Install</code>. Then the same with <code>AvrDebugger</code>.</p>
 <details>
 <summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
@@ -400,9 +404,9 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/dw-link.png" width="50%">
 </p>
 
-<h3 id="step-2-install-the-debug-enabled-minicore">Step 2: Install the debug-enabled MiniCore</h3>
-<p>Since the stock Arduino AVR Boards package does not support debugging, we need to shop elsewhere. For this reason, you need to add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog so that <code>MiniCore</code> can be installed:</p>
-<pre><code>https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+<h3 id="step-2-install-the-debug-enabled-board-package">Step 2: Install the debug-enabled board package</h3>
+<p>Since the stock Arduino AVR Boards package does not support debugging, we need to shop elsewhere. For this reason, you need to add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog so that <code>AvrDebugger</code> can be installed:</p>
+<pre><code>https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 </code></pre>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -429,7 +433,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Next you have to install the <code>MiniCore</code>. Activate the <code>Boards Manager</code>, select <code>MiniCore</code>, and click on <code>Install</code>.</p>
+<p>Next you have to install the <code>AvrDebugger</code>. Activate the <code>Boards Manager</code>, select <code>AvrDebugger</code>, and click on <code>Install</code>.</p>
 <details>
 <summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
@@ -496,9 +500,10 @@ It may also be a good idea to consult the <a href="../limitations/">Limitations<
 </ul>
 </li>
 </ul>
-<h3 id="step-1-install-the-debug-enabled-tinycore-package">Step 1: Install the debug-enabled TinyCore package</h3>
-<p>Add a new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
-<pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
+<h3 id="step-1-install-debug-enabled-packages">Step 1: Install debug-enabled packages</h3>
+<p>Add new <em>boards manager URL</em> in the <code>Preferences</code> dialog:</p>
+<pre><code>https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
+https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
 </code></pre>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -525,7 +530,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Next, you have to install the new package. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>.</p>
+<p>Next, you have to install the new packages. Activate the <code>Boards Manager</code>, select <code>TinyCore</code>, and click on <code>Install</code>. Same with <code>AvrDebugger</code>.</p>
 <details>
 <summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
@@ -641,7 +646,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <hr />
 <ol>
 <li id="fn:*">
-<p>You actually will need to add only one of these URLs which depends on the <a href="../supported-mcus/">MCU on the board</a>.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+<p>Strictly speaking, you need to install it only for future board packages. But then it does not hurt to do that right now, already.&#160;<a class="footnote-backref" href="#fnref:*" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>

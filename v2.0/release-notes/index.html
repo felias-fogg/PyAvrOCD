@@ -108,6 +108,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v200">Release v2.0.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v170">Release v1.7.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v160">Release v1.6.0</a>
@@ -219,6 +221,23 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v200">Release v2.0.0</h2>
+<ul>
+<li><strong>dw-link users have to update to dw-link 7.</strong> PyAvrOCD now talks to dw-link using the JTAGICE mkII protocol instead of passing GDB's messages through, and dw-link 6 is no longer supported. dw-link is now an Arduino library: install <code>dw-link</code> with the Library Manager and upload the example sketch <code>dw-link</code> to the Uno, or flash <code>dw-link.hex</code> from the <a href="https://github.com/felias-fogg/dw-link/releases">releases page</a>.</li>
+<li><strong>The Python package needs Python 3.11 or later</strong>; Python 3.10 reached its end of life in October 2026. The binaries are not affected.</li>
+<li><strong>New debug probes</strong>: the <em>AVR JTAGICE mkII</em> (including clones) and the <em>AVR Dragon</em>, for debugWIRE and JTAG targets. Under Windows, they need a WinUSB driver, which can be installed with <a href="https://zadig.akeo.ie">Zadig</a>; the libusb library is now included. On Linux, the <a href="https://pyavrocd.io/99-edbg-debuggers.rules">udev rules file</a> now covers them as well.</li>
+<li><strong>And, for historical interest, the very first one</strong>: the <em>AVR JTAG ICE</em> (JTAGICE mkI) and its clones on a serial port, for the JTAG MCUs it was made for, with hardware breakpoints only. Microchip Studio 7 no longer supports it.</li>
+<li>The <strong>SVD</strong> folder has been moved from pyavrocd-utils to the root folder of the tools package.</li>
+<li>The discovery of debug probes has been reworked: PyAvrOCD uses any compatible probe as long as it is the only one, and <code>-t</code> and <code>-u</code> select one otherwise. <code>-u</code> now also accepts the end of the USB serial number of a device behind a serial port, e.g., a genuine Arduino Uno running dw-link, which, unlike the port name, does not change when the board is plugged into another USB socket.</li>
+<li><code>-D</code> and <code>-P</code> set the JTAG clock of the JTAGICE mkII and the AVR Dragon as well.</li>
+<li><code>--reboot-debugger</code> now works for all debug probes.</li>
+<li>New option <code>--power-cycle-command</code>, which runs a command to power-cycle the target when debugWIRE needs it and the probe cannot do it itself. This is mainly for running e2e tests.</li>
+<li>New option <code>--min-version</code>, which asserts that PyAvrOCD has at least this version. This option is intended to be used in IDEs.</li>
+<li>New option <code>--arduino-ide</code>, which consists of all options common to the Arduino IDE invocation, not containing any invocation-dependent arguments.</li>
+<li>Unknown options will not lead to a critical error with subsequent termination, but are now simply marked as an error in the log.</li>
+<li>A SIGTERM or SIGINT, e.g., from an IDE stopping the debug session, no longer interrupts a probe transaction halfway.</li>
+<li>On UPDI targets, single-stepping after the PC has been set onto a software breakpoint (<code>jump</code>, <code>set $pc</code>, or an IDE's "set next statement") now executes the instruction there (after the breakpoint has been removed from flash).</li>
+</ul>
 <h2 id="release-v170">Release v1.7.0</h2>
 <ul>
 <li>The binaries run on older systems again: Linux x86_64 and ARM64 need GLIBC 2.35 instead of 2.38, so Debian 12, Ubuntu 22.04 and Raspberry Pi OS bookworm are supported once more. On macOS, the ARM64 binaries need 11.0 (Big Sur) and the Intel binaries 10.15 (Catalina), where both needed 14 (Sonoma) before.</li>
