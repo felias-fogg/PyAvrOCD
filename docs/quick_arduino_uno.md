@@ -28,7 +28,7 @@ The completed board setup may then look as follows.
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/dw-link.png" width="50%">
 </p>
 
-### Step 2: Install the debug-enabled board package
+### Step 2: Install the debug-capable board package
 
 Since the stock Arduino AVR Boards package does not support debugging, we need to shop elsewhere. For this reason, you need to add a new *boards manager URL* in the `Preferences` dialog so that `AvrDebugger` can be installed:
 

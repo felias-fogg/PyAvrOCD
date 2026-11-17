@@ -13,9 +13,9 @@ The only thing you need is the XPlained Mini board and a USB cable to connect it
 
 
 
-### Step 1: Install the debug-enabled XMiniCore
+### Step 1: Install the debug-capable XMiniCore
 
-Add new *boards manager URL* in the `Preferences` dialog:
+Add new *boards manager URLs* in the `Preferences` dialog:
 
 ```
 https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json

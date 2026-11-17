@@ -75,7 +75,7 @@ The disadvantage is that [link-time optimization prunes away essential informati
 All these problems disappear when link-time optimization is disabled. Whether that is possible depends on the board package:
 
 - In **MiniCore**, **MightyCore**, **MegaCore**, **MajorCore**, and **XMiniCore**, link-time optimization can be disabled in the `Tools` menu.
-- In the debug-enabled **Arduino AVR Boards** package, it is disabled when the `Optimize for Debugging` option is activated (from 1.11.0-pre4 on).
+- In the debug-capable **Arduino AVR Boards** package, it is disabled when the `Optimize for Debugging` option is activated (from 1.11.0-pre4 on).
 - In **TinyCore**, **MegaCoreX**, **megaTinyCore**, and **DxCore**, it cannot be disabled at the moment.
 
 ## Link-time jump relaxation

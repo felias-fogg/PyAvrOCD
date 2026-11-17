@@ -4,7 +4,7 @@ In addition to PyAvrOCD, you need an IDE, a debug GUI, or the stand-alone GDB cl
 
 ## Arduino IDE 2
 
-After having installed [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/), you can extend the IDE's capabilities by adding third-party packages in the `Additional Board Manager URLs` field of the `Preferences` dialog. The set of available debug-enabled Arduino packages and how to install them is covered in the [section on Arduino packages](supporting-packages.md).
+After having installed [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/), you can extend the IDE's capabilities by adding third-party packages in the `Additional Board Manager URLs` field of the `Preferences` dialog. The set of available debug-capable Arduino packages and how to install them is covered in the [section on Arduino packages](supporting-packages.md).
 
 ## Arduino Maker Workshop
 
@@ -12,7 +12,7 @@ First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. 
 
 ## PlatformIO and Visual Studio Code
 
-You need to install [Visual Studio Code](https://code.visualstudio.com) and the Visual Studio Code extension [PlatformIO](https://platformio.org). By using project-specific `platformio.ini` files, integrating PyAvrOCD is straightforward. You simply need to  specify the debug-enabled platform for the Atmel AVR family:
+You need to install [Visual Studio Code](https://code.visualstudio.com) and the Visual Studio Code extension [PlatformIO](https://platformio.org). By using project-specific `platformio.ini` files, integrating PyAvrOCD is straightforward. You simply need to  specify the debug-ready platform for the Atmel AVR family:
 
 ```
 [env:...]
@@ -20,7 +20,7 @@ platform = https://github.com/felias-fogg/platform-atmelavr.git
 ...
 ```
 
-This debug-enabled platform fork has already the right `debug_server` command with all the right parameters and contains the `debug_init_cmds` setting up a GDB session with PyAvrOCD. If you want to change something in these settings, you should check the original settings in `~/.platformio/platforms/atmelavr/platform.py`.
+This debug-ready platform fork has already the right `debug_server` command with all the right parameters and contains the `debug_init_cmds` setting up a GDB session with PyAvrOCD. If you want to change something in these settings, you should check the original settings in `~/.platformio/platforms/atmelavr/platform.py`.
 
 A complete platformio.ini file for an ATtiny85 project when using the [dw-link debug probe](https://github.com/felias-fogg/dw-link) could look las follows:
 
@@ -62,7 +62,7 @@ For the modern parts, i.e., UPDI targets, there is no supporting fork yet, but i
 
 ## PlatformIO and CLion
 
-Similar to Visual Studio Code, you can install a PlatfromIO plugin that exposes the most important PlatformIO commands in CLion. After you have installed CLion, follow the instructions of the [CLion documentation](https://www.jetbrains.com/help/clion/platformio.html) for installing PlatformIO. Then you can use the way described above in order to use the debug-enabled fork of the platform package.
+Similar to Visual Studio Code, you can install a PlatfromIO plugin that exposes the most important PlatformIO commands in CLion. After you have installed CLion, follow the instructions of the [CLion documentation](https://www.jetbrains.com/help/clion/platformio.html) for installing PlatformIO. Then you can use the way described above in order to use the debug-ready fork of the platform package.
 
 ## A debug GUI: Gede
 

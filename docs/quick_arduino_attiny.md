@@ -15,9 +15,9 @@ This quickstart guide demonstrates how to use the Arduino IDE 2 for debugging on
     * 2 resistors (10 kΩ, 1kΩ)
     * 1 capacitor (100 nF)
 
-### Step 1: Install debug-enabled packages
+### Step 1: Install debug-capable packages
 
-Add new *boards manager URL* in the `Preferences` dialog:
+Add new *boards manager URLs* in the `Preferences` dialog:
 
 	https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 	https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json

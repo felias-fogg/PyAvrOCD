@@ -10,7 +10,7 @@ You need a Curiosity Nano board and a USB cable to connect the board to your com
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cnano.png" width="55%">
 </p>
 
-### Step 1: Install a debug-enabled Arduino package
+### Step 1: Install a debug-capable Arduino package
 
 Add one of the following URLs, depending on [what board you want to deal with](supported-boards.md), to the list of *boards manager URL*s in the `Preferences` dialog:
 
@@ -20,7 +20,7 @@ https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_inde
 https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
 ```
 
-In addition, you need the `AvrDebugger` board package as well.[^*] So add the following URL as well:
+In addition, you need the `AvrDebugger` board package as well.[^*] So add the following URL:
 
 ```
 https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
@@ -28,7 +28,7 @@ https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.
 
 {!details-boards-manager-url.md!}
 
-Next, you have to install the appropriate Arduino package. Activate the `Boards Manager`, select the most recent versions of the package you want to install, and click on `Install`.
+Next, you have to install the appropriate Arduino packages. Activate the `Boards Manager`, select the most recent versions of the package you want to install, and click on `Install`.
 
 {!details-install-package.md!}
 

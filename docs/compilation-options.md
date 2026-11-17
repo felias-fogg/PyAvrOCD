@@ -24,7 +24,7 @@ When the binary code gets too large because of the `Optimize for Debugging` opti
 #endif
 ```
 
-For some of the debug-enabled Arduino packages, it is possible to disable *link-time optimization* (LTO). This can be helpful because it will preserve some debugging information ([see below](compilation-options.md#lto)).
+For some of the debug-capable Arduino packages, it is possible to disable *link-time optimization* (LTO). This can be helpful because it will preserve some debugging information ([see below](compilation-options.md#lto)).
 
 !!! info "Disable 'Optimize for Debugging' setting after debugging has finished."
     Once `Optimize for Debugging` has been activated, it will also be enabled for other projects. You have to explicitly disable this option in order to get smaller binary files again.

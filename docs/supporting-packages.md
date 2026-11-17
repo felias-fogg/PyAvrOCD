@@ -1,21 +1,18 @@
-# Debug-enabled Arduino packages
+# Debug-capable Arduino packages
 
-Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. There are four types of such packages:
+Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. You can distinguish them along two dimensions. The first one is the dimension of who maintains the **debug-capable package**. Some of them are **original packages**, maintained by their authors. Others are **forks** of existing packages. The second dimension is how much debug support is integrated into the package. Some are **debug-configured**, meaning that all configuration files have been provided, but the binary debugging tools are missing. For those packages, it is necessary to additionally install the **AvrDebugger board package**. A package is called **debug-ready **when it contains all the configuration files as well as the binary tools.
 
-1. The package maintainer has integrated all the configurations and the debugging tools as part of the package.
-2. The package maintainer has integrated all the configurations, but it needs a package of type 1 to use the debugging tools.
-3. I have forked an existing package and provided the configuration as well as the debugging tools.
-4. I have forked an existing package and provided the configuration, but the tools needs to come from a package of type 1.
+Up until version 1.7.0, all debug-capable packages had been *debug-ready*. Starting with 2.0.0, new versions of debug-capable packages are set up to be *debug-configured*. The main reasons behind this are that it saves considerable disk space and it allows for centralized updates of the debugging tools.
 
-If you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog.
+If you want to install such a debug-capable package, you first have to add a new *boards manager* URL in the `Preferences` dialog.
 
 {!details-boards-manager-url.md!}
 
-Once this has been done, you can search in the <code>Boards Manager</code> for the package and install it or upgrade to the most recent version. In case of a debug-enabled fork, the version number is usually suffixed by `-preX,` and the name of the package will have `(Debug enabled)` attached to the official name.
+Once this has been done, you can search in the <code>Boards Manager</code> for the package and install it or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by `-preX,` and the name of the package will have `(Debug capable)` attached to the official name.
 
 {!details-install-package.md!}
 
-## Hardware packages with integrated debugging tools
+## Debug-ready packages
 
 <a id=avrdebugger></a>
 
@@ -79,7 +76,7 @@ This is a fork of the package for the megaAVR-0 chip family, such as the ATmega4
 https://mcudude.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 ```
 
-## Hardware packages without integrated debugging tools
+## Debug-configured packages
 
 ### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
 
@@ -91,10 +88,10 @@ https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 
 As with all the other boards in this section, you also need to install the `AvrDebugger` package.
 
-## Debug-enabled forks including debugging tools
+## Debug-ready forks
 
 <a id=arduino-avr-boards></a>
-### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (Debug enabled)
+### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (debug-capable)
 
 This is the debug-enabled fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are
 
@@ -112,7 +109,7 @@ Since the AvrDebugger board package is very similar in intention and coverage, t
 
 <a id=arduino-megaavr-boards></a>
 
-### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (Debug enabled)
+### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (debug-capable)
 
 This is the debug-enabled fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by [MegaCoreX](#megacorex). The only changes to the upstream repo are:
 
@@ -129,7 +126,7 @@ https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCor
 
 <a id=megatinycore></a>
 
-### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (Debug enabled)
+### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (debug-capable)
 
 This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-enabled fork available using the following URL:
 
@@ -138,7 +135,7 @@ https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_inde
 ```
 
 <a id=dxcore></a>
-### [DxCore](https://github.com/felias-fogg/DxCore) (Debug enabled)
+### [DxCore](https://github.com/felias-fogg/DxCore) (debug-capable)
 
 This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-enabled fork available by using:
 
@@ -147,7 +144,8 @@ https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_DxCore_index.json
 ```
 
 <a id=attinycore></a>
-### [ATTinyCore](https://github.com/felias-fogg/ATTinyCore) (Debug enabled)
+
+### [ATTinyCore](https://github.com/felias-fogg/ATTinyCore) (debug-capable)
 
 This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. Nowadays, [TinyCore (see above)](#tinycore) is the preferred package for classic ATtinys. You can make this fork available by including the following URL:
 
@@ -155,6 +153,6 @@ This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all class
 https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 ```
 
-## Debug-enabled forks without integrated debugging tools
+## Debug-configured forks
 
 Currently, there are no such packages. But this will change quickly.
