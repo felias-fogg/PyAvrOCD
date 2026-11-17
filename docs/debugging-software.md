@@ -8,7 +8,7 @@ After having installed [Arduino IDE 2](https://docs.arduino.cc/software/ide-v2/t
 
 ## Arduino Maker Workshop
 
-First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. In addition to the Visual Studio Code extension [Arduino Maker Workshop](https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop), one needs to add the [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension. In order to debug a particular MCU, install the right board packages from the [Arduino packages list](supporting-packages.md).
+First, [Visual Studio Code](https://code.visualstudio.com) has to be installed. In addition to the Visual Studio Code extension [Arduino Maker Workshop](https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop), one needs to add the [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) extension. In order to debug a particular MCU, install the right board packages from the [Arduino packages list](supporting-packages.md) as mentioned above.
 
 ## PlatformIO and Visual Studio Code
 

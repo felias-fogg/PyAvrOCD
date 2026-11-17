@@ -15,15 +15,16 @@ The only thing you need is the XPlained Mini board and a USB cable to connect it
 
 ### Step 1: Install the debug-enabled XMiniCore
 
-Add a new *boards manager URL* in the `Preferences` dialog:
+Add new *boards manager URL* in the `Preferences` dialog:
 
 ```
 https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
+https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 ```
 
 {!details-boards-manager-url.md!}
 
-Next you have to install the new package. Activate the `Boards Manager`, select `XMiniCore`, and click on `Install`.
+Next you have to install the new packages. Activate the `Boards Manager`, select `XMiniCore`, and click on `Install`. Then the same with `AvrDebugger`.
 
 {!details-install-package.md!}
 

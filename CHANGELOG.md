@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.0
+## 2.0.0 (16-Nov-2026)
 
 - **Changed**:
   - This release introduces a breaking change. The dw-link debugger is now expected to speak a variant of the JTAGICE mkII (AVR067) protocol, instead of GDB RSP. This means working with dw-link is now more consistent because the entire debugging logic is handled by PyAvrOCD.

@@ -30,7 +30,7 @@ Interested in giving PyAvrOCD a try? You are welcome to [install](https://pyavro
 
 ## What has been done so far, and what to expect in the future
 
-Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas. Recently, the coverage of debug probes has been extended to cover also JTAG ICE, JTAGICE mkII, and the Dragon.
+Meanwhile, PyAvrOCD covers all debugWIRE, JTAG (Megas), and UPDI MCUs. I am unsure whether it makes sense to extend its coverage to Xmegas. Recently, the coverage of debug probes has been extended to cover also JTAG ICE, JTAGICE mkII, and the Dragon. Further, the communication interface to dw-link has been redesigned.  
 
 I made some leeway to integrate PyAvrOCD more tightly with *PlatformIO* and with the *Arduino Maker Workshop* VSCode extension.
 

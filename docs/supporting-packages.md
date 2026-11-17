@@ -1,6 +1,13 @@
 # Debug-enabled Arduino packages
 
-Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. There are two types of such packages. Either debugging has been integrated by the package maintainer, or it is a fork of an existing package. Either way, if you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog.
+Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. There are four types of such packages:
+
+1. The package maintainer has integrated all the configurations and the debugging tools as part of the package.
+2. The package maintainer has integrated all the configurations, but it needs a package of type 1 to use the debugging tools.
+3. I have forked an existing package and provided the configuration as well as the debugging tools.
+4. I have forked an existing package and provided the configuration, but the tools needs to come from a package of type 1.
+
+If you want to install such a package, you first have to add a new *boards manager* URL in the `Preferences` dialog.
 
 {!details-boards-manager-url.md!}
 
@@ -8,7 +15,13 @@ Once this has been done, you can search in the <code>Boards Manager</code> for t
 
 {!details-install-package.md!}
 
-## Hardware packages with integrated debugging solutions
+## Hardware packages with integrated debugging tools
+
+<a id=avrdebugger></a>
+
+### [AvrDebugger](https://github.com/felias-fogg/AvrDebugger)
+
+This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools *PyAvrOCD*, a patched version of *avr-gdb*, and *simavr*.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section with packages of type 2.
 
 ### [TinyCore](https://github.com/MCUdude/TinyCore)
 
@@ -32,14 +45,6 @@ This is the package for the small ATmegas with a debugWIRE interface, aka, ATmeg
 
 ```
 https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
-```
-
-### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
-
-This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. You can make the board package available by including the following boards manager URL:
-
-```
-https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 ```
 
 ### [MightyCore](https://github.com/MCUdude/MightyCore)
@@ -74,7 +79,19 @@ This is a fork of the package for the megaAVR-0 chip family, such as the ATmega4
 https://mcudude.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 ```
 
-## Debug-enabled forks of official Arduino packages
+## Hardware packages without integrated debugging tools
+
+### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
+
+This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. You can make the board package available by including the following boards manager URL:
+
+```
+https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
+```
+
+As with all the other boards in this section, you also need to install the `AvrDebugger` package.
+
+## Debug-enabled forks including debugging tools
 
 <a id=arduino-avr-boards></a>
 ### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (Debug enabled)
@@ -90,6 +107,8 @@ You can make this fork available by including:
 ```
 https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json
 ```
+
+Since the AvrDebugger board package is very similar in intention and coverage, this package will be retired soon.
 
 <a id=arduino-megaavr-boards></a>
 
@@ -107,9 +126,6 @@ You can make this fork available by including:
 ```
 https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCore-megaavr_index.json
 ```
-
-
-## Debug-enabled forks of 3rd-party packages
 
 <a id=megatinycore></a>
 
@@ -138,3 +154,7 @@ This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all class
 ```
 https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 ```
+
+## Debug-enabled forks without integrated debugging tools
+
+Currently, there are no such packages. But this will change quickly.

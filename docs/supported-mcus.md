@@ -185,7 +185,7 @@ The ATmega128(A) MCUs do not allow for software breakpoints. This means that you
 
 The ATmega8515 does not have a debug interface.
 
-### ATmegas supported by [Arduino AVR Boards (Debug enabled)](supporting-packages.md#arduino-avr-boards)
+### ATmegas supported by [AvrDebug](supporting-packages.md#avrdebugger)
 
 Most of the MCUs covered by this package are already supported by other packages. However, one exception is the ATmega32U4 (e.g., on the Leonardo).
 

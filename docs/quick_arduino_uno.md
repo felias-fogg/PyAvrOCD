@@ -28,17 +28,17 @@ The completed board setup may then look as follows.
 <img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/dw-link.png" width="50%">
 </p>
 
-### Step 2: Install the debug-enabled MiniCore
+### Step 2: Install the debug-enabled board package
 
-Since the stock Arduino AVR Boards package does not support debugging, we need to shop elsewhere. For this reason, you need to add a new *boards manager URL* in the `Preferences` dialog so that `MiniCore` can be installed:
+Since the stock Arduino AVR Boards package does not support debugging, we need to shop elsewhere. For this reason, you need to add a new *boards manager URL* in the `Preferences` dialog so that `AvrDebugger` can be installed:
 
 ```
-https://mcudude.github.io/MiniCore/package_MCUdude_MiniCore_index.json
+https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 ```
 
 {!details-boards-manager-url.md!}
 
-Next you have to install the `MiniCore`. Activate the `Boards Manager`, select `MiniCore`, and click on `Install`.
+Next you have to install the `AvrDebugger`. Activate the `Boards Manager`, select `AvrDebugger`, and click on `Install`.
 
 {!details-install-package.md!}
 

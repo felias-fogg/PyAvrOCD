@@ -12,12 +12,18 @@ You need a Curiosity Nano board and a USB cable to connect the board to your com
 
 ### Step 1: Install a debug-enabled Arduino package
 
-Add new *boards manager URL*s in the `Preferences` dialog:[^*]
+Add one of the following URLs, depending on [what board you want to deal with](supported-boards.md), to the list of *boards manager URL*s in the `Preferences` dialog:
 
 ```
 https://felias-fogg.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
+```
+
+In addition, you need the `AvrDebugger` board package as well.[^*] So add the following URL as well:
+
+```
+https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 ```
 
 {!details-boards-manager-url.md!}
@@ -51,4 +57,4 @@ If you want to stop debugging, it may be a good idea to deactivate the `Optimize
 
 If something goes wrong, it is a good idea to have a look at the output of the `gdb-server` console. Messages with the prefix \[CRITICAL] often tell what went wrong. It may also be a good idea to consult the [Troubleshooting](troubleshooting.md) and the [Limitations](limitations.md) section of the PyAvrOCD manual.
 
-[^*]: You actually will need to add only one of these URLs which depends on the [MCU on the board](supported-mcus.md).
+[^*]: Strictly speaking, you need to install it only for future board packages. But then it does not hurt to do that right now, already.
