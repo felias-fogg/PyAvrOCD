@@ -5,15 +5,17 @@ session logic is in session.py; this module supplies the primitives it needs.
 
 What is different from the mkII backend:
 - the probe is a serial port; with more than one, -u names it by the end of its name
-- hardware breakpoints only (SwbpSupport.NONE): the mkI has no command for software breakpoints,
-  and the server cannot plant them yet, because Erase Page SPM has not been made to work (see
-  jtag1.Jtag1Protocol.erase_page_spm). Four comparators: PSB0 and PSB1 through memory type 0x60, X
-  and Y through parameters and the break control register. The probe clears them at every break,
-  so all of them are sent before each go; there are no clear commands.
+- hardware breakpoints only (SwbpSupport.NONE): the mkI has no command for software breakpoints.
+  The server could plant them (page erase and IReg injection work), but only with a number of
+  special cases, see docs/jtagice1-software-breakpoints.md. Four comparators: PSB0 and PSB1
+  through memory type 0x60, X and Y through parameters and the break control register. The probe
+  clears them at every break, so all of them are sent before each go; there are no clear commands.
 - no run-to-address command: run_to sets one more comparator
-- a load needs 'erase before load' (the default on JTAG), since a single page cannot be erased
-- the probe does not measure the target voltage on the clone (always 0xFF), and the baud rate it
-  reports is meaningless (0x17); the server switches to 115200 and back to 19200 at the end
+- a load needs 'erase before load' (the default on JTAG), since the backend does not erase single
+  pages
+- the CH340 clone does not measure the target voltage (always 0xFF), and the baud rate it
+  reports is meaningless (0x17); the Olimex clone reports both properly (5.05 V as 0xCE). The
+  server switches to 115200 and back to 19200 at the end
 - FORCED_STOP on a target that is stopped already lets it run a few instructions (measured: the PC
   moves on by 4 words each time), so the backend sends it only while the target runs; after a
   reset, step or stop, the probe sends no break message (measured), so none is waited for
@@ -141,7 +143,7 @@ class Jtag1Backend(AvrSession):
         """The port stays open for the whole session; see release"""
 
     def _target_voltage(self) -> float:
-        """6.25 V at 0xFF (avrdude's scale); the clone always reports 0xFF"""
+        """6.25 V at 0xFF (avrdude's scale); the CH340 clone always reports 0xFF"""
         if self.protocol is None:
             self._sign_on()
         return 6.25 * self._proto().get_parameter(jtag1.PAR_OCD_VTARGET) / 255

@@ -17,6 +17,8 @@ What AVR060 does not say, measured on a clone (CH340, HW 0xC0, SW 0x80) with an 
   (AVR060's 'Event L'; avarice's breakpoint space) at the word address.
 - Reading the baud rate parameter returns 0x17 at any speed, OCD Vtarget always 0xFF.
 - The data block of a write is acknowledged twice, for every memory type (avarice reads it so, too).
+- A PML write changes the flash only when it covers a whole page; a few words are acknowledged
+  but not written (measured on two clones with an ATmega32).
 """
 from dataclasses import dataclass
 import logging
@@ -488,10 +490,12 @@ class Jtag1Protocol():
 
     def erase_page_spm(self, address : int) -> None:
         """
-        Cmd_ERASEPAGE_SPM: erase the flash page at a byte address, in debug mode. AVR060 gives the
-        address as a word; the probe waits for a third byte (avarice sends a zero there).
+        Cmd_ERASEPAGE_SPM: erase the flash page at a byte address, in debug mode. Measured on two
+        clones (2026-11-17, ATmega32): the probe takes the word address of the page in three bytes,
+        MSB first, and seems to ignore the first of them -- the byte address in the last two bytes
+        erases a different page (0x6000 sent as 60 00 00 erased page 0). 25-32 ms.
         """
-        self.command(bytes([CMD_ERASEPAGE_SPM]) + address.to_bytes(2, 'big') + b'\x00', 0,
+        self.command(bytes([CMD_ERASEPAGE_SPM]) + (address // 2).to_bytes(3, 'big'), 0,
                      "Erase page 0x{:X}".format(address))
 
     # --- execution ---

@@ -191,6 +191,11 @@ class TestMemory(TestCase):
         p.write_memory(jtag1.MEMTYPE_PML, 0x40, bytes.fromhex("98 95"))     # BREAK
         self.assertEqual(p.transport.written, b'\x57\xa0\x00\x00\x00\x40' + EOP + b'h\x95\x98' + EOP)
 
+    def test_erase_page_takes_word_address_in_three_bytes(self):
+        p = protocol(b'AA')
+        p.erase_page_spm(0x6000)
+        self.assertEqual(p.transport.written, b'\xa1\x00\x30\x00' + EOP)
+
     def test_program_breakpoint(self):
         p = protocol(b'AAA')
         p.set_program_breakpoint(1, 44)
