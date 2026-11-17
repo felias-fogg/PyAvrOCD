@@ -1,12 +1,12 @@
 # Invoking PyAvrOCD
 
-In a terminal window, you invoke PyAvrOCD as follows, where the only mandatory option is the `-d` or `--device` option, specifying the target MCU:
+In a terminal window, you invoke PyAvrOCD as follows:
 
 ```
 $ pyavrocd [options]
 ```
 
-PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.
+PyAvrOCD will then, in most cases, look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect. You can influence its behavior with the command-line options shown below.
 
 ## Debug probe discovery
 
