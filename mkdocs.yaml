@@ -67,3 +67,7 @@ not_in_nav:
   generate-new-version.md
   load-speed.md
   snap-connector.md
+
+# Static pages to build
+static_templates:
+  - 404.html
