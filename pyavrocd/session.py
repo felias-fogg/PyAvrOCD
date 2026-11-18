@@ -857,6 +857,17 @@ class AvrSession(DebugBackend):
         self._update_regfile_in_target()
         self._go_to(address | self.bad_pc_bit_mask)
 
+    def step(self, opcode : int | None = None) -> None:
+        """
+        Update register file first, also for a step by injection (SwbpSupport.SERVER), which does not
+        go through _step: otherwise the injected instruction works on registers without GDB's pending
+        writes, and GDB reads the registers from before the step afterwards (found by the e2e test
+        'setpc' with dw-link: after 'set $pc' onto a breakpoint, GDB had read the registers, so the
+        'inc r24' executed at the breakpoint did not show).
+        """
+        self._update_regfile_in_target()
+        super().step(opcode)
+
     def _step(self) -> None:
         """
         Update register file, then make a single step

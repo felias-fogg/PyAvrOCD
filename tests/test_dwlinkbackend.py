@@ -190,6 +190,32 @@ class TestSession(TestCase):
         self.backend.execute_instruction.assert_called_once_with(0x940E)
         self.backend._step.assert_not_called()
 
+    def test_step_by_injection_writes_pending_registers_first(self):
+        self.backend._swbp_planted = {0xB2: 0x9583}           # inc r24
+        self.backend._swbp_wanted = {0xB2}
+        self.backend.program_counter_read = MagicMock(return_value=0x59)
+        self.backend._regfile_read_raw = MagicMock(return_value=bytearray(32))
+        self.backend._regfile_write_raw = MagicMock()
+        order = MagicMock()
+        self.backend._regfile_write_raw.side_effect = lambda regs: order('write', bytes(regs))
+        self.backend.execute_instruction = MagicMock(side_effect=lambda op: order('inject', op))
+        self.backend.register_write(24, b'\x05')
+        self.backend.step()
+        self.assertEqual(order.mock_calls[0], call('write', bytes(24) + b'\x05' + bytes(7)))
+        self.assertEqual(order.mock_calls[1], call('inject', 0x9583))
+
+    def test_step_by_injection_rereads_registers_afterwards(self):
+        self.backend._swbp_planted = {0xB2: 0x9583}           # inc r24
+        self.backend._swbp_wanted = {0xB2}
+        self.backend.program_counter_read = MagicMock(return_value=0x59)
+        before, after = bytearray(32), bytearray(32)
+        before[24], after[24] = 0xA1, 0xA2
+        self.backend._regfile_read_raw = MagicMock(side_effect=[before, after])
+        self.backend.execute_instruction = MagicMock()
+        self.assertEqual(self.backend.register_read(24, 1), b'\xa1')
+        self.backend.step()
+        self.assertEqual(self.backend.register_read(24, 1), b'\xa2')
+
     def test_software_breakpoints_planted_by_server(self):
         self.assertTrue(self.backend.software_breakpoint_set(0xB2))
         self.assertEqual(self.backend._swbp_wanted, {0xB2})
