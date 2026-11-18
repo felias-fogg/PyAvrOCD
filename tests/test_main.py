@@ -670,8 +670,12 @@ class TestFindProbe(TestCase):
     ICE_CANDIDATE = ProbeCandidate('atmelice', 'Atmel-ICE CMSIS-DAP', 'J42700018184')
     PORT = ProbeCandidate('dwlink', 'dw-link', '/dev/cu.usbmodem242101')
 
-    def find(self, jtag2_found=(), hid=(), ports=(), cmd=(), intf='debugwire', system='Darwin', usb_bus=()):
-        """find_probe with the given probes attached; returns ((abort, probe), logger, sleep)"""
+    def find(self, jtag2_found=(), hid=(), ports=(), cmd=(), intf='debugwire', system='Darwin', usb_bus=(),
+             *, recent=False):
+        """
+        find_probe with the given probes attached; returns ((abort, probe), logger, sleep). 'recent':
+        this server signed off from a mkII or Dragon a moment ago
+        """
         logger = MagicMock()
         args = options(['-d', 'attiny85'] + list(cmd))
         def hid_tools(serialnumber_substring='', tool_name=None):
@@ -686,6 +690,7 @@ class TestFindProbe(TestCase):
              patch('pyavrocd.main.dwlinkbackend.discover', return_value=list(ports)), \
              patch('pyavrocd.main.usb.core.find', return_value=list(usb_bus)), \
              patch('pyavrocd.main.platform.system', return_value=system), \
+             patch('pyavrocd.main.jtag2backend.signed_off_recently', return_value=recent), \
              patch('pyavrocd.main.time.monotonic', side_effect=itertools.count()), \
              patch('pyavrocd.main.time.sleep') as sleep:
             return find_probe(args, intf, logger), logger, sleep
@@ -715,23 +720,36 @@ class TestFindProbe(TestCase):
         self.assertEqual(self.find([], [hid_tool(0x2111, 'EDBG CMSIS-DAP', 'ATML1')])[0][1].tool, 'edbg')
 
     def test_waits_for_reenumeration(self):
-        # after avrdude has signed off, the probe is back on the bus only after a few seconds
-        attempts = iter([[], [], [self.CLONE]])
-        result, _, sleep = self.find(lambda t=None: next(attempts), cmd=['-u', '4262'])
-        self.assertEqual(result, (False, self.CLONE))
-        self.assertEqual(sleep.call_count, 2)
+        # after a sign-off, the probe is back on the bus only after a few seconds; waited for when
+        # -u names it, -t names a mkII or Dragon, or this server signed off from one a moment ago
+        for cmd, recent in ((['-u', '4262'], False), (['-t', 'jtagice2'], False), ([], True)):
+            attempts = iter([[], [], [self.CLONE]])
+            result, _, sleep = self.find(lambda t=None, a=attempts: next(a), cmd=cmd, recent=recent)
+            self.assertEqual(result, (False, self.CLONE))
+            self.assertEqual(sleep.call_count, 2)
+
+    def test_nothing_on_usb(self):
+        result, logger, sleep = self.find(ports=[])
+        self.assertEqual(result, (True, None))
+        sleep.assert_not_called()                            # no mkII or Dragon was signed off from
+        logger.critical.assert_called_with("No compatible tool discovered")
+        logger.info.assert_any_call("be coming back on USB: try again in a few seconds")
 
     def test_nothing_after_the_wait(self):
-        result, logger, sleep = self.find(ports=[])
+        result, logger, sleep = self.find(ports=[], recent=True)
         self.assertEqual(result, (True, None))
         self.assertGreater(sleep.call_count, 0)
         logger.critical.assert_called_with("No compatible tool discovered")
-        logger.warning.assert_not_called()
 
     def test_dwlink_when_nothing_on_usb(self):
+        # no wait: it used to cost every start from the IDE 5 s, which cannot pass -t dwlink
         result, _, sleep = self.find(ports=[self.PORT])
         self.assertEqual(result, (False, self.PORT))
-        self.assertGreater(sleep.call_count, 0)              # the price of a reliable start after an upload
+        sleep.assert_not_called()
+        # right after a session with a mkII or Dragon, dw-link is found once the wait is over
+        result, _, sleep = self.find(ports=[self.PORT], recent=True)
+        self.assertEqual(result, (False, self.PORT))
+        self.assertGreater(sleep.call_count, 0)
 
     def test_no_wait_when_a_serial_port_is_meant(self):
         # -t dwlink, or -u naming the port of dw-link: no mkII or Dragon to wait for

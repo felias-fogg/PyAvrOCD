@@ -38,6 +38,7 @@ import pyedbglib
 from pyavrocd import dwlinkbackend
 from pyavrocd import jtag2
 from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
+from pyavrocd import jtag2backend
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.dwlinkbackend import DwlinkBackend
 from pyavrocd import jtag1backend
@@ -532,15 +533,21 @@ def find_probe(args : argparse.Namespace, intf : str,
     debugWIRE targets) or the JTAGICE mkI (for the JTAG parts it knows) is looked for there.
     A JTAGICE mkII or AVR Dragon leaves the bus for 1.5 to 3 s after every sign-off, avrdude's at the
     end of an upload too, and a server started right after it would not find the probe. So, with
-    nothing on USB, wait for it up to REENUMERATION_WAIT seconds, unless the selection rules it out
-    (an EDBG tool, which does not do this, or a serial port; the wait would cost every dw-link start).
+    nothing on USB, wait for it up to REENUMERATION_WAIT seconds -- but only when such a probe can be
+    meant: -t names one, -u names a probe on USB, or this server signed off from one less than
+    REENUMERATION_WAIT seconds ago (jtag2backend.signed_off_recently). Waiting always cost every
+    dw-link start from the IDE 5 s (measured 2026-11-18), as the IDE cannot pass -t. Not covered: an
+    upload with avrdude through a mkII or Dragon followed by a start without -t within those seconds;
+    the message then says to try again.
     """
     serial_meant : bool = args.tool in SERIAL_TOOLS or \
       (bool(args.serialnumber) and serial_port_with_suffix(args.serialnumber))
     found : list[ProbeCandidate] = []
     libusb : bool = True
     if args.tool not in SERIAL_TOOLS:
-        wait : bool = not serial_meant and args.tool not in EDBG_TOOLS
+        wait : bool = not serial_meant and args.tool not in EDBG_TOOLS and \
+          (args.tool in JTAG2_TOOLS or bool(args.serialnumber) or
+           jtag2backend.signed_off_recently(REENUMERATION_WAIT))
         deadline : float = time.monotonic() + (REENUMERATION_WAIT if wait else 0)
         while True:
             found, libusb = usb_probes(args, logger)
@@ -617,6 +624,8 @@ def explain_missing_probe(args : argparse.Namespace, libusb : bool, logger : log
         logger.warning("A JTAGICE mkII or AVR Dragon needs libusb: %s",
                            "'brew install libusb'" if platform.system() == 'Darwin'
                            else "'sudo apt install libusb-1.0-0'")
+    logger.info("A JTAGICE mkII or AVR Dragon that has just been used, e.g., by avrdude, may still")
+    logger.info("be coming back on USB: try again in a few seconds")
 
 def find_dwlink(args : argparse.Namespace, intf : str, logger : logging.Logger,
                     explain : Callable[[], None] = lambda: None) -> tuple[bool, ProbeCandidate | None]:

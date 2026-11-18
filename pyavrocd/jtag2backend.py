@@ -27,7 +27,11 @@ Behaviour of the probes that the code relies on (measured with a JTAGICE mkII cl
 - USB errors reach the session as Jtag2UsbError (a BackendError), timeouts as Jtag2UsbTimeout
 """
 import argparse
+import getpass
 import logging
+import os
+import re
+import tempfile
 import time
 from collections.abc import Callable
 
@@ -37,6 +41,33 @@ from pyavrocd import jtag2
 from pyavrocd.backend import SwbpSupport, BackendError, BackendNotSupportedError, ProbeCandidate
 from pyavrocd.session import AvrSession
 from pyavrocd.errors import FatalError
+
+def signoff_marker() -> str:
+    """
+    A file in the temporary folder whose time stamp says when a JTAGICE mkII or AVR Dragon was last
+    signed off by this server; one per user, so that a shared /tmp does not get in the way
+    """
+    try:
+        user = getpass.getuser()
+    except (KeyError, OSError):
+        user = 'unknown'
+    return os.path.join(tempfile.gettempdir(), "pyavrocd-jtag2-signoff-" + re.sub(r'[^\w.-]', '_', user))
+
+def note_signoff() -> None:
+    """After the final sign-off: the probe is now re-enumerating for 1.5 to 3 s"""
+    try:
+        with open(signoff_marker(), 'a', encoding='ascii'):
+            pass
+        os.utime(signoff_marker())
+    except OSError:
+        pass
+
+def signed_off_recently(window : float) -> bool:
+    """Did this server sign off from a JTAGICE mkII or AVR Dragon less than 'window' seconds ago?"""
+    try:
+        return time.time() - os.path.getmtime(signoff_marker()) < window
+    except OSError:
+        return False
 
 #pylint: disable=too-many-public-methods,too-many-instance-attributes
 class Jtag2Backend(AvrSession):
@@ -430,6 +461,9 @@ class Jtag2Backend(AvrSession):
         try:
             self._sign_off()
             self.protocol.sign_off()
+            # the probe now leaves the bus for a few seconds; a server started right after this
+            # one waits for it (main.find_probe)
+            note_signoff()
         except (BackendError, usb.core.USBError) as e:
             self.logger.debug("Final sign-off: %s", e)
         finally:

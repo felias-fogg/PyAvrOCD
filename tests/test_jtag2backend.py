@@ -2,12 +2,16 @@
 The test suit for the Jtag2Backend class (JTAGICE mkII and AVR Dragon)
 """
 #pylint: disable=protected-access,missing-function-docstring,missing-class-docstring
+import os
+import tempfile
+import time
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, create_autospec
 
 import usb.core
 
 from pyavrocd import jtag2
+from pyavrocd import jtag2backend
 from pyavrocd.backend import ProbeCandidate
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.errors import FatalError
@@ -325,20 +329,24 @@ class TestRelease(TestCase):
         backend.transport = transport = MagicMock()
         return backend, proto, transport
 
-    def test_signs_off_and_closes(self):
+    @patch('pyavrocd.jtag2backend.note_signoff')
+    def test_signs_off_and_closes(self, note):
         backend, proto, transport = self.make()
         backend._mode_set = True
         backend.release()
+        note.assert_called_once_with()            # the probe now re-enumerates; find_probe waits for it
         proto.set_parameter.assert_called_once_with(jtag2.PAR_EMULATOR_MODE,
                                                     bytes([jtag2.EMULATOR_MODE_UNKNOWN]))
         proto.sign_off.assert_called_once_with()
         transport.close.assert_called_once_with()
         self.assertIsNone(backend.protocol)
 
-    def test_errors_are_swallowed_and_closed(self):
+    @patch('pyavrocd.jtag2backend.note_signoff')
+    def test_errors_are_swallowed_and_closed(self, note):
         backend, proto, transport = self.make()
         proto.sign_off.side_effect = jtag2.Jtag2UsbTimeout("No response to command 0x00")
         backend.release()
+        note.assert_not_called()
         transport.close.assert_called_once_with()
         self.assertIsNone(backend.protocol)
 
@@ -346,6 +354,31 @@ class TestRelease(TestCase):
         backend, _, _ = self.make()
         backend.protocol = None
         backend.release()
+
+
+class TestSignoffMarker(TestCase):
+    """The time stamp that tells the next server to wait for a re-enumerating mkII or Dragon"""
+
+    def test_noted_and_recent(self):
+        with tempfile.TemporaryDirectory() as folder, \
+             patch('pyavrocd.jtag2backend.tempfile.gettempdir', return_value=folder):
+            self.assertFalse(jtag2backend.signed_off_recently(5.0))      # never signed off
+            jtag2backend.note_signoff()
+            self.assertTrue(jtag2backend.signed_off_recently(5.0))
+            past = time.time() - 6.0
+            os.utime(jtag2backend.signoff_marker(), (past, past))
+            self.assertFalse(jtag2backend.signed_off_recently(5.0))      # long enough ago
+            jtag2backend.note_signoff()                                   # an existing file is refreshed
+            self.assertTrue(jtag2backend.signed_off_recently(5.0))
+
+    def test_per_user_and_unwritable(self):
+        with patch('pyavrocd.jtag2backend.getpass.getuser', return_value='a b/c'):
+            self.assertTrue(jtag2backend.signoff_marker().endswith('pyavrocd-jtag2-signoff-a_b_c'))
+        with patch('pyavrocd.jtag2backend.getpass.getuser', side_effect=OSError("no user")):
+            self.assertTrue(jtag2backend.signoff_marker().endswith('pyavrocd-jtag2-signoff-unknown'))
+        with patch('pyavrocd.jtag2backend.tempfile.gettempdir', return_value='/nonexistent/folder'):
+            jtag2backend.note_signoff()                                   # no exception
+            self.assertFalse(jtag2backend.signed_off_recently(5.0))
 
 
 DRAGON = ProbeCandidate(tool='dragon', product='AVRDRAGON', address='00A200050860')
