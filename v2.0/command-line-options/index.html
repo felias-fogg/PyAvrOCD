@@ -157,10 +157,10 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="invoking-pyavrocd">Invoking PyAvrOCD</h1>
-<p>In a terminal window, you invoke PyAvrOCD as follows, where the only mandatory option is the <code>-d</code> or <code>--device</code> option, specifying the target MCU:</p>
+<p>In a terminal window, you invoke PyAvrOCD as follows:</p>
 <pre><code>$ pyavrocd [options]
 </code></pre>
-<p>PyAvrOCD will then look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect to it. You can influence its behavior with the command-line options shown below.</p>
+<p>PyAvrOCD will then, in most cases, look for a debug probe, establish a connection to it, and wait for the GDB debugger to connect. You can influence its behavior with the command-line options shown below.</p>
 <h2 id="debug-probe-discovery">Debug probe discovery</h2>
 <p>The basic rule for PyAvrOCD is that it will find and sign on to any compatible debug probe, as long as there is only one probe connected to the host.  If the probe is connected via a serial port, it has to be the only serial port on USB. In all other cases, you need to specify the <code>-u</code> or <code>-t</code> option. With <code>-t</code> or <code>--tool</code> you can restrict the discovery to a particular type of tool, e.g., <code>dwlink</code> or <code>atmelice</code>. With <code>-u</code> or <code>--usbsn</code> you can specify a suffix of either the USB serial number or the name of the serial port. Note that the USB serial number also works with serial ports.</p>
 <p>Finally, a few words of caution. Under <strong>Windows</strong>, you may need to install the WinUSB driver using <a href="https://zadig.akeo.ie">Zadig</a> in order to access the debug probes using USB bulk transfer (e.g., Dragon or JTAGICE mkII). If you run Windows on ARM, such devices cannot be accessed at all (for the time being). On <strong>Linux</strong>, <a href="../install/">you need to install a udev rules file</a>, and your user account must be allowed to access the serial port, typically by being a member of the <code>dialout</code> group.</p>
