@@ -51,7 +51,7 @@ from pyavrocd.server import RspServer
 
 # What a meta option stands for: defaults that only make sense when an IDE starts the server.
 # Options that a core sets itself do not belong here.
-IDE_EXPANSIONS : dict[str, list[str]] = { 'arduino_ide' : ['--once'] }
+IDE_EXPANSIONS : dict[str, list[str]] = { 'arduino_ide' : ['--once', '--outdated-elf', 'refuse'] }
 
 class ExpandAction(argparse.Action):
     """
@@ -188,6 +188,12 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             dest='once',
                             action='store_true',
                             help="Terminate when GDB disconnects or detaches")
+
+    parser.add_argument("--outdated-elf",
+                            dest='outdated_elf',
+                            choices=['warn', 'refuse'],
+                            default='warn',
+                            help="If sources are newer than the ELF file: warn (default) or refuse to start")
 
     parser.add_argument("--arduino-ide",
                             dest='arduino_ide',
@@ -487,6 +493,73 @@ def check_elf_file_for_relax_optimization(elf_file : str, logger : logging.Logge
         return False
     return False
 
+def line_table_files(dwarfinfo : Any) -> set[str]:
+    """
+    The full names of the source files in the line tables of all compilation units. Up to DWARF 4,
+    directory index 0 means the compilation directory, which is not in the table; from DWARF 5 on,
+    it is the first entry of the table (pyelftools presents both under the same names).
+    """
+    names : set[str] = set()
+    for cu in dwarfinfo.iter_CUs():
+        program = dwarfinfo.line_program_for_CU(cu)
+        if program is None:
+            continue
+        dirs = list(program.header['include_directory'])
+        if program.header['version'] < 5:
+            comp_dir = cu.get_top_DIE().attributes.get('DW_AT_comp_dir')
+            dirs.insert(0, comp_dir.value if comp_dir else b'')
+        for entry in program.header['file_entry']:
+            name = entry.name.decode(errors='replace')
+            if not os.path.isabs(name) and entry.dir_index is not None and entry.dir_index < len(dirs):
+                name = os.path.join(dirs[entry.dir_index].decode(errors='replace'), name)
+            names.add(os.path.normpath(name))
+    return names
+
+def sources_newer_than_elf(elf_file : str | None) -> list[str]:
+    """
+    The source files named in the line tables of the ELF file that have been changed after it was
+    built, i.e., the program being debugged is not the one in the editor. Arduino builds name the
+    original sketch files there (e.g., .../Arduino/Blink/Blink.ino), not only the copies in the build
+    folder. Files that are not there any more are left out; nothing is reported if the ELF file
+    cannot be read (check_elf_file_for_relax_optimization says so).
+    """
+    if elf_file is None:
+        return []
+    try:
+        built = os.path.getmtime(elf_file)
+        with open(elf_file, 'rb') as f:
+            ef = ELFFile(f)
+            if not ef.has_dwarf_info():
+                return []
+            names = line_table_files(ef.get_dwarf_info())
+    except Exception: # pylint: disable=broad-exception-caught # a hint only, never a reason to stop
+        return []
+    return sorted(n for n in names if os.path.isfile(n) and os.path.getmtime(n) > built)
+
+def check_outdated_elf(elf_file : str | None, refuse : bool, logger : logging.Logger) -> bool:
+    """
+    Say so if the sources have been changed after the ELF file was built: in the Arduino IDE, Debug
+    takes the binary of the last 'Verify' or 'Upload', and someone who has just fixed a bug would
+    otherwise debug the old code without noticing. With 'refuse' (--outdated-elf refuse, part of
+    --arduino-ide), this is critical and True is returned: the server does not start, and the IDE
+    then brings the gdb-server terminal with the message to the front, where a warning is easily
+    missed once the session runs.
+    """
+    newer = sources_newer_than_elf(elf_file)
+    if not newer:
+        return False
+    log = logger.critical if refuse else logger.warning
+    log("The program was built before these files were changed:")
+    for name in newer[:5]:
+        log("  %s", name)
+    if len(newer) > 5:
+        log("  ... and %d more", len(newer) - 5)
+    if refuse:
+        log("Verify (compile) the sketch first, then start debugging again")
+    else:
+        log("You are debugging the previous version: verify (compile) the sketch first")
+    return refuse
+
 def startup_helper_prog(args : argparse.Namespace, logger : logging.Logger) -> None:
     """
     Starts program requested by user, e.g., a debugger GUI
@@ -735,6 +808,8 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
 
     # check that ELF file has not been produced using the -mrelax option
     if check_elf_file_for_relax_optimization(args.elffile, logger):
+        return 1
+    if check_outdated_elf(args.elffile, args.outdated_elf == 'refuse', logger):
         return 1
 
     abort, probe = find_probe(args, intf, logger)

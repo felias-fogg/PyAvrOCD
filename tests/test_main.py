@@ -15,6 +15,7 @@ import pymcuprog.pymcuprog_errors
 from pyavrocd.main import options,  setup_logging, \
      process_arguments, startup_helper_prog, run_server, startup, handle_simavr, \
      find_probe, EDBG_PRODUCTS, version_tuple
+from pyavrocd import main as main_module
 from pyavrocd.backend import ProbeCandidate
 from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
 
@@ -143,7 +144,7 @@ class TestMain(TestCase):
         self.assertEqual(options(["-d", "atmega328p"]).arduino_ide, None)
         args = options(["-d", "atmega328p", "--arduino-ide"])
         self.assertTrue(args.once)
-        self.assertEqual(args.arduino_ide, ['--once'])
+        self.assertEqual(args.arduino_ide, ['--once', '--outdated-elf', 'refuse'])
         self.assertEqual(args.unknown_options, [])
 
     @patch('pyavrocd.main.os.path.exists', MagicMock(return_value=False))
@@ -425,7 +426,7 @@ class TestMain(TestCase):
         mock_logger = MagicMock()
         self.assertEqual(startup(['-d', 'atmega328p', '-t', 'dwlink', '--arduino-ide'],
                                  mock_logger), 1)                  # 1: no dw-link attached
-        mock_logger.info.assert_has_calls([call("--arduino-ide stands for: %s", "--once")])
+        mock_logger.info.assert_has_calls([call("--arduino-ide stands for: %s", "--once --outdated-elf refuse")])
 
     @patch('pyavrocd.main.importlib.metadata.version', return_value='2.0.0rc1')
     @patch('pyavrocd.main.dwlinkbackend.discover', return_value=[])
@@ -833,3 +834,88 @@ class TestFindJtagice1(TestCase):
         result, logger = self.find(ports=[])
         self.assertEqual(result, (True, None))
         logger.critical.assert_called_with("No compatible tool discovered")
+
+
+def fake_dwarf(*units):
+    """DWARF info whose compilation units have the given (version, comp_dir, dirs, files) line tables"""
+    cus = []
+    programs = {}
+    for version, comp_dir, dirs, files in units:
+        attributes = {'DW_AT_comp_dir': SimpleNamespace(value=comp_dir)} if comp_dir is not None else {}
+        cu = SimpleNamespace(get_top_DIE=lambda a=attributes: SimpleNamespace(attributes=a))
+        cus.append(cu)
+        programs[id(cu)] = SimpleNamespace(header={
+            'version': version, 'include_directory': tuple(dirs),
+            'file_entry': tuple(SimpleNamespace(name=n, dir_index=i) for n, i in files)})
+    return SimpleNamespace(iter_CUs=lambda: iter(cus), line_program_for_CU=lambda cu: programs[id(cu)])
+
+
+class TestOutdatedElf(TestCase):
+    """Warn when the sources have changed after the program being debugged was built"""
+
+    def test_line_table_files_dwarf2_and_dwarf5(self):
+        # up to DWARF 4, index 0 is the compilation directory; from DWARF 5 on, the first table entry
+        dwarf = fake_dwarf((2, b'/build', [b'/sketch', b'/core'], [(b'x.cpp', 0), (b'Blink.ino', 1), (b'wiring.c', 2)]),
+                           (5, b'/ignored', [b'/build5', b'/sketch5'], [(b'y.cpp', 0), (b'App.ino', 1)]),
+                           (3, None, [], [(b'/abs/z.h', 0)]))
+        self.assertEqual(main_module.line_table_files(dwarf),
+                         {os.path.normpath(p) for p in ('/build/x.cpp', '/sketch/Blink.ino', '/core/wiring.c',
+                                                        '/build5/y.cpp', '/sketch5/App.ino', '/abs/z.h')})
+
+    def make(self, folder, files_newer):
+        """An 'ELF' and two sources in folder, the ones named in files_newer changed after the build"""
+        elf = os.path.join(folder, 'Blink.ino.elf')
+        sources = {name: os.path.join(folder, name) for name in ('Blink.ino', 'helper.h')}
+        for path in [elf] + list(sources.values()):
+            with open(path, 'w', encoding='ascii') as f:
+                f.write('x')
+        for name, path in sources.items():
+            os.utime(path, (1000, 2000 if name in files_newer else 500))
+        os.utime(elf, (1000, 1000))
+        dwarf = fake_dwarf((2, folder.encode(), [], [(b'Blink.ino', 0), (b'helper.h', 0), (b'gone.c', 0)]))
+        return elf, MagicMock(return_value=MagicMock(has_dwarf_info=lambda: True, get_dwarf_info=lambda: dwarf))
+
+    def test_newer_sources_found(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for newer in ((), ('Blink.ino',), ('Blink.ino', 'helper.h')):
+                elf, elffile = self.make(folder, newer)
+                with patch('pyavrocd.main.ELFFile', elffile):
+                    found = main_module.sources_newer_than_elf(elf)
+                self.assertEqual(found, sorted(os.path.join(folder, n) for n in newer))   # gone.c left out
+
+    def test_nothing_without_elf_or_on_errors(self):
+        self.assertEqual(main_module.sources_newer_than_elf(None), [])
+        self.assertEqual(main_module.sources_newer_than_elf('/nonexistent/x.elf'), [])
+        with tempfile.TemporaryDirectory() as folder:
+            elf, _ = self.make(folder, ('Blink.ino',))
+            self.assertEqual(main_module.sources_newer_than_elf(elf), [])            # not an ELF file at all
+
+    def test_warning(self):
+        logger = MagicMock()
+        with patch('pyavrocd.main.sources_newer_than_elf', return_value=[]):
+            self.assertFalse(main_module.check_outdated_elf('x.elf', True, logger))
+        logger.warning.assert_not_called()
+        logger.critical.assert_not_called()
+        names = ['/s/f%d.cpp' % i for i in range(7)]
+        with patch('pyavrocd.main.sources_newer_than_elf', return_value=names):
+            self.assertFalse(main_module.check_outdated_elf('x.elf', False, logger))
+        logger.critical.assert_not_called()
+        texts = [c.args for c in logger.warning.call_args_list]
+        self.assertEqual(texts[0], ("The program was built before these files were changed:",))
+        self.assertEqual(texts[1:6], [("  %s", n) for n in names[:5]])
+        self.assertEqual(texts[6], ("  ... and %d more", 2))
+        self.assertIn("verify (compile) the sketch first", texts[7][0])
+
+    def test_refused(self):
+        logger = MagicMock()
+        with patch('pyavrocd.main.sources_newer_than_elf', return_value=['/s/Blink.ino']):
+            self.assertTrue(main_module.check_outdated_elf('x.elf', True, logger))
+        logger.warning.assert_not_called()
+        texts = [c.args for c in logger.critical.call_args_list]
+        self.assertEqual(texts[1], ("  %s", '/s/Blink.ino'))
+        self.assertIn("then start debugging again", texts[-1][0])
+
+    def test_option(self):
+        self.assertEqual(options(["-d", "atmega328p"]).outdated_elf, 'warn')
+        self.assertEqual(options(["--arduino-ide"]).outdated_elf, 'refuse')
+        self.assertEqual(options(["--arduino-ide", "--outdated-elf", "warn"]).outdated_elf, 'warn')
