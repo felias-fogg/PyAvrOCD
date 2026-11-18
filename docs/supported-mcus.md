@@ -14,7 +14,7 @@ The list is structured by the Arduino packages that support the chips, where som
 
 Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rather challenging.
 
-### ATtinys supported by [TinyCore](supporting-packages.md#tinycore) and [ATTinyCore (Debug enabled)](supporting-packages.md#attinycore)
+### ATtinys supported by [TinyCore](supporting-packages.md#tinycore) and [ATTinyCore (debug-configured)](supporting-packages.md#attinycore)
 
 * **ATtiny43U**
 * **ATtiny2313\***, **ATtiny2313A\***

@@ -1,14 +1,14 @@
 # Debug-capable Arduino packages
 
-Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. You can distinguish them along two dimensions. The first one is the dimension of who maintains the **debug-capable package**. Some of them are **original packages**, maintained by their authors. Others are **forks** of existing packages. The second dimension is how much debug support is integrated into the package. Some are **debug-configured**, meaning that all configuration files have been provided, but the binary debugging tools are missing. For those packages, it is necessary to additionally install the **AvrDebugger board package**. A package is called **debug-ready **when it contains all the configuration files as well as the binary tools.
+Arduino packages are the key to making debugging available in the *Arduino IDE 2* and the *Arduino Maker Workshop*. You can distinguish them along two dimensions. The first one is the dimension of who maintains the **debug-capable package**. Some of them are **original packages**, maintained by their authors. Others are **forks** of existing packages. The second dimension is how much debug support is integrated into the package. Some are **debug-configured**, meaning that all configuration files have been provided, but the binary debugging tools are missing. For those packages, it is necessary to additionally install the **[AvrDebugger](#avrdebugger) board package**. A package is called **debug-ready** when it contains all the configuration files as well as the binary tools.
 
 Up until version 1.7.0, all debug-capable packages had been *debug-ready*. Starting with 2.0.0, new versions of debug-capable packages are set up to be *debug-configured*. The main reasons behind this are that it saves considerable disk space and it allows for centralized updates of the debugging tools.
 
-If you want to install such a debug-capable package, you first have to add a new *boards manager* URL in the `Preferences` dialog.
+If you want to install such a debug-capable package, you first have to add new *boards manager* URLs in the `Preferences` dialog.
 
 {!details-boards-manager-url.md!}
 
-Once this has been done, you can search in the <code>Boards Manager</code> for the package and install it or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by `-preX,` and the name of the package will have `(Debug capable)` attached to the official name.
+Once this has been done, you can search in the <code>Boards Manager</code> for the packages and install it or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by `-preX`, and the name of the package will have `(debug-configured)` attached to the official name (up to version 1.7.0, it used to be `(Debug enabled)`).
 
 {!details-install-package.md!}
 
@@ -18,7 +18,13 @@ Once this has been done, you can search in the <code>Boards Manager</code> for t
 
 ### [AvrDebugger](https://github.com/felias-fogg/AvrDebugger)
 
-This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools *PyAvrOCD*, a patched version of *avr-gdb*, and *simavr*.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section with packages of type 2.
+This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools *PyAvrOCD*, a patched version of *avr-gdb*, and *simavr*.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section with packages listing debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:
+
+```
+https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
+```
+
+
 
 ### [TinyCore](https://github.com/MCUdude/TinyCore)
 
@@ -54,7 +60,7 @@ https://mcudude.github.io/MightyCore/package_MCUdude_MightyCore_index.json
 
 ### [MegaCore](https://github.com/MCUdude/MegaCore)
 
-A package for most 64- and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the [listed MCUs](https://github.com/MCUdude/MegaCore#supported-microcontrollers) are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding the foolowing URL to the *boards manager URL*:
+A package for most 64- and 100-pin AVRs. For example, the Arduino Mega (2560) is supported by this package. All of the [listed MCUs](https://github.com/MCUdude/MegaCore#supported-microcontrollers) are debuggable, but the ATmega128 has the problem that only hardware breakpoints are allowed. Debugging is supported since version 3.1.0. You can make the package installable by adding the following URL to the *boards manager URL*:
 
 ```
 https://mcudude.github.io/MegaCore/package_MCUdude_MegaCore_index.json
@@ -68,9 +74,9 @@ This package covers just ATmega8515 and ATmega162, of which only the latter poss
 https://mcudude.github.io/MajorCore/package_MCUdude_MajorCore_index.json
 ```
 
-### [MegaCoreX](https://github.com/felias-fogg/MegaCoreX)
+### [MegaCoreX](https://github.com/MCUDude/MegaCoreX)
 
-This is a fork of the package for the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can make the debug-enabled fork of the package available using the following URL:
+This package covers the megaAVR-0 chip family, such as the ATmega4809, which is used on the Nano Every Board and the Uno WiFi Rev 2. You can make it available using the following URL:
 
 ```
 https://mcudude.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
@@ -80,20 +86,21 @@ https://mcudude.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 
 ### [XMiniCore](https://github.com/felias-fogg/XMiniCore)
 
-This is a debug-enabled Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. You can make the board package available by including the following boards manager URL:
+This is a debug-configured Arduino package for the Microchip development boards [ATmega328P Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328p-xmini), [ATmega168BP Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega168pb-xmini), and [ATmega328PB Xplained Mini](https://www.microchip.com/en-us/development-tool/atmega328pb-xmini). It is meant to be a replacement for the *Atmel AVR Xplained-minis* board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see [quickstart guide for ATmega328P Xplained Mini](quick_arduino.md#quickstart-atmega328p-xplained-mini)). It is just plug-and-play. You can make the board package available by including the following boards manager URL:
 
 ```
 https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 ```
 
-As with all the other boards in this section, you also need to install the `AvrDebugger` package.
+As with all the other packages in this section, you also need to install the [AvrDebugger](#avrdebugger) package.
 
 ## Debug-ready forks
 
 <a id=arduino-avr-boards></a>
-### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (debug-capable)
 
-This is the debug-enabled fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are
+### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (Debug enabled)
+
+This is a fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are
 
 - additional programmers,
 - changes to platform.txt to enable debugging,
@@ -109,9 +116,9 @@ Since the AvrDebugger board package is very similar in intention and coverage, t
 
 <a id=arduino-megaavr-boards></a>
 
-### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (debug-capable)
+### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (Debug enabled)
 
-This is the debug-enabled fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by [MegaCoreX](#megacorex). The only changes to the upstream repo are:
+This is a fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by [MegaCoreX](#megacorex). The only changes to the upstream repo are:
 
 - additional programmers,
 - changes to platform.txt to enable debugging,
@@ -126,33 +133,36 @@ https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCor
 
 <a id=megatinycore></a>
 
-### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (debug-capable)
+### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (Debug enabled)
 
-This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-enabled fork available using the following URL:
+This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-capable fork available using the following URL:
 
 ```
 https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
 ```
 
 <a id=dxcore></a>
-### [DxCore](https://github.com/felias-fogg/DxCore) (debug-capable)
 
-This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-enabled fork available by using:
+### [DxCore](https://github.com/felias-fogg/DxCore) (Debug enabled)
+
+This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-capable fork available by using:
 
 ```
-https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_DxCore_index.json
+https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
 ```
+
+
+
+## Debug-configured forks
 
 <a id=attinycore></a>
 
-### [ATTinyCore](https://github.com/felias-fogg/ATTinyCore) (debug-capable)
+### [ATTinyCore](https://github.com/felias-fogg/ATTinyCore) (debug-configured)
 
-This is a debug-enabled fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWire interface. Nowadays, [TinyCore (see above)](#tinycore) is the preferred package for classic ATtinys. You can make this fork available by including the following URL:
+This is a fork of ATTinyCore version 1.5.2, which covers all classic ATtinys with a debugWIRE interface. Nowadays, [TinyCore (see above)](#tinycore) is the preferred package for classic ATtinys. However, I still maintain ATTinyCore 1.5.2 so that people can use it if they want. You can make this fork available by including the following URL:
 
 ```
 https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 ```
 
-## Debug-configured forks
-
-Currently, there are no such packages. But this will change quickly.
+If you want to debug with this core, you need to install the [AvrDebugger](#avrdebugger) package as well.
