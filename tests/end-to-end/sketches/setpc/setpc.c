@@ -1,5 +1,5 @@
 /*
- * For the e2e test 'setpc' (UPDI only): the PC is written onto a software breakpoint
+ * For the e2e test 'setpc': the PC is written onto a software breakpoint
  * and the target is single-stepped. The labels give GDB fixed names for the three
  * instructions, wherever the compiler puts them: a one-word instruction that gets
  * the breakpoint, a two-word one after it, and one more after that. When the step

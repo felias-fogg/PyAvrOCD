@@ -519,15 +519,18 @@ tests:
         response: LedOff
       - import: epilog
 
-# UPDI only: write the PC onto a software breakpoint and single-step. The OCD would
-# execute the BREAK instead of the instruction and leave the PC off by one, so that the
-# next step lands in the middle of the two-word instruction (see docs/UPDI-notes.md).
-# The backend steps without the breakpoint in this case. In avr-gdb, a code address cast
-# to an integer is a word address, as is the value assigned to $pc.
+# Write the PC onto a software breakpoint and single-step. On UPDI, the OCD would execute
+# the BREAK instead of the instruction and leave the PC off by one, so that the next step
+# lands in the middle of the two-word instruction (see docs/UPDI-notes.md); the backend
+# steps without the breakpoint in this case. On the other interfaces the same sequence
+# settles whether each way of stepping over a BREAK (by the probe, or by injection from
+# the server) copes with a PC that was written rather than reached. r24 shows that the
+# 'inc r24' at the breakpoint was executed, and only once. In avr-gdb, a code address
+# cast to an integer is a word address, as is the value assigned to $pc.
   setpc:
     sketch: setpc
     requires:
-      updi: true
+      onlyhwbp: false        # needs software breakpoints
     steps:
       - stimulus: set logging file log/setpc.log
       - import: prolog
@@ -544,8 +547,11 @@ tests:
       - stimulus: print (unsigned long)$pc == (unsigned long)&pcbp_next
         response: "= 1"
       - stimulus: set $pc = (unsigned long)&pcbp_target
+      - stimulus: set $r24_before = $r24
       - stimulus: stepi                       # PC written onto the BREAK: the case in question
       - stimulus: print (unsigned long)$pc == (unsigned long)&pcbp_next
+        response: "= 1"
+      - stimulus: print (int)(unsigned char)($r24 - $r24_before)
         response: "= 1"
       - stimulus: stepi                       # and not into the middle of the two-word sts
       - stimulus: print (unsigned long)$pc == (unsigned long)&pcbp_after

@@ -184,6 +184,23 @@ cores:
         value: 20000000UL
     default: 20
 
+  AvrDebugger:                  # the Arduino AVR boards with debug flags; uses arduino:avr's core
+    toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
+    options:
+      cpu: true
+      clock: false
+      bootloader: false
+      chip: false
+      LTO: false
+      pinout: false
+      variant: false
+    default: 16
+    clock:
+      8:
+        value: 8000000UL
+      16:
+        value: 16000000UL
+
   arduino:
     toolchain: arduino:avr-gcc   # for the make sketches; avr-gcc is not on the PATH everywhere
     options:
