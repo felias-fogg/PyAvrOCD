@@ -24,7 +24,11 @@ This is a package that inherits most of its properties from Arduino's AVR Board 
 https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 ```
 
+<a id=megaavrdebugger></a>
 
+### [megaAvrDebugger](https://github.com/felias-fogg/AvrDebugger)
+
+This is the second platform of the [AvrDebugger](#avrdebugger) package and is installed from the same URL. It inherits core and variants from Arduino's *megaAVR Boards* package and adds the debug configuration and the UPDI programmers for the Nano Every and the Uno WiFi Rev2. It uses the same debugging tools as AvrDebugger; if you install both, the tools are installed only once. The Uno WiFi Rev2 has an onboard debugger (mEDBG); the Nano Every needs an external UPDI probe connected to the UPDI pad on the back of the board.
 
 ### [TinyCore](https://github.com/MCUdude/TinyCore)
 
@@ -96,41 +100,6 @@ As with all the other packages in this section, you also need to install the [Av
 
 ## Debug-ready forks
 
-<a id=arduino-avr-boards></a>
-
-### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (Debug enabled)
-
-This is a fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are
-
-- additional programmers,
-- changes to platform.txt to enable debugging,
-- changes to boards.txt to enable the JTAG pins on boards with the JTAG interface, and
-- an upgrade to version 8.0 of avrdude.
-
-You can make this fork available by including:
-```
-https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json
-```
-
-Since the AvrDebugger board package is very similar in intention and coverage, this package will be retired soon.
-
-<a id=arduino-megaavr-boards></a>
-
-### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (Debug enabled)
-
-This is a fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by [MegaCoreX](#megacorex). The only changes to the upstream repo are:
-
-- additional programmers,
-- changes to platform.txt to enable debugging,
-- change to boards.txt to set the default programmer for the Uno Wifi Rev2, and
-- an upgrade to version 8.0 of avrdude.
-
-You can make this fork available by including:
-
-```
-https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCore-megaavr_index.json
-```
-
 <a id=megatinycore></a>
 
 ### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (Debug enabled)
@@ -166,3 +135,30 @@ https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.jso
 ```
 
 If you want to debug with this core, you need to install the [AvrDebugger](#avrdebugger) package as well.
+
+
+
+## Retired forks
+
+Some forks that I provided earlier are now in a retired state. They are marked as *deprecated* and their README pages tell you what to install instead.
+
+<a id=arduino-avr-boards></a>
+
+### [Arduino AVR Boards](https://github.com/felias-fogg/ArduinoCore-avr) (Debug enabled)
+
+This fork of the standard Arduino package is deprecated. Debugging the classic Arduino AVR boards is now provided by [AvrDebugger](#avrdebugger), which works together with the official *Arduino AVR Boards*. If you have installed the fork, switch over as follows:
+
+1. Remove `https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json` from the *boards manager URLs*.
+2. In the `Boards Manager`, select a 1.8.x version of *Arduino AVR Boards* and install it. This replaces the fork.
+3. Install [AvrDebugger](#avrdebugger).
+
+<a id=arduino-megaavr-boards></a>
+
+### [Arduino megaAVR Boards](https://github.com/felias-fogg/ArduinoCore-megaavr) (Debug enabled)
+
+This is a fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno WiFi Rev2 boards. Debugging the Arduino megaAVR boards is now provided by [megaAvrDebugger](#megaavrdebugger), which works together with the official *Arduino megaAVR Boards*. If you have installed the fork, switch over as follows:
+
+1. Remove `https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCore-megaavr_index.json` from the *boards manager URLs*.
+2. In the `Boards Manager`, select a 1.8.x version of *Arduino megaAVR Boards* and install it. This replaces the fork.
+3. Install [megaAvrDebugger](#megaavrdebugger).
+

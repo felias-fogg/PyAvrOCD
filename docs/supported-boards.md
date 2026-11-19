@@ -63,8 +63,8 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Arduino Industrial 101
 - Arduino Linino One
 - Arduino UNO WiFi (Rev 1):  [MiniCore](supporting-packages.md#minicore); cut `RESET EN` solder bridge
-- **Arduino Uno WiFi (Rev 2)**: [MegaCoreX](supporting-packages.md#megacorex), [Arduino megaAVR Boards (Debug enabled)](supporting-packages.md#arduino-megaavr-boards); board has an onboard debugger; the recommended pinout is `Uno Wifi`; serial I/O is via `Serial`; `LED_BUILTIN` is digital pin 25 (PD6); there is no bootloader support because you can load via the onboard debugger/programmer `microUPDI/Uno WiFi`
-- **Arduino Nano Every:** [MegaCoreX](supporting-packages.md#megacorex), [Arduino megaAVR Boards (Debug enabled)](supporting-packages.md#arduino-megaavr-boards); [UPDI pad on the backside](board-preparation.md#preparing-a-updi-target); the only pinout is `Nano Every`; serial I/O is routed via `Serial`; `LED_BUILTIN` is digital pin 13 (PE2); there is no bootloader support because you can load via the onboard programmer `JTAG2UPDI`
+- **Arduino Uno WiFi (Rev 2)**: [MegaCoreX](supporting-packages.md#megacorex), [megaAvrDebugger](supporting-packages.md#megaavrdebugger); board has an onboard debugger; the recommended pinout is `Uno Wifi`; serial I/O is via `Serial`; `LED_BUILTIN` is digital pin 25 (PD6); there is no bootloader support because you can load via the onboard debugger/programmer `microUPDI/Uno WiFi`
+- **Arduino Nano Every:** [MegaCoreX](supporting-packages.md#megacorex), [megaAvrDebugger](supporting-packages.md#megaavrdebugger); [UPDI pad on the backside](board-preparation.md#preparing-a-updi-target); the only pinout is `Nano Every`; serial I/O is routed via `Serial`; `LED_BUILTIN` is digital pin 13 (PE2); there is no bootloader support because you can load via the onboard programmer `JTAG2UPDI`
 
 ## Sparkfun boards
 

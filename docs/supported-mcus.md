@@ -278,7 +278,7 @@ Most of the MCUs covered by this package are already supported by other packages
 
 ## Modern ATmegas
 
-### ATmegas supported by [MegaCoreX (Debug enabled)](supporting-packages.md#megacorex)
+### ATmegas supported by [MegaCoreX](supporting-packages.md#megacorex)
 
 This is the megaAVR 0-series. The ATmega4809 made it on some Arduino boards.
 
@@ -287,7 +287,7 @@ This is the megaAVR 0-series. The ATmega4809 made it on some Arduino boards.
 - **ATmega3208**, **ATmega3209**
 - **ATmega4808**, **ATmega4809**
 
-### ATmega supported by [Arduino megaAVR Boards (Debug enabled)](supporting-packages.md#arduino-megaavr-boards)
+### ATmega supported by [megaAvrDebugger](supporting-packages.md#megaavrdebugger)
 
 There exists only 2 Arduino boards, both using the
 
