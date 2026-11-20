@@ -279,8 +279,12 @@
 <td>Command that power-cycles the target, for instance by switching a laboratory supply off and on again. It is run through the shell whenever debugWIRE needs a power cycle and the debug probe cannot do it itself (only the mEDBG and dw-link on a dw-probe shield can). If it does not finish with exit status 0 within 60 seconds, you are asked to power-cycle as usual. An example for a Siglent SPD3303X on the network is <code>extras/powercycle/spd3303x.py</code> in the repository: <code>--power-cycle-command "python3 extras/powercycle/spd3303x.py supply 1"</code>.</td>
 </tr>
 <tr>
+<td><code>--outdated-elf</code></td>
+<td>What to do when source files of the program have been changed after the ELF file given with <code>--elf-file</code> was built: <code>warn</code> (default) or <code>refuse</code> to start.</td>
+</tr>
+<tr>
 <td><code>--arduino-ide</code></td>
-<td>Stands for the options that only make sense when the Arduino IDE 2 starts the GDB server, currently <code>--once</code>. They take effect as if they stood in place of <code>--arduino-ide</code>, so an option given after it overrides them.</td>
+<td>Stands for the options that only make sense when the Arduino IDE 2 starts the GDB server, currently <code>--once --outdated-elf refuse</code>. They take effect as if they stood in place of <code>--arduino-ide</code>, so an option given after it overrides them.</td>
 </tr>
 <tr>
 <td><code>--min-version</code></td>

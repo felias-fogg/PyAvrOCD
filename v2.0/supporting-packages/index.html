@@ -61,6 +61,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#avrdebugger">AvrDebugger</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#megaavrdebugger">megaAvrDebugger</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#tinycore">TinyCore</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#microcore">MicroCore</a>
@@ -83,21 +85,21 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#debug-ready-forks">Debug-ready forks</a>
+    <li class="toctree-l2"><a class="reference internal" href="#debug-configured-forks">Debug-configured forks</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#attinycore-debug-configured">ATTinyCore (debug-configured)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#megatinycore-debug-configured">megaTinyCore (debug-configured)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dxcore-debug-configured">DxCore (debug-configured)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#retired-forks">Retired forks</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#arduino-avr-boards-debug-enabled">Arduino AVR Boards (Debug enabled)</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#arduino-megaavr-boards-debug-enabled">Arduino megaAVR Boards (Debug enabled)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#megatinycore-debug-enabled">megaTinyCore (Debug enabled)</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#dxcore-debug-enabled">DxCore (Debug enabled)</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#debug-configured-forks">Debug-configured forks</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#attinycore-debug-configured">ATTinyCore (debug-configured)</a>
     </li>
         </ul>
     </li>
@@ -221,7 +223,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 </details>
 <p></p>
 
-<p>Once this has been done, you can search in the <code>Boards Manager</code> for the packages and install it or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by <code>-preX</code>, and the name of the package will have <code>(debug-configured)</code> attached to the official name (up to version 1.7.0, it used to be <code>(Debug enabled)</code>).</p>
+<p>Once this has been done, you can search in the <code>Boards Manager</code> for the packages and install or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by <code>-preX</code>, and the name of the package will have <code>(debug-configured)</code> attached to the official name (up to version 1.7.0, it used to be <code>(Debug enabled)</code>).</p>
 <details>
 <summary><b>How to install a new Arduino package or update an existing one</b></summary>
 <p></p>
@@ -233,9 +235,12 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <h2 id="debug-ready-packages">Debug-ready packages</h2>
 <p><a id=avrdebugger></a></p>
 <h3 id="avrdebugger"><a href="https://github.com/felias-fogg/AvrDebugger">AvrDebugger</a></h3>
-<p>This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools <em>PyAvrOCD</em>, a patched version of <em>avr-gdb</em>, and <em>simavr</em>.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section with packages listing debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:</p>
+<p>This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools <em>PyAvrOCD</em>, a patched version of <em>avr-gdb</em>, and <em>simavr</em>.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section on debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:</p>
 <pre><code>https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 </code></pre>
+<p><a id=megaavrdebugger></a></p>
+<h3 id="megaavrdebugger"><a href="https://github.com/felias-fogg/AvrDebugger">megaAvrDebugger</a></h3>
+<p>This is the second platform of the <a href="#avrdebugger">AvrDebugger</a> package and is installed from the same URL. It inherits core and variants from Arduino's <em>megaAVR Boards</em> package and adds the debug configuration and the UPDI programmers for the Nano Every and the Uno WiFi Rev2. It uses the same debugging tools as AvrDebugger; if you install both, the tools are installed only once. The Uno WiFi Rev2 has an onboard debugger (mEDBG); the Nano Every needs an external UPDI probe connected to the UPDI pad on the back of the board.</p>
 <h3 id="tinycore"><a href="https://github.com/MCUdude/TinyCore">TinyCore</a></h3>
 <p>This is a fork of ATTinyCore version 2.0.0. It is the preferred way of supporting classic ATtinys.  <s>It does not yet support the micronucleus bootloaders, however.</s> Debugging support has been integrated starting with the release of v0.0.1. You can install it after including the following URL:</p>
 <pre><code>https://mcudude.github.io/TinyCore/package_MCUdude_TinyCore_index.json
@@ -270,42 +275,6 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 </code></pre>
 <p>As with all the other packages in this section, you also need to install the <a href="#avrdebugger">AvrDebugger</a> package.</p>
-<h2 id="debug-ready-forks">Debug-ready forks</h2>
-<p><a id=arduino-avr-boards></a></p>
-<h3 id="arduino-avr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-avr">Arduino AVR Boards</a> (Debug enabled)</h3>
-<p>This is a fork of the standard Arduino package, which supports all Arduino AVR boards. The only changes are</p>
-<ul>
-<li>additional programmers,</li>
-<li>changes to platform.txt to enable debugging,</li>
-<li>changes to boards.txt to enable the JTAG pins on boards with the JTAG interface, and</li>
-<li>an upgrade to version 8.0 of avrdude.</li>
-</ul>
-<p>You can make this fork available by including:</p>
-<pre><code>https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json
-</code></pre>
-<p>Since the AvrDebugger board package is very similar in intention and coverage, this package will be retired soon.</p>
-<p><a id=arduino-megaavr-boards></a></p>
-<h3 id="arduino-megaavr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-megaavr">Arduino megaAVR Boards</a> (Debug enabled)</h3>
-<p>This is a fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno Wifi Rev2 boards. Note that these are also supported (offering more configuration options) by <a href="#megacorex">MegaCoreX</a>. The only changes to the upstream repo are:</p>
-<ul>
-<li>additional programmers,</li>
-<li>changes to platform.txt to enable debugging,</li>
-<li>change to boards.txt to set the default programmer for the Uno Wifi Rev2, and</li>
-<li>an upgrade to version 8.0 of avrdude.</li>
-</ul>
-<p>You can make this fork available by including:</p>
-<pre><code>https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCore-megaavr_index.json
-</code></pre>
-<p><a id=megatinycore></a></p>
-<h3 id="megatinycore-debug-enabled"><a href="https://github.com/felias-fogg/megaTinyCore">megaTinyCore</a> (Debug enabled)</h3>
-<p>This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-capable fork available using the following URL:</p>
-<pre><code>https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
-</code></pre>
-<p><a id=dxcore></a></p>
-<h3 id="dxcore-debug-enabled"><a href="https://github.com/felias-fogg/DxCore">DxCore</a> (Debug enabled)</h3>
-<p>This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-capable fork available by using:</p>
-<pre><code>https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
-</code></pre>
 <h2 id="debug-configured-forks">Debug-configured forks</h2>
 <p><a id=attinycore></a></p>
 <h3 id="attinycore-debug-configured"><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore</a> (debug-configured)</h3>
@@ -313,6 +282,36 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <pre><code>https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.json
 </code></pre>
 <p>If you want to debug with this core, you need to install the <a href="#avrdebugger">AvrDebugger</a> package as well.</p>
+<p><a id=megatinycore></a></p>
+<h3 id="megatinycore-debug-configured"><a href="https://github.com/felias-fogg/megaTinyCore">megaTinyCore</a> (debug-configured)</h3>
+<p>This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make this debug-configured fork available using the following URL:</p>
+<pre><code>https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
+</code></pre>
+<p>And again, if you want to debug, you need to install the <a href="#avrdebugger">AvrDebugger</a> package too.</p>
+<p><a id=dxcore></a></p>
+<h3 id="dxcore-debug-configured"><a href="https://github.com/felias-fogg/DxCore">DxCore</a> (debug-configured)</h3>
+<p>This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-capable fork available by using:</p>
+<pre><code>https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
+</code></pre>
+<p>As before, debugging is only possible if you install the <a href="#avrdebugger">AvrDebugger</a> package.</p>
+<h2 id="retired-forks">Retired forks</h2>
+<p>Some forks that I provided earlier are now in a retired state. They are marked as <em>deprecated</em> and their README pages tell you what to install instead.</p>
+<p><a id=arduino-avr-boards></a></p>
+<h3 id="arduino-avr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-avr">Arduino AVR Boards</a> (Debug enabled)</h3>
+<p>This fork of the standard Arduino package is deprecated. Debugging the classic Arduino AVR boards is now provided by <a href="#avrdebugger">AvrDebugger</a>, which works together with the official <em>Arduino AVR Boards</em>. If you have installed the fork, switch over as follows:</p>
+<ol>
+<li>Remove <code>https://felias-fogg.github.io/ArduinoCore-avr/package_felias-fogg_ArduinoCore-avr_index.json</code> from the <em>boards manager URLs</em>.</li>
+<li>In the <code>Boards Manager</code>, select a 1.8.x version of <em>Arduino AVR Boards</em> and install it. This replaces the fork.</li>
+<li>Install <a href="#avrdebugger">AvrDebugger</a>.</li>
+</ol>
+<p><a id=arduino-megaavr-boards></a></p>
+<h3 id="arduino-megaavr-boards-debug-enabled"><a href="https://github.com/felias-fogg/ArduinoCore-megaavr">Arduino megaAVR Boards</a> (Debug enabled)</h3>
+<p>This is a fork of the megaAVR Arduino package, which supports the Nano Every as well as the Uno WiFi Rev2 boards. Debugging the Arduino megaAVR boards is now provided by <a href="#megaavrdebugger">megaAvrDebugger</a>, which works together with the official <em>Arduino megaAVR Boards</em>. If you have installed the fork, switch over as follows:</p>
+<ol>
+<li>Remove <code>https://felias-fogg.github.io/ArduinoCore-megaavr/package_felias-fogg_ArduinoCore-megaavr_index.json</code> from the <em>boards manager URLs</em>.</li>
+<li>In the <code>Boards Manager</code>, select a 1.8.x version of <em>Arduino megaAVR Boards</em> and install it. This replaces the fork.</li>
+<li>Install <a href="#megaavrdebugger">megaAvrDebugger</a>.</li>
+</ol>
               
             </div>
           </div><footer>
