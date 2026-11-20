@@ -1015,7 +1015,7 @@ devices:
       flash: 48
     board: '4809'
     pinout: 48pin_standard
-    setup: Curiosity Nano or Uno WiFi Rev2 or Nano Every
+    setup: Curiosity Nano or a bare chip; for the Uno WiFi Rev2 use 'uno-wifi', for the Nano Every 'nano-every' (their LED and board pins differ; this pinout's LED_BUILTIN is PA7, the NINA reset on the Uno WiFi Rev2)
 
   atmega808:
     mcu: atmega808

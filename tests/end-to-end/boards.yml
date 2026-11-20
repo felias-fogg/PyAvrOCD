@@ -58,6 +58,7 @@ devices:
   uno-wifi:
     import: atmega4809
     pinout: uno_wifi
+    setup: Arduino Uno WiFi Rev2 (onboard mEDBG); BOOTEND must be 0x00, as the sketches are built without a bootloader -- an upload with the official megaAVR core sets it to 0x02, and then no interrupt arrives
 
   nano-every:
     import: atmega4809

@@ -8,7 +8,7 @@ If you want to install such a debug-capable package, you first have to add new *
 
 {!details-boards-manager-url.md!}
 
-Once this has been done, you can search in the <code>Boards Manager</code> for the packages and install it or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by `-preX`, and the name of the package will have `(debug-configured)` attached to the official name (up to version 1.7.0, it used to be `(Debug enabled)`).
+Once this has been done, you can search in the <code>Boards Manager</code> for the packages and install or upgrade to the most recent version. In case of a debug-capable fork, the version number is usually suffixed by `-preX`, and the name of the package will have `(debug-configured)` attached to the official name (up to version 1.7.0, it used to be `(Debug enabled)`).
 
 {!details-install-package.md!}
 
@@ -18,7 +18,7 @@ Once this has been done, you can search in the <code>Boards Manager</code> for t
 
 ### [AvrDebugger](https://github.com/felias-fogg/AvrDebugger)
 
-This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools *PyAvrOCD*, a patched version of *avr-gdb*, and *simavr*.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section with packages listing debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:
+This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools *PyAvrOCD*, a patched version of *avr-gdb*, and *simavr*.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section on debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:
 
 ```
 https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json

@@ -6,6 +6,8 @@
 #     ./extras/release.sh 1.3.4-rc1    # one to try out first
 #     ./extras/release.sh -n 1.3.4     # say what it would do, do nothing
 #
+# (./avr/extras/release.sh where extras/ sits in the core's folder, as in TinyCore.)
+#
 # A tag is the one thing in this whole business that cannot be taken back once
 # it is out: the workflow runs, the release appears, the board manager index
 # gets an entry, and people have it. So everything that can be looked at
@@ -15,10 +17,10 @@ set -u
 DRY=0
 case "${1:-}" in
     -n|--dry-run) DRY=1; shift ;;
-    -h|--help) echo "Usage: ./extras/release.sh [-n] <version>"; exit 0 ;;
+    -h|--help) echo "Usage: $0 [-n] <version>"; exit 0 ;;
 esac
 if [[ -z "${1:-}" ]] || [[ -n "${2:-}" ]]; then
-    echo "Usage: ./extras/release.sh [-n] <version>      e.g. 1.3.4 or 1.3.4-rc1"
+    echo "Usage: $0 [-n] <version>      e.g. 1.3.4 or 1.3.4-rc1"
     exit 1
 fi
 
@@ -42,12 +44,18 @@ BASE=$(base "$VERSION")
 
 # The version is stated in different places in different projects, and where it
 # is stated is also what the release is built from.
-if [[ -f platform.txt ]]; then
-    STATED=$(sed -n 's/^version=//p' platform.txt)
-    WHERE=platform.txt
-elif [[ -f avr/platform.txt ]]; then
-    STATED=$(sed -n 's/^version=//p' avr/platform.txt)
-    WHERE=avr/platform.txt
+# A core keeps its platform.txt at the top or in the folder of its architecture. A
+# platform.txt may set version= more than once (megaTinyCore does, as a workaround
+# for an IDE bug); the last one wins, as in the IDE.
+WHERE=""
+for candidate in platform.txt avr/platform.txt megaavr/platform.txt; do
+    if [[ -f "$candidate" ]]; then
+        WHERE="$candidate"
+        break
+    fi
+done
+if [[ -n "$WHERE" ]]; then
+    STATED=$(sed -n 's/^version=//p' "$WHERE" | tail -1)
 elif [[ -f pyproject.toml ]]; then
     STATED=$(sed -n 's/^version *= *"\(.*\)"/\1/p' pyproject.toml | head -1)
     WHERE=pyproject.toml
@@ -111,10 +119,11 @@ fi
 
 # The same checks the release workflow runs, so a failure costs a second here
 # instead of a red run and a tag that has to be cleaned up afterwards.
-if [[ -f extras/check_core.py ]] && command -v python3 > /dev/null; then
-    ROOT="."
-    [[ -f avr/platform.txt ]] && ROOT="avr"
-    python3 extras/check_core.py --root "$ROOT" --tag "$TAG" || exit 1
+# The checker sits beside this script, wherever that is (extras/ or avr/extras/),
+# and is told where the core is: in the folder of its platform.txt.
+HERE="$(cd "$(dirname "$0")" && pwd)"
+if [[ -f "$HERE/check_core.py" ]] && command -v python3 > /dev/null; then
+    python3 "$HERE/check_core.py" --root "$(dirname "$WHERE")" --tag "$TAG" || exit 1
 fi
 
 echo
