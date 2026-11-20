@@ -26,16 +26,19 @@ class HardwareBP():
         """
         Start execution with HWBP 0 (if not None)
         """
+        # The PC is read for the log only, and that is a round trip to the probe: the arguments
+        # of a logging call are evaluated even when its level is disabled, so read it only then
+        pc : int | None = None
+        if self.logger.isEnabledFor(logging.DEBUG):
+            pc = self.dbg.program_counter_read() << 1
         if cursor is not None: # if HWBP has been reserved for temporary work
-            self.logger.debug("Run from 0x%X to cursor 0x%X", self.dbg.program_counter_read()<<1,
-                                  cursor)
+            self.logger.debug("Run from 0x%X to cursor 0x%X", pc, cursor)
             self.dbg.run_to(cursor)
         elif self._hwbplist[0] is not None:
-            self.logger.debug("Run from 0x%X to HWBP0 0x%X", self.dbg.program_counter_read()<<1,
-                                  self._hwbplist[0])
+            self.logger.debug("Run from 0x%X to HWBP0 0x%X", pc, self._hwbplist[0])
             self.dbg.run_to(self._hwbplist[0])
         else:
-            self.logger.debug("Run from 0x%X",  self.dbg.program_counter_read()<<1)
+            self.logger.debug("Run from 0x%X", pc)
             self.dbg.run()
 
     def clear_all(self) -> None:

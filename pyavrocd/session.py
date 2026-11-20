@@ -873,6 +873,11 @@ class AvrSession(DebugBackend):
         Update register file, then make a single step
         """
         self._update_regfile_in_target()
+        # Reading the PC for the log costs a round trip to the probe each time, and the
+        # arguments of a logging call are evaluated even when its level is disabled
+        if not self.logger.isEnabledFor(logging.DEBUG):
+            self._single_step()
+            return
         self.logger.debug("PC before step: 0x%X", self.program_counter_read() << 1)
         self._single_step()
         self.logger.debug("PC after step: 0x%X", self.program_counter_read() << 1)
