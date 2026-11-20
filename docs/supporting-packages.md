@@ -98,28 +98,6 @@ https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 
 As with all the other packages in this section, you also need to install the [AvrDebugger](#avrdebugger) package.
 
-## Debug-ready forks
-
-<a id=megatinycore></a>
-
-### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (Debug enabled)
-
-This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make the debug-capable fork available using the following URL:
-
-```
-https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
-```
-
-<a id=dxcore></a>
-
-### [DxCore](https://github.com/felias-fogg/DxCore) (Debug enabled)
-
-This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-capable fork available by using:
-
-```
-https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
-```
-
 
 
 ## Debug-configured forks
@@ -135,6 +113,32 @@ https://felias-fogg.github.io/ATTinyCore/package_drazzy.com_ATTinyCore_index.jso
 ```
 
 If you want to debug with this core, you need to install the [AvrDebugger](#avrdebugger) package as well.
+
+<a id=megatinycore></a>
+
+### [megaTinyCore](https://github.com/felias-fogg/megaTinyCore) (debug-configured)
+
+This is a fork of the package for modern ATiny Chips (series 0, 1, and 2). Make this debug-configured fork available using the following URL:
+
+```
+https://felias-fogg.github.io/megaTinyCore/package_SpenceKonde_megaTinyCore_index.json
+```
+
+And again, if you want to debug, you need to install the [AvrDebugger](#avrdebugger) package too.
+
+
+
+<a id=dxcore></a>
+
+### [DxCore](https://github.com/felias-fogg/DxCore) (debug-configured)
+
+This is a fork of DxCore, the package for the most recently marketed AVR chips. Make the debug-capable fork available by using:
+
+```
+https://felias-fogg.github.io/DxCore/package_SpenceKonde_DxCore_index.json
+```
+
+As before, debugging is only possible if you install the [AvrDebugger](#avrdebugger) package.
 
 
 
