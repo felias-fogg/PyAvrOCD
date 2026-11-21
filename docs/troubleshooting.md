@@ -43,7 +43,7 @@ This error can happen after the GDB server was terminated before the debugger. I
 
 ### `ISP programming failed. Wrong connection or wrong MCU?`
 
-This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. It could also mean that the MCU is not accessible anymore by ISP programming, which can have [many possible causes](limitations.md#debugwire-can-brick-mcus).
+This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. The next likely reason is that it is a wrong MCU. It could also mean that the MCU is not accessible anymore by ISP programming, which can have [many possible causes](limitations.md#debugwire-can-brick-mcus).
 
 ### `Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?`
 
@@ -69,7 +69,7 @@ This happens when the line marked to be stopped at does not contain any machine 
 
 ### The debugger does not stop at all although only a single-step was requested or it definitely should have stopped at the next breakpoint.
 
-Such behavior could be caused the UPDI communication speed being too slow. I experienced breakpoint and single-step skidding when the UPDI communication speed was too low, e.g., 400 kbps or less when the MCU ran at 16 MHz. And this may lead to missing a breakpoint or stepping too far. Another possible cause is the [`-mrelax` optimization](compilation-options.md#critical-optimization-options) option (see below).
+Such behavior could be caused the UPDI communication speed being too slow. I experienced breakpoint and single-step skidding when the UPDI communication speed was too low, e.g., 400 kbps or less when the MCU ran at 16 MHz. And this may lead to missing a breakpoint or stepping too far. Another possible cause is the [`-mrelax` optimization](compilation-options.md#critical-optimization-options) option (see below). Or it might be the [*single-stepping takes forever*](#single-stepping-takes-forever) syndrome.
 
 ### The debugger seems to be confused about the line where it stopped
 
@@ -83,7 +83,7 @@ Probably the one of the reasons mentioned above (no `-Og` option set, `-mrelax` 
 
 You requested a single step, and the debugger seems to take forever to complete this single step. There are a few possible causes. First, when single-stepping a SLEEP instruction, the MCU will go into sleep mode. Second, [single-steping a source code line that contains an (implicit) loop](limitations.md#single-stepping-lines-containing-loops) can lead to a severe slowdown.  Third, this could also be caused by the phenomenon mentioned above (low UPDI communication speed leading to single-step skidding). Fourth, it could be caused by the `-mrelax` option (see above).
 
-In all cases, simply stop with Ctrl-C (or the equivalent on the IDE level), set a breakpoint where you want to stop next, and continue execution.
+In all cases, simply stop with Ctrl-C (or the equivalent on the IDE level), set a breakpoint where you want to stop next, and continue execution (instead of single-stepping).
 
 ### Variables cannot be accessed in the debugger
 
