@@ -170,36 +170,20 @@
 <p>Since the RESET line is used for communication between the MCU and the debug probe, no capacitors should be connected to it. Similarly, pull-up resistors should not be stronger than 10 kΩ. And, there should be no active reset circuit connected to this line. In other words, before debugging starts, disconnect such components from the RESET line.</p>
 <h3 id="arduino-uno-and-clones">Arduino Uno and clones</h3>
 <p>On the <strong>Arduino Uno</strong> and similar boards, an auto-reset capacitor is usually connected to the RESET line, as shown below.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/auto-reset.jpg" width="50%">
-</p>
-
+<p><img alt="" src="../pics/auto-reset.jpg" /></p>
 <p>This is responsible for issuing a reset signal when a serial connection is established to the board, which starts the bootloader, which then expects a HEX file sent by the Arduino IDE. On the original Uno board, there is a solder bridge marked 'RESET EN' that needs to be cut to disconnect the capacitor.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/cutconn.jpg" width="80%">
-</p>
-
+<p><img alt="" src="../pics/cutconn.jpg" /></p>
 <p>On clone boards with a CH340 serial converter chip, you may have to remove the capacitor marked <code>C8</code>.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/remove-c8.png" width="80%">
-</p>
+<p><img alt="" src="../pics/remove-c8.png" /></p>
 <h3 id="arduino-nano-and-clones">Arduino Nano and clones</h3>
 <p>Things are a bit more complicated with <strong>Arduino Nano</strong> boards. Here, you not only have to remove the auto-reset capacitor but also a strong pull-up resistor of 1kΩ on the RESET line. The following picture shows the bottom side of an Arduino Nano V3.3. The capacitor to be removed has been marked by a red ellipse, the 1kΩ resistor by a magenta one. Since this resistor is part of a resistor array, one needs to cut the trace instead. If you manage to cut the trace at the point marked by the green line, everything is fine. If you are not able to accomplish that, cutting at the point marked by the blue line is also OK. In this case, the power LED will also be cut off. In any case, after this modification, this board will probably only be usable for debugging purposes.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-cut.png" width="80%">
-</p>
-
+<p><img alt="" src="../pics/nano-cut.png" /></p>
 <p>For Arduino Nano clones (those using a CH340 as the serial converter), one can remove the resistor and the capacitor marked in the following picture, <a href="https://mtech.dk/thomsen/electro/arduino.php">as described by denMike</a>.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-clone.png" width="80%">
-</p>
+<p><img alt="" src="../pics/nano-clone.png" /></p>
 <p>Note, however, that there are many different versions of Nanos on the market. Verify that making the changes will indeed accomplish what you are after: Removing the capacitive and resistive load from the RESET line.</p>
 <h3 id="arduino-pro-mini-and-clones">Arduino Pro Mini and clones</h3>
 <p>The <strong>Arduino Pro Mini</strong> is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/pro-minis.png" width="80%">
-</p>
-
+<p><img alt="" src="../pics/pro-minis.png" /></p>
 <h3 id="other-atmegax8-boards">Other ATmegaX8 boards</h3>
 <p>For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.</p>
 <h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
@@ -221,10 +205,7 @@ The `SPIEN` fuse could be disabled. In this case, the above comments apply. Othe
 <h2 id="preparing-a-updi-target">Preparing a UPDI target</h2>
 <p>UPDI targets are easy to deal with. Ensure that there is no capacitive or resistive load or active component on the UPDI line and that the UPDI pin is accessible.</p>
 <p>On the <strong>Nano Every</strong>, UPDI cannot be accessed through the board pins, but there is a pad on the backside of the PCB that can be used to access the UPDI line. It is the middle pad of the line of three pads closer to the edge of the board (see picture below). And the onboard USB-UART converter is usually disconnected from this pin, so that one can connect to the pin without any problems.</p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/nano-every.png" width="60%">
-</p>
-
+<p><img alt="nano-every" src="../pics/nano-every.png" /></p>
 <p>On the <strong>Uno WIFI Rev2</strong>, again, the UPDI pin is not exposed. But on this board, a mEDBG debugger is implemented. So you can connect the MCU through this debugger.</p>
 <p>Problems arise when the UPDI pin is used as a GPIO or a RESET line. For this, consult the <a href="../fuse-preparation/#preparing-a-updi-target">section on fuse preparations for UPDI targets</a>.</p>
               
