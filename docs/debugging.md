@@ -14,19 +14,19 @@ Instead of connecting to a target, it is also possible to run a simulator (for s
 
 After c[ompiling the sketch](compilation-options.md#compiling-an-arduino-sketch-in-the-arduino-ide-2), it is time to start debugging by clicking the debug button in the top row. This will start the GDB server. If it does not start or exits prematurely, consult the [troubleshooting section](troubleshooting.md).
 
-![ide2-2](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-2.png)
+![ide2-2](pics/ide2-2.png)
 
 When you deal with a debugWIRE target, you may be asked to power-cycle the target, i.e., to disconnect and reconnect power to the target. Power cycling is only necessary once. The next time you start a debugging session, the MCU will already be in debugWIRE mode, and the GDB server will not stop at this point.
 
-Eventually, execution is stopped in the first line of the internal `main` function at an initial internal breakpoint, indicated by the yellow triangle (not on Windows) left of line 35 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
+Eventually, execution is stopped on the first line of the internal `main` function at an initial internal breakpoint, indicated by the yellow triangle (not on Windows) left of line 35 in the following screenshot. It may take some time before we reach that point, as the debugger must also load the program.
 
 After stopping, the IDE rearranges the layout, showing the debugging panes on the left and the sketch and other relevant source files on the right. It will also switch from displaying the `gdb-server` console to the `Debug Console`, which displays the output of the GDB debugger. In the last line of this console, a prompt symbol`>` is shown, where you can enter any GDB command, in particular, the [`monitor` commands](monitor-commands.md) to control the GDB server.
 
-![ide2-3](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-3-new.png)
+![ide2-3](pics/ide2-3-new.png)
 
 Now is a good time to familiarize yourself with the window's layout. The source code is on the right side. Below that is a console window, and to the left are the debug panes. To set a breakpoint, click to the left of the line numbers. Such breakpoints are displayed as red dots, such as those located to the left of lines 8 and 13 in the picture below.
 
-![ide2-4](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/ide2-4.png)
+![ide2-4](pics/ide2-4.png)
 
 ### Debugging
 
@@ -35,7 +35,7 @@ The debugging panes are organized as follows (see picture above). Pane A contain
 - *Reset*ting the device
 - *Continue* execution or *pause*
 - *Step over*: execute one source line
-- *Step into*: execute stepping into the function, if in this line one is called
+- *Step into*: execute stepping into the function, if one is called on this line
 - *Step out*: finish the current function and stop after the line where it was called
 - *Restart*: Same as Reset
 - *Stop*: Terminate debugging
@@ -44,7 +44,37 @@ Pane B shows the active threads, but there is just one in our case. Pane C displ
 
 Pane D displays variable values. Unfortunately, global variables are not shown if *link-time optimizations* are enabled, which is the default. Pane E can be populated with watch expressions, for example, with the names of global variables.  Finally, in pane F, the active breakpoints are listed.
 
-The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays all I/O registers of the MCU and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers. For more information on debugging, refer to the Arduino [debugging tutorial](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-debugger/).
+The panes below pane F are interesting if you are deep into the MCU hardware. The `CORTEX PERIPHERALS` pane displays I/O registers of the MCU and allows you to change the contents of these registers. The `CORTEX REGISTERS` pane displays the general registers.
+
+### Breakpoints
+
+Breakpoints are arguably one of the most powerful tools when it comes to debugging. They allow you to break execution at every point and then inspect the state of your program or even change it. Afterward, execution can be continued.
+
+ As mentioned above, you can set and remove them by clicking to the left of the line numbers of the program listing in the editor window. In the `BREAKPOINTS` pane, you can additionally disable and enable single or all breakpoints. Further, you can modify their effect. When right-clicking on a breakpoint entry, you can select to edit the breakpoint, which permits you to modify breakpoints in various ways:
+
+- You can turn the breakpoint into a *logpoint* meaning that at each hit, a log message in the `Debug Console` is printed instead of breaking execution. The log message can have printf format, e.g., `"counter1=%d counter2=%d\n" cnt1 cnt2`. Of course, this will slow down execution considerably.
+- You can add an expression to the breakpoint, turning it into a *conditional breakpoint*. At each breakpoint hit, the expression is evaluated, and only if true, execution breaks. This is much faster than doing such a thing manually. However, again, it slows down execution significantly because the stop and the evaluation of the expression will take time, usually around 50-200 milliseconds. If you think about a loop only doing a bit of basic arithmetic that iterates 1000 times, then an uninterrupted execution would take less than a second. With a conditional breakpoint, it is at least a minute.
+- You can set a *hit count*, which specifies how often this breakpoint can be hit without a stop taking place.  Again, this will slow down execution by roughly 50-100 ms for each breakpoint hit.
+
+PyAvrOCD uses *hardware breakpoints*, those based on hardware comparators, and *software breakpoints*, where the BREAK instruction is programmed into flash memory. It will do so in a manner to minimize flash wear. However, you can control which kind of breakpoints are employed by using the [`monitor breakpoints` command](monitor-commands.md#monitor-bp).
+
+<!--
+
+### Watchpoints
+
+*Watchpoints*, also called *data breakpoints*, are similar to ordinary breakpoints. However, instead of breaking when a certain program location in the program is reached, watchpoints request to break when a certain data location is accessed. Hardware support for such watchpoints is unfortunately only present in JTAG targets. They can use two of their four hardware breakpoints as watchpoints for a byte location. In addition, PyAvrOCD itself emulates such watchpoints in software, which is roughly one order of magnitude faster than using the mechanism GDB offers. However, a single instruction is still roughly 10-20 milliseconds, slowing execution down by a factor of at least 10,000.
+
+In Arduino IDE 2, there is no direct way to activate watchpoints. It is still possible to type the corresponding GDB commands into the input line of the `Debug Console`, though. The `watch`, `rwatch`, and `awatch` commands are described in detail in the [GDB manual section on Setting Watchpoints](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Set-Watchpoints.html#Set-Watchpoints). Note that PyAvrOCD, in general, expects either a variable or pointer value. Further, for JTAG targets, one 2-byte variable or two 1-byte variables are supported. All the remaining watchpoints will be emulated. Similar to program breakpoints, the usage of watchpoints can be controlled by the [`monitor watchpoints` command](monitor-commands.md#monitor-wp).
+
+-->
+
+### Peripherals pane
+
+The `CORTEX PERIPHERALS` pane provides you with a view into all of the MCU's I/O registers. After opening one of the register groups by clicking, the content of the registers in that group will be shown, and the updated values are displayed after each execution stop. Changed values are highlighted as shown in the following picture.
+
+![](pics/SVD.png)
+
+Hovering with your mouse over a register or bitfield will provide you with extra information. Clicking on the pen allows you to change the register value or bitfield.
 
 ### Correcting the bug and starting over
 
@@ -72,21 +102,21 @@ Debugging a program/sketch in PlatformIO/VSC is very similar to doing the same t
 
 [Gede](https://github.com/jhn98032/gede) is a lean and clean GUI for GDB. It can be built from source and run on almost all Linux distros, FreeBSD, and macOS. You need an avr-gdb client with a version greater than or equal to 10.2. If you have installed Gede somewhere in your PATH, you can start Gede by specifying the option `--start gede` or `-s gede` when starting PyAvrOCD.
 
-![Gede](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede.png)
+![Gede](pics/gede.png)
 
 `Project dir` and `Program` are specific to your debugging session. The rest should be copied as it is shown. Before you click `OK`, you should switch to the `Commands` section, where you need to enter the command `monitor debugwire enable` if you are working with a debugWIRE target.
 
-![ ](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-cmds.png)
+![ ](pics/gede-cmds.png)
 
 Clicking on OK, you start a debugging session. The startup may take a while because the debugger always loads the object file into memory. After a while, you will see a window similar to what is shown below.
 
-![Gede section](https://raw.githubusercontent.com/felias-fogg/PyAvrOCD/refs/heads/main/docs/pics/gede-window.png)
+![Gede section](pics/gede-window.png)
 
 ## Debugging with a command-line interface
 
-If you are more into command-line interface programming, simply using avr-gdb may be the right approach for you.
+If you are more into command-line interfaces, simply using avr-gdb may be the right approach for you.
 
-After [compiling your program](compilation-options.md#compiling-in-other-environments), e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all`, so that the GDB server manages the debug-related fuses (see [Setting the right fuses](fuse-preparation.md#general-considerations)):
+After [compiling your program](compilation-options.md#compiling-in-other-environments), e.g., varblink0.ino, you can start the GDB server and the GDB debugger. When starting the GDB server from the command line, you need to specify the MCU you want to connect to. In addition, you should specify the option `-m all` so that the GDB server manages the debug-related fuses (see [Setting the right fuses](fuse-preparation.md#general-considerations)):
 
 ```log
 $ pyavrocd -d atmega328p -m all
@@ -126,7 +156,9 @@ Note: automatically using hardware breakpoints for read-only addresses.
 ...
 ```
 
-In the above dialog, note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug. The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD often deletes the bootloader as well (in order to clear the lock bits), you also cannot upload anything over the serial line.
+In the above dialog, note the request to power-cycle the target system, which will only appear when dealing with debugWIRE targets. You then need to disconnect and reconnect the power to the target. Afterward, debugWIRE mode is enabled, and you can debug.
+
+The debugWIRE mode will not be disabled when you leave the debugger! It will only be disabled when you issue the command `monitor debugwire disable`.  This means that until then, the RESET button will not be of any use; you cannot upload anything using SPI programming, nor can you change fuses. Since PyAvrOCD often deletes the bootloader as well (in order to clear the lock bits), you also cannot upload anything over the serial line.
 
 ### Inspecting I/O registers
 
@@ -170,7 +202,7 @@ EXINT.EICRA.ISC0 (@0x800069[1:0]) = 0x0, 0b0, 0 (External Interrupt Sense Contro
 (gdb)
 ```
 
-If you specify an integer in addition, this will be used to set the value of the register or bitfield if uniquely described by `<ioreg-expression>`. This could look like as follows.
+If you specify an integer in addition, this will be used to set the value of the register or bitfield if uniquely described by `<ioreg-expression>`. This could look like this.
 
 ```
 ...

@@ -4,12 +4,12 @@ PyAvrOCD implements several `monitor` commands. These can be used to control imp
 
 When using Arduino IDE 2, you can type such commands into the last line of the `Debug Console`.
 
-<p align="center"><img src="https://raw.githubusercontent.com/felias-fogg/pyavrocd/refs/heads/main/docs/pics/ide-uno-5.png" width="70%"></p>
+![ide-uno-5](pics/ide-uno-5.png)
 
 | Command                                                      | Action                                                       |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| `monitor` `atexit` [`stay` \| `leave`]                       | When specifying `leave`, then the debugging mode will be left when exiting the debugger. With `stay`, the debugging mode is not left when exiting. For the debugWIRE interface, `stay` is the default (in order to avoid power-cycling). For all other interfaces, `leave` is the default. When you want to re-attach to a running system after leaving debugging, you should choose `stay`. Not necessary for UPDI targets. |
-| `monitor` `breakpoints` [`all` \| `software` \| `hardware`]  | Restricts the kind of breakpoints that can be used. Either `all` types are permitted, only `software` breakpoints are allowed, or only `hardware` breakpoints can be used. Using `all` kinds is the default. |
+| `monitor` `atexit` [`stay` \| `leave`]                       | When specifying `leave`, the debugging mode will be left when exiting the debugger. With `stay`, the debugging mode is not left when exiting. For the debugWIRE interface, `stay` is the default (in order to avoid power-cycling). For all other interfaces, `leave` is the default. When you want to re-attach to a running system after leaving debugging, you should choose `stay`. Not necessary for UPDI targets. |
+| `monitor` `breakpoints` [`all` \| `software` \| `hardware`]  | <a id=monitor-bp></a>Restricts the kind of breakpoints that can be used. Either `all` types are permitted, only `software` breakpoints are allowed, or only `hardware` breakpoints can be used. Using `all` kinds is the default. |
 | `monitor` `caching` [`enable` \| `disable`]                  | The loaded executable is cached in PyAvrOCD when `enable`d, which is the default setting. |
 | `monitor` `debugwire` [`enable` \| `disable`]                | DebugWIRE mode will be `enable`d or `disable`d. When enabling it, you may be asked to power-cycle the target, and the MCU will be reset. After disabling debugWIRE mode, one has to exit the debugger. Afterward, the MCU can be programmed again using SPI programming. |
 | `monitor` `disconnect`                                       | Disconnect from debug probe. This can be helpful in an IDE context when the IDE kills the GDB server while it is shutting down. |
@@ -23,9 +23,10 @@ When using Arduino IDE 2, you can type such commands into the last line of the `
 | `monitor` `rangestepping `[`enable` \| `disable`]            | The GDB range-stepping command is supported or disabled. The default is that it is `enable`d. |
 | `monitor` `reset`                                            | Resets the MCU.                                              |
 | `monitor` `singlestep` [`safe` \| `interruptible`]           | Single-stepping can be performed in a `safe` way, where single steps are shielded against interrupts. Otherwise, a single step can lead to a jump into the interrupt dispatch table. The `safe` option is the default. |
-| `monitor` `timers` [`run` \| `freeze`]                        | Timers can either be `frozen` when execution is stopped, or they can `run` freely. The latter option is helpful when PWM output is crucial, and it is the default. Changing the timer mode will imply an MCU reset. Note that on (U)PDI targets, the timers are always frozen when the CPU is stopped. |
+| `monitor` `timers` [`run` \| `freeze`]                       | Timers can either be `frozen` when execution is stopped, or they can `run` freely. The latter option is helpful when PWM output is crucial, and it is the default. Changing the timer mode will imply an MCU reset. Note that on (U)PDI targets, the timers are always frozen when the CPU is stopped. |
 | `monitor` `verify` [`enable `\|` disable`]                   | Verify flash after loading each flash page. The default setting is for this option to be `enable`d. |
 | `monitor` `version`                                          | Show version number of PyAvrOCD.                             |
+<!-- | `monitor` `watchpoints` [`all` \|`software` \|`hardware`]    | <a id=monitor-wp></a>Restricts the kind of watchpoints that can be used. Either `all` types are permitted, only `software` watchpoints (emulated in PyAvrOCD) are allowed, or only `hardware` watchpoints can be used. Using `all` kinds is the default. | -->
 
 All commands can, as usual, be abbreviated. For example, `mo de e` is equivalent to `monitor debugwire enable`. If you use a command without an argument, the current setting is printed.
 
