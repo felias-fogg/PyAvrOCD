@@ -1,4 +1,4 @@
-# Potential Speedup for Rangestepping
+# Potential Speedup for Range Stepping
 
 While the current implementation of range stepping does already cover a lot of ground, there is still the problem that when one "steps over" a line, one will necessarily stop for each procedure call. The reason is that we leave the range. GDB will then set a BP at the return address inside the range, continue execution, and after returning back into the range, another range-stepping action is called.
 
@@ -31,7 +31,7 @@ $m 80...                 ;; looking into prog
 $m 00...                 ;; looking into stack
 $m 00...                 ;; looking somewhere else
 $Z1,<func>,2             ;; set breakpoint outside range (start of function address)
-$vCont;c                 ;; finish function and stop after return
+$vCont;c                 ;; continue
 T05 ... PC at <func>     ;; stop inside function
 $z1,<func>,2             ;; remove temp BP
 $m 00 ...
