@@ -196,7 +196,7 @@
               
                 <h1 id="debug-capable-arduino-packages">Debug-capable Arduino packages</h1>
 <p>Arduino packages are the key to making debugging available in the <em>Arduino IDE 2</em> and the <em>Arduino Maker Workshop</em>. You can distinguish them along two dimensions. The first one is the dimension of who maintains the <strong>debug-capable package</strong>. Some of them are <strong>original packages</strong>, maintained by their authors. Others are <strong>forks</strong> of existing packages. The second dimension is how much debug support is integrated into the package. Some are <strong>debug-configured</strong>, meaning that all configuration files have been provided, but the binary debugging tools are missing. For those packages, it is necessary to additionally install the <strong><a href="#avrdebugger">AvrDebugger</a> board package</strong>. A package is called <strong>debug-ready</strong> when it contains all the configuration files as well as the binary tools.</p>
-<p>Up until version 1.7.0, all debug-capable packages had been <em>debug-ready</em>. Starting with 2.0.0, new versions of debug-capable packages are set up to be <em>debug-configured</em>. The main reasons behind this are that it saves considerable disk space and it allows for centralized updates of the debugging tools.</p>
+<p>Up until version 1.7.0 of PyAvrOCD, all debug-capable packages had been <em>debug-ready</em>. Starting with version 2.0.0, new versions of debug-capable packages are set up to be <em>debug-configured</em>. The main reasons behind this are that it saves considerable disk space and it allows for centralized updates of the debugging tools.</p>
 <p>If you want to install such a debug-capable package, you first have to add new <em>boards manager</em> URLs in the <code>Preferences</code> dialog.</p>
 <details>
   <summary><b>How to enter a new boards manager URL</b></summary>
@@ -235,7 +235,7 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <h2 id="debug-ready-packages">Debug-ready packages</h2>
 <p><a id=avrdebugger></a></p>
 <h3 id="avrdebugger"><a href="https://github.com/felias-fogg/AvrDebugger">AvrDebugger</a></h3>
-<p>This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools <em>PyAvrOCD</em>, a patched version of <em>avr-gdb</em>, and <em>simavr</em>.  The plan is to make AvrDebugger the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section on debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:</p>
+<p>This is a package that inherits most of its properties from Arduino's AVR Board package. The main difference is that it provides more programmers and has the configurations set up to start a debugger on a limited set of the classic Arduino boards. Most importantly, it provides the debugging tools <em>PyAvrOCD</em>, a patched version of <em>avr-gdb</em>, and <em>simavr</em>.  AvrDebugger is the central package for supplying the debugging tools. That means that the other packages mentioned in this section are supposed to slowly migrate to the section on debug-configured packages. The necessary URL for the Additional Boards Managers URLs is:</p>
 <pre><code>https://felias-fogg.github.io/AvrDebugger/package_felias-fogg_AvrDebugger_index.json
 </code></pre>
 <p><a id=megaavrdebugger></a></p>
@@ -270,11 +270,11 @@ Finish the dialog by clicking on two <code>OK</code>  buttons in succession.
 <pre><code>https://mcudude.github.io/MegaCoreX/package_MCUdude_MegaCoreX_index.json
 </code></pre>
 <h2 id="debug-configured-packages">Debug-configured packages</h2>
+<p>All the packages in this section need the <a href="#avrdebugger">AvrDebugger</a> package as well.</p>
 <h3 id="xminicore"><a href="https://github.com/felias-fogg/XMiniCore">XMiniCore</a></h3>
 <p>This is a debug-configured Arduino package for the Microchip development boards <a href="https://www.microchip.com/en-us/development-tool/atmega328p-xmini">ATmega328P Xplained Mini</a>, <a href="https://www.microchip.com/en-us/development-tool/atmega168pb-xmini">ATmega168BP Xplained Mini</a>, and <a href="https://www.microchip.com/en-us/development-tool/atmega328pb-xmini">ATmega328PB Xplained Mini</a>. It is meant to be a replacement for the <em>Atmel AVR Xplained-minis</em> board package of the official Arduino distribution. The new package is a stripped-down and adapted version of MiniCore. The boards, together with PyAvrOCD, work very smoothly (see <a href="../quick_arduino/#quickstart-atmega328p-xplained-mini">quickstart guide for ATmega328P Xplained Mini</a>). It is just plug-and-play. You can make the board package available by including the following boards manager URL:</p>
 <pre><code>https://felias-fogg.github.io/XMiniCore/package_felias-fogg_XMiniCore_index.json
 </code></pre>
-<p>As with all the other packages in this section, you also need to install the <a href="#avrdebugger">AvrDebugger</a> package.</p>
 <h2 id="debug-configured-forks">Debug-configured forks</h2>
 <p><a id=attinycore></a></p>
 <h3 id="attinycore-debug-configured"><a href="https://github.com/felias-fogg/ATTinyCore">ATTinyCore</a> (debug-configured)</h3>
