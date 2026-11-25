@@ -1,6 +1,6 @@
 """
 The session logic for classic and AVR8X targets that does not depend on the probe:
-fuse management (lockbits, BOOTRST, OCDEN, DWEN, EESAVE), signature checks, the checks for
+fuse management (lockbits, BOOTRST, OCDEN, DWEN, EESAVE, BOOTEND, OSCCFG), signature checks, the checks for
 chips with known defects, waiting for a power cycle, the register cache, and the order of
 the steps when a session starts and ends. Moved here unchanged from EdbgBackend, so that
 every backend (EDBG, JTAGICE mkII / AVR Dragon, ...) gets it.
@@ -18,6 +18,7 @@ import time
 
 from pymcuprog.deviceinfo import deviceinfo  # pure device description, no tool dependency
 
+from pyavrocd import updifuses
 from pyavrocd.backend import DebugBackend, BackendError, BackendNotSupportedError
 from pyavrocd.errors import FatalError, EndOfSession
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
@@ -33,7 +34,7 @@ class OcdLockedError(BackendError):
 # Properties of the debugging interfaces: the fuses that may be managed, number of hardware
 # breakpoints, SREG address, start of the I/O space, and the value of unset lockbits
 IFACE_PROPERTIES : dict[str, dict[str, Any]] = {
-    'updi' :      { 'manage' : ['lockbits', 'eesave'],
+    'updi' :      { 'manage' : ['lockbits', 'eesave', 'bootend', 'oscfreq'],
                     'hwbpnum' : 2, 'sregaddr' : 0x3F, 'iooffset' : 0, 'nolock' : 0xC5 },
     'debugwire' : { 'manage' : ['lockbits', 'bootrst', 'dwen', 'eesave'],
                     'hwbpnum' : 1, 'sregaddr' : 0x5F, 'iooffset' : 0x20, 'nolock' : 0xFF },
@@ -291,6 +292,7 @@ class AvrSession(DebugBackend):
                 raise FatalError("Could not attach to OCD because chip is locked") #pylint: disable=raise-missing-from
             self._erase_locked_chip()
         self._manage_fuses()
+        self._manage_updi_fuses()
         self._verify_target(dev_id)
         self._check_attiny2313()
         self._check_stuck_at_one_pc()
@@ -345,6 +347,73 @@ class AvrSession(DebugBackend):
                             dev_name[self.device_info['device_id']]))
         self.switch_to_debmode()
         self.logger.info("Switched to debugging mode")
+
+    def _updi_fuse_targets(self) -> list[tuple[str, int, int]]:
+        """
+        The UPDI fuses the program dictates, as (name, address, new value) -- only those that are
+        managed and differ from what the chip has.
+        """
+        targets : list[tuple[str, int, int]] = []
+        if 'bootend' in self.manage and 'bootend_base' in self.device_info:
+            if not self.args.elffile:
+                self.logger.info("BOOTEND/BOOTSIZE not checked: no ELF file given (-e)")
+            else:
+                vectors = updifuses.vector_table_address(self.args.elffile)
+                wanted = None if vectors is None else updifuses.bootend_value(vectors, self.device_info)
+                addr : int = self.device_info['bootend_base']
+                if vectors is None:
+                    self.logger.warning("BOOTEND/BOOTSIZE left alone: cannot tell where the vector "
+                                        "table of the program is")
+                elif wanted is None:
+                    self.logger.warning("BOOTEND/BOOTSIZE left alone: the vector table at 0x%X is "
+                                        "not at a multiple of %d bytes", vectors,
+                                        self.device_info['bootend_unit'])
+                else:
+                    current = self.read_fuse(addr, 1)[0]
+                    self.logger.debug("BOOTEND/BOOTSIZE: 0x%02X, vector table at 0x%X needs 0x%02X",
+                                      current, vectors, wanted)
+                    if current != wanted:
+                        targets.append(('BOOTEND/BOOTSIZE', addr, wanted))
+        if 'oscfreq' in self.manage and 'oscfreq_base' in self.device_info:
+            if not getattr(self.args, 'fcpu_given', False):
+                self.logger.info("Oscillator fuse not checked: no clock frequency given (-F)")
+            elif updifuses.oscillator_for(self.args.F_CPU) is None:
+                self.logger.info("Oscillator fuse left alone: %d Hz does not tell 16 from 20 MHz",
+                                 self.args.F_CPU)
+            else:
+                addr = self.device_info['oscfreq_base']
+                current = self.read_fuse(addr, 1)[0]
+                wanted = updifuses.oscfreq_value(current, self.args.F_CPU, self.device_info)
+                if wanted is not None and wanted != current:
+                    targets.append(('OSCCFG', addr, wanted))
+        return targets
+
+    def _manage_updi_fuses(self) -> None:
+        """
+        Set the UPDI fuses that follow from the program (-m bootend, -m oscfreq): BOOTEND/BOOTSIZE
+        from where the vector table is, the 16/20 MHz oscillator from F_CPU. A fuse is written only
+        if it differs. UPDI fuses take effect after a reset, and leaving programming mode is one.
+        """
+        if self._iface != 'updi' or self.args.attach:
+            return
+        if not {'bootend', 'oscfreq'} & set(self.manage):
+            return
+        # The fuses can be read in debugging mode. Programming mode is entered only for writing,
+        # because leaving it resets the MCU, and the next UPDI access needs some time after that.
+        targets = self._updi_fuse_targets()
+        if not targets:
+            return
+        self.switch_to_progmode()
+        try:
+            for name, addr, wanted in targets:
+                old = self.read_fuse(addr, 1)[0]
+                self.write_fuse(addr, bytearray([wanted]))
+                if self.read_fuse(addr, 1)[0] != wanted:
+                    raise FatalError("Fuse %s could not be set to 0x%02X" % (name, wanted))
+                self.logger.info("Fuse %s changed from 0x%02X to 0x%02X", name, old, wanted)
+        finally:
+            self.switch_to_debmode()
+            time.sleep(0.5) # as in _erase_locked_chip: the reset has to be over before the next access
 
     def _verify_target(self, dev_id : int) -> None:
         """

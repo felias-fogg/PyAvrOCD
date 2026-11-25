@@ -89,6 +89,8 @@ DEVICE_INFO = {
     'hv_implementation': 1,
     'eesave_base' : 0x5,
     'eesave_mask' : 0x01,
+    'bootend_base' : 0x8,
+    'bootend_unit' : 512,
     'device_id': 0x1E9572,
     'interface': 'UPDI',
 

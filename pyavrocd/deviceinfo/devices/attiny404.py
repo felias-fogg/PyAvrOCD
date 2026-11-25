@@ -89,6 +89,12 @@ DEVICE_INFO = {
     'hv_implementation': 0,
     'eesave_base' : 0x5,
     'eesave_mask' : 0x01,
+    'bootend_base' : 0x8,
+    'bootend_unit' : 256,
+    'oscfreq_base' : 0x2,
+    'oscfreq_mask' : 0x03,
+    'oscfreq_16mhz' : 0x01,
+    'oscfreq_20mhz' : 0x02,
     'device_id': 0x1E9226,
     'interface': 'UPDI',
 

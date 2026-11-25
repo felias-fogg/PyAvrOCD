@@ -201,6 +201,10 @@ class Memory():
     def store_to_cache(self, addr : int, data : bytes) -> None:
         """
         Store chunks into the flash cache. Programming will take place later.
+        Note that it is expected that chunks come in with increasing addresses.
+        Note further that the initial section, the part below the first code address,
+        will be written as 0xFF, wiping out any boot loader on UPDI targets. This is
+        intentionally the case!
         """
         self.logger.debug("store_to_cache at %X", addr)
         if addr < len(self._flash):

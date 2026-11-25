@@ -54,7 +54,7 @@ class TestMain(TestCase):
         self.assertEqual(args.nomm, False)
         self.assertEqual(args.skipsig, False)
         self.assertEqual(args.f, None)
-        self.assertEqual(args.F_CPU, '1000000')
+        self.assertEqual(args.F_CPU, None)   # the default (1 MHz) is applied in process_arguments
         self.assertEqual(args.atexit, None)
         self.assertEqual(args.breakpoints, 'all')
         self.assertEqual(args.caching, 'enable')
@@ -127,7 +127,7 @@ class TestMain(TestCase):
             call('Possible interfaces (-i) are: ', end=''),
             call('debugwire, jtag, pdi, updi'),
             call('Possible (repeatable) fuse management options (-m) are: '),
-            call('all, none, bootrst, nobootrst, dwen, nodwen, ocden, noocden, lockbits, nolockbits, eesave, noeesave', '(default = none)'),
+            call('all, none, bootrst, nobootrst, dwen, nodwen, ocden, noocden, lockbits, nolockbits, eesave, noeesave, bootend, nobootend, oscfreq, nooscfreq', '(default = none)'),
             call('Possible verbosity levels (-v) are: '),
             call('all, debug, info, warning, error, critical', '(default = info)')])
 
@@ -198,7 +198,7 @@ class TestMain(TestCase):
         args.clkdeb = 200
         args.kbps = None
         self.assertEqual(process_arguments(args, MagicMock()), (None, 'atmega328p', 'debugwire'))
-        self.assertEqual(args.manage, ['ocden', 'lockbits', 'eesave'])
+        self.assertEqual(args.manage, ['ocden', 'lockbits', 'eesave', 'bootend', 'oscfreq'])
 
     def test_process_arguments_gdb_manage_none_port(self):
         args = SimpleNamespace()

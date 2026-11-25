@@ -120,7 +120,7 @@ def options(cmd: list[str]) -> argparse.Namespace:
 
     parser.add_argument("-F", "--F_CPU",
                             type=str,
-                            default="1000000",
+                            default=None,
                             help="CPU clock frequency in Hz (default 1000000)")
 
     interface_choices : list[str] = ['debugwire', 'jtag', 'pdi', 'updi']
@@ -131,7 +131,8 @@ def options(cmd: list[str]) -> argparse.Namespace:
                             help="Debugging interface to use, use '?' for list")
 
     manage_choices : list [str] = ['all', 'none', 'bootrst', 'nobootrst', 'dwen', 'nodwen',
-                          'ocden', 'noocden', 'lockbits', 'nolockbits', 'eesave', 'noeesave']
+                          'ocden', 'noocden', 'lockbits', 'nolockbits', 'eesave', 'noeesave',
+                          'bootend', 'nobootend', 'oscfreq', 'nooscfreq']
     parser.add_argument("-m", "--manage",
                             metavar="FUSE",
                             action='append',
@@ -350,7 +351,9 @@ def process_arguments(args : argparse.Namespace, logger : logging.Logger) -> tup
     - device name
     - interface string
     """
-    args.F_CPU = int(args.F_CPU.rstrip('UL'))
+    # Whether -F was given: the oscillator fuse (-m oscfreq) must not follow the default
+    args.fcpu_given = args.F_CPU is not None
+    args.F_CPU = int((args.F_CPU or "1000000").rstrip('UL'))
 
     if args.cmd:
         portcmd : list[str] = [c for c in args.cmd if 'gdb_port' in c]
@@ -367,7 +370,7 @@ def process_arguments(args : argparse.Namespace, logger : logging.Logger) -> tup
     manage :list[str] = []
     for f in args.manage:
         if f == 'all':
-            manage = ['bootrst', 'dwen', 'ocden', 'lockbits', 'eesave']
+            manage = ['bootrst', 'dwen', 'ocden', 'lockbits', 'eesave', 'bootend', 'oscfreq']
         elif f == 'none':
             manage = []
         elif f.startswith('no'):

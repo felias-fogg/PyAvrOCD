@@ -8,6 +8,7 @@ from typing import Any
 # pylint: disable=consider-using-f-string,line-too-long
 
 import os
+import re
 import collections
 import argparse
 import textwrap
@@ -332,6 +333,64 @@ def capture_eesave_from_register_group(element):
                 return off
     return None
 
+def capture_bootend_from_fuse_module(element):
+    """
+    Capture the fuse offset of BOOTEND (tinyAVR 0/1/2, megaAVR 0) or BOOTSIZE (AVR Dx, Ex, Sx)
+    from the FUSE module element
+
+    :param element: element with tag='module' and name='FUSE'
+    :return: offset of the fuse as a string, or None
+    """
+    for reg in element.iter('register'):
+        if reg.attrib.get('name', '').upper() in ('BOOTEND', 'BOOTSIZE'):
+            return reg.attrib['offset']
+    return None
+
+def bootend_unit(devicename):
+    """
+    The number of bytes one unit of BOOTEND/BOOTSIZE stands for. The ATDF files do not say; the
+    numbers are from the data sheets. For the AVR Lx parts there is no data sheet yet, so they get
+    no unit, and PyAvrOCD does not manage the fuse there.
+
+    :param devicename: device name as in the ATDF file
+    :return: bytes per unit, or None
+    """
+    name = devicename.lower()
+    if re.match(r'^at(tiny|mega)\d', name):          # tinyAVR 0/1/2, megaAVR 0
+        return 256
+    if re.match(r'^avr\d+(ea|eb)\d', name):
+        return 256
+    if re.match(r'^avr\d+(da|db|dd|du|sd)\d', name):
+        return 512
+    return None
+
+def capture_oscfreq_from_fuse_module(element):
+    """
+    Capture the fuse bits that choose between the 16 MHz and the 20 MHz internal oscillator:
+    FREQSEL in OSCCFG (tinyAVR 0/1/2, megaAVR 0) or OSCHFFRQ in OSCCFG (AVR Ex, Lx). The values
+    come from the value group the bitfield refers to, shifted into the position of the field.
+
+    :param element: element with tag='module' and name='FUSE'
+    :return: (offset, mask, value for 16 MHz, value for 20 MHz) as ints, or None
+    """
+    groups = {vg.attrib.get('name'): vg for vg in element.iter('value-group')}
+    for reg in element.iter('register'):
+        if reg.attrib.get('name', '').upper() != 'OSCCFG':
+            continue
+        for bf in reg.findall('bitfield'):
+            if bf.attrib.get('name', '').upper() not in ('FREQSEL', 'OSCHFFRQ'):
+                continue
+            mask = int(bf.attrib['mask'], 16)
+            shift = (mask & -mask).bit_length() - 1
+            values = {}
+            for value in groups.get(bf.attrib.get('values'), []):
+                found = re.match(r'^(16|20)M', value.attrib.get('name', '').upper())
+                if found:
+                    values[found.group(1)] = int(value.attrib['value'], 16) << shift
+            if '16' in values and '20' in values:
+                return int(reg.attrib['offset'], 16), mask, values['16'], values['20']
+    return None
+
 def capture_bootrst_from_register_group(element):
     """
     Capture the fuse address of the BOOTRST bit from a register-group element
@@ -537,6 +596,8 @@ def harvest_from_file(filename : str) -> tuple[ str, list[str]]:
     bootrst_mask = None
     eesave_base = None
     eesave_mask = None
+    bootend_base = None
+    oscfreq = None
     tcnt0_base = None
     toie0_base = None
     toie0_mask = None
@@ -568,6 +629,9 @@ def harvest_from_file(filename : str) -> tuple[ str, list[str]]:
                 extra_fields += module
                 if found_updi_fuse:
                     shared_updi = True
+                if elem.attrib['name'].upper() == 'FUSE':
+                    bootend_base = capture_bootend_from_fuse_module(elem) or bootend_base
+                    oscfreq = capture_oscfreq_from_fuse_module(elem) or oscfreq
             if elem.tag == 'interface':
                 interfaces.append(elem.attrib['name'])
             if elem.tag == 'property-groups':
@@ -685,6 +749,14 @@ def harvest_from_file(filename : str) -> tuple[ str, list[str]]:
         extra_fields += "    'eesave_base' : " + "%s" % eesave_base + ",\n"
     if eesave_mask:
         extra_fields += "    'eesave_mask' : " + "%s" % eesave_mask + ",\n"
+    if bootend_base and bootend_unit(devicename):
+        extra_fields += "    'bootend_base' : " + "%s" % bootend_base + ",\n"
+        extra_fields += "    'bootend_unit' : " + "%d" % bootend_unit(devicename) + ",\n"
+    if oscfreq:
+        extra_fields += "    'oscfreq_base' : 0x%X,\n" % oscfreq[0]
+        extra_fields += "    'oscfreq_mask' : 0x%02X,\n" % oscfreq[1]
+        extra_fields += "    'oscfreq_16mhz' : 0x%02X,\n" % oscfreq[2]
+        extra_fields += "    'oscfreq_20mhz' : 0x%02X,\n" % oscfreq[3]
     if tcnt0_base:
         extra_fields += "    'tcnt0_base' : " + "0x%02X" % tcnt0_base + ",\n"
     if cs0_base:
