@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.1.0
+
+- **Changed:**
+  - `--arduino-ide` now also stands for `--outdated-elf refuse` (see below).
+  - `-m all` now includes the new fuse options `bootend` and `oscfreq`.
+  - When the Arduino IDE starts PyAvrOCD with dw-link, the server listens after 0.7 s instead of 5.3 s. It used to wait 5 s for a JTAGICE mkII or AVR Dragon.
+  - Single-stepping is faster: about 12 ms per step instead of 20 ms (84 instead of 50 steps per second, measured on an AVR64DD32 with nEDBG). Log calls no longer read the PC for their arguments when debug logging is off.
+- **Added:**
+  - New option `--outdated-elf warn|refuse` (default: `warn`). If source files named in the ELF file's line tables have changed after the ELF file was built, PyAvrOCD warns or refuses to start. The Arduino IDE debugs the binary of the last *Verify* or *Upload* and does not compile when *Debug* is clicked.
+  - New fuse options `-m bootend` and `-m oscfreq` for UPDI targets (tinyAVR 0/1/2, megaAVR 0, AVR Dx, Ex, Sx; `oscfreq` also Lx):
+    - `bootend` sets BOOTEND or BOOTSIZE so that the application section starts where the vector table of the program given with `--elf-file` is.
+    - `oscfreq` selects the 16 or the 20 MHz oscillator (FREQSEL or OSCHFFRQ in OSCCFG) that `--F_CPU` requires, if `-F` is given and the frequency can be derived from only one of the two. For 2 MHz, which both give, and for tuned, overclocked or external clocks, the fuse is left as it is.
+    - A fuse is written only if its value differs; the other bits of the fuse byte are kept.
+  - The device files carry `bootend_base`/`bootend_unit` and `oscfreq_base`/`oscfreq_mask`/`oscfreq_16mhz`/`oscfreq_20mhz`, generated from the ATDF files by `harvest.py` (the BOOTEND/BOOTSIZE unit from the data sheets).
+- **Fixed:**
+  - dw-link: after a single step from a location with a software breakpoint, GDB could be shown the registers from before the step, and a register written at the breakpoint could be lost. The register cache is now written back before the instruction is executed in the debugger.
+  - Programs built for a UPDI chip whose BOOTEND/BOOTSIZE fuse did not match where the program is linked (e.g., MegaCoreX without bootloader on an Arduino Uno WiFi Rev2 that had been uploaded to with the official megaAVR core) ran until the first interrupt and then hung. With `-m bootend`, which the Arduino cores enable through `-m all`, the fuse is set accordingly (issue #21).
+
 ## 2.0.0 (16-Nov-2026)
 
 - **Changed**:
