@@ -108,6 +108,8 @@
                   </li>
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Release notes</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#release-v210">Release v2.1.0</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v200">Release v2.0.0</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#release-v170">Release v1.7.0</a>
@@ -221,6 +223,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="release-notes">Release Notes</h1>
+<h2 id="release-v210">Release v2.1.0</h2>
+<ul>
+<li><strong>The Arduino IDE now refuses to debug an outdated program.</strong> If you change the sketch and click <em>Debug</em> without <em>Verify</em> first, the IDE would debug the previous version. PyAvrOCD now notices this and says so in the gdb-server terminal. Outside the Arduino IDE, it only warns (option <code>--outdated-elf</code>).</li>
+<li><strong>UPDI chips: the fuses that the program dictates are set automatically</strong> (<code>-m bootend</code>, <code>-m oscfreq</code>, part of <code>-m all</code>). BOOTEND/BOOTSIZE is set so that the program's interrupt vector table is where the chip looks for it. This fixes sketches that hung at the first interrupt. The 16/20 MHz oscillator is selected according to <code>--F_CPU</code>.</li>
+<li><strong>Debugging with dw-link starts about 5 seconds faster</strong> in the Arduino IDE.</li>
+<li><strong>Single-stepping is faster</strong>, about 12 ms instead of 20 ms per step.</li>
+<li>With dw-link, GDB could show outdated register values after a single step from a breakpoint. This is fixed.</li>
+</ul>
 <h2 id="release-v200">Release v2.0.0</h2>
 <ul>
 <li><strong>dw-link users have to update to dw-link 7.</strong> PyAvrOCD now talks to dw-link using the JTAGICE mkII protocol instead of passing GDB's messages through, and dw-link 6 is no longer supported. dw-link is now an Arduino library: install <code>dw-link</code> with the Library Manager and upload the example sketch <code>dw-link</code> to the Uno, or flash <code>dw-link.hex</code> from the <a href="https://github.com/felias-fogg/dw-link/releases">releases page</a>.</li>
