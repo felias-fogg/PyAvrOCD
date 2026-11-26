@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyAvrOCD Class Layers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&display=swap">
+<style>
+/* Layout: a protocol stack read top (GDB) to bottom (wire); levels are rows, probe families are columns from L3 down */
+:root {
+  --bg: #f6f7f8;
+  --panel: #ffffff;
+  --fg: #1b2128;
+  --muted: #5d6874;
+  --rule: #d9dee3;
+  --own: #0b6e75;      --own-bg: #e3f2f2;      /* pyavrocd */
+  --mcu: #8a5a00;      --mcu-bg: #fbf0da;      /* pymcuprog */
+  --edbg: #5b3f99;     --edbg-bg: #efeafa;     /* pyedbglib */
+  --ext: #4f5964;      --ext-bg: #eceef1;      /* hidapi, pyusb/libusb, pyserial */
+  --warn: #a33a1f;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161a; --panel: #1a2026; --fg: #e3e8ec; --muted: #98a3ad; --rule: #2d353d;
+    --own: #5cc6cc; --own-bg: #12302f; --mcu: #e6b45a; --mcu-bg: #33280f;
+    --edbg: #b49cf0; --edbg-bg: #2a2340; --ext: #aab4be; --ext-bg: #252c33; --warn: #f08a6c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161a; --panel: #1a2026; --fg: #e3e8ec; --muted: #98a3ad; --rule: #2d353d;
+  --own: #5cc6cc; --own-bg: #12302f; --mcu: #e6b45a; --mcu-bg: #33280f;
+  --edbg: #b49cf0; --edbg-bg: #2a2340; --ext: #aab4be; --ext-bg: #252c33; --warn: #f08a6c;
+  color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1, h2 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; margin: 0; letter-spacing: .01em; }
+h1 { font-size: 2rem; line-height: 1.15; }
+h2 { font-size: 1.35rem; }
+p { margin: 0; max-width: 68ch; }
+code, .mono { font-family: var(--f-mono); font-size: .9em; }
+header { display: grid; gap: 12px; }
+.lede { color: var(--muted); }
+section { display: grid; gap: 16px; min-width: 0; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: .85rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; border: 1px solid; }
+
+.scroll { overflow-x: auto; min-width: 0; }
+.stack { display: grid; grid-template-columns: 210px repeat(3, minmax(0, 1fr)); min-width: 860px;
+  border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); }
+.stack > div { padding: 12px 14px; border-top: 1px solid var(--rule); min-width: 0; }
+.stack > .colhead { border-top: 0; font: 600 .72rem/1.3 var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-block: 10px; }
+.lvl { display: grid; gap: 2px; align-content: start; border-right: 1px solid var(--rule); }
+.lvl b { font: 600 .72rem var(--f-mono); color: var(--muted); letter-spacing: .06em; }
+.lvl strong { font: 600 1rem/1.25 var(--f-display); }
+.lvl small { color: var(--muted); font-size: .8rem; line-height: 1.35; }
+.span3 { grid-column: span 3; }
+.cell { display: flex; flex-wrap: wrap; gap: 8px; align-content: start; }
+.cell + .cell { border-left: 1px dashed var(--rule); }
+.none { color: var(--muted); font-size: .82rem; font-style: italic; }
+.c { display: grid; gap: 1px; padding: 5px 9px; border-radius: 5px; border: 1px solid; font-family: var(--f-mono); font-size: .8rem; line-height: 1.3; }
+.c i { font-style: normal; font-family: var(--f-body); font-size: .7rem; opacity: .8; }
+.own  { color: var(--own);  background: var(--own-bg);  border-color: color-mix(in srgb, var(--own) 35%, transparent); }
+.mcu  { color: var(--mcu);  background: var(--mcu-bg);  border-color: color-mix(in srgb, var(--mcu) 35%, transparent); }
+.edbg { color: var(--edbg); background: var(--edbg-bg); border-color: color-mix(in srgb, var(--edbg) 35%, transparent); }
+.ext  { color: var(--ext);  background: var(--ext-bg);  border-color: color-mix(in srgb, var(--ext) 35%, transparent); }
+.c.dead { border-style: dashed; opacity: .75; }
+.cross { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: .85rem; color: var(--muted); }
+
+.diagrams { display: grid; gap: 16px; }
+figure { margin: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+figcaption { font: 600 .95rem var(--f-display); }
+figcaption span { font: 400 .82rem var(--f-body); color: var(--muted); margin-left: 6px; }
+pre.mermaid { margin: 0; overflow-x: auto; background: transparent; }
+
+ol.notes { margin: 0; padding-left: 1.3em; display: grid; gap: 12px; max-width: 80ch; }
+ol.notes li::marker { font-family: var(--f-mono); color: var(--muted); }
+.tag { font: 600 .68rem var(--f-body); text-transform: uppercase; letter-spacing: .08em; padding: 1px 6px; border-radius: 3px; margin-right: 6px; vertical-align: 1px; border: 1px solid; }
+.tag.obs { color: var(--own); border-color: var(--own); }
+.tag.chk { color: var(--warn); border-color: var(--warn); }
+footer { color: var(--muted); font-size: .82rem; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <h1>PyAvrOCD class layers</h1>
+  <p class="lede">State of the branch <code>backends</code> on 2026-11-03. Base classes and MROs were computed from the code itself, and associations come from the attributes each constructor sets. The levels run from the GDB connection at the top down to the wire.</p>
+  <div class="legend">
+    <span><i class="sw own"></i>pyavrocd</span>
+    <span><i class="sw mcu"></i>pymcuprog</span>
+    <span><i class="sw edbg"></i>pyedbglib</span>
+    <span><i class="sw ext"></i>OS-level library</span>
+    <span><i class="sw own" style="border-style:dashed"></i>defined but not used</span>
+  </div>
+</header>
+
+<section>
+  <h2>Level map</h2>
+  <div class="scroll">
+  <div class="stack">
+    <div class="colhead">Level</div>
+    <div class="colhead">EDBG (Atmel-ICE, PICkit4, SNAP, mEDBG, nEDBG)</div>
+    <div class="colhead">JTAGICE mkII, AVR Dragon</div>
+    <div class="colhead">dw-link 7</div>
+
+    <div class="lvl"><b>L7</b><strong>GDB remote protocol</strong><small>TCP socket, RSP packets, dispatch</small></div>
+    <div class="cell span3">
+      <span class="c own">RspServer<i>server.py</i></span>
+      <span class="c own">GdbHandler<i>handler.py</i></span>
+    </div>
+
+    <div class="lvl"><b>L6</b><strong>Debugger logic</strong><small>breakpoints, execution, memory map, monitor commands</small></div>
+    <div class="cell span3">
+      <span class="c own">BreakAndExec<i>breakexec.py</i></span>
+      <span class="c own">HardwareBP<i>hardwarebp.py</i></span>
+      <span class="c own">Memory<i>memory.py</i></span>
+      <span class="c own">MonitorCommand<i>monitor.py</i></span>
+      <span class="c own">LiveTests<i>livetests.py</i></span>
+    </div>
+
+    <div class="lvl"><b>L5</b><strong>Backend interface</strong><small>the only thing L6 and L7 see; server-side SW BPs live here</small></div>
+    <div class="cell span3">
+      <span class="c own">DebugBackend (ABC)<i>backend.py</i></span>
+      <span class="c own">SwbpSupport<i>enum</i></span>
+      <span class="c own">ProbeCandidate<i>dataclass</i></span>
+      <span class="c own">BackendError + 3 subclasses<i>backend.py</i></span>
+      <span class="c own dead">ToolSpec<i>no register_tool() call</i></span>
+    </div>
+
+    <div class="lvl"><b>L4</b><strong>Session logic</strong><small>fuses, signature, DWEN/OCDEN, power cycle, register cache</small></div>
+    <div class="cell span3">
+      <span class="c own">AvrSession<i>session.py</i></span>
+      <span class="c own">OcdNotEnabledError, OcdLockedError<i>session.py</i></span>
+    </div>
+
+    <div class="lvl"><b>L3</b><strong>Probe backends</strong><small>the primitives AvrSession needs, per probe family</small></div>
+    <div class="cell">
+      <span class="c own">EdbgBackend<i>xavrdebugger.py</i></span>
+      <span class="c mcu">AvrDebugger<i>2nd base of EdbgBackend</i></span>
+    </div>
+    <div class="cell"><span class="c own">Jtag2Backend<i>jtag2backend.py</i></span></div>
+    <div class="cell"><span class="c own">DwlinkBackend<i>dwlinkbackend.py, is-a Jtag2Backend</i></span></div>
+
+    <div class="lvl"><b>L2</b><strong>Target and NVM access</strong><small>per interface: memory types, NVM, target quirks</small></div>
+    <div class="cell">
+      <span class="c own">XNvmAccessProviderCmsisDapUpdi<i>xnvmupdi.py</i></span>
+      <span class="c own">XNvmAccessProviderCmsisDapDebugwire<i>xnvmdebugwire.py</i></span>
+      <span class="c own">XNvmAccessProviderCmsisDapMegaAvrJtag<i>xnvmmegaavrjtag.py</i></span>
+      <span class="c mcu">NvmAccessProviderCmsisDapSpi<i>ISP</i></span>
+      <span class="c own">XTinyXAvrTarget<i>xavr8target.py</i></span>
+      <span class="c own">XTinyAvrTarget<i>xavr8target.py</i></span>
+      <span class="c own">XMegaAvrJtagTarget<i>xavr8target.py</i></span>
+      <span class="c own dead">XXmegaAvrTarget<i>not referenced</i></span>
+      <span class="c mcu">AvrDevice, NvmAccessProvider…<i>bases</i></span>
+    </div>
+    <div class="cell"><span class="none">No separate level: Jtag2Backend does this itself, with the jtag2 helpers make_device_descriptor(), make_device_context() and io_masks().</span></div>
+    <div class="cell"><span class="none">As for the mkII, inherited from Jtag2Backend.</span></div>
+
+    <div class="lvl"><b>L1</b><strong>Probe command sets</strong><small>what the probe firmware understands</small></div>
+    <div class="cell">
+      <span class="c edbg">Avr8Protocol<i>debugging</i></span>
+      <span class="c edbg">AvrIspProtocol<i>ISP</i></span>
+      <span class="c edbg">EdbgProtocol<i>board control</i></span>
+      <span class="c edbg">Jtagice3HousekeepingProtocol<i>sign-on, parameters</i></span>
+    </div>
+    <div class="cell">
+      <span class="c own">Jtag2Protocol<i>AVR067 commands</i></span>
+      <span class="c own">Jtag2Isp<i>ISP over mkII</i></span>
+      <span class="c own">SignOn<i>parsed answer</i></span>
+    </div>
+    <div class="cell">
+      <span class="c own">DwlinkProtocol<i>is-a Jtag2Protocol, adds error numbers</i></span>
+      <span class="c own">Jtag2Isp<i>inherited use</i></span>
+    </div>
+
+    <div class="lvl"><b>L0</b><strong>Framing and transport</strong><small>frames, sequence numbers, CRC, the wire</small></div>
+    <div class="cell">
+      <span class="c edbg">Jtagice3Protocol, Jtagice3Command<i>JTAGICE3 frames</i></span>
+      <span class="c edbg">AvrCommand<i>fragments, avr_command_response</i></span>
+      <span class="c edbg">CmsisDapUnit, DapWrapper<i>CMSIS-DAP, dap_command_response</i></span>
+      <span class="c edbg">HidTransportBase → CyHidApiTransport<i>USB HID</i></span>
+      <span class="c ext">hidapi</span>
+    </div>
+    <div class="cell">
+      <span class="c own">make_frame, parse_frame, crc16<i>functions in jtag2.py</i></span>
+      <span class="c own">Jtag2UsbTransport<i>USB bulk</i></span>
+      <span class="c ext">pyusb + libusb</span>
+    </div>
+    <div class="cell">
+      <span class="c own">make_frame, parse_frame, crc16<i>shared</i></span>
+      <span class="c own">Jtag2SerialTransport<i>byte stream, finds frame start</i></span>
+      <span class="c ext">pyserial</span>
+    </div>
+  </div>
+  </div>
+  <div class="cross"><strong style="color:var(--fg)">Across all levels:</strong>
+    <span class="c own">main.py<i>find_probe, find_dwlink, reboot_or_serve</i></span>
+    <span class="c own">_Deferral, transaction()<i>termination.py</i></span>
+    <span class="c own">FatalError, EndOfSession, TerminationRequest<i>errors.py</i></span>
+  </div>
+</section>
+
+<section>
+  <h2>Class diagrams</h2>
+  <p class="lede">Hollow triangle: inheritance. Filled diamond: the owner creates and holds the object. Open diamond: holds a reference it was given.</p>
+  <div class="diagrams">
+    <figure>
+      <figcaption>L7 to L3<span>everything above the backend interface, and the backend hierarchy</span></figcaption>
+<pre class="mermaid">
+classDiagram
+  direction TB
+  class DebugBackend {
+    &lt;&lt;abstract&gt;&gt;
+    swbp_support
+    guard_transactions()
+  }
+  class AvrSession {
+    &lt;&lt;abstract&gt;&gt;
+    primitives _sign_on() ...
+  }
+  class AvrDebugger {
+    pymcuprog
+  }
+  RspServer *-- GdbHandler : handler
+  GdbHandler *-- MonitorCommand : mon
+  GdbHandler *-- Memory : mem
+  GdbHandler *-- BreakAndExec : bp
+  GdbHandler *-- LiveTests
+  BreakAndExec *-- HardwareBP : hwbp
+  Memory o-- MonitorCommand
+  BreakAndExec o-- MonitorCommand
+  RspServer o-- DebugBackend : avrdebugger
+  GdbHandler o-- DebugBackend : dbg
+  Memory o-- DebugBackend : dbg
+  BreakAndExec o-- DebugBackend : dbg
+  HardwareBP o-- DebugBackend : dbg
+  DebugBackend <|-- AvrSession
+  AvrSession <|-- EdbgBackend
+  AvrDebugger <|-- EdbgBackend
+  AvrSession <|-- Jtag2Backend
+  Jtag2Backend <|-- DwlinkBackend
+</pre>
+    </figure>
+
+    <figure>
+      <figcaption>EDBG stack<span>L3 down to the HID transport; pymcuprog and pyedbglib classes included</span></figcaption>
+<pre class="mermaid">
+classDiagram
+  direction TB
+  AvrDebugger <|-- EdbgBackend
+  EdbgBackend o-- HidTransportBase : transport
+  EdbgBackend *-- XNvmAccessProviderCmsisDapUpdi : device (UPDI)
+  EdbgBackend *-- XNvmAccessProviderCmsisDapDebugwire : device (debugWIRE)
+  EdbgBackend *-- XNvmAccessProviderCmsisDapMegaAvrJtag : device (JTAG)
+  EdbgBackend *-- NvmAccessProviderCmsisDapSpi : spidevice
+  EdbgBackend *-- EdbgProtocol : edbg_protocol
+  EdbgBackend *-- Jtagice3HousekeepingProtocol : housekeeper
+  XNvmAccessProviderCmsisDapUpdi *-- XTinyXAvrTarget : avr
+  XNvmAccessProviderCmsisDapDebugwire *-- XTinyAvrTarget : avr
+  XNvmAccessProviderCmsisDapMegaAvrJtag *-- XMegaAvrJtagTarget : avr
+  NvmAccessProviderCmsisDapSpi *-- AvrIspProtocol : isp
+  TinyXAvrTarget <|-- XTinyXAvrTarget
+  TinyAvrTarget <|-- XTinyAvrTarget
+  MegaAvrJtagTarget <|-- XMegaAvrJtagTarget
+  AvrDevice <|-- TinyXAvrTarget
+  AvrDevice <|-- TinyAvrTarget
+  AvrDevice <|-- MegaAvrJtagTarget
+  AvrDevice *-- Avr8Protocol : protocol
+  Jtagice3Protocol <|-- Avr8Protocol
+  Jtagice3Protocol <|-- AvrIspProtocol
+  Jtagice3Protocol <|-- EdbgProtocol
+  Jtagice3Protocol <|-- Jtagice3HousekeepingProtocol
+  Jtagice3Command <|-- Jtagice3Protocol
+  AvrCommand <|-- Jtagice3Command
+  CmsisDapUnit <|-- AvrCommand
+  DapWrapper <|-- CmsisDapUnit
+  DapWrapper o-- HidTransportBase : transport
+  HidTransportBase <|-- CyHidApiTransport
+</pre>
+    </figure>
+
+    <figure>
+      <figcaption>mkII and dw-link stack<span>L3 down to USB bulk and serial</span></figcaption>
+<pre class="mermaid">
+classDiagram
+  direction TB
+  class Jtag2UsbTransport {
+    write_frame()
+    read_frame()
+  }
+  class Jtag2SerialTransport {
+    write_frame()
+    read_frame()
+  }
+  class Jtag2Protocol {
+    command()
+    sign_on()
+  }
+  Jtag2Backend <|-- DwlinkBackend
+  Jtag2Protocol <|-- DwlinkProtocol
+  Jtag2Backend *-- Jtag2UsbTransport : transport
+  Jtag2Backend *-- Jtag2Protocol : protocol
+  Jtag2Backend *-- Jtag2Isp : _isp
+  DwlinkBackend *-- Jtag2SerialTransport : transport
+  DwlinkBackend *-- DwlinkProtocol : protocol
+  Jtag2Isp o-- Jtag2Protocol
+  Jtag2Protocol o-- Jtag2UsbTransport : transport
+  Jtag2Protocol o-- Jtag2SerialTransport : transport
+  Jtag2Protocol ..> SignOn : creates
+</pre>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <h2>Observations</h2>
+  <ol class="notes">
+    <li><span class="tag obs">structure</span>The levels are separated in different ways. Inside pyedbglib, L1 and L0 are one inheritance chain: <code>Avr8Protocol</code> is-a <code>Jtagice3Protocol</code> is-a … is-a <code>DapWrapper</code>, which holds the transport. In pyavrocd's own mkII code, the levels are separate objects joined by composition: backend → protocol → transport.</li>
+    <li><span class="tag obs">structure</span>The two stacks are not equally deep. EDBG has a level L2 from pymcuprog (NVM provider → target → <code>Avr8Protocol</code>), and pyavrocd's <code>X…</code> classes extend it. The mkII path has no L2: <code>Jtag2Backend</code> builds the device descriptor and context itself and calls <code>Jtag2Protocol</code> directly.</li>
+    <li><span class="tag obs">MRO</span><code>EdbgBackend</code>'s MRO is EdbgBackend → AvrSession → DebugBackend → ABC → AvrDebugger. A method that pymcuprog's <code>AvrDebugger</code> defines is used only when none of pyavrocd's own classes defines the same name.</li>
+    <li><span class="tag obs">signals</span>The signal guard sits at different levels. For EDBG it wraps the two pyedbglib L0 methods <code>DapWrapper.dap_command_response</code> and <code>AvrCommand.avr_command_response</code>. For mkII and dw-link it sits one level higher, in <code>Jtag2Protocol.command()</code>, around a command together with its response. <code>Jtag2Backend.guard_transactions()</code> therefore does nothing.</li>
+    <li><span class="tag obs">typing</span>The two mkII transports have no common base class. They share <code>flush()</code>, <code>write_frame()</code>, <code>read_frame()</code> and <code>close()</code> only by duck typing; <code>set_baudrate()</code> exists only on the serial one. That is why <code>DwlinkBackend</code> needs <code># type: ignore[assignment]</code> on <code>transport</code> and <code>protocol</code>. A <code>typing.Protocol</code> for the transport would remove the ignores.</li>
+    <li><span class="tag chk">unused</span><code>XXmegaAvrTarget</code> is not referenced outside <code>xavr8target.py</code>. The <code>ToolSpec</code> registry (<code>TOOLS</code>, <code>register_tool()</code>, <code>discover_probes()</code>) is never filled; <code>main.py</code> chooses the backend with <code>EDBG_TOOLS</code> and <code>JTAG2_TOOLS</code>. The registry is meant for the time when a fourth probe family arrives.</li>
+  </ol>
+</section>
+
+<footer>Generated 2026-11-03 from the working tree of PyAvrOCD (branch backends). pymcuprog and pyedbglib classes are from the installed packages of the poetry environment.</footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<script>
+  const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "default", securityLevel: "strict" });
+</script>
+</body>
+</html>
