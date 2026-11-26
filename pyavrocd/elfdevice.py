@@ -143,7 +143,7 @@ def check_elf_device(elf_file : str | None, device : str | None, logger : loggin
             return False
         what = "the architecture " + arch
         logger.debug("ELF architecture %s, %s needs %s", arch, device, expected)
-    logger.critical("The program was built for %s, not for %s", what, device)
-    logger.critical("Select the right board, or verify (compile) the sketch for this one, "
+    logger.critical("The binary was built for %s, not for %s", what, device)
+    logger.critical("Recompile with correct MCU, "
                         "then start debugging again")
     return True

@@ -901,10 +901,10 @@ class TestOutdatedElf(TestCase):
             self.assertFalse(main_module.check_outdated_elf('x.elf', False, logger))
         logger.critical.assert_not_called()
         texts = [c.args for c in logger.warning.call_args_list]
-        self.assertEqual(texts[0], ("The program was built before these files were changed:",))
+        self.assertEqual(texts[0], ("The binary was built before these source files were modified:",))
         self.assertEqual(texts[1:6], [("  %s", n) for n in names[:5]])
         self.assertEqual(texts[6], ("  ... and %d more", 2))
-        self.assertIn("verify (compile) the sketch first", texts[7][0])
+        self.assertIn("You are debugging the previous version: recompile first!", texts[7][0])
 
     def test_refused(self):
         logger = MagicMock()

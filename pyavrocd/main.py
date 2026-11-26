@@ -553,15 +553,15 @@ def check_outdated_elf(elf_file : str | None, refuse : bool, logger : logging.Lo
     if not newer:
         return False
     log = logger.critical if refuse else logger.warning
-    log("The program was built before these files were changed:")
+    log("The binary was built before these source files were modified:")
     for name in newer[:5]:
         log("  %s", name)
     if len(newer) > 5:
         log("  ... and %d more", len(newer) - 5)
     if refuse:
-        log("Verify (compile) the sketch first, then start debugging again")
+        log("Recompile, then start debugging again")
     else:
-        log("You are debugging the previous version: verify (compile) the sketch first")
+        log("You are debugging the previous version: recompile first!")
     return refuse
 
 def startup_helper_prog(args : argparse.Namespace, logger : logging.Logger) -> None:
