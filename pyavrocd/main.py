@@ -41,6 +41,7 @@ from pyavrocd.xavrdebugger import EdbgBackend, EdbgProbe
 from pyavrocd import jtag2backend
 from pyavrocd.jtag2backend import Jtag2Backend
 from pyavrocd.dwlinkbackend import DwlinkBackend
+from pyavrocd.elfdevice import check_elf_device
 from pyavrocd import jtag1backend
 from pyavrocd.jtag1backend import Jtag1Backend
 from pyavrocd.backend import DebugBackend, ProbeCandidate
@@ -813,6 +814,8 @@ def startup(command_line : list[str], logger : logging.Logger) -> int:
     if check_elf_file_for_relax_optimization(args.elffile, logger):
         return 1
     if check_outdated_elf(args.elffile, args.outdated_elf == 'refuse', logger):
+        return 1
+    if not args.skipsig and check_elf_device(args.elffile, device, logger):
         return 1
 
     abort, probe = find_probe(args, intf, logger)

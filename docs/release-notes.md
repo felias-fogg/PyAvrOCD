@@ -3,6 +3,7 @@
 ## Release v2.1.0
 
 - **The Arduino IDE now refuses to debug an outdated program.** If you change the sketch and click *Debug* without *Verify* first, the IDE would debug the previous version. PyAvrOCD now notices this and says so in the gdb-server terminal. Outside the Arduino IDE, it only warns (option `--outdated-elf`).
+- **Debugging is refused when there is a target mismatch**:  When the program has been compiled for target that is not identical with the target specified with the `--device` option, debugging is refused.
 - **UPDI chips: the fuses that the program dictates are set automatically** (`-m bootend`, `-m oscfreq`, part of `-m all`). BOOTEND/BOOTSIZE is set so that the program's interrupt vector table is where the chip looks for it. This fixes sketches that hung at the first interrupt. The 16/20 MHz oscillator is selected according to `--F_CPU`.
 - **Debugging with dw-link starts about 5 seconds faster** in the Arduino IDE.
 - **Single-stepping is faster**, about 12 ms instead of 20 ms per step.

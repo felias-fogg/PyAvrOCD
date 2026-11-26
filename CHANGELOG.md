@@ -10,6 +10,7 @@
 - **Added:**
   - On JTAG targets, watchpoints, also called data breakpoints, are now supported. Either one 2-byte or two 1-byte variables. They eat into the set of available hardware breakpoints.
   - New option `--outdated-elf warn|refuse` (default: `warn`). If source files named in the ELF file's line tables have changed after the ELF file was built, PyAvrOCD warns or refuses to start. The Arduino IDE debugs the binary of the last *Verify* or *Upload* and does not compile when *Debug* is clicked.
+  - If the ELF file is specified, then the target mentioned in the ELF file is compared with the device specified by the `--device` option. If there is a mismatch, debugging is refused.
   - New fuse options `-m bootend` and `-m oscfreq` for UPDI targets (tinyAVR 0/1/2, megaAVR 0, AVR Dx, Ex, Sx; `oscfreq` also Lx):
     - `bootend` sets BOOTEND or BOOTSIZE so that the application section starts where the vector table of the program given with `--elf-file` is.
     - `oscfreq` selects the 16 or the 20 MHz oscillator (FREQSEL or OSCHFFRQ in OSCCFG) that `--F_CPU` requires, if `-F` is given and the frequency can be derived from only one of the two. For 2 MHz, which both give, and for tuned, overclocked or external clocks, the fuse is left as it is.
