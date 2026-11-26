@@ -23,6 +23,10 @@ on:
         type: boolean
         default: false
 
+# The token is read-only unless a job asks for more.
+permissions:
+  contents: read
+
 jobs:
   check:
     defaults:
@@ -585,6 +589,8 @@ jobs:
 
   build-assets:
     needs: [check, build-binaries, build-armhf-binary, build-i686-linux-binary, clients-debug-test]
+    permissions:
+      contents: write   # creates the release and uploads its assets
     # A skipped dependency skips the dependent job as well, so the armhf job
     # being optional has to be spelled out here: the other two must have
     # succeeded, and armhf may have succeeded or been skipped.
