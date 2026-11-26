@@ -32,9 +32,11 @@ Sometimes it may be necessary to change a few fuses before debugging is possible
 
 - `Lockbits`: If lockbits are set, then debugging is impossible. For this reason, the GDB server will clear the lockbits by erasing the chip's flash and EEPROM memory, provided PyAvrOCD has been instructed to manage the lockbits by `--manage all` or `--manage lockbits`.
 - `BOOTRST`: If this fuse is programmed, then instead of starting at address 0x0000, the MCU will start execution at the bootloader address. Since this is usually not intended when debugging, the GDB server unprograms this fuse. For the unlikely case that one wants to debug a bootloader, there is still the option to protect this fuse by not including `bootrst` as a fuse to be managed by the server when starting the GDB server from the command line.
+- `BOOTEND`, `BOOTSIZE`: On modern AVR chips, the boot section is located before the application program and the size of it is described by the `BOOTEND` or `BOOTSIZE` fuse bits. Since these fuses also decide about where the interrupt vector table is located, these fuse bits should align with what the compiler is instructed. For this reason, it is a good idea to always include `bootend` among the managed resources.
 - `DWEN`: This fuse needs to be programmed to access the debugWIRE on-chip debugger module. PyAvrOCD will program this fuse when asked to do so by the command `monitor debugwire enable`. After the fuse has been programmed, you must power-cycle the target board to enable the debugWIRE interface. Note that afterwards, SPI programming is impossible. With the command `monitor debugwire disable`, the debugWIRE interface will be disabled, and the `DWEN` fuse will be unprogrammed.
 - `OCDEN`: This is the fuse for enabling the JTAG on-chip debugger. It is simpler to deal with than `DWEN`,  because one can enable and disable this fuse in every situation. It will be activated before debugging starts and deactivated afterward.
 - `EESAVE`: If this fuse is programmed, then EEPROM contents will survive chip erase operations. If not, EEPROM content is deleted each time an erase operation is performed, even if this is only organizational. If you want to protect your EEPROM content, allow PyAvrOCD to manage this fuse. It will then temporarily program this fuse when necessary in order to safeguard the EEPROM content. This is particularly important when loading an executable that contains a code part to be stored in EEPROM. However, it does not help you when you need to clear the lock bits. If any lock bits are set, it is not possible to change fuses, which means you cannot change the EESAVE fuse temporarily.
+- `OSCHFFREQ`, `FREQSEL`: Some of the modern AVR chips provide fuses which can be used to choose between different oscillator frequencies, usually between 16 MHz and 20 MHz. Other frequencies are derived using a prescaler that has to be set during the initialization of the program. If one allows the `oscfreq` to be managed by PyAvrOCD, then it will select the right base frequency for the chosen `F_CPU` frequency.
 
 If you want to leave all the fuse management to PyAvrOCD, then specify `--manage all`. If you want to play it safe instead, you can manage these fuses and the lockbits manually using a fuse setting program such as avrdude.
 
@@ -85,13 +87,17 @@ After you have finished debugging, you should unprogram `OCDEN` because otherwis
 
 ## Preparing a UPDI target
 
-If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. However, if it is a pin with UPDI/GPIO/RESET shared functionality, and the UPDI functionality has been disabled,  you need high-voltage programming. PyAvrOCD does not support this because the compatible debug probes do not support high-voltage programming. The advice is to buy a dedicated [high-voltage UPDI programmer](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) or [build one on a breadboard](https://avdweb.nl/arduino/attiny3217/hv-programming), and then restore the UPDI functionality.
+If the UPDI pin is a dedicated UPDI pin, you do not have to prepare anything. However, if it is a pin with UPDI/GPIO/RESET shared functionality, and the UPDI functionality has been disabled,  you need high-voltage programming. PyAvrOCD does not support this because most of the compatible debug probes do not support high-voltage programming. The advice is to buy a dedicated a Microchip debug probe that can do that, to acquire a [high-voltage UPDI programmer](https://www.adafruit.com/product/5893?srsltid=AfmBOoo5mSe4piu5mrG4wDqql3ubXbUT2IH2BZVAKtZqX9YQiEWx0HX6) or to [build one on a breadboard](https://avdweb.nl/arduino/attiny3217/hv-programming), and then restore the UPDI functionality.
 
 ### Fuse settings when PyAvrOCD manages the fuse
 
-UPDI targets do not have a special debugging fuse, and the bootloader, if there is one, will be overwritten with NOPs. This means you only need to care about `lockbits`. So, for UPDI targets, PyAvrOCD will only manage the `EESAVE` fuse and the `lockbits` for you.
+UPDI targets do not have a special debugging fuse. However, PyAvrOCD will take care of the `lockbits` and the fuses associated with the `eesave`, `bootend`, and `oscfreq` resources.
 
 ### Fuse settings when fuses are managed manually
 
-When you want complete control over the fuses, you only have to make sure that the `lockbits` are cleared. You may also want to set the `EESAVE` fuse.
+When you want complete control over the fuses, you only have to make sure the following:
 
+1. The `lockbits` should be cleared.
+2. `BOOTSIZE` or `BOOTEND` should be set to the value the compiler assumed when compiling the program.
+3. The `OSCCFG` fuses should have the right value.
+4. The `EESAVE` fuse should be set to an appropriate value.
