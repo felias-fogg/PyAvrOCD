@@ -7,6 +7,14 @@ import logging
 from pyavrocd.backend import DebugBackend
 from pyavrocd.errors import FatalError
 
+# A hardware breakpoint that compares a data address for a watchpoint; it is not free for code
+RESERVED : int = -1
+
+# GDB's watchpoint types (Z2, Z3, Z4), the name in the stop reply, and the data breakpoint mode
+WATCH_KINDS : dict[int, tuple[str, int]] = {2 : ('watch', DebugBackend.DATA_WRITE),
+                                            3 : ('rwatch', DebugBackend.DATA_READ),
+                                            4 : ('awatch', DebugBackend.DATA_ACCESS)}
+
 
 class HardwareBP():
     """
@@ -20,6 +28,9 @@ class HardwareBP():
         self._hwbplist : list[int | None] = [None]*self._numhwbp
         self._tempalloc : list[int] | None = None
         self.logger : logging.Logger = logging.getLogger('pyavrocd.hardwarebp')
+        # watchpoints: (type, data address, length) -> the hardware breakpoints comparing for it
+        self._data_slots : list[int] = [ix for ix in dbg.data_breakpoint_slots() if ix < self._numhwbp]
+        self._watches : dict[tuple[int, int, int], list[int]] = {}
 
 
     def execute(self, cursor : int|None = None) -> None:
@@ -46,6 +57,7 @@ class HardwareBP():
         Clear all hardware breakpoints
         """
         self._hwbplist = [None]*self._numhwbp
+        self._watches = {}
         for ix in range(self._numhwbp-1):
             self.dbg.hardware_breakpoint_clear(ix+1)
         self.logger.debug("All hardware breakpoints cleared")
@@ -79,6 +91,12 @@ class HardwareBP():
         """
         return self._numhwbp - len([addr for addr in self._hwbplist if addr is not None])
 
+    def usable(self) -> int:
+        """
+        The number of hardware breakpoints that can be used for code, i.e., not reserved for watchpoints
+        """
+        return self._numhwbp - self._hwbplist.count(RESERVED)
+
     def set(self, addr : int) -> int | None:
         """
         Allocates the next free hardware breakpoint (counting up) and returns the index
@@ -109,10 +127,10 @@ class HardwareBP():
         """
         self.logger.debug("Trying to allocate %d temp HWBPs", len(templist))
         reassignlist : list[int] = []
-        if len(templist) > self._numhwbp:
+        if len(templist) > self.usable():
             raise FatalError("Not enough HWBPs for range-stepping. Internal confusion.")
         self._tempalloc = []
-        allocated : list[int] = [addr for addr in self._hwbplist if addr is not None]
+        allocated : list[int] = [addr for addr in self._hwbplist if addr is not None and addr != RESERVED]
         nextix : int | None
         for el in templist:
             nextix = self.set(el)
@@ -187,3 +205,71 @@ class HardwareBP():
         Tells us whether HWBP0 is available
         """
         return self._hwbplist[0] is None
+
+    # ===== watchpoints ==========================================================
+
+    def set_watch(self, kind : int, address : int, length : int) -> tuple[bool, list[int]]:
+        """
+        Set a watchpoint of GDB type 'kind' (2 write, 3 read, 4 access) on 'length' bytes at data
+        address 'address'. One data breakpoint per byte, so 1 or 2 bytes, at any alignment. Returns
+        whether it worked, and the code breakpoints that had to give up their hardware breakpoint
+        (they have to be allocated anew). A range-stepping scaffold is given up as well.
+        """
+        if kind not in WATCH_KINDS or length < 1 or (kind, address, length) in self._watches:
+            return False, []
+        free = [ix for ix in self._data_slots if self._hwbplist[ix] != RESERVED]
+        if length > len(free):
+            self.logger.debug("Watchpoint at 0x%X (%d bytes) needs %d data breakpoints, %d free",
+                              address, length, length, len(free))
+            return False, []
+        slots = free[:length]
+        if self._tempalloc is not None and set(slots) & set(self._tempalloc):
+            self.clear_temp()
+        displaced : list[int] = []
+        for ix in slots:
+            if self._hwbplist[ix] is not None:
+                displaced.append(self._hwbplist[ix]) # type: ignore[arg-type]
+                self._free(ix)
+            self._hwbplist[ix] = RESERVED
+        for offset, ix in enumerate(slots):
+            self.dbg.hardware_breakpoint_clear(ix)
+            self.dbg.data_breakpoint_set(ix, address + offset, WATCH_KINDS[kind][1])
+        self._watches[(kind, address, length)] = slots
+        self.logger.debug("Watchpoint %s at 0x%X (%d bytes) on HWBP %s",
+                          WATCH_KINDS[kind][0], address, length, slots)
+        return True, displaced
+
+    def clear_watch(self, kind : int, address : int, length : int) -> bool:
+        """Remove a watchpoint; False if there is none like this"""
+        slots = self._watches.pop((kind, address, length), None)
+        if slots is None:
+            return False
+        for ix in slots:
+            self.dbg.hardware_breakpoint_clear(ix)
+            self._hwbplist[ix] = None
+        self.logger.debug("Watchpoint at 0x%X removed", address)
+        return True
+
+    def watch_hit(self, fired : list[int]) -> tuple[str, int] | None:
+        """
+        The watchpoint behind the data breakpoints that fired, as the name for the stop reply
+        ('watch', 'rwatch', 'awatch') and its data address; None if none of them is a watchpoint
+        """
+        for (kind, address, _), slots in self._watches.items():
+            if set(slots) & set(fired):
+                return WATCH_KINDS[kind][0], address
+        return None
+
+    def watch_for_access(self, address : int, write : bool) -> tuple[str, int] | None:
+        """
+        The watchpoint that an access to data address 'address' triggers (a write: watch and
+        awatch, a read: rwatch and awatch), as for watch_hit; for accesses the server simulates
+        """
+        for (kind, start, length) in self._watches:
+            if start <= address < start + length and (kind == 4 or (kind == 2) == write):
+                return WATCH_KINDS[kind][0], start
+        return None
+
+    def has_watches(self) -> bool:
+        """Whether any watchpoint is set"""
+        return bool(self._watches)

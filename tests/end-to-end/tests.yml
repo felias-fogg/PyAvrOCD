@@ -1931,3 +1931,113 @@ tests:
 
 
 
+
+# Hardware watchpoints: only the JTAG megaAVRs have data comparators, two of them, one byte each,
+# and only the EDBG probes give access to them (hwwatch is added by the probe)
+  watch_hw:
+    requires:
+      jtag: true
+      hwwatch: true
+      arduino: true
+    sketch: wpprobe
+    steps:
+      - stimulus: set logging file log/watch_hw.log
+      - stimulus: set confirm off   # 'delete' without numbers asks otherwise
+      - import: prolog
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      # write; from setup on, as the .bss clearing of the C runtime writes probe_w too, which
+      # GDB only reports if the RAM held something else than 0 before
+      - stimulus: break setup
+        response: Breakpoint 1
+      - stimulus: continue
+        response: Breakpoint 1, setup
+      - stimulus: delete
+      - stimulus: watch probe_w
+        response: Hardware watchpoint 2
+      - stimulus: continue
+        response: New value = 1
+      - stimulus: continue
+        response: New value = 2
+      - stimulus: delete
+      # read
+      - stimulus: rwatch probe_r
+        response: Hardware read watchpoint 3
+      - stimulus: continue
+        response: Value = 7
+      - stimulus: delete
+      # access, two bytes: takes both comparators
+      - stimulus: awatch probe_w16
+        response: Hardware access (read/write) watchpoint 4
+      - stimulus: continue
+        response: Hardware access (read/write) watchpoint 4
+      # no comparator left for a third byte (sink exists; an unused variable would be removed by
+      # LTO, and GDB would ask for address 0, which is refused for another reason)
+      - stimulus: watch sink
+        response: Hardware watchpoint 5
+      - stimulus: continue
+        response: Could not insert hardware
+      - stimulus: delete
+      # two 1-byte watchpoints together with a code breakpoint, which has to give way
+      - stimulus: watch probe_w
+        response: Hardware watchpoint 6
+      - stimulus: rwatch probe_r
+        response: Hardware read watchpoint 7
+      - stimulus: break loop
+        response: Breakpoint 8
+      - stimulus: continue
+        responses:
+          - Breakpoint 8, loop
+          - Hardware watchpoint 6
+      - stimulus: continue
+        responses:
+          - Breakpoint 8, loop
+          - Hardware watchpoint 6
+          - Hardware read watchpoint 7
+      - stimulus: delete
+      # set while stopped, then single steps: the probe hands data breakpoints to the OCD only
+      # when running, so PyAvrOCD steps by running to the next instruction then
+      - stimulus: break wpprobe.ino:10
+        response: Breakpoint 9
+      - stimulus: continue
+        response: Breakpoint 9, loop
+      - stimulus: watch probe_w
+        response: Hardware watchpoint 10
+      - stimulus: stepi 3
+        response: Hardware watchpoint 10
+      - stimulus: delete
+      - import: epilog
+
+# Without data comparators (UPDI, debugWIRE, JTAG with mkI/mkII/Dragon), 'watch' is refused, and
+# GDB's own software watchpoints work after 'set remote hardware-watchpoint-limit 0' -- slowly,
+# so only over the few instructions from the start of the line to the store
+  watch_none:
+    requires:
+      hwwatch: false
+      arduino: true
+    sketch: wpprobe
+    steps:
+      - stimulus: set logging file log/watch_none.log
+      - stimulus: set confirm off   # 'delete' without numbers asks otherwise
+      - import: prolog
+      - stimulus: load
+        timeout: 20
+        response: Start address 0x
+      - stimulus: break wpprobe.ino:10
+        response: Breakpoint 1
+      - stimulus: continue
+        response: Breakpoint 1, loop
+      - stimulus: watch probe_w
+        response: Hardware watchpoint 2
+      - stimulus: continue
+        response: Could not insert hardware
+      - stimulus: delete
+      - stimulus: set remote hardware-watchpoint-limit 0
+      - stimulus: watch probe_w
+        response: Watchpoint 3
+      - stimulus: continue
+        timeout: 60
+        response: New value
+      - stimulus: delete
+      - import: epilog

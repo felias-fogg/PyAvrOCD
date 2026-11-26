@@ -59,3 +59,6 @@ extras/binaries/i686-linux-gnu/VERSION
 # test needs no avr-gcc.
 !extras/ci/*.elf
 .venv/
+# Hand-over files between rune2e.py and serv.sh, present only while a test runs.
+tests/end-to-end/pyavrocd.options
+tests/end-to-end/pyavrocd.running

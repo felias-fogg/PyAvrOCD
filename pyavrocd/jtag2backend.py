@@ -40,6 +40,7 @@ import usb.core
 from pyavrocd import jtag2
 from pyavrocd.backend import SwbpSupport, BackendError, BackendNotSupportedError, ProbeCandidate
 from pyavrocd.session import AvrSession
+from pyavrocd.breakexec import straight_line_length
 from pyavrocd.errors import FatalError
 
 def signoff_marker() -> str:
@@ -98,6 +99,8 @@ class Jtag2Backend(AvrSession):
         self._swbps : set[int] = set()       # software breakpoints (byte addresses)
         self._planted : set[int] = set()     # those the probe has planted at the last go or step
         self._pending_removals : dict[int, int] = {}  # cleared, but still in flash -> original word
+        self._data_bps : set[int] = set()    # comparators armed as data breakpoints (watchpoints)
+        self._break_cause : int = 0          # cause of the last EVT_BREAK seen: the comparator, 0 = none
         self._isp : jtag2.Jtag2Isp | None = None
         self._mode_set : bool = False
         self._ext_reset_held : bool = False   # see _activate_interface
@@ -348,15 +351,31 @@ class Jtag2Backend(AvrSession):
 
     def _go(self) -> None:
         self._proto().drain_breaks()
+        self._break_cause = 0
         self._start("Go", self._proto().go)
         self._breakpoints_updated()
 
     def _go_to(self, address : int) -> None:
         self._proto().drain_breaks()
+        self._break_cause = 0
         self._start("Run to address", lambda timeout: self._proto().run_to(address >> 1, timeout))
         self._breakpoints_updated()
 
     def _single_step(self) -> None:
+        """
+        A single step never reports a data breakpoint on these probes, whether it was armed before
+        or after the last go (measured, AVR Dragon, ATmega32). So, while data breakpoints are armed,
+        an instruction that continues with the next one is 'stepped' by running to the next one,
+        which stops there or right after the access, with the comparator as the cause.
+        """
+        self._break_cause = 0
+        if self._data_bps:
+            pc = self.program_counter_read() << 1
+            length = straight_line_length(int.from_bytes(self.flash_read(pc, 2), 'little'))
+            if length is not None:
+                self._go_to((pc + length) | self.bad_pc_bit_mask)
+                self._break_cause = self._proto().wait_for_break()[1]
+                return
         self._proto().drain_breaks()
         try:
             self._start("Single step", self._proto().single_step)
@@ -582,6 +601,7 @@ class Jtag2Backend(AvrSession):
         result = self._proto().poll_break(0)
         if result is None:
             return None
+        self._break_cause = result[1]
         return result[0] << 1
 
     def program_counter_write(self, program_counter : int) -> None:
@@ -722,7 +742,22 @@ class Jtag2Backend(AvrSession):
             self.logger.warning("A hardware breakpoint at address 0 does not fire on this probe")
         self._proto().set_break(ix, (address | self.bad_pc_bit_mask) >> 1)
 
+    def data_breakpoint_slots(self) -> list[int]:
+        """On JTAG megaAVRs, comparators 2 and 3 can compare data addresses (not on debugWIRE)"""
+        if self._iface == 'jtag' and self._architecture == 'avr8':
+            return [2, 3]
+        return []
+
+    def data_breakpoint_set(self, ix : int, address : int, mode : int) -> None:
+        self._proto().set_data_break(ix, address, mode)
+        self._data_bps.add(ix)
+
+    def data_breakpoints_hit(self) -> list[int]:
+        """The data breakpoint that caused the last stop: the cause of EVT_BREAK is the comparator"""
+        return [self._break_cause] if self._break_cause in self._data_bps else []
+
     def hardware_breakpoint_clear(self, ix : int) -> None:
+        self._data_bps.discard(ix)
         try:
             self._proto().clr_break(ix)
         except jtag2.Jtag2Error as e:     # clearing an unset comparator is refused by some firmware

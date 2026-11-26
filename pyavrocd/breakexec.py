@@ -36,6 +36,17 @@ SIGSYS  : int = 12    # Bad system call means in our case "Too many breakpoints"
 SWBP : int = 1
 HWBP : int = -1
 
+def straight_line_length(opcode : int) -> int | None:
+    """
+    For an instruction that continues with the next one (no jump, branch, skip, call, return,
+    BREAK or SLEEP): its length in bytes, 2 or 4. None otherwise. Used to 'step' by running to the
+    next instruction, which lets the data breakpoints of the JTAG OCD take effect.
+    """
+    if opcode in (BREAKCODE, SLEEPCODE) or BreakAndExec._branch_instr(opcode): # pylint: disable=protected-access
+        return None
+    return 4 if BreakAndExec._two_word_instr(opcode) else 2 # pylint: disable=protected-access
+
+
 class BreakAndExec():
     """
     This class manages breakpoints, supports flashwear minimizing execution, and
@@ -66,6 +77,7 @@ class BreakAndExec():
         self._range_end : int = 0
         self._range_word : list[int] = []
         self._range_branch : list[int] = []
+        self._sim_watch : tuple[str, int] | None = None # watchpoint hit by a simulated LDS/STS
         self._range_exit : set[int] = set()
 
     def maxbpnum(self) -> int:
@@ -73,8 +85,36 @@ class BreakAndExec():
         Returns maximum number of explicit breakpoints
         """
         if self.mon.is_onlyhwbps():
-            return self.dbg.get_hwbpnum()
+            return self.hwbp.usable()
         return 1024
+
+    def insert_watchpoint(self, kind : int, address : int, length : int) -> bool:
+        """
+        Set a hardware watchpoint (GDB type 2, 3, 4) on 'length' bytes at data address 'address'.
+        Code breakpoints whose hardware breakpoint is taken over are allocated anew before the
+        next execution (as software breakpoints or on another hardware breakpoint).
+        """
+        done, displaced = self.hwbp.set_watch(kind, address, length)
+        for addr in displaced:
+            if addr in self._bp and self._bp[addr]['allocated'] == HWBP:
+                self._bp[addr]['allocated'] = None
+        return done
+
+    def remove_watchpoint(self, kind : int, address : int, length : int) -> bool:
+        """Remove a hardware watchpoint"""
+        return self.hwbp.clear_watch(kind, address, length)
+
+    def watch_hit(self) -> tuple[str, int] | None:
+        """
+        After a stop: the watchpoint that caused it (kind, data address), or None. Either the
+        server simulated the access (LDS/STS at a software breakpoint), or a data breakpoint fired.
+        """
+        if self._sim_watch is not None:
+            hit, self._sim_watch = self._sim_watch, None
+            return hit
+        if not self.hwbp.has_watches():
+            return None
+        return self.hwbp.watch_hit(self.dbg.data_breakpoints_hit())
 
     def insert_breakpoint(self, address : int) -> None:
         """
@@ -183,7 +223,7 @@ class BreakAndExec():
         # assign a HWBP to the most recently introduced BP, if we are not using all for range-stepping,
         # and take into account the possibility that hardware breakpoints are not allowed
         if self._bp[most_recent]['allocated'] is None \
-          and self.hwbp.temp_allocated_num() != self.dbg.get_hwbpnum() \
+          and self.hwbp.temp_allocated_num() != self.hwbp.usable() \
           and not self.mon.is_onlyswbps():
             # try to set a HWBP
             if self.hwbp.set(most_recent) is not None:
@@ -317,6 +357,7 @@ class BreakAndExec():
         for range-stepping. If fresh=True, we delete the range-stepping scaffold and the
         temporary BP assignment, otherwise we keep the assignment.
         """
+        self._sim_watch = None
         if fresh:
             self._range_start = None
             self.hwbp.clear_temp()
@@ -346,8 +387,10 @@ class BreakAndExec():
             if self._two_word_instr(self._bp[addr]['opcode']):
             # if there is a two word instruction, simulate
                 self.logger.debug("Two-word instruction at SWBP: simulate")
-                addr = self._sim_two_word_instr(self._bp[addr]['opcode'],
-                                                self._bp[addr]['secondword'], addr)
+                opcode, secondword = self._bp[addr]['opcode'], self._bp[addr]['secondword']
+                if (opcode & ~0x3F0) == 0x9000 and self.hwbp.has_watches(): # LDS/STS: no comparator sees it
+                    self._sim_watch = self.hwbp.watch_for_access(secondword, (opcode & 0x200) != 0)
+                addr = self._sim_two_word_instr(opcode, secondword, addr)
                 self.logger.debug("New PC(byte addr)=0x%X, return SIGTRAP", addr)
                 self.dbg.program_counter_write(addr>>1)
                 return SIGTRAP
@@ -586,7 +629,7 @@ class BreakAndExec():
             return self.single_step(None, fresh=False) # reduce to one step!
         if self.hwbp.temp_allocated() is None: # we need to set up the range scaffold
             self.logger.debug("Setting up new scaffold in range-stepping preparation")
-            available : int = self.dbg.get_hwbpnum()
+            available : int = self.hwbp.usable()
             if self.mon.is_onlyhwbps():
                 available = self.hwbp.available()
                 if available == 0:

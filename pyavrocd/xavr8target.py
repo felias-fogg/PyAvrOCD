@@ -816,6 +816,22 @@ class XMegaAvrJtagTarget(MegaAvrJtagTarget):
         return self.protocol.check_response(resp)
 
 
+    def data_breakpoint_set(self, num : int, address : int, mode : int) -> bytes | None:
+        """
+        Lets hardware breakpoint <num> (2 or 3) compare a data address: the core stops after an
+        instruction that reads (mode 0), writes (1) or accesses (2) 'address' in data space.
+        Breakpoint 1 accepts the same command but compares the PC (measured on an ATmega32 with
+        the Atmel-ICE), hence the restriction.
+        """
+        if num not in (2, 3):
+            self.logger.error("Tried to set data breakpoint %d at 0x%X on JTAG target", num, address)
+            return None
+        resp = self.protocol.jtagice3_command_response(
+            bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_SET, Avr8Protocol.CMD_VERSION0, 2, num]) +
+            binary.pack_le32(address) +
+            bytearray([mode]))
+        return self.protocol.check_response(resp)
+
     def hardware_breakpoint_clear(self, num : int) -> bytes | None:
         """
         Clears the hardware breakpoint <num>

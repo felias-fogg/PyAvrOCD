@@ -8,6 +8,7 @@
   - When the Arduino IDE starts PyAvrOCD with dw-link, the server listens after 0.7 s instead of 5.3 s. It used to wait 5 s for a JTAGICE mkII or AVR Dragon.
   - Single-stepping is faster: about 12 ms per step instead of 20 ms (84 instead of 50 steps per second, measured on an AVR64DD32 with nEDBG). Log calls no longer read the PC for their arguments when debug logging is off.
 - **Added:**
+  - On JTAG targets, watchpoints, also called data breakpoints, are now supported. Either one 2-byte or two 1-byte variables. They eat into the set of available hardware breakpoints.
   - New option `--outdated-elf warn|refuse` (default: `warn`). If source files named in the ELF file's line tables have changed after the ELF file was built, PyAvrOCD warns or refuses to start. The Arduino IDE debugs the binary of the last *Verify* or *Upload* and does not compile when *Debug* is clicked.
   - New fuse options `-m bootend` and `-m oscfreq` for UPDI targets (tinyAVR 0/1/2, megaAVR 0, AVR Dx, Ex, Sx; `oscfreq` also Lx):
     - `bootend` sets BOOTEND or BOOTSIZE so that the application section starts where the vector table of the program given with `--elf-file` is.

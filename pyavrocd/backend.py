@@ -424,6 +424,27 @@ class DebugBackend(ABC):
     def hardware_breakpoint_clear(self, ix: int) -> bytes | None:
         """Clear hardware breakpoint number 'ix' (reply ignored)"""
 
+    # ----- data breakpoints (hardware watchpoints) ------------------------------
+    # Only the OCD of the JTAG megaAVRs has data comparators. They are hardware breakpoints
+    # 2 and 3, which then compare a data address instead of the PC. Cleared with
+    # hardware_breakpoint_clear like a code breakpoint.
+
+    DATA_READ = 0       # modes of a data breakpoint, as in the EDBG command
+    DATA_WRITE = 1
+    DATA_ACCESS = 2
+
+    def data_breakpoint_slots(self) -> list[int]:
+        """Numbers of the hardware breakpoints that can compare data addresses; none by default"""
+        return []
+
+    def data_breakpoint_set(self, ix: int, address: int, mode: int) -> None:
+        """Let hardware breakpoint 'ix' stop after a 'mode' access to data address 'address'"""
+        raise BackendNotSupportedError("no data breakpoints")
+
+    def data_breakpoints_hit(self) -> list[int]:
+        """The data breakpoints (numbers) that caused the last stop seen by poll_event"""
+        return []
+
     # The three public methods below are the SwbpSupport.SERVER implementation.
     # SwbpSupport.PROBE backends override them with the probe's commands.
 

@@ -398,6 +398,23 @@ class TestBreakAndExec(TestCase):
         self.bp.dbg.step.assert_not_called()
         self.bp.dbg.run_to.assert_not_called()
 
+    def test_single_step_simulated_sts_reports_watchpoint(self):
+        # an STS at a software breakpoint is simulated, so no data comparator sees the write
+        self.set_up()
+        self.bp.dbg.get_hwbpnum.return_value = 4
+        self.bp.dbg.data_breakpoint_slots.return_value = [2, 3]
+        self.bp.hwbp = HardwareBP(self.bp.dbg)
+        self.bp.insert_watchpoint(2, 0x65, 1)
+        self.bp.mon.is_onlyswbps.return_value = False
+        self.bp.mon.is_onlyhwbps.return_value = False
+        self.bp.dbg.program_counter_read.return_value = 22
+        self.bp._bp[44] = { 'opcode' : 0x9380, 'secondword' :  0x0065, 'allocated' : SWBP, \
+                                'active': True, 'timestamp' : 1}
+        self.assertEqual(self.bp.single_step(None), SIGTRAP)
+        self.assertEqual(self.bp.watch_hit(), ('watch', 0x65))
+        self.bp.dbg.data_breakpoints_hit.return_value = []
+        self.assertIsNone(self.bp.watch_hit())      # reported once
+
     def test_single_step_unsafe_with_start(self):
         self.set_up()
         self.bp.mon.is_safe.return_value = False

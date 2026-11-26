@@ -49,6 +49,7 @@ A \<capability> could be
 - cadc: true # needs a classic adc
 - autopower: true # requires auto power-cycle (on xminis)
 - dirty: true # needs dirty PC
+- hwwatch: true # hardware watchpoints (JTAG megaAVR with any JTAG probe; added by the probe)
 
 ------
 

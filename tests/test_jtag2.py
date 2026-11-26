@@ -256,6 +256,12 @@ class TestProtocol(TestCase):
         self.assertEqual(len(timeouts), 4)
         self.assertTrue(all(t <= jtag2.POLL_SLICE for t in timeouts), timeouts)
 
+    def test_data_breakpoint_frame(self):
+        # type 2 (data), comparator 3, plain data address, mode 0 = read (measured on the Dragon)
+        proto = Jtag2Protocol(FakeTransport([('same', b"\x80")]))
+        proto.set_data_break(3, 0x60, 0)
+        self.assertEqual([body.hex() for _, body in proto.transport.sent], ["1102036000000000"])
+
     def test_breakpoint_and_progmode_frames(self):
         # the formats measured on the mkII clone (324P): word addresses, numbers 1-3 and 0 for SW BPs
         proto = Jtag2Protocol(FakeTransport([('same', b"\x80")] * 9))

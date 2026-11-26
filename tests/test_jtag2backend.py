@@ -42,6 +42,50 @@ class TestJtag2Backend(TestCase):
         self.assertIs(self.backend.protocol, second)
         self.assertIs(self.backend.sign_on_info, second.sign_on.return_value)
 
+    def jtag_backend(self):
+        with patch('pyavrocd.session.logging.getLogger', MagicMock()):
+            backend = Jtag2Backend(ProbeCandidate(tool='dragon', product='AVRDRAGON', address='0860'),
+                                   'atmega32', 'jtag', options(['-d', 'atmega32']))
+        backend.protocol = MagicMock()
+        return backend
+
+    def test_data_breakpoints_only_on_jtag(self):
+        self.assertEqual(self.backend.data_breakpoint_slots(), [])       # debugWIRE (and dw-link)
+        backend = self.jtag_backend()
+        self.assertEqual(backend.data_breakpoint_slots(), [2, 3])
+        backend.data_breakpoint_set(3, 0x60, 0)
+        backend.protocol.set_data_break.assert_called_with(3, 0x60, 0)
+
+    def test_break_cause_names_the_comparator(self):
+        backend = self.jtag_backend()
+        backend.data_breakpoint_set(2, 0x65, 1)
+        backend.data_breakpoint_set(3, 0x60, 0)
+        for cause, hit in ((3, [3]), (2, [2]), (1, []), (0, [])):
+            backend.protocol.poll_break.return_value = (0x59, cause)
+            self.assertEqual(backend.poll_event(), 0xB2)
+            self.assertEqual(backend.data_breakpoints_hit(), hit)
+        backend.hardware_breakpoint_clear(3)
+        backend.protocol.poll_break.return_value = (0x5B, 3)
+        backend.poll_event()
+        self.assertEqual(backend.data_breakpoints_hit(), [])             # not armed any more
+
+    def test_step_runs_to_next_while_data_breakpoints_armed(self):
+        # a single step never reports a data breakpoint on these probes
+        backend = self.jtag_backend()
+        backend.protocol.byte_ms = jtag2.jtag_byte_ms(0)
+        backend.program_counter_read = MagicMock(return_value=0xAE >> 1)
+        backend.flash_read = MagicMock(return_value=bytearray([0x80, 0x93]))   # sts (2 words)
+        backend._single_step()
+        backend.protocol.single_step.assert_called_once()                # nothing armed: a usual step
+        backend.data_breakpoint_set(2, 0x65, 1)
+        backend.protocol.wait_for_break.return_value = (0x59, 2)
+        backend._single_step()
+        self.assertEqual(backend.protocol.run_to.call_args.args[0], 0xB2 >> 1)
+        self.assertEqual(backend.data_breakpoints_hit(), [2])
+        backend.flash_read.return_value = bytearray([0x08, 0x95])        # ret: stepped as usual
+        backend._single_step()
+        self.assertEqual(backend.protocol.single_step.call_count, 2)
+
     def test_go_waits_longer_for_breakpoints_to_plant(self):
         # measured on the ATmega2560: 0.44 s per 256-byte page at JTAG clock code 0
         with patch('pyavrocd.session.logging.getLogger', MagicMock()):

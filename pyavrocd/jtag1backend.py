@@ -42,6 +42,11 @@ BP_X_ON : int = 0x20              # break control: comparator X on, as program b
 BP_X_PROGRAM : int = 0x0C
 BP_Y_ON : int = 0x10              # comparator Y on (only together with X)
 BP_Y_PROGRAM : int = 0x03
+# Data breakpoints on X and Y: the mode (0 read, 1 write, 2 access) goes into bits 3:2 for X and
+# bits 1:0 for Y. The break status (Resp_BREAK, parameter 0x87) has bit 2 for X, bit 3 for Y, bit 5
+# for PSB0 and bit 7 for a step, several at once (measured on the Olimex clone, ATmega32)
+BREAK_STATUS_X : int = 0x04
+BREAK_STATUS_Y : int = 0x08
 
 
 def discover() -> list[ProbeCandidate]:
@@ -84,6 +89,9 @@ class Jtag1Backend(AvrSession):
         self.transport : jtag1.Jtag1SerialTransport | None = None
         self.protocol : jtag1.Jtag1Protocol | None = None
         self._hwbps : dict[int, int] = {}       # comparator index (1-3) -> byte address
+        self._data_bps : dict[int, tuple[int, int]] = {}  # index (2, 3) -> (data address, mode)
+        self._data_on : dict[int, int] = {}     # break status bit of X/Y -> index of its data breakpoint
+        self._break_status : int = 0            # break status of the last stop
         self._running : bool = True             # may the target run? Unknown counts as running
         self._ext_reset_held : bool = False
         self.logger.info("mkI backend on %s, iface: %s, HWBPs: %d", candidate.address, iface, self._hwbpnum)
@@ -205,35 +213,58 @@ class Jtag1Backend(AvrSession):
         """
         addresses = ([cursor] if cursor is not None else []) + [self._hwbps[ix] for ix in sorted(self._hwbps)]
         words = [(address | self.bad_pc_bit_mask) >> 1 for address in addresses]
-        if len(words) > 4:
+        # X and Y: the data breakpoints first (Y works only together with X), then program ones
+        combined : list[tuple[int, int, int | None]] = \
+            [(address, data_mode, ix) for ix, (address, data_mode) in sorted(self._data_bps.items())]
+        if len(words) > 4 - len(combined):
             raise BackendError("More than four hardware breakpoints")
+        combined += [(word, -1, None) for word in words[2:]]
         proto = self._proto()
         for number, word in enumerate(words[:2]):
             proto.set_program_breakpoint(number, word)
         mode = 0
-        if len(words) > 2:
-            proto.set_parameter(jtag1.PAR_BREAK_ADDR1_HIGH, words[2] >> 8)
-            proto.set_parameter(jtag1.PAR_BREAK_ADDR1_LOW, words[2] & 0xFF)
-            mode |= BP_X_ON | BP_X_PROGRAM
-        if len(words) > 3:
-            proto.set_parameter(jtag1.PAR_BREAK_ADDR2_HIGH, words[3] >> 8)
-            proto.set_parameter(jtag1.PAR_BREAK_ADDR2_LOW, words[3] & 0xFF)
-            mode |= BP_Y_ON | BP_Y_PROGRAM
+        self._data_on = {}
+        if combined:
+            address, data_mode, ix = combined[0]
+            proto.set_parameter(jtag1.PAR_BREAK_ADDR1_HIGH, address >> 8)
+            proto.set_parameter(jtag1.PAR_BREAK_ADDR1_LOW, address & 0xFF)
+            mode |= BP_X_ON | (BP_X_PROGRAM if data_mode < 0 else data_mode << 2)
+            if ix is not None:
+                self._data_on[BREAK_STATUS_X] = ix
+        if len(combined) > 1:
+            address, data_mode, ix = combined[1]
+            proto.set_parameter(jtag1.PAR_BREAK_ADDR2_HIGH, address >> 8)
+            proto.set_parameter(jtag1.PAR_BREAK_ADDR2_LOW, address & 0xFF)
+            mode |= BP_Y_ON | (BP_Y_PROGRAM if data_mode < 0 else data_mode)
+            if ix is not None:
+                self._data_on[BREAK_STATUS_Y] = ix
         if mode:
             proto.set_parameter(jtag1.PAR_COMB_BREAK_CTRL, mode)
 
     def _go(self) -> None:
+        self._break_status = 0
         self._send_breakpoints()
         self._proto().go()
         self._running = True
 
     def _go_to(self, address : int) -> None:
+        self._break_status = 0
         self._send_breakpoints(cursor=address)
         self._proto().go()
         self._running = True
 
     def _single_step(self) -> None:
+        """
+        The probe clears all breakpoints at a break; a step reports a data breakpoint that fires in
+        it, if it was set right before (measured: status 0x84 = step + X). So the data breakpoints
+        are set before the step, and the break cause read afterwards.
+        """
+        self._break_status = 0
+        if self._data_bps:
+            self._send_breakpoints()
         self._proto().single_step()
+        if self._data_bps:
+            self._break_status = self._proto().get_parameter(jtag1.PAR_OCD_BREAK_CAUSE)
 
     def _regfile_read_raw(self) -> bytearray:
         return bytearray(self._proto().read_memory(jtag1.MEMTYPE_SRAM, 0, 32))
@@ -347,9 +378,13 @@ class Jtag1Backend(AvrSession):
         self._running = False
 
     def poll_event(self) -> int | None:
-        if not self._running or self._proto().poll_break(0) is None:
+        if not self._running:
+            return None
+        status = self._proto().poll_break(0)
+        if status is None:
             return None
         self._running = False
+        self._break_status = status
         return self._proto().read_pc() << 1
 
     def program_counter_write(self, program_counter : int) -> None:
@@ -463,6 +498,20 @@ class Jtag1Backend(AvrSession):
 
     def hardware_breakpoint_clear(self, ix : int) -> None:
         self._hwbps.pop(ix, None)
+        self._data_bps.pop(ix, None)
+
+    def data_breakpoint_slots(self) -> list[int]:
+        """The combined comparators X and Y can compare data addresses"""
+        return [2, 3] if self._architecture == 'avr8' else []
+
+    def data_breakpoint_set(self, ix : int, address : int, mode : int) -> None:
+        """Remembered; sent before the next go or step, on X or Y"""
+        self._hwbps.pop(ix, None)
+        self._data_bps[ix] = (address, mode)
+
+    def data_breakpoints_hit(self) -> list[int]:
+        """The data breakpoints that caused the last stop, by the X and Y bits of the break status"""
+        return [ix for bit, ix in self._data_on.items() if self._break_status & bit]
 
     def can_set_run_timers(self) -> bool:
         return True

@@ -58,6 +58,8 @@ RSP_SPI_DATA : int = 0x88
 RESET_DEBUGWIRE_DISABLE : int = 0x04  # flag of CMND_RESET
 BREAK_PROGRAM : int = 0x01           # type of CMND_SET_BREAK
 BREAK_MODE_PROGRAM : int = 0x03      # mode of CMND_SET_BREAK
+BREAK_DATA : int = 0x02              # type of CMND_SET_BREAK: a data breakpoint, modes 0 read, 1 write,
+                                     # 2 access (JTAG only; measured on the AVR Dragon, ATmega32)
 SOFTWARE_BREAKPOINT : int = 0x00     # breakpoint number of a software breakpoint
 RSP_OK : int = 0x80
 RSP_PARAMETER : int = 0x81
@@ -771,6 +773,15 @@ class Jtag2Protocol():
         """
         self.ok(struct.pack("<BBBIB", CMND_SET_BREAK, BREAK_PROGRAM, number, pc, BREAK_MODE_PROGRAM),
                 "Set breakpoint {} at 0x{:X}".format(number, pc))
+
+    def set_data_break(self, number : int, address : int, mode : int) -> None:
+        """
+        CMND_SET_BREAK for a data breakpoint on comparator 2 or 3 at a data address: the target stops
+        after the access, and EVT_BREAK names the comparator as its cause. The probe hands it to the
+        OCD at GO and RUN_TO only; a single step never reports it (measured, AVR Dragon, ATmega32).
+        """
+        self.ok(struct.pack("<BBBIB", CMND_SET_BREAK, BREAK_DATA, number, address, mode),
+                "Set data breakpoint {} at 0x{:X}".format(number, address))
 
     def clr_break(self, number : int, pc : int = 0) -> None:
         """CMND_CLR_BREAK; a software breakpoint is identified by its word address"""

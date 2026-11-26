@@ -544,6 +544,17 @@ devices:
     board: '32'
     setup: ATmega32 on the 40-pin DIP board (JTAG)
 
+  atmega644p:
+    mcu: atmega644p
+    import: classic_mega
+    core: MightyCore
+    provides:
+      ram: 4
+      flash: 64
+    board: '644'
+    variant: modelP
+    setup: ATmega644P on the 40-pin DIP board (JTAG)
+
   atmega1284p:
     mcu: atmega1284p
     import: classic_mega

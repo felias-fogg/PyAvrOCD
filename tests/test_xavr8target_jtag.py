@@ -152,6 +152,21 @@ class TestXAvr8TargetJtag(TestCase):
             binary.pack_le32(0x200) +
             bytearray([3]))
 
+    def test_data_breakpoint_set_right(self):
+        # type 2 (data) instead of 1 (code), and the mode (1 = write) instead of 3
+        self.set_up()
+        self.xa.protocol.check_response.return_value = None
+        self.assertEqual(self.xa.data_breakpoint_set(3, 0x65, 1), None)
+        self.xa.protocol.jtagice3_command_response.assert_called_with(bytearray([Avr8Protocol.CMD_AVR8_HW_BREAK_SET, Avr8Protocol.CMD_VERSION0, 2, 3]) +
+            binary.pack_le32(0x65) +
+            bytearray([1]))
+
+    def test_data_breakpoint_set_not_on_1(self):
+        # breakpoint 1 accepts a data breakpoint, but compares the PC
+        self.set_up()
+        self.assertEqual(self.xa.data_breakpoint_set(1, 0x65, 1), None)
+        self.xa.protocol.jtagice3_command_response.assert_not_called()
+
     def test_hardware_breakpoint_clear_right(self):
         self.set_up()
         self.xa.protocol.check_response.return_value = None

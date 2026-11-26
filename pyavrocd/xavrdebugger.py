@@ -32,6 +32,7 @@ from pymcuprog.utils import read_target_voltage, read_tool_info
 from pyavrocd.backend import DebugBackend, SwbpSupport, BackendError, BackendNotSupportedError,\
      InvalidAddressError, IspConnectionError
 from pyavrocd.session import AvrSession, OcdNotEnabledError, OcdLockedError
+from pyavrocd.breakexec import straight_line_length
 from pyavrocd.termination import guard_probe_transactions
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
 from pyavrocd.xnvmmegaavrjtag import XNvmAccessProviderCmsisDapMegaAvrJtag
@@ -83,6 +84,11 @@ class EdbgBackend(AvrSession, AvrDebugger):
         # has been written since the target last stopped (see _step_off_written_pc_bp)
         self._swbps : set[int] = set()
         self._pc_written : bool = False
+        self._break_ext_info : int = 0   # extended info of the last break event (see poll_event)
+        # data breakpoints changed since the last run: the probe hands them to the OCD only at RUN
+        # and RUN_TO, not at STEP (measured, ATmega32 + Atmel-ICE), see _single_step
+        self._data_dirty : bool = False
+        self._data_bps : set[int] = set()   # hardware breakpoints armed as data breakpoints
 
         # Edbg protocol instance, necessary to access target power control
         if transport and transport.hid_device is not None:
@@ -249,6 +255,8 @@ class EdbgBackend(AvrSession, AvrDebugger):
         Execute, after removing pending events
         """
         self.flush_events() # remove any pending poll events from queue
+        self._break_ext_info = 0
+        self._data_dirty = False
         self._pc_written = False
         AvrDebugger.run(self)
 
@@ -257,17 +265,55 @@ class EdbgBackend(AvrSession, AvrDebugger):
         Execute up to address, after removing pending events
         """
         self.flush_events() # remove any pending poll events from queue
+        self._break_ext_info = 0
+        self._data_dirty = False
         self._pc_written = False
         AvrDebugger.run_to(self, address)
 
     def _single_step(self) -> None:
         """
-        One step, after removing pending events
+        One step, after removing pending events. The break event of a step reports a data breakpoint
+        that fired in it (cause 2/3, ext info 0x8800/0x8400), but only if the data breakpoints were
+        handed to the OCD by a RUN or RUN_TO: a STEP does not do that (measured, ATmega32 and
+        Atmel-ICE; Microchip Studio sets them before running, too). So, if they have changed since
+        the last run, an instruction that does not change the flow of execution is 'stepped' by
+        running to the next instruction, which hands them over; the probe then stops there or right
+        after the access. Instructions that change the flow are stepped as usual: of those, only
+        calls and returns access data at all (the stack). A usual step waits for the core to stop
+        by reading the running state and leaves the break event in the queue, so with data
+        breakpoints armed, the event is read afterwards (it arrives within about a millisecond).
         """
         self.flush_events() # remove any pending poll events from queue
+        self._break_ext_info = 0
+        if self._data_dirty and self._step_by_running_to_next():
+            return
         if not self._step_off_written_pc_bp():
             AvrDebugger.step(self)
+            if self._data_bps:
+                deadline = time.monotonic() + 0.1
+                while self.poll_event() is None and time.monotonic() < deadline:
+                    time.sleep(0.001)
         self._pc_written = False
+
+    def _step_by_running_to_next(self) -> bool:
+        """
+        Step by running to the next instruction, if that is where the step ends; True if done.
+        The break event is read here, as the stop may come from a data breakpoint.
+        """
+        pc = self.program_counter_read() << 1
+        length = straight_line_length(int.from_bytes(self.flash_read(pc, 2), 'little'))
+        if length is None:
+            return False
+        nextpc = pc + length
+        self._data_dirty = False
+        self._pc_written = False
+        AvrDebugger.run_to(self, nextpc | self.bad_pc_bit_mask)
+        deadline = time.monotonic() + 1.0
+        while self.poll_event() is None:
+            if time.monotonic() > deadline:
+                raise FatalError("Timeout waiting for the AVR core to halt after a step")
+            time.sleep(0.001)
+        return True
 
     def _step_off_written_pc_bp(self) -> bool:
         """
@@ -456,6 +502,9 @@ class EdbgBackend(AvrSession, AvrDebugger):
         """
         Clear the ix-th hardware breakpoint
         """
+        if ix in self.data_breakpoint_slots():
+            self._data_dirty = True
+            self._data_bps.discard(ix)
         return self.device.avr.hardware_breakpoint_clear(ix)
 
     def stack_pointer_write(self, data : bytes) -> None:
@@ -630,8 +679,37 @@ class EdbgBackend(AvrSession, AvrDebugger):
         AvrDebugger.stop(self)
 
     def poll_event(self) -> int | None:
-        """PC (byte address) if the target has stopped since the last call, else None"""
-        return AvrDebugger.poll_event(self)
+        """
+        PC (byte address) if the target has stopped since the last call, else None. As in
+        AvrDebugger.poll_event, but the extended info of a break event is kept: on JTAG, it says
+        which hardware breakpoints fired (measured on an ATmega32 with the Atmel-ICE: #1 0x1000,
+        #2 0x0800, #3 0x0400, several at once possible).
+        """
+        event = self.device.avr.protocol.poll_events()
+        if not event:
+            return None
+        pc = self.device.avr.protocol.decode_break_event(event)
+        if pc is not None:
+            body = event[1:]
+            ext = Avr8Protocol.EVT_AVR8_BREAK_EXT_INFO
+            self._break_ext_info = (body[ext] << 8) | body[ext + 1] if len(body) > ext + 1 else 0
+        return pc
+
+    def data_breakpoint_slots(self) -> list[int]:
+        """On JTAG megaAVRs, hardware breakpoints 2 and 3 can compare data addresses"""
+        if self._iface == 'jtag' and self._architecture == 'avr8':
+            return [2, 3]
+        return []
+
+    def data_breakpoint_set(self, ix : int, address : int, mode : int) -> None:
+        """Hardware breakpoint 'ix' stops after a 'mode' access to data address 'address'"""
+        self.device.avr.data_breakpoint_set(ix, address, mode)
+        self._data_dirty = True
+        self._data_bps.add(ix)
+
+    def data_breakpoints_hit(self) -> list[int]:
+        """The data breakpoints that fired at the last stop seen by poll_event"""
+        return [ix for ix, bit in ((2, 0x0800), (3, 0x0400)) if self._break_ext_info & bit]
 
     def program_counter_write(self, program_counter : int) -> None:
         """Set PC (word address), and remember that it was written"""

@@ -52,6 +52,7 @@ schema = { 'includes': [ '<STR>' ],
                                        'dirty': '<BOOL>',
                                        'onlyhwbp': '<BOOL>',
                                        'slowstep': '<BOOL>',
+                                       'hwwatch': '<BOOL>',
                                        'resetto0': '<BOOL>' },
                          'import': '<STR>',
                          'after': '<STR>',
@@ -590,7 +591,15 @@ PROBE_PROVIDES : dict[str, dict[str, Any]] = {
     # JTAGICE mkI: PyAvrOCD sets only hardware breakpoints with it; a safe single step takes about
     # 300 ms (the probe refreshes its copy of the I/O registers after every stop); its reset
     # starts at 0, whatever BOOTRST says (measured on an ATmega16)
-    'jtag1' : { 'onlyhwbp' : True, 'slowstep' : True, 'resetto0' : True },
+    'jtag1' : { 'onlyhwbp' : True, 'slowstep' : True, 'resetto0' : True, 'hwwatch' : True },
+    # JTAG: the OCD's data comparators give hardware watchpoints (2 bytes), with the EDBG probes,
+    # the JTAGICE mkII, the AVR Dragon and the mkI (above)
+    'atmelice_jtag' : { 'hwwatch' : True },
+    'powerdebugger_jtag' : { 'hwwatch' : True },
+    'pickit4_jtag' : { 'hwwatch' : True },
+    'snap_jtag' : { 'hwwatch' : True },
+    'jtag2' : { 'hwwatch' : True },
+    'dragon_jtag' : { 'hwwatch' : True },
     }
 
 def usb_serial(dev : Any) -> str:

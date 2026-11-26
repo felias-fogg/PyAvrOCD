@@ -199,7 +199,9 @@ class GdbHandler():
         if sig == SIGBUS:
             self.send_debug_message("Cannot execute because stack pointer is too low")
             self.logger.warning("Cannot execute because stack pointer is too low.")
-        if sig is not None:
+        if sig == SIGTRAP: # the stop of a step: a watchpoint may have fired in it
+            self.send_signal(sig, self.bp.watch_hit())
+        elif sig is not None:
             self.send_signal(sig)
 
 
@@ -895,6 +897,12 @@ class GdbHandler():
                 self.logger.debug("rs_stage=%d", self._rs_stage)
             self.bp.remove_breakpoint(int(addr, 16))
             self.send_packet("OK")
+        elif breakpoint_type in {b"2", b"3", b"4"} and self.dbg.data_breakpoint_slots():
+            watch = self._watchpoint_args(packet)
+            if watch is not None and self.bp.remove_watchpoint(*watch):
+                self.send_packet("OK")
+            else:
+                self.send_packet("E01")
         else:
             self.logger.debug("Breakpoint type %r not supported", breakpoint_type)
             self.send_packet("")
@@ -919,9 +927,33 @@ class GdbHandler():
                 self.logger.debug("rs_stage=%d", self._rs_stage)
             self.bp.insert_breakpoint(int(addr, 16))
             self.send_packet("OK")
+        elif breakpoint_type in {b"2", b"3", b"4"} and self.dbg.data_breakpoint_slots():
+            # hardware watchpoints: only the JTAG megaAVRs have data comparators; elsewhere the
+            # empty reply below says 'not supported' (GDB needs 'set remote hardware-watchpoint-limit 0'
+            # to fall back on its own software watchpoints then)
+            watch = self._watchpoint_args(packet)
+            if watch is not None and self.bp.insert_watchpoint(*watch):
+                self.send_packet("OK")
+            else:
+                self.logger.warning("Hardware watchpoint not possible: %s", packet.decode(errors='replace'))
+                self.send_packet("E01")
         else:
             self.logger.error("Breakpoint type %r not supported", breakpoint_type)
             self.send_packet("")
+
+    def _watchpoint_args(self, packet : bytes) -> tuple[int, int, int] | None:
+        """
+        Type, data address and length from a Z2/Z3/Z4 or z2/z3/z4 packet. GDB addresses data space
+        with an offset of 0x800000; anything outside of it cannot be watched. Watchpoints of more
+        than 2 bytes are refused: there are only two data comparators, one per byte.
+        """
+        try:
+            kind, addr, length = (int(field, 16) for field in packet.split(b",")[:3])
+        except ValueError:
+            return None
+        if not 0x800000 <= addr < 0x810000 or not 1 <= length <= 2:
+            return None
+        return kind, addr - 0x800000, length
 
     def _timeout_handler(self, _ : bytes) -> None:
         """
@@ -947,9 +979,11 @@ class GdbHandler():
         pc = self.dbg.poll_event()
         if pc:
             self.logger.debug("MCU stopped execution")
+            # which watchpoint fired, if any -- before further events overwrite the information
+            watch = self.bp.watch_hit()
             while self.dbg.poll_event():
                 pass # remove any pending message
-            self.send_signal(SIGTRAP)
+            self.send_signal(SIGTRAP, watch)
 
     def send_packet(self, packet_data : str) -> None:
         """
@@ -977,9 +1011,10 @@ class GdbHandler():
         self.send_packet('O' + binascii.hexlify(bytearray((mes+"\n").\
                                                     encode('utf-8'))).decode("ascii").upper())
 
-    def send_signal(self, signal : int | None) -> None:
+    def send_signal(self, signal : int | None, watch : tuple[str, int] | None = None) -> None:
         """
-        Sends signal to GDB
+        Sends signal to GDB; for a stop at a watchpoint, 'watch' is its kind ('watch', 'rwatch',
+        'awatch') and data address, which the stop reply names as GDB knows it (+0x800000)
         """
         self.last_sigval = signal
         if signal: # do nothing if None or 0
@@ -993,6 +1028,8 @@ class GdbHandler():
             pcstring = binascii.hexlify(pc.to_bytes(4,byteorder='little')).decode('ascii')
             stoppacket = "T{:02X}20:{:02X};21:{:02X}{:02X};22:{};thread:1;".\
               format(signal, sreg, spl, sph, pcstring)
+            if watch is not None:
+                stoppacket += "{}:{:X};".format(watch[0], watch[1] + 0x800000)
             self.send_packet(stoppacket)
 
     def handle_data(self, data : bytes | None) -> None:

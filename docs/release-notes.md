@@ -6,6 +6,7 @@
 - **UPDI chips: the fuses that the program dictates are set automatically** (`-m bootend`, `-m oscfreq`, part of `-m all`). BOOTEND/BOOTSIZE is set so that the program's interrupt vector table is where the chip looks for it. This fixes sketches that hung at the first interrupt. The 16/20 MHz oscillator is selected according to `--F_CPU`.
 - **Debugging with dw-link starts about 5 seconds faster** in the Arduino IDE.
 - **Single-stepping is faster**, about 12 ms instead of 20 ms per step.
+- **Data breakpoints** (watchpoints) are now supported on JTAG targets. Either one double byte or two single byte variables are supported.  
 - With dw-link, GDB could show outdated register values after a single step from a breakpoint. This is fixed.
 
 ## Release v2.0.0

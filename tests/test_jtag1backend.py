@@ -74,6 +74,44 @@ class TestJtag1Backend(TestCase):
         b._go()
         self.assertEqual(b.protocol.set_program_breakpoint.call_count, 2)
 
+    def test_data_breakpoints_on_x_and_y(self):
+        # data first on X (write: mode bits 3:2 = 01) and Y (read: bits 1:0 = 00), code on PSB0
+        b = backend()
+        self.assertEqual(b.data_breakpoint_slots(), [2, 3])
+        b.data_breakpoint_set(2, 0x65, 1)
+        b.data_breakpoint_set(3, 0x60, 0)
+        b._go_to(0xAE)
+        b.protocol.set_program_breakpoint.assert_called_once_with(0, 0xAE >> 1)
+        b.protocol.set_parameter.assert_has_calls([
+            call(jtag1.PAR_BREAK_ADDR1_HIGH, 0x00), call(jtag1.PAR_BREAK_ADDR1_LOW, 0x65),
+            call(jtag1.PAR_BREAK_ADDR2_HIGH, 0x00), call(jtag1.PAR_BREAK_ADDR2_LOW, 0x60),
+            call(jtag1.PAR_COMB_BREAK_CTRL, 0x20 | 0x04 | 0x10 | 0x00)])
+
+    def test_data_breakpoint_hit_from_break_status(self):
+        # measured: bit 2 = X, bit 3 = Y, bit 5 = PSB0, combined (0x24)
+        b = backend()
+        b.data_breakpoint_set(2, 0x65, 1)
+        b.data_breakpoint_set(3, 0x60, 0)
+        b._go()
+        b.protocol.read_pc.return_value = 0x59
+        for status, hit in ((0x0004, [2]), (0x0008, [3]), (0x0024, [2]), (0x0020, [])):
+            b._running = True
+            b.protocol.poll_break.return_value = status
+            b.poll_event()
+            self.assertEqual(b.data_breakpoints_hit(), hit)
+
+    def test_step_sets_data_breakpoints_and_reads_cause(self):
+        # a step reports X if it was set right before (measured: 0x84 = step + X)
+        b = backend()
+        b._single_step()
+        b.protocol.get_parameter.assert_not_called()
+        b.data_breakpoint_set(2, 0x65, 1)
+        b.protocol.get_parameter.return_value = 0x84
+        b._single_step()
+        b.protocol.set_parameter.assert_any_call(jtag1.PAR_COMB_BREAK_CTRL, 0x24)
+        b.protocol.get_parameter.assert_called_with(jtag1.PAR_OCD_BREAK_CAUSE)
+        self.assertEqual(b.data_breakpoints_hit(), [2])
+
     def test_too_many_breakpoints(self):
         b = backend()
         for ix in (1, 2, 3, 4):

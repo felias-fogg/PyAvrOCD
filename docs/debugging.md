@@ -58,15 +58,19 @@ Breakpoints are arguably one of the most powerful tools when it comes to debuggi
 
 PyAvrOCD uses *hardware breakpoints*, those based on hardware comparators, and *software breakpoints*, where the BREAK instruction is programmed into flash memory. It will do so in a manner to minimize flash wear. However, you can control which kind of breakpoints are employed by using the [`monitor breakpoints` command](monitor-commands.md#monitor-bp).
 
-<!--
+
 
 ### Watchpoints
 
-*Watchpoints*, also called *data breakpoints*, are similar to ordinary breakpoints. However, instead of breaking when a certain program location in the program is reached, watchpoints request to break when a certain data location is accessed. Hardware support for such watchpoints is unfortunately only present in JTAG targets. They can use two of their four hardware breakpoints as watchpoints for a byte location. In addition, PyAvrOCD itself emulates such watchpoints in software, which is roughly one order of magnitude faster than using the mechanism GDB offers. However, a single instruction is still roughly 10-20 milliseconds, slowing execution down by a factor of at least 10,000.
+*Watchpoints*, also called *data breakpoints*, are similar to ordinary breakpoints. However, instead of breaking when a certain program location in the program is reached, watchpoints request to break when a certain data location is accessed. Hardware support for such watchpoints is unfortunately only present in JTAG targets. They can use two of their hardware breakpoints as watchpoints for one byte each, so either two 1-byte variables or one 2-byte variable can be watched; the program stops right after the instruction that accessed it. For larger variables, one can only watch a part of them, e.g., `watch *(unsigned int*)&longvar` in order to watch the least significant word, or `watch *(unsigned int*)(&longvar+1)` to watch the most significant word.
 
-In Arduino IDE 2, there is no direct way to activate watchpoints. It is still possible to type the corresponding GDB commands into the input line of the `Debug Console`, though. The `watch`, `rwatch`, and `awatch` commands are described in detail in the [GDB manual section on Setting Watchpoints](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Set-Watchpoints.html#Set-Watchpoints). Note that PyAvrOCD, in general, expects either a variable or pointer value. Further, for JTAG targets, one 2-byte variable or two 1-byte variables are supported. All the remaining watchpoints will be emulated. Similar to program breakpoints, the usage of watchpoints can be controlled by the [`monitor watchpoints` command](monitor-commands.md#monitor-wp).
+Note that watchpoints take away hardware breakpoints. In particular, if those are the only breakpoints, such as when using the JTAG ICE probe or on an ATmega128, this can significantly reduce the number of usable program breakpoints. Since one hardware breakpoint is needed for line-stepping and when dealing with watchpoints, the use of 2 watchpoints implies that one is down to only one hardware breakpoint.
 
--->
+On other targets, GDB can emulate watchpoints by single-stepping, which is very slow (tens of milliseconds per instruction). GDB only does that after `set remote hardware-watchpoint-limit 0`.
+
+In Arduino IDE 2, there is no direct way to activate watchpoints. It is still possible to type the corresponding GDB commands into the input line of the `Debug Console`, though. The `watch`, `rwatch`, and `awatch` commands are described in detail in the [GDB manual section on Setting Watchpoints](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Set-Watchpoints.html#Set-Watchpoints). Note that PyAvrOCD, in general, expects either a variable or pointer value.
+
+
 
 ### Peripherals pane
 

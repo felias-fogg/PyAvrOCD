@@ -44,6 +44,7 @@ class TestGdbHandler(TestCase):
         self.gh.mem.lazy_loading = False
         self.gh.mem.programming_mode = False
         self.gh.bp = create_autospec(BreakAndExec, specSet=True, instance=True)
+        self.gh.bp.watch_hit.return_value = None   # no watchpoint behind a stop, unless a test says so
         self.gh._live_tests = create_autospec(LiveTests, specSet=True, instance=True)
 
     def test_rsp_packet_construction(self):
@@ -612,6 +613,20 @@ class TestGdbHandler(TestCase):
         self.gh.bp.single_step.assert_called_with(None)
         self.gh.comsocket.sendall.assert_called_with(rsp("T0520:55;21:3412;22:02020000;thread:1;"))
 
+    def test_step_reports_watchpoint(self):
+        # the instruction stepped over (e.g., at a breakpoint) wrote the watched variable
+        self.set_up()
+        self.gh.mon.is_debugger_active.return_value=True
+        self.gh.mem.is_flash_empty.return_value = False
+        self.gh.mon.is_noload.return_value = False
+        self.gh.dbg.program_counter_read.return_value = 0x00000101
+        self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
+        self.gh.dbg.status_register_read.return_value = [0x55]
+        self.gh.bp.single_step.return_value = 5
+        self.gh.bp.watch_hit.return_value = ('awatch', 0x63)
+        self.gh.dispatch('vCont', b';s')
+        self.gh.comsocket.sendall.assert_called_with(rsp("T0520:55;21:3412;22:02020000;thread:1;awatch:800063;"))
+
     def test_step_with_signal_handler(self):
         self.set_up()
         self.gh._step_handler = Mock()
@@ -822,6 +837,7 @@ class TestGdbHandler(TestCase):
     def test_remove_breakpoint_handler_wrong_type(self):
         self.set_up()
         self.gh.mon.is_debugger_active.return_value = True
+        self.gh.dbg.data_breakpoint_slots.return_value = []   # no data comparators (not JTAG)
         self.gh.dispatch('z',b'2,111,2')
         self.gh.comsocket.sendall.assert_called_with(rsp(''))
 
@@ -843,8 +859,47 @@ class TestGdbHandler(TestCase):
     def test_add_breakpoint_handler_wrong_type(self):
         self.set_up()
         self.gh.mon.is_debugger_active.return_value = True
+        self.gh.dbg.data_breakpoint_slots.return_value = []   # no data comparators (not JTAG)
         self.gh.dispatch('Z',b'2,111,2')
         self.gh.comsocket.sendall.assert_called_with(rsp(''))
+
+    def test_add_watchpoint(self):
+        self.set_up()
+        self.gh.dbg.data_breakpoint_slots.return_value = [2, 3]
+        self.gh.bp.insert_watchpoint.return_value = True
+        self.gh.dispatch('Z',b'2,800065,1')
+        self.gh.bp.insert_watchpoint.assert_called_with(2, 0x65, 1)
+        self.gh.comsocket.sendall.assert_called_with(rsp('OK'))
+
+    def test_add_watchpoint_refused(self):
+        # more than 2 bytes, an address outside data space, or no comparator left
+        self.set_up()
+        self.gh.dbg.data_breakpoint_slots.return_value = [2, 3]
+        self.gh.bp.insert_watchpoint.return_value = False
+        for packet in (b'2,800060,4', b'2,65,1', b'3,800065,1'):
+            self.gh.dispatch('Z', packet)
+            self.gh.comsocket.sendall.assert_called_with(rsp('E01'))
+        self.gh.bp.insert_watchpoint.assert_called_once_with(3, 0x65, 1)
+
+    def test_remove_watchpoint(self):
+        self.set_up()
+        self.gh.dbg.data_breakpoint_slots.return_value = [2, 3]
+        self.gh.bp.remove_watchpoint.return_value = True
+        self.gh.dispatch('z',b'4,800063,2')
+        self.gh.bp.remove_watchpoint.assert_called_with(4, 0x63, 2)
+        self.gh.comsocket.sendall.assert_called_with(rsp('OK'))
+
+    def test_poll_events_watchpoint(self):
+        self.set_up()
+        self.gh.mon.is_debugger_active.return_value = True
+        self.gh.dbg.poll_event.side_effect = [ 0x101, None ]
+        self.gh.dbg.program_counter_read.return_value = 0x00000101
+        self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
+        self.gh.dbg.status_register_read.return_value = [0x88]
+        self.gh.bp.watch_hit.return_value = ('watch', 0x65)
+        self.gh.poll_events()
+        self.gh.comsocket.sendall.assert_called_with(
+            rsp("T0520:88;21:3412;22:02020000;thread:1;watch:800065;"))
 
     def test_add_breakpoint_handler_new(self):
         self.set_up()
@@ -868,6 +923,7 @@ class TestGdbHandler(TestCase):
         self.gh.dbg.program_counter_read.return_value = 0x00000101
         self.gh.dbg.stack_pointer_read.return_value = bytearray([0x34, 0x12])
         self.gh.dbg.status_register_read.return_value = [0x88]
+        self.gh.bp.watch_hit.return_value = None
         self.gh.poll_events()
         self.gh.dbg.poll_event.assert_called()
         self.gh.comsocket.sendall.assert_called_with(rsp("T0520:88;21:3412;22:02020000;thread:1;"))
