@@ -16,19 +16,19 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - **AVR Butterfly (ATmega169)**: [MegaCore](supporting-packages.md#megacore)
 - <u>MEGA-1284P Xplained</u>: [MightyCore](supporting-packages.md#mightycore)
 - **ATmega4809 Curiosity Nano**: [MegaCoreX](supporting-packages.md#megacorex); onboard debugger; choose the `48 pin standard` pinout; serial I/O is routed via `Serial3`; the LED is connected to PF5 (digital pin 39); the programmer you have to choose is `Curiosity Nano`.
-- ATtiny416 Xplained Nano:  [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger
-- ATtiny817 Xplained Pro: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger
-- **ATtiny817 Xplained Mini**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PC0 (`LED_BUILTIN`); button is on PC5; programmer should be `Xplained Mini`; serial I/O through the debug interface works.
-- **ATtiny1607 Curiosity Nano**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
-- ATtiny1627 Curiosity Nano: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`;
-- **ATtiny3217 Curiosity Nano**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
-- **ATtiny3227 Curiosity Nano**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
-- **AVR128DA48 Curiosity Nano**: [DxCore (Debug enabled)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PC6 (pin 20); button is on PC7 (pin 21); programmer should be `Curiosity Nano`; serial I/O is routed via `Serial1` instead of `Serial` through the debug interface.
-- **AVR128DB48 Curiosity Nano**: [DxCore (Debug enabled)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PB3 (pin 11); button is on PB2 (pin 10); serial I/O is routed via `Serial3` instead of `Serial` through the debug interface.
-- **AVR64DD32 Curiosity Nano**: [DxCore (Debug enabled)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, `RESET`); programmer should be `Curiosity Nano`; serial I/O through the debug interface is routed via `Serial`, however, you need to swap the I/O pins using `Serial.swap(3)`.
-- **AVR64DU32 Curiosity Nano**: [DxCore (Debug enabled)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PF2 (pin 22); button is on PF6 (pin 26, `RESET`); programmer should be `Curiosity Nano`; serial I/O is routed via `Serial1` instead of `Serial` through the debug interface, and in addition, you need to swap the pins: `Serial1.swap(2)`.
-- **AVR64EA48 Curiosity Nano**: [DxCore (Debug enabled)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PB3 (pin 11); button is on PB2 (pin 10); programmer should be `Curiosity Nano`; serial I/O is routed via `Serial1` instead of `Serial` through the debug interface.
-- **AVR16EB32 Curiosity Nano**: [DxCore (Debug enabled)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, `RESET`); programmer should be `Curiosity Nano`; serial I/O through the debug interface is routed via `Serial`, however, you need to swap the I/O pins using `Serial.swap(4)`.
+- ATtiny416 Xplained Nano:  [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger
+- ATtiny817 Xplained Pro: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger
+- **ATtiny817 Xplained Mini**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PC0 (`LED_BUILTIN`); button is on PC5; programmer should be `Xplained Mini`; serial I/O through the debug interface works.
+- **ATtiny1607 Curiosity Nano**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
+- ATtiny1627 Curiosity Nano: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`;
+- **ATtiny3217 Curiosity Nano**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
+- **ATtiny3227 Curiosity Nano**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
+- **AVR128DA48 Curiosity Nano**: [DxCore (debug-configured)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PC6 (pin 20); button is on PC7 (pin 21); programmer should be `Curiosity Nano`; serial I/O is routed via `Serial1` instead of `Serial` through the debug interface.
+- **AVR128DB48 Curiosity Nano**: [DxCore (debug-configured)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PB3 (pin 11); button is on PB2 (pin 10); serial I/O is routed via `Serial3` instead of `Serial` through the debug interface.
+- **AVR64DD32 Curiosity Nano**: [DxCore (debug-configured)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, `RESET`); programmer should be `Curiosity Nano`; serial I/O through the debug interface is routed via `Serial`, however, you need to swap the I/O pins using `Serial.swap(3)`.
+- **AVR64DU32 Curiosity Nano**: [DxCore (debug-configured)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PF2 (pin 22); button is on PF6 (pin 26, `RESET`); programmer should be `Curiosity Nano`; serial I/O is routed via `Serial1` instead of `Serial` through the debug interface, and in addition, you need to swap the pins: `Serial1.swap(2)`.
+- **AVR64EA48 Curiosity Nano**: [DxCore (debug-configured)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PB3 (pin 11); button is on PB2 (pin 10); programmer should be `Curiosity Nano`; serial I/O is routed via `Serial1` instead of `Serial` through the debug interface.
+- **AVR16EB32 Curiosity Nano**: [DxCore (debug-configured)](supporting-packages.md#dxcore); onboard debugger; LED is connected to PF5 (pin 25); button is on PF6 (pin 26, `RESET`); programmer should be `Curiosity Nano`; serial I/O through the debug interface is routed via `Serial`, however, you need to swap the I/O pins using `Serial.swap(4)`.
 
 ## Arduino boards
 
@@ -39,7 +39,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - Arduino Diecimila:  [MiniCore](supporting-packages.md#minicore); [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
 - **Arduino Nano:**  [MiniCore](supporting-packages.md#minicore), [AvrDebug](supporting-packages.md#avrdebugger); [100 nF cap and 1kΩ resistor needs to be removed](board-preparation.md#arduino-nano-and-clones)
 - **Arduino Mega**: [MegaCore](supporting-packages.md#megacore), [AvrDebug](supporting-packages.md#avrdebugger); JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
-- **Arduino Mega 2560:** [MegaCore](https://github.com/MCUdude/MegaCore), [AvrDebug](supporting-packages.md#avrdebugger); JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
+- **Arduino Mega 2560:** [MegaCore](supporting-packages.md#megacore), [AvrDebug](supporting-packages.md#avrdebugger); JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
 - Arduino Mega ADK: [MegaCore](supporting-packages.md#megacore)
 - **Arduino Leonardo**:  [AvrDebug](supporting-packages.md#avrdebugger); JTAG pins are A0-A3, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag)
 - Arduino Leonardo ETH
@@ -88,7 +88,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - <s>Flora (ATmega32U4)</s>: JTAG pins are not accessible
 - Feather 32U4
 - Feather 328P: [MiniCore](supporting-packages.md#minicore)
-- Gemma (ATtiny85):  [TinyCore](https://github.com/MCUdude/TinyCore); RESET pad on backside
+- Gemma (ATtiny85):  [TinyCore](supporting-packages.md#tinycore); RESET pad on backside
 - Trinket 3.3V (ATtiny85): [TinyCore](supporting-packages.md#tinycore)
 - Trinket 5V (ATtiny85): [TinyCore](supporting-packages.md#tinycore)
 - Metro (ATmega328P):  [MiniCore](supporting-packages.md#minicore), cut `RESET EN` solder bridge
@@ -102,8 +102,8 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - <u>ItsyBitsy 32u4 (5V)</u>: [AvrDebug](supporting-packages.md#avrdebugger)
 - Bluefruit Micro
 - ATmega32u4 Breakout Board: [AvrDebug](supporting-packages.md#avrdebugger)
-- **SEESAW Breakout ATtiny817**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore)
-- **SEESAW Breakout ATtiny1616**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore)
+- **SEESAW Breakout ATtiny817**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
+- **SEESAW Breakout ATtiny1616**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
 ## Teensy boards
 
@@ -149,7 +149,7 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 - **ATtiny43 dev. board**: [TinyCore](supporting-packages.md#tinycore)
 
-- **ATtiny3217 breakout board (assembled)**: [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore)
+- **ATtiny3217 breakout board (assembled)**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
 ## Miscellaneous boards
 

@@ -49,7 +49,7 @@ Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rat
 
 ## Modern ATtinys
 
-### ATtiny 0-series supported by [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore)
+### ATtiny 0-series supported by [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
 - **ATtiny202**
 - **ATtiny402**
@@ -68,7 +68,7 @@ Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rat
 
 
 
-### ATtiny 1-series supported by [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore)
+### ATtiny 1-series supported by [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
 - **ATtiny212**
 - **ATtiny412**
@@ -90,7 +90,7 @@ Because of its limited flash memory, debugging a sketch on an ATtiny13(A) is rat
 
 
 
-### ATtiny 2-series supported by [megaTinyCore (Debug enabled)](supporting-packages.md#megatinycore)
+### ATtiny 2-series supported by [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
 - **ATtiny424**
 
@@ -295,40 +295,40 @@ There exists only 2 Arduino boards, both using the
 
 ## AVR Dx-, Ex-, Lx-, Sx- devices
 
-### AVR DA series supported by [DxCore (Debug enabled)](supporting-packages.md#dxcore)
+### AVR DA series supported by [DxCore (debug-configured)](supporting-packages.md#dxcore)
 
 - **AVR32DA28**, AVR32DA28S, AVR32DA32, AVR32DA32S, AVR32DA48, AVR32DA48S
 - **AVR64DA28**, AVR64DA28S, AVR64DA32, AVR64DA32S, AVR64DA48, AVR64DA48S, AVR64DA64, AVR64DA64S
 - **AVR128DA28**, AVR128DA28S, AVR128DA32, AVR128DA32S, **AVR128DA48**, AVR128DA48S, AVR128DA64, AVR128DA64S
 
-### AVR DB series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
+### AVR DB series supported by  [DxCore (debug-configured)](supporting-packages.md#dxcore)
 
 - **AVR32DB28**, AVR32DB32, AVR32DB48
 - **AVR64DB28**, AVR64DB32, AVR64DB48, AVR64DB64
 - **AVR128DB28**, <u>AVR128DB32</u>, **AVR128DB48**, <u>AVR128DB64</u>
 
-### AVR DD series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
+### AVR DD series supported by  [DxCore (debug-configured)](supporting-packages.md#dxcore)
 
 - AVR16DD14, AVR16DD20, **AVR16DD28**, AVR16DD32
 
 - AVR32DD14, AVR32DD20, **AVR32DD28**, AVR32DD32
 - <u>AVR64DD14</u>, <u>AVR64DD20</u>, **AVR64DD28**, **AVR64DD32**
 
-### AVR DU series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
+### AVR DU series supported by  [DxCore (debug-configured)](supporting-packages.md#dxcore)
 
 - AVR16DU14, AVR16DU20, **AVR16DU28**, AVR16DU32
 
 - AVR32DU14, AVR32DU20, **AVR32DU28**, AVR32DU32
 - **AVR64DU28**, **AVR64DU32**
 
-### AVR EA series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
+### AVR EA series supported by  [DxCore (debug-configured)](supporting-packages.md#dxcore)
 
 - **AVR16EA28**, AVR16EA32, AVR16EA48
 
 - **AVR32EA28**, AVR32EA32, AVR32EA48
 - **AVR64EA28**, AVR64EA32, **AVR64EA48**
 
-### AVR EB series supported by  [DxCore (Debug enabled)](supporting-packages.md#dxcore)
+### AVR EB series supported by  [DxCore (debug-configured)](supporting-packages.md#dxcore)
 
 - AVR16EB14, AVR16EB20, **AVR16EB28**, **AVR16EB32**
 - AVR32EB14, AVR32EB20, **AVR32EB28**, AVR32EB32
