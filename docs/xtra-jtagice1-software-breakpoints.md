@@ -82,7 +82,7 @@ Two points have to be checked before implementing this:
 - The stop reply currently expedites SREG, SP and PC (`handler.py`). After a deferred step, only the PC is known, so the reply would have to carry the PC alone, and GDB would have to cope with that.
 - An RSP log of a continue from a breakpoint has to confirm that GDB sends `Z0` and `c` after the step without reading registers in between.
 
-The range-stepping heuristic (see [Potential Speedup for Rangestepping](rangestepping-speedup.md)) also looks at the context of packets. The two should be considered together.
+The range-stepping heuristic (see [Potential Speedup for Rangestepping](xtra-rangestepping-speedup.md)) also looks at the context of packets. The two should be considered together.
 
 ## Effort
 
