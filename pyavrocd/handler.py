@@ -21,7 +21,7 @@ from pyavrocd.backend import DebugBackend, BackendError, InvalidAddressError, Is
 from pyavrocd.breakexec import BreakAndExec, NOSIG, SIGHUP, SIGINT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGSEGV, SIGSYS
 from pyavrocd.monitor import MonitorCommand
 from pyavrocd.livetests import LiveTests
-from pyavrocd.errors import  EndOfSession, FatalError
+from pyavrocd.errors import  EndOfSession, FatalError, ProbeNotResponding
 
 RECEIVE_BUFFER = 1024
 
@@ -123,7 +123,7 @@ class GdbHandler():
             if self.mem.lazy_loading and cmd != 'X': # new packet after a string of X-packets
                 self._set_binary_memory_handler_finalize(b'')
             handler(packet)
-        except (EndOfSession, KeyboardInterrupt):
+        except (EndOfSession, KeyboardInterrupt, ProbeNotResponding):
             raise
         except Exception as e:
             self.logger.critical(str(e))

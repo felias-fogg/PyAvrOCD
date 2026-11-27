@@ -20,7 +20,7 @@ from pymcuprog.deviceinfo import deviceinfo  # pure device description, no tool 
 
 from pyavrocd import updifuses
 from pyavrocd.backend import DebugBackend, BackendError, BackendNotSupportedError
-from pyavrocd.errors import FatalError, EndOfSession
+from pyavrocd.errors import FatalError, EndOfSession, ProbeNotResponding
 from pyavrocd.deviceinfo.devices.alldevices import dev_name
 
 
@@ -270,7 +270,7 @@ class AvrSession(DebugBackend):
                 raise FatalError("Could  not connect to target.")
             if self._iface == 'jtag' and dev_id & 0xFF != 0x3F:
                 raise FatalError("Not a Microchip JTAG target")
-        except EndOfSession:
+        except (EndOfSession, ProbeNotResponding):
             raise
         except Exception as e:
             if warmstart:

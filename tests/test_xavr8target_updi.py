@@ -139,7 +139,7 @@ class TestXAvr8TargetUpdi(TestCase):
         self.xa.activate_physical.side_effect = lambda *a: calls.append('activate')
         self.xa.protocol.attach.side_effect = lambda *a: calls.append('attach')
         self.xa.reactivate()
-        self.assertEqual(calls, ['detach', 'deactivate', 'activate', 'attach'])
+        self.assertEqual(calls, [])     # nothing on UPDI, see XTinyXAvrTarget.reactivate
 
     def test_switch_to_progmode(self):
         self.set_up()

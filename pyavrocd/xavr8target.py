@@ -154,13 +154,14 @@ class XTinyXAvrTarget(TinyXAvrTarget):
 
     def reactivate(self) -> None:
         """
-        Reactivate physical: Necessary to set the right timer mode
+        Nothing to do for UPDI. On JTAG, reactivating the physical is what makes the timer mode
+        reach the OCD; on UPDI, the timers are frozen anyway (each peripheral has its own debug-run
+        bit), and the timers command does not change anything. Reactivating used to be done after
+        every load all the same, and that is harmful there: between the detach and the attach, the
+        freshly loaded program runs, and an mEDBG that is forwarding the target's UART output to an
+        open virtual COM port at that moment stops answering altogether (measured on an
+        ATtiny416 Xplained Nano, 2026-11-27).
         """
-        self.protocol.detach()
-        self.deactivate_physical()
-        self.activate_physical()
-        self.protocol.attach()
-        self.logger_loc.info("Physical interface re-activated")
 
     def switch_to_progmode(self) -> None:
         """
