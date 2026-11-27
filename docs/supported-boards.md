@@ -103,11 +103,6 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - **SEESAW Breakout ATtiny817**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 - **SEESAW Breakout ATtiny1616**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
-## Teensy boards
-
-- <u>Teensy 2.0 (ATmega32U4)</u>
-- <u>Teensy++ (AT90USB1286)</u>
-
 ## Olimex boards
 
 - Olimex-328: [MiniCore](supporting-packages.md#minicore)
