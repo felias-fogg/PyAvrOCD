@@ -14,11 +14,11 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - <u>AT90USBKEY2 (AT90USB1287)</u>
 - <u>ATmega256RFR2 Xplained Pro</u>
 - **AVR Butterfly (ATmega169)**: [MegaCore](supporting-packages.md#megacore)
-- <u>MEGA-1284P Xplained</u>: [MightyCore](supporting-packages.md#mightycore)
-- **ATmega4809 Curiosity Nano**: [MegaCoreX](supporting-packages.md#megacorex); onboard debugger; choose the `48 pin standard` pinout; serial I/O is routed via `Serial3`; the LED is connected to PF5 (digital pin 39); the programmer you have to choose is `Curiosity Nano`. Programmer is `Xplained Mini`.
-- **ATtiny416 Xplained Nano**:  [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is PB5; button is PB4; erial I/O through the debug interface works, provided you swap the pins: `Serial1.swap(1)`.
+- **MEGA-1284P Xplained**: [MightyCore](supporting-packages.md#mightycore); no onboard debugger, but a UART-USB bridge; LED0 (`LED_BUILTIN`) and switch SW0 are on PB0; serial I/O is routed via `Serial1`; the onboard crystal has a clock frequency of 11.05 MHz.
+- **ATmega4809 Curiosity Nano**: [MegaCoreX](supporting-packages.md#megacorex); onboard debugger; choose the `48 pin standard` pinout; serial I/O is routed via `Serial3`; the LED is connected to PF5 (digital pin 39); the programmer you have to choose is `Curiosity Nano`.
+- **ATtiny416 Xplained Nano**:  [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is PB5 (`LED_BUILTIN`); button is PB4; serial I/O through the debug interface works, provided you swap the pins: `Serial1.swap(1)`. Programmer is `Xplained Mini`. [Note that the mEDBG debugger might get stuck when debugging starts while the board outputs over the serial line through the debugger](troubleshooting.md#the-debug-probe-stopped-responding).
 - ATtiny817 Xplained Pro: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger
-- **ATtiny817 Xplained Mini**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PC0 (`LED_BUILTIN`); button is on PC5; programmer should be `Xplained Mini`; serial I/O through the debug interface works.
+- **ATtiny817 Xplained Mini**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PC0 (`LED_BUILTIN`); button is on PC5; programmer should be `Xplained Mini`; serial I/O through the debug interface works. [Note that the mEDBG debugger might get stuck when debugging starts while the board outputs over the serial line through the debugger](troubleshooting.md#the-debug-probe-stopped-responding).
 - **ATtiny1607 Curiosity Nano**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
 - ATtiny1627 Curiosity Nano: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`;
 - **ATtiny3217 Curiosity Nano**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore); onboard debugger; LED is connected to PB7 (`LED_BUILTIN`); button is on PC4; programmer should be `Curiosity Nano`; serial I/O through the debug interface works.
@@ -32,18 +32,18 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 ## Arduino boards
 
-- Arduino Yún
+- Arduino Yún:  [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
 - **Arduino UNO R3**:   [MiniCore](supporting-packages.md#minicore), [AvrDebugger](supporting-packages.md#avrdebugger); [the `RESET EN` solder bridge needs to be cut](board-preparation.md#preparing-a-debugwire-target)
 - Arduino UNO Mini:  [MiniCore](supporting-packages.md#minicore); remove capacitor `C3`
 - Arduino Duemilanove:  [MiniCore](supporting-packages.md#minicore); `RESET EN` needs to be cut
 - Arduino Diecimila:  [MiniCore](supporting-packages.md#minicore); [remove 100nF capacitor](https://awtfy.com/2010/02/21/modify-an-arduino-for-debugwire/)
-- **Arduino Nano:**  [MiniCore](supporting-packages.md#minicore), [AvrDebugger](supporting-packages.md#avrdebugger); [100 nF cap and 1kΩ resistor needs to be removed](board-preparation.md#arduino-nano-and-clones)
+- Arduino Nano:  [MiniCore](supporting-packages.md#minicore), [AvrDebugger](supporting-packages.md#avrdebugger); [100 nF cap and 1kΩ resistor needs to be removed](board-preparation.md#arduino-nano-and-clones)
 - **Arduino Mega**: [MegaCore](supporting-packages.md#megacore), [AvrDebugger](supporting-packages.md#avrdebugger); JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
 - **Arduino Mega 2560:** [MegaCore](supporting-packages.md#megacore), [AvrDebugger](supporting-packages.md#avrdebugger); JTAG pins are A4-A7, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag), `RESET EN` does not need to be opened
 - Arduino Mega ADK: [MegaCore](supporting-packages.md#megacore)
 - **Arduino Leonardo**:  [AvrDebugger](supporting-packages.md#avrdebugger); JTAG pins are A0-A3, use [this board adapter](https://github.com/felias-fogg/PyAvrOCD/tree/main/pcbs/arduino-jtag)
-- Arduino Leonardo ETH
-- <u>Arduino Micro</u>
+- Arduino Leonardo ETH: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
+- <u>Arduino Micro</u>: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
 - <s>Arduino Esplora</s>: JTAG pins are not accessible
 - Arduino Mini: [MiniCore](supporting-packages.md#minicore) (if Mini 05); do not connect the DTR pin of the FTDI header
 - Arduino Ethernet: [MiniCore](supporting-packages.md#minicore); do not connect the DTR pin of the FTDI header
@@ -55,53 +55,51 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 - <u>Arduino Pro Mini</u>:  [MiniCore](supporting-packages.md#minicore), [AvrDebugger](supporting-packages.md#avrdebugger); do not connect the DTR pin of the FTDI header
 - Arduino NG (ATmega168):  [MiniCore](supporting-packages.md#minicore); no modifications necessary
 - <s>Arduino NG (ATmega8)</s>: no debugging interface
-- Arduino Robot Control
-- Arduino Robot Motor
+- Arduino Robot Control: JTAG pins are in use for other purposes
+- Arduino Robot Motor: JTAG pins are in use for other purposes
 - <u>Arduino Gemma</u>: [TinyCore](supporting-packages.md#tinycore); RESET pad on backside
-- <u>Adafruit Circuit Playground 32u4</u>
-- Arduino Yún Mini
-- Arduino Industrial 101
-- Arduino Linino One
+- <s>Adafruit Circuit Playground 32u4</s>: JTAG pins are in use for other purposes and are not accessible.
+- Arduino Yún Mini:  [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
+- Arduino Industrial 101: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
+- Arduino Linino One: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
 - Arduino UNO WiFi (Rev 1):  [MiniCore](supporting-packages.md#minicore); cut `RESET EN` solder bridge
-- **Arduino Uno WiFi (Rev 2)**: [MegaCoreX](supporting-packages.md#megacorex), [megaAvrDebugger](supporting-packages.md#megaavrdebugger); board has an onboard debugger; the recommended pinout is `Uno Wifi`; serial I/O is via `Serial`; `LED_BUILTIN` is digital pin 25 (PD6); there is no bootloader support because you can load via the onboard debugger/programmer `microUPDI/Uno WiFi`
+- **Arduino Uno WiFi (Rev 2)**: [MegaCoreX](supporting-packages.md#megacorex), [megaAvrDebugger](supporting-packages.md#megaavrdebugger); board has an onboard debugger; the recommended pinout is `Uno Wifi`; serial I/O is via `Serial`; `LED_BUILTIN` is digital pin 25 (PD6); there is no bootloader support because you can load via the onboard debugger/programmer `microUPDI/Uno WiFi`. [Note that the mEDBG debugger might get stuck when debugging starts while the board outputs over the serial line through the debugger](troubleshooting.md#the-debug-probe-stopped-responding).
 - **Arduino Nano Every:** [MegaCoreX](supporting-packages.md#megacorex), [megaAvrDebugger](supporting-packages.md#megaavrdebugger); [UPDI pad on the backside](board-preparation.md#preparing-a-updi-target); the only pinout is `Nano Every`; serial I/O is routed via `Serial`; `LED_BUILTIN` is digital pin 13 (PE2); there is no bootloader support because you can load via the onboard programmer `JTAG2UPDI`
 
 ## Sparkfun boards
 
-- RedBoard (ATmega328P): [MiniCore](supporting-packages.md#minicore), [AvrDebugger](supporting-packages.md#avrdebugger); [the `RESET EN` solder bridge needs to be cut](board-preparation.md#preparing-a-debugwire-target) remove `C8`
+- RedBoard (ATmega328P): [MiniCore](supporting-packages.md#minicore), [AvrDebugger](supporting-packages.md#avrdebugger); remove `C8`
 - <u>Pro Micro 3.3V (ATmega32U4)</u>
-- <u>Pro Micro 5V (ATmega32U4)</u>: [AvrDebugger](supporting-packages.md#avrdebugger)
+- <u>Pro Micro 5V (ATmega32U4)</u>: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo)
 - Fio v3
-- Qduino Mini (ATmega32U4): [AvrDebugger](supporting-packages.md#avrdebugger)
+- Qduino Mini (ATmega32U4): [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo)
 - Mega Pro 3.3V: [MegaCore](supporting-packages.md#megacore), [AvrDebugger](supporting-packages.md#avrdebugger)
 - Mega Pro 5V: [MegaCore](supporting-packages.md#megacore), [AvrDebugger](supporting-packages.md#avrdebugger)
-- RedBot (ATmega328P): [MiniCore](supporting-packages.md#minicore)
-- <u>Serial-7-Segment-Display</u> (ATmega328P): [MiniCore](supporting-packages.md#minicore)
+- <u>Serial-7-Segment-Display</u> (ATmega328P): [MiniCore](supporting-packages.md#minicore); do not make a connection to DTR
 - ATmega128RFA1 Development Board
 - <s>LilyPad USB Plus</s>:  JTAG pins are not accessible
-- SerLcd
 - Digital Sandbox (ATmega328P): [MiniCore](supporting-packages.md#minicore)
-- Microview (ATmega328P): [MiniCore](supporting-packages.md#minicore); the SPI pins are not exposed, you need to solder to some vias inside the enclosure
+- <s>Microview (ATmega328P)</s>: The SPI pins are not exposed
 
 ## Adafruit boards
 
 - <s>Flora (ATmega32U4)</s>: JTAG pins are not accessible
-- Feather 32U4
+- Feather 32U4: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo)
 - Feather 328P: [MiniCore](supporting-packages.md#minicore)
 - Gemma (ATtiny85):  [TinyCore](supporting-packages.md#tinycore); RESET pad on backside
 - Trinket 3.3V (ATtiny85): [TinyCore](supporting-packages.md#tinycore)
 - Trinket 5V (ATtiny85): [TinyCore](supporting-packages.md#tinycore)
 - Metro (ATmega328P):  [MiniCore](supporting-packages.md#minicore), cut `RESET EN` solder bridge
 - Metro Mini V2:  [MiniCore](supporting-packages.md#minicore), you have to figure out which cap to remove
-- Circuit Playground Classic (ATmega32U4)
+- <s>Circuit Playground Classic (ATmega32U4)</s>: JTAG pins are not exposed and used for different purposes
 - Pro Trinket 5V/16MHz (USB): [MiniCore](supporting-packages.md#minicore)
 - Pro Trinket 3V/12MHz (USB): [MiniCore](supporting-packages.md#minicore)
 - Pro Trinket 5V/16MHz (FTDI): [MiniCore](supporting-packages.md#minicore)
 - Pro Trinket 3V/12MHz (FTDI): [MiniCore](supporting-packages.md#minicore)
 - ItsyBitsy 32u4 (3V)
-- <u>ItsyBitsy 32u4 (5V)</u>: [AvrDebugger](supporting-packages.md#avrdebugger)
+- <u>ItsyBitsy 32u4 (5V)</u>: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo)
 - Bluefruit Micro
-- ATmega32u4 Breakout Board: [AvrDebugger](supporting-packages.md#avrdebugger)
+- ATmega32u4 Breakout Board: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo)
 - **SEESAW Breakout ATtiny817**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 - **SEESAW Breakout ATtiny1616**: [megaTinyCore (debug-configured)](supporting-packages.md#megatinycore)
 
@@ -113,11 +111,11 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 ## Olimex boards
 
 - Olimex-328: [MiniCore](supporting-packages.md#minicore)
-- Olimex-32u4
+- Olimex-32u4: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo); JTAG pins are A0-A3
+- Olimexino-85: [TinyCore](supporting-packages.md#tinycore)
 - <s>eduArdu</s>: JTAG pins are not accessible
 - Olimex-Nano: [MiniCore](supporting-packages.md#minicore)
-- RGB-Glasses
-- Olimexino-2560: [MegaCore](supporting-packages.md#megacore)
+- Olimexino-2560: [MegaCore](supporting-packages.md#megacore), [AvrDebugger](supporting-packages.md#avrdebugger)
 - **AVR-CAN (AT90CAN128)**: [MegaCore](supporting-packages.md#megacore)
 - AVR-GSM (ATMega32): [MightyCore](supporting-packages.md#mightycore)
 - AVR-IO-M16 (ATmega16): [MightyCore](supporting-packages.md#mightycore)
@@ -127,13 +125,13 @@ Most of the supported Microchip boards have an embedded debugger on board, which
 
 ## Seeed Studio boards
 
-- Seeeduino V3.0: [MiniCore](supporting-packages.md#minicore)
+- Seeeduino V3.0: [MiniCore](supporting-packages.md#minicore); switch M_RST_AUTO to manual
 - <u>Seeeduino v4</u>:  [MiniCore](supporting-packages.md#minicore); remove `C14` and RESET LED (next to RESET button)
 - <u>Stalker</u>: [MiniCore](supporting-packages.md#minicore); do not connect DTR
 - Seeeduino Lotus: [MiniCore](supporting-packages.md#minicore); remove `C6` and RESET LED (next to RESET button)
-- Seeeduino Lite
-- Seeeduino Nano: [MiniCore](supporting-packages.md#minicore)
-- Seeeduino Mega 2560: [MegaCore](supporting-packages.md#megacore)
+- Seeeduino Lite: [AvrDebugger](supporting-packages.md#avrdebugger) (Leonardo)
+- Seeeduino Nano: [MiniCore](supporting-packages.md#minicore), `C6` needs to be removed
+- Seeeduino Mega: [MegaCore](supporting-packages.md#megacore), [AvrDebugger](supporting-packages.md#avrdebugger), JTAG pins: A4-A7
 
 ## Azduino boards by Spence Konde
 
