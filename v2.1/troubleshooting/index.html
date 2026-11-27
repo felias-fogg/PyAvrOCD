@@ -112,6 +112,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#debug-session-not-started-debugwire-not-activated-by-power-cycling-parasitic-power-supply">Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-debug-probe-stopped-responding">The debug probe stopped responding</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#problems-while-debugging">Problems while debugging</a>
@@ -237,6 +239,8 @@
 <p>This error message is displayed when, on a debugWIRE target, the DWEN fuse cannot be set because ISP/SPI programming cannot be initiated. It could be a wiring problem, which, in my experience, is the most likely reason. The next likely reason is that it is a wrong MCU. It could also mean that the MCU is not accessible anymore by ISP programming, which can have <a href="../limitations/#debugwire-can-brick-mcus">many possible causes</a>.</p>
 <h3 id="debug-session-not-started-debugwire-not-activated-by-power-cycling-parasitic-power-supply"><code>Debug session not started: debugWIRE not activated by power-cycling. Parasitic power supply?</code></h3>
 <p>DebugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a <a href="https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/">parasitic power supply</a> problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the <code>IOREF</code> pin instead of using the <code>5V</code>  or <code>3.3V</code> pin. If this is not possible, consult the <a href="https://github.com/felias-fogg/XMiniCore#powering-external-circuitry">README file</a> of XMiniCore.</p>
+<h3 id="the-debug-probe-stopped-responding"><code>The debug probe stopped responding</code></h3>
+<p>PyAvrOCD waited in vain for an answer from the debug probe. Unplug the probe, or the board with the on-board debugger, and plug it in again. With an mEDBG on a UPDI target, the most likely cause is that the target sends serial output to an open serial monitor while the debug session starts, e.g., right after plugging in or uploading: close the serial monitor before starting the debugger, or wait until the program is quiet.</p>
 <h2 id="problems-while-debugging">Problems while debugging</h2>
 <h3 id="code-executes-slower-or-faster-than-expected">Code executes slower or faster than expected</h3>
 <p>Note that PyAvrOCD by itself does not set any timing-related fuses (<code>CKDIV8</code> on classic chips or <code>FREQSEL</code> on modern chips). This means before debugging, you need to run <code>Burn Bootloader</code> in the Arduino IDE 2 after selecting the right clock settings, or you have to set the timing-related fuses to their desired values by other means.</p>
