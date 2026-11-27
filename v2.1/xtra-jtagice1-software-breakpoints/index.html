@@ -219,7 +219,7 @@
 <li>The stop reply currently expedites SREG, SP and PC (<code>handler.py</code>). After a deferred step, only the PC is known, so the reply would have to carry the PC alone, and GDB would have to cope with that.</li>
 <li>An RSP log of a continue from a breakpoint has to confirm that GDB sends <code>Z0</code> and <code>c</code> after the step without reading registers in between.</li>
 </ul>
-<p>The range-stepping heuristic (see <a href="rangestepping-speedup.md">Potential Speedup for Rangestepping</a>) also looks at the context of packets. The two should be considered together.</p>
+<p>The range-stepping heuristic (see <a href="../xtra-rangestepping-speedup/">Potential Speedup for Rangestepping</a>) also looks at the context of packets. The two should be considered together.</p>
 <h2 id="effort">Effort</h2>
 <p>This is a fair amount of special-casing for a probe that is rarely used: the re-arming, the swapped byte order, the deferred step, the return-address correction and the breakpoint allocation. Until then, the mkI stays with its four hardware breakpoints. The only change worth making independently is the address format in <code>erase_page_spm</code>, since the current one is wrong.</p>
               
