@@ -20,7 +20,7 @@ import select
 # debugger modules
 
 from pyavrocd.handler import GdbHandler, RECEIVE_BUFFER
-from pyavrocd.errors import  EndOfSession, TerminationRequest
+from pyavrocd.errors import  EndOfSession, TerminationRequest, ProbeNotResponding
 from pyavrocd.termination import interrupt
 from pyavrocd.backend import DebugBackend
 
@@ -133,6 +133,12 @@ class RspServer():
             return 0
         except KeyboardInterrupt: # caused by user interrupt
             self.logger.info("Terminated by Ctrl-C")
+            return 1
+        except ProbeNotResponding as e: # see xavrdebugger.limit_hid_reads
+            self.logger.critical("%s", e)
+            self.logger.critical("Unplug the probe, or the board with the on-board debugger, and plug it in again.")
+            self.logger.critical("With an mEDBG on a UPDI target: close the serial monitor "
+                                     "before starting the debugger.")
             return 1
         except Exception as e:
             self.logger.critical("Forced exit: %s", e)

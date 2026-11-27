@@ -49,6 +49,10 @@ This error message is displayed when, on a debugWIRE target, the DWEN fuse canno
 
 DebugWIRE was not activated despite (automatic) power-cycling. Perhaps there is a [parasitic power supply](https://arduino-craft-corner.de/index.php/2022/03/15/parasitic-power-supply/) problem? This happens in particular on Xplained-Mini boards since the board power is not switched when an automatic power cycle is performed. A cure can be to power the application circuit connected to the board through the `IOREF` pin instead of using the `5V`  or `3.3V` pin. If this is not possible, consult the [README file](https://github.com/felias-fogg/XMiniCore#powering-external-circuitry) of XMiniCore.
 
+### `The debug probe stopped responding`
+
+PyAvrOCD waited in vain for an answer from the debug probe. Unplug the probe, or the board with the on-board debugger, and plug it in again. With an mEDBG on a UPDI target, the most likely cause is that the target sends serial output to an open serial monitor while the debug session starts, e.g., right after plugging in or uploading: close the serial monitor before starting the debugger, or wait until the program is quiet.
+
 ## Problems while debugging
 
 ### Code executes slower or faster than expected

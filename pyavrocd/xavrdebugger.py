@@ -19,6 +19,7 @@ from pyedbglib.protocols.avrispprotocol import AvrIspProtocol, AvrIspProtocolErr
 from pyedbglib.protocols.edbgprotocol import EdbgProtocol
 from pyedbglib.protocols import housekeepingprotocol
 from pyedbglib.hidtransport.hidtransportbase import HidTransportBase
+from pyedbglib.hidtransport.cyhidapi import CyHidApiTransport
 
 # pymcuorig library
 from pymcuprog.avrdebugger import AvrDebugger
@@ -37,7 +38,40 @@ from pyavrocd.termination import guard_probe_transactions
 from pyavrocd.xnvmdebugwire import XNvmAccessProviderCmsisDapDebugwire
 from pyavrocd.xnvmmegaavrjtag import XNvmAccessProviderCmsisDapMegaAvrJtag
 from pyavrocd.xnvmupdi import XNvmAccessProviderCmsisDapUpdi
-from pyavrocd.errors import FatalError, EndOfSession
+from pyavrocd.errors import FatalError, EndOfSession, ProbeNotResponding
+
+PROBE_NOT_RESPONDING : str = "The debug probe stopped responding"
+HID_READ_TIMEOUT_MS : int = 10000   # every single read is a short request/answer, long operations are polled
+
+def limit_hid_reads(transport : HidTransportBase, timeout_ms : int = HID_READ_TIMEOUT_MS) -> None:
+    """
+    pyedbglib's hidapi transport reads without a time limit, so a probe that stops answering (an mEDBG
+    does when it has to activate UPDI while forwarding UART traffic to an open serial port) leaves the
+    server waiting forever -- and unkillable, since the termination guard holds back SIGTERM until the
+    transaction is over. Here, a read gives up after timeout_ms and raises ProbeNotResponding; from
+    then on, every read and write fails at once, so that the cleanup does not wait for each command.
+    """
+    if not isinstance(transport, CyHidApiTransport) or getattr(transport, 'reads_limited', False):
+        return
+    write, dead = transport.hid_write, [False]
+
+    def hid_write(data_send : bytearray) -> int:
+        if dead[0]:
+            raise ProbeNotResponding(PROBE_NOT_RESPONDING)
+        return int(write(data_send))
+
+    def hid_read() -> bytearray:
+        if dead[0]:
+            raise ProbeNotResponding(PROBE_NOT_RESPONDING)
+        response = transport.hid_device.read(transport.device.packet_size, timeout_ms)
+        if not response:
+            dead[0] = True
+            raise ProbeNotResponding(PROBE_NOT_RESPONDING)
+        return bytearray(response)
+
+    transport.hid_write = hid_write         # type: ignore[method-assign]
+    transport.hid_read = hid_read           # type: ignore[method-assign]
+    transport.reads_limited = True          # type: ignore[attr-defined]
 
 class EdbgProbe(NamedTuple):
     """How an EDBG probe was found: pymcuprog's backend, connected, and the tool it is connected to"""
@@ -70,6 +104,7 @@ class EdbgBackend(AvrSession, AvrDebugger):
         """
         AvrSession.__init__(self, devicename, iface, args)
         self.transport : HidTransportBase = transport
+        limit_hid_reads(transport)
         self.clkprg : int = args.clkprg # JTAG programming clock frequency
         self.clkdeb : int = args.clkdeb # JTAG debug clock frequency
         self.kbps : int = args.kbps # UPDI/PDI communication speed limit
