@@ -84,7 +84,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#arduino-pro-mini-and-clones">Arduino Pro Mini and clones</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#other-atmegax8-boards">Other ATmegaX8 boards</a>
+    <li class="toctree-l3"><a class="reference internal" href="#other-boards-with-debugwire-mcus">Other boards with debugWIRE MCUs</a>
     </li>
         </ul>
     </li>
@@ -182,9 +182,9 @@
 <p><img alt="" src="../pics/nano-clone.png" /></p>
 <p>Note, however, that there are many different versions of Nanos on the market. Verify that making the changes will indeed accomplish what you are after: Removing the capacitive and resistive load from the RESET line.</p>
 <h3 id="arduino-pro-mini-and-clones">Arduino Pro Mini and clones</h3>
-<p>The <strong>Arduino Pro Mini</strong> is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.</p>
+<p>The <strong>Arduino Pro Mini</strong> is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original SparkFun board (left), this is the bottom pin; on some clones (right), it is the top one.</p>
 <p><img alt="" src="../pics/pro-minis.png" /></p>
-<h3 id="other-atmegax8-boards">Other ATmegaX8 boards</h3>
+<h3 id="other-boards-with-debugwire-mcus">Other boards with debugWIRE MCUs</h3>
 <p>For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.</p>
 <h2 id="preparing-a-jtag-target">Preparing a JTAG target</h2>
 <p>JTAG targets are easier to deal with. Simply do not connect anything to the JTAG lines (<code>TDI</code>, <code>TDO</code>, <code>TMS</code>, <code>TCK</code>).  On an Arduino Mega or Mega 2560, these are the analog pins A4-A7. On a Leonardo, these are the analog pins A0-A3. While physical changes on the board are not necessary, it is very likely that the <a href="../fuse-preparation/">JTAG pins have to be enabled by setting the corresponding fuses</a>. It also means that one should disconnect anything from those lines.</p>
