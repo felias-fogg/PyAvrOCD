@@ -39,11 +39,11 @@ Note, however, that there are many different versions of Nanos on the market. Ve
 
 ### Arduino Pro Mini and clones
 
-The **Arduino Pro Mini** is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original Sparkfun board (left), this is the bottom pin; on some clones (right), it is the top one.
+The **Arduino Pro Mini** is a simpler case. The pull-up resistor has a resistance of 10 kΩ, and the auto-reset capacitor is not connected as long as nothing is connected to the DTR pin. This is the header pin, either labeled DTR or GRN. On the original SparkFun board (left), this is the bottom pin; on some clones (right), it is the top one.
 
 ![](pics/pro-minis.png)
 
-### Other ATmegaX8 boards
+### Other boards with debugWIRE MCUs
 
 For other boards with ATmega168 and ATmega328 chips, the situation is similar. Find out what is connected to the RESET line and disconnect any capacitors and strong resistors. And the same holds for other debugWIRE MCUs.
 
